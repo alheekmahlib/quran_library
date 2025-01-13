@@ -1,0 +1,85 @@
+name: quran_library
+description: "A Quran Package you can put in your app and it will work without the need for any other resources."
+version: 0.0.1
+homepage: https://github.com/alheekmahlib/quran_library
+
+environment:
+  sdk: '>=2.17.0 <4.0.0'
+  flutter: ">=1.17.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+
+  # state management
+  get: ^4.6.6
+
+
+  # local storage
+  shared_preferences: ^2.3.5
+
+  #UI
+  fluttertoast: ^8.2.10
+  flutter_svg: ^2.0.17
+
+  #Tools
+  intl: ^0.20.1
+  archive: ^4.0.2
+  http: ^1.2.2
+  path_provider: ^2.1.5
+  get_storage: ^2.1.1
+  collection: ^1.19.0
+
+# This package supports all platforms listed below.
+# But note that it works and fits on mobile size devices
+# Additional Screen Sizes will be supported later
+platforms:
+  android:
+  ios:
+  linux:
+  macos:
+  web:
+  windows:
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+package_rename_config:
+  android:
+    package_name: com.alheekmah.quranPackage
+
+  ios:
+    bundle_name: com.alheekmah.quranPackage
+    package_name: com.alheekmah.quranPackage
+
+  linux:
+    package_name: com.alheekmah.quranPackage
+
+  macos:
+    package_name: com.alheekmah.quranPackage
+
+flutter:
+  assets:
+    - lib/assets/
+    - lib/assets/fonts/
+    - lib/assets/fonts/hafs.ttf
+    - lib/assets/fonts/Kufam-Regular.ttf
+    - lib/assets/fonts/NotoNaskhArabic-VariableFont_wght.ttf
+    - lib/assets/jsons/
+    - lib/assets/svg/
+    - lib/assets/svg/surah_name/
+
+  fonts:
+    - family: hafs
+      fonts:
+        - asset: packages/quran_library/assets/fonts/hafs.ttf
+    - family: kufi
+      fonts:
+        - asset: packages/quran_library/assets/fonts/Kufam-Regular.ttf
+    - family: naskh
+      fonts:
+        - asset: packages/quran_library/assets/fonts/NotoNaskhArabic-VariableFont_wght.ttf
+

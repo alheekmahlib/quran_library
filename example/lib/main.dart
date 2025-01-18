@@ -33,7 +33,6 @@ class _MyAppState extends State<MyApp> {
       textColor: Colors.black,
       backgroundColor: Color(0xfffaf7f3),
       languageCode: 'ar',
-      bookmarkList: [],
     );
   }
 }

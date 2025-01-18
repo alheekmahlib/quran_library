@@ -190,7 +190,7 @@ class _DefaultDrawer extends StatelessWidget {
                     );
                   }).toList(),
                 );
-              }).toList(),
+              }),
             ],
           ),
         ],

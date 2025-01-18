@@ -242,26 +242,24 @@ class QuranFontsPage extends StatelessWidget {
                                                     // إنشاء OverlayEntry جديد
                                                     final overlay =
                                                         Overlay.of(context);
-                                                    if (overlay != null) {
-                                                      final newOverlayEntry =
-                                                          OverlayEntry(
-                                                        builder: (context) =>
-                                                            AyahLongClickDialog(
-                                                          ayahFonts:
-                                                              ayahs[ayahIndex],
-                                                          position: details
-                                                              .globalPosition,
-                                                        ),
-                                                      );
+                                                    final newOverlayEntry =
+                                                        OverlayEntry(
+                                                      builder: (context) =>
+                                                          AyahLongClickDialog(
+                                                        ayahFonts:
+                                                            ayahs[ayahIndex],
+                                                        position: details
+                                                            .globalPosition,
+                                                      ),
+                                                    );
 
-                                                      quranCtrl.state
-                                                              .overlayEntry =
-                                                          newOverlayEntry;
+                                                    quranCtrl.state
+                                                            .overlayEntry =
+                                                        newOverlayEntry;
 
-                                                      // إدخال OverlayEntry في Overlay
-                                                      overlay.insert(
-                                                          newOverlayEntry);
-                                                    }
+                                                    // إدخال OverlayEntry في Overlay
+                                                    overlay.insert(
+                                                        newOverlayEntry);
                                                   }
                                                 }
                                               },
@@ -327,26 +325,23 @@ class QuranFontsPage extends StatelessWidget {
                                                   // إنشاء OverlayEntry جديد
                                                   final overlay =
                                                       Overlay.of(context);
-                                                  if (overlay != null) {
-                                                    final newOverlayEntry =
-                                                        OverlayEntry(
-                                                      builder: (context) =>
-                                                          AyahLongClickDialog(
-                                                        ayahFonts:
-                                                            ayahs[ayahIndex],
-                                                        position: details
-                                                            .globalPosition,
-                                                      ),
-                                                    );
+                                                  final newOverlayEntry =
+                                                      OverlayEntry(
+                                                    builder: (context) =>
+                                                        AyahLongClickDialog(
+                                                      ayahFonts:
+                                                          ayahs[ayahIndex],
+                                                      position: details
+                                                          .globalPosition,
+                                                    ),
+                                                  );
 
-                                                    quranCtrl.state
-                                                            .overlayEntry =
-                                                        newOverlayEntry;
+                                                  quranCtrl.state.overlayEntry =
+                                                      newOverlayEntry;
 
-                                                    // إدخال OverlayEntry في Overlay
-                                                    overlay.insert(
-                                                        newOverlayEntry);
-                                                  }
+                                                  // إدخال OverlayEntry في Overlay
+                                                  overlay
+                                                      .insert(newOverlayEntry);
                                                 }
                                               }
                                             },

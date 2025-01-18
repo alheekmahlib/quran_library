@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:get_storage/get_storage.dart';
@@ -63,7 +64,7 @@ class QuranRepository {
       }).toList();
     } catch (e) {
       // Log the error and return an empty list in case of issues
-      print("Error parsing bookmarks: $e");
+      log("Error parsing bookmarks: $e");
       return [];
     }
   }

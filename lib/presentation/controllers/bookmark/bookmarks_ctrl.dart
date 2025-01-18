@@ -25,11 +25,11 @@ class BookmarksCtrl extends GetxController {
   final BookmarkModel searchBookmark =
       BookmarkModel(id: 3, colorCode: 0xFFF7EFE0, name: 'search Bookmark');
 
-  final List<BookmarkModel> _defaultBookmarks = [
-    BookmarkModel(id: 0, colorCode: 0xAAFFD354, name: 'العلامة الصفراء'),
-    BookmarkModel(id: 1, colorCode: 0xAAF36077, name: 'العلامة الحمراء'),
-    BookmarkModel(id: 2, colorCode: 0xAA00CD00, name: 'العلامة الخضراء'),
-  ];
+  // final List<BookmarkModel> _defaultBookmarks = [
+  //   BookmarkModel(id: 0, colorCode: 0xAAFFD354, name: 'العلامة الصفراء'),
+  //   BookmarkModel(id: 1, colorCode: 0xAAF36077, name: 'العلامة الحمراء'),
+  //   BookmarkModel(id: 2, colorCode: 0xAA00CD00, name: 'العلامة الخضراء'),
+  // ];
 
   void initBookmarks(
       {Map<int, List<BookmarkModel>>? userBookmarks, bool overwrite = false}) {

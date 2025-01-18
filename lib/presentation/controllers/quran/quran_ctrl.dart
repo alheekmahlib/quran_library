@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -168,7 +170,7 @@ class QuranCtrl extends GetxController {
       final response = SurahResponseModel.fromJson(jsonResponse);
       surahsList.assignAll(response.surahs);
     } catch (e) {
-      print('Error fetching data: $e');
+      log('Error fetching data: $e');
     } finally {
       isLoading(false);
     }

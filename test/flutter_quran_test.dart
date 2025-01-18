@@ -1,15 +1,11 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:quran_library/flutter_quran.dart';
-import 'package:quran_library/src/repository/quran_repository.dart';
-import 'package:quran_library/src/utils/preferences/preferences_utils.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:quran_library/data/repositories/quran_repository.dart';
+import 'package:quran_library/quran_library.dart';
 
 void main() {
   late QuranRepository quranRepository;
 
   setUp(() async {
-    SharedPreferences.setMockInitialValues({});
-    PreferencesUtils().preferences = await SharedPreferences.getInstance();
     quranRepository = QuranRepository();
   });
 

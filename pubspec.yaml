@@ -17,7 +17,7 @@ dependencies:
 
 
   # local storage
-  shared_preferences: ^2.3.5
+  get_storage: ^2.1.1
 
   #UI
   fluttertoast: ^8.2.10
@@ -28,7 +28,6 @@ dependencies:
   archive: ^4.0.2
   http: ^1.2.2
   path_provider: ^2.1.5
-  get_storage: ^2.1.1
   collection: ^1.19.0
 
 # This package supports all platforms listed below.

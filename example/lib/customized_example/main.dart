@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:quran_library/flutter_quran.dart';
+import 'package:quran_library/quran_library.dart';
 
 void main() => runApp(
       MaterialApp(
@@ -21,22 +21,22 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   @override
   void initState() {
-    FlutterQuran().init();
+    QuranLibrary().init();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    FlutterQuran().removeBookmark(bookmarkId: 0);
-    final usedBookmarks = FlutterQuran().usedBookmarks;
+    QuranLibrary().removeBookmark(bookmarkId: 0);
+    final usedBookmarks = QuranLibrary().usedBookmarks;
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
         drawer: Drawer(
           child: Builder(builder: (context) {
-            final jozzs = FlutterQuran().allJozz;
-            final hizbs = FlutterQuran().allHizb;
-            final surahs = FlutterQuran().getAllSurahs();
+            final jozzs = QuranLibrary().allJoz;
+            final hizbs = QuranLibrary().allHizb;
+            final surahs = QuranLibrary().getAllSurahs();
             return SafeArea(
               child: SingleChildScrollView(
                 child: Column(
@@ -49,7 +49,7 @@ class _MyAppState extends State<MyApp> {
                       children: List.generate(
                           jozzs.length,
                           (index) => GestureDetector(
-                              onTap: () => FlutterQuran().jumpToJozz(index + 1),
+                              onTap: () => QuranLibrary().jumpToJoz(index + 1),
                               child: Padding(
                                 padding: const EdgeInsets.only(top: 4.0),
                                 child: Text(
@@ -66,7 +66,7 @@ class _MyAppState extends State<MyApp> {
                       children: List.generate(
                           hizbs.length,
                           (index) => GestureDetector(
-                              onTap: () => FlutterQuran().jumpToHizb(index + 1),
+                              onTap: () => QuranLibrary().jumpToHizb(index + 1),
                               child: Padding(
                                 padding: const EdgeInsets.only(top: 4.0),
                                 child: Text(
@@ -84,7 +84,7 @@ class _MyAppState extends State<MyApp> {
                           surahs.length,
                           (index) => GestureDetector(
                               onTap: () =>
-                                  FlutterQuran().jumpToSurah(index + 1),
+                                  QuranLibrary().jumpToSurah(index + 1),
                               child: Padding(
                                 padding: const EdgeInsets.only(top: 4.0),
                                 child: Text(
@@ -101,7 +101,7 @@ class _MyAppState extends State<MyApp> {
                       children: usedBookmarks
                           .map((bookmark) => GestureDetector(
                               onTap: () =>
-                                  FlutterQuran().jumpToBookmark(bookmark),
+                                  QuranLibrary().jumpToBookmark(bookmark),
                               child: Padding(
                                 padding: const EdgeInsets.only(top: 4.0),
                                 child: Text(
@@ -120,10 +120,10 @@ class _MyAppState extends State<MyApp> {
             );
           }),
         ),
-        body: const FlutterQuranScreen(
+        body: QuranLibraryScreen(
           withPageView: true,
           textColor: Colors.black,
-          backgroundColor: Colors.white,
+          backgroundColor: Color(0xfffaf7f3),
         ),
       ),
     );

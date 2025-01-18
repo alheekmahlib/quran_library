@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:quran_library/flutter_quran.dart';
+import 'package:quran_library/quran_library.dart';
 
 void main() => runApp(
       GetMaterialApp(
@@ -22,16 +22,17 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   @override
   void initState() {
-    FlutterQuran().init();
+    QuranLibrary().init();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return const FlutterQuranScreen(
+    return const QuranLibraryScreen(
       withPageView: true,
       textColor: Colors.black,
-      backgroundColor: Colors.white,
+      backgroundColor: Color(0xfffaf7f3),
+      languageCode: 'ar',
       bookmarkList: [],
     );
   }

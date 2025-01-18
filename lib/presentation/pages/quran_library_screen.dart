@@ -43,9 +43,9 @@ part '../widgets/surah_header_widget.dart';
 
 class QuranLibraryScreen extends StatelessWidget {
   const QuranLibraryScreen({
-    this.showBottomWidget = true,
+    // this.showBottomWidget = true,
     this.useDefaultAppBar = true,
-    this.bottomWidget,
+    // this.bottomWidget,
     this.appBar,
     this.onPageChanged,
     super.key,
@@ -70,20 +70,20 @@ class QuranLibraryScreen extends StatelessWidget {
     this.sajdaName,
   });
 
-  /// متغير لتعطيل أو تمكين القطعة السفلية الافتراضية [showBottomWidget]
-  ///
-  /// [showBottomWidget] is a bool to disable or enable the default bottom widget
-  final bool showBottomWidget;
+  // /// متغير لتعطيل أو تمكين الويدجت السفلية الافتراضية [showBottomWidget]
+  // ///
+  // /// [showBottomWidget] is a bool to disable or enable the default bottom widget
+  // final bool showBottomWidget;
 
   /// متغير لتعطيل أو تمكين شريط التطبيقات الافتراضية [useDefaultAppBar]
   ///
   /// [useDefaultAppBar] is a bool to disable or enable the default app bar widget
   final bool useDefaultAppBar;
 
-  /// إذا قمت بإضافة قطعة هنا فإنه سيحل محل القطعة السفلية الافتراضية [bottomWidget]
-  ///
-  /// [bottomWidget] if if provided it will replace the default bottom widget
-  final Widget? bottomWidget;
+  // /// إذا قمت بإضافة قطعة هنا فإنه سيحل محل القطعة السفلية الافتراضية [bottomWidget]
+  // ///
+  // /// [bottomWidget] if if provided it will replace the default bottom widget
+  // final Widget? bottomWidget;
 
   /// إذا قمت بإضافة شريط التطبيقات هنا فإنه سيحل محل شريط التطبيقات الافتراضية [appBar]
   ///

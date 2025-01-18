@@ -49,15 +49,9 @@ QuranLibraryScreen(
     /// إذا قمت بإضافة شريط التطبيقات هنا فإنه سيحل محل شريط التطبيقات الافتراضية [appBar]
     /// [appBar] if if provided it will replace the default app bar
     appBar: ...,
-    /// متغير لتعطيل أو تمكين القطعة السفلية الافتراضية [showBottomWidget]
-    /// [showBottomWidget] is a bool to disable or enable the default bottom widget
-    showBottomWidget: // true or false,
     /// متغير لتعطيل أو تمكين شريط التطبيقات الافتراضية [useDefaultAppBar]
     /// [useDefaultAppBar] is a bool to disable or enable the default app bar widget
     useDefaultAppBar: // true or false,
-    /// إذا قمت بإضافة قطعة هنا فإنه سيحل محل القطعة السفلية الافتراضية [bottomWidget]
-    /// [bottomWidget] if if provided it will replace the default bottom widget
-    bottomWidget: ...,
     /// إذا تم توفيره فسيتم استدعاؤه عند تغيير صفحة القرآن [onPageChanged]
     /// [onPageChanged] if provided it will be called when a quran page changed
     onPageChanged: (int pageIndex) => print("Page changed: $pageIndex"),

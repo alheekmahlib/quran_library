@@ -1,6 +1,6 @@
 name: quran_library
 description: "A Quran Package you can put in your app and it will work without the need for any other resources."
-version: 0.0.1
+version: 0.0.2
 homepage: https://github.com/alheekmahlib/quran_library
 
 environment:

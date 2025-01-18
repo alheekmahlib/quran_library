@@ -20,7 +20,7 @@ class SurahHeaderWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (bannerStyle!.isImage!) {
+    if (bannerStyle!.isImage ?? false) {
       return GestureDetector(
         onTap: () {
           if (onSurahBannerPress != null) {
@@ -30,23 +30,25 @@ class SurahHeaderWidget extends StatelessWidget {
           }
         },
         child: Container(
-          height: bannerStyle!.bannerImageHeight,
-          width: bannerStyle!.bannerImageWidth,
+          height: bannerStyle!.bannerImageHeight ?? 50.0,
+          width: bannerStyle!.bannerImageWidth ?? double.infinity,
           margin: EdgeInsets.symmetric(
               vertical: quranCtrl.state.fontsSelected.value ? 8.0 : 16.0),
           padding: const EdgeInsets.symmetric(vertical: 0.0),
           decoration: BoxDecoration(
             image: DecorationImage(
-                image: AssetImage(bannerStyle!.bannerImagePath!),
+                image: AssetImage(bannerStyle!.bannerImagePath ??
+                    AssetsPath().surahSvgBanner),
                 fit: BoxFit.fill),
           ),
           alignment: Alignment.center,
           child: SvgPicture.asset(
             'packages/quran_library/lib/assets/svg/surah_name/00$surahNumber.svg',
-            width: surahNameStyle!.surahNameWidth,
-            height: surahNameStyle!.surahNameHeight,
+            width: surahNameStyle!.surahNameWidth ?? 70,
+            height: surahNameStyle!.surahNameHeight ?? 37,
             colorFilter: ColorFilter.mode(
-                surahNameStyle!.surahNameColor, BlendMode.srcIn),
+                surahNameStyle!.surahNameColor ?? Colors.black,
+                BlendMode.srcIn),
           ),
         ),
       );
@@ -67,16 +69,17 @@ class SurahHeaderWidget extends StatelessWidget {
               alignment: Alignment.center,
               children: [
                 SvgPicture.asset(
-                  bannerStyle!.bannerSvgPath!,
-                  width: bannerStyle!.bannerSvgWidth,
-                  height: bannerStyle!.bannerSvgHeight,
+                  bannerStyle!.bannerSvgPath ?? AssetsPath().surahSvgBanner,
+                  width: bannerStyle!.bannerSvgWidth ?? 150.0,
+                  height: bannerStyle!.bannerSvgHeight ?? 40.0,
                 ),
                 SvgPicture.asset(
                   'packages/quran_library/lib/assets/svg/surah_name/00$surahNumber.svg',
-                  width: surahNameStyle!.surahNameWidth,
-                  height: surahNameStyle!.surahNameHeight,
+                  width: surahNameStyle!.surahNameWidth ?? 70,
+                  height: surahNameStyle!.surahNameHeight ?? 37,
                   colorFilter: ColorFilter.mode(
-                      surahNameStyle!.surahNameColor, BlendMode.srcIn),
+                      surahNameStyle!.surahNameColor ?? Colors.black,
+                      BlendMode.srcIn),
                 ),
               ],
             ),

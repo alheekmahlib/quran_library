@@ -19,8 +19,8 @@ class BasmallahWidget extends StatelessWidget {
             : AssetsPath().besmAllah,
         width: basmalaStyle.basmalaWidth ?? 150,
         height: basmalaStyle.basmalaHeight ?? 40,
-        colorFilter:
-            ColorFilter.mode(basmalaStyle.basmalaColor, BlendMode.srcIn),
+        colorFilter: ColorFilter.mode(
+            basmalaStyle.basmalaColor ?? Colors.black, BlendMode.srcIn),
       ),
     );
   }

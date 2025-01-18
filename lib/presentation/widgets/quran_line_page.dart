@@ -19,6 +19,7 @@ class QuranLinePage extends StatelessWidget {
   final String? languageCode;
   final String? juzName;
   final String? sajdaName;
+  final Widget? topTitleChild;
   QuranLinePage(
       {super.key,
       required this.pageIndex,
@@ -38,7 +39,8 @@ class QuranLinePage extends StatelessWidget {
       required this.newSurahs,
       this.languageCode,
       this.juzName,
-      this.sajdaName});
+      this.sajdaName,
+      this.topTitleChild});
 
   final quranCtrl = QuranCtrl.instance;
 
@@ -63,6 +65,7 @@ class QuranLinePage extends StatelessWidget {
         juzName: juzName,
         sajdaName: sajdaName,
         isRight: pageIndex.isEven ? true : false,
+        topTitleChild: topTitleChild,
         child: Container(
             height: Get.height * .63,
             padding: EdgeInsets.symmetric(
@@ -100,8 +103,8 @@ class QuranLinePage extends StatelessWidget {
                             firstTabText: 'أسماء السورة',
                             backgroundColor: Colors.white,
                             closeIconColor: Colors.black,
-                            indicatorColor: Colors.amber.withValues(alpha: 2),
-                            primaryColor: Colors.amber.withValues(alpha: 2),
+                            indicatorColor: Colors.amber.withValues(alpha: .2),
+                            primaryColor: Colors.amber.withValues(alpha: .2),
                             surahNameColor: Colors.black,
                             surahNumberColor: Colors.black,
                             textColor: Colors.black,
@@ -158,6 +161,7 @@ class QuranLinePage extends StatelessWidget {
         languageCode: languageCode,
         juzName: juzName,
         sajdaName: sajdaName,
+        topTitleChild: topTitleChild,
         child: SingleChildScrollView(
           physics: context.customOrientation(
               const NeverScrollableScrollPhysics(), null),
@@ -201,9 +205,9 @@ class QuranLinePage extends StatelessWidget {
                                   backgroundColor: Colors.white,
                                   closeIconColor: Colors.black,
                                   indicatorColor:
-                                      Colors.amber.withValues(alpha: 2),
+                                      Colors.amber.withValues(alpha: .2),
                                   primaryColor:
-                                      Colors.amber.withValues(alpha: 2),
+                                      Colors.amber.withValues(alpha: .2),
                                   surahNameColor: Colors.black,
                                   surahNumberColor: Colors.black,
                                   textColor: Colors.black,

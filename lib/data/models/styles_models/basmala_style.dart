@@ -2,7 +2,7 @@ import 'package:flutter/material.dart' show Color;
 
 class BasmalaStyle {
   ///[basmalaColor] It is required to add the color for the basmalah
-  final Color basmalaColor;
+  final Color? basmalaColor;
 
   ///[basmalaWidth] if you wanna add the width for the basmalah
   final double? basmalaWidth;
@@ -11,7 +11,7 @@ class BasmalaStyle {
   final double? basmalaHeight;
 
   BasmalaStyle({
-    required this.basmalaColor,
+    this.basmalaColor,
     this.basmalaWidth,
     this.basmalaHeight,
   });

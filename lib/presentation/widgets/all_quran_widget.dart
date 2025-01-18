@@ -7,15 +7,18 @@ class AllQuranWidget extends StatelessWidget {
   final String? juzName;
   final String? sajdaName;
   final Widget child;
+  final Widget? topTitleChild;
 
-  AllQuranWidget(
-      {super.key,
-      required this.pageIndex,
-      required this.isRight,
-      required this.child,
-      this.languageCode,
-      this.juzName,
-      this.sajdaName});
+  AllQuranWidget({
+    super.key,
+    required this.pageIndex,
+    required this.isRight,
+    required this.child,
+    this.languageCode,
+    this.juzName,
+    this.sajdaName,
+    this.topTitleChild,
+  });
 
   final quranCtrl = QuranCtrl.instance;
 
@@ -30,6 +33,8 @@ class AllQuranWidget extends StatelessWidget {
             child: isRight
                 ? Row(
                     children: [
+                      topTitleChild ?? SizedBox.shrink(),
+                      SizedBox(width: 16),
                       Text(
                         '${juzName ?? 'الجزء'}: ${quranCtrl.getJuzByPage(pageIndex).juz}'
                             .convertNumbers(languageCode: languageCode),
@@ -80,6 +85,8 @@ class AllQuranWidget extends StatelessWidget {
                             fontFamily: 'naskh',
                             color: const Color(0xff77554B)),
                       ),
+                      SizedBox(width: 16),
+                      topTitleChild ?? SizedBox.shrink(),
                     ],
                   ),
           ),

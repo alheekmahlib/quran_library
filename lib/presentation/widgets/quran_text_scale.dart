@@ -106,9 +106,9 @@ class QuranTextScale extends StatelessWidget {
                                             backgroundColor: Colors.white,
                                             closeIconColor: Colors.black,
                                             indicatorColor: Colors.amber
-                                                .withValues(alpha: 2),
+                                                .withValues(alpha: .2),
                                             primaryColor: Colors.amber
-                                                .withValues(alpha: 2),
+                                                .withValues(alpha: .2),
                                             surahNameColor: Colors.black,
                                             surahNumberColor: Colors.black,
                                             textColor: Colors.black,
@@ -382,9 +382,9 @@ class QuranTextScale extends StatelessWidget {
                                             backgroundColor: Colors.white,
                                             closeIconColor: Colors.black,
                                             indicatorColor: Colors.amber
-                                                .withValues(alpha: 2),
+                                                .withValues(alpha: .2),
                                             primaryColor: Colors.amber
-                                                .withValues(alpha: 2),
+                                                .withValues(alpha: .2),
                                             surahNameColor: Colors.black,
                                             surahNumberColor: Colors.black,
                                             textColor: Colors.black,

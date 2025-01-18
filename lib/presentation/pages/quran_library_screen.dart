@@ -68,6 +68,7 @@ class QuranLibraryScreen extends StatelessWidget {
     this.downloadFontsDialogStyle,
     this.juzName,
     this.sajdaName,
+    this.topTitleChild,
   });
 
   // /// متغير لتعطيل أو تمكين الويدجت السفلية الافتراضية [showBottomWidget]
@@ -194,6 +195,12 @@ class QuranLibraryScreen extends StatelessWidget {
   ///
   final String? sajdaName;
 
+  /// إذا كنت تريد إضافة ويدجت بجانب اسم السورة [topTitleChild]
+  ///
+  /// If you want to add a widget next to the surah name [topTitleChild]
+  ///
+  final Widget? topTitleChild;
+
   @override
   Widget build(BuildContext context) {
     return GetBuilder<QuranCtrl>(
@@ -313,6 +320,7 @@ class QuranLibraryScreen extends StatelessWidget {
                         juzName: juzName,
                         sajdaName: sajdaName,
                         isRight: pageIndex.isEven ? true : false,
+                        topTitleChild: topTitleChild,
                         child: QuranFontsPage(
                           pageIndex: pageIndex,
                           bookmarkList: bookmarkList,
@@ -353,24 +361,33 @@ class QuranLibraryScreen extends StatelessWidget {
                       deviceSize: deviceSize,
                       juzName: juzName,
                       sajdaName: sajdaName,
+                      topTitleChild: topTitleChild,
                     )),
-          QuranTextScale(
+          AllQuranWidget(
             pageIndex: pageIndex,
-            bookmarkList: bookmarkList,
-            textColor: textColor,
-            bookmarks: bookmarkCtrl.bookmarks,
-            onAyahLongPress: onAyahLongPress,
-            bookmarksColor: bookmarksColor,
-            surahInfoStyle: surahInfoStyle,
-            surahNameStyle: surahNameStyle,
-            bannerStyle: bannerStyle,
-            basmalaStyle: basmalaStyle,
-            onSurahBannerPress: onSurahBannerPress,
-            surahNumber: surahNumber,
-            bookmarksAyahs: bookmarkCtrl.bookmarksAyahs,
-            ayahSelectedBackgroundColor: ayahSelectedBackgroundColor,
-            onAyahPress: onPagePress,
             languageCode: languageCode,
+            juzName: juzName,
+            sajdaName: sajdaName,
+            isRight: pageIndex.isEven ? true : false,
+            topTitleChild: topTitleChild,
+            child: QuranTextScale(
+              pageIndex: pageIndex,
+              bookmarkList: bookmarkList,
+              textColor: textColor,
+              bookmarks: bookmarkCtrl.bookmarks,
+              onAyahLongPress: onAyahLongPress,
+              bookmarksColor: bookmarksColor,
+              surahInfoStyle: surahInfoStyle,
+              surahNameStyle: surahNameStyle,
+              bannerStyle: bannerStyle,
+              basmalaStyle: basmalaStyle,
+              onSurahBannerPress: onSurahBannerPress,
+              surahNumber: surahNumber,
+              bookmarksAyahs: bookmarkCtrl.bookmarksAyahs,
+              ayahSelectedBackgroundColor: ayahSelectedBackgroundColor,
+              onAyahPress: onPagePress,
+              languageCode: languageCode,
+            ),
           ),
         ),
       ),

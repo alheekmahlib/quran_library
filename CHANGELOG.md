@@ -5,3 +5,8 @@
 ## 0.0.2
 
 * **downgrade intl package to 0.19.0.**
+* **add a widget next to the surah name (optional).**
+
+## 0.0.3
+
+* **add a widget next to the surah name (optional).**

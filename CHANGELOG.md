@@ -9,4 +9,4 @@
 
 ## 0.0.3
 
-* **add a widget next to the surah name (optional).**
+* **add a widget next to the joz (optional).**

@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:quran_library/core/extensions/convert_arabic_to_english_numbers_extension.dart';
 
 import '../../../data/models/ayah.dart';
 import '../../../data/models/quran_fonts_models/surahs_model.dart';
@@ -181,9 +182,90 @@ class QuranCtrl extends GetxController {
     if (searchText.isEmpty) {
       return [];
     } else {
-      final filteredAyahs = ayahs
-          .where((aya) => aya.ayahText.contains(searchText.trim()))
-          .toList();
+      // تطبيع النصوص المدخلة
+      final normalizedSearchText =
+          normalizeText(searchText.toLowerCase().trim());
+
+      final filteredAyahs = ayahs.where((aya) {
+        // تطبيع نص الآية واسم السورة
+        final normalizedAyahText = normalizeText(aya.ayahText.toLowerCase());
+        final normalizedSurahNameAr =
+            normalizeText(aya.surahNameAr.toLowerCase());
+        final normalizedSurahNameEn =
+            normalizeText(aya.surahNameEn.toLowerCase());
+
+        // التحقق من تطابق نص الآية
+        final containsWord = normalizedAyahText.contains(normalizedSearchText);
+
+        // التحقق من تطابق رقم الصفحة
+        final matchesPage = aya.page.toString() ==
+            normalizedSearchText
+                .convertArabicToEnglishNumbers(normalizedSearchText);
+
+        // التحقق من تطابق اسم السورة بالعربية أو الإنجليزية
+        final matchesSurahName =
+            normalizedSurahNameAr == normalizedSearchText ||
+                normalizedSurahNameEn == normalizedSearchText;
+
+        // التحقق من رقم الآية
+        final matchesAyahNumber = aya.ayahNumber.toString() ==
+            normalizedSearchText
+                .convertArabicToEnglishNumbers(normalizedSearchText);
+
+        // إذا تحقق أي شرط من الشروط أعلاه باستثناء رقم السورة
+        return containsWord ||
+            matchesPage ||
+            matchesSurahName ||
+            matchesAyahNumber;
+      }).toList();
+
+      return filteredAyahs;
+    }
+  }
+
+// دالة تطبيع النصوص لتحويل الأحرف
+  String normalizeText(String text) {
+    return text
+        .replaceAll('ة', 'ه')
+        .replaceAll('أ', 'ا')
+        .replaceAll('إ', 'ا')
+        .replaceAll('آ', 'ا')
+        .replaceAll('ى', 'ي')
+        .replaceAll('ئ', 'ي')
+        .replaceAll('ؤ', 'و')
+        .replaceAll(RegExp(r'\s+'), ' '); // إزالة الفراغات الزائدة
+  }
+
+  List<AyahModel> searchSurah(String searchText) {
+    if (searchText.isEmpty) {
+      return [];
+    } else {
+      // تطبيع النص المدخل
+      final normalizedSearchText =
+          normalizeText(searchText.toLowerCase().trim());
+
+      final filteredAyahs = ayahs.where((aya) {
+        // تطبيع اسم السورة بالعربية والإنجليزية
+        final normalizedSurahNameAr =
+            normalizeText(aya.surahNameAr.toLowerCase());
+        final normalizedSurahNameEn =
+            normalizeText(aya.surahNameEn.toLowerCase());
+
+        // التحقق من تطابق اسم السورة بالعربية أو الإنجليزية
+        final matchesSurahName =
+            normalizedSurahNameAr == normalizedSearchText ||
+                normalizedSurahNameEn == normalizedSearchText;
+
+        // التحقق من تطابق رقم السورة
+        final matchesSurahNumber = aya.surahNumber.toString() ==
+            normalizedSearchText
+                .convertArabicToEnglishNumbers(normalizedSearchText);
+        ;
+
+        // إذا تحقق أي شرط من الشرطين أعلاه
+        return matchesSurahName || matchesSurahNumber;
+      }).toList();
+
       return filteredAyahs;
     }
   }

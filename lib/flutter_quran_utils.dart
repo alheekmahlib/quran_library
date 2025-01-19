@@ -50,12 +50,19 @@ class QuranLibrary {
   /// Page numbers start at 1, so the first page of the Quran is page 1.
   int get currentPageNumber => quranCtrl.lastPage;
 
-  /// [search] يبحث في القرآن عن النص المُعطى.
+  /// [search] يبحث في القرآن عن الآيات من خلال الكلمة أو رقم الصفحة.
   /// يعيد قائمة بجميع الآيات التي تحتوي نصوصها على النص المُعطى.
   ///
-  /// [search] Searches the Quran for the given text.
-  /// Returns a list of all Ayahs whose text contains the given text.
+  /// [search] searches the Qur’an for verses by word or page number.
+  /// Returns a list of all verses whose texts contain the given text.
   List<AyahModel> search(String text) => quranCtrl.search(text);
+
+  /// [search] يبحث في القرآن عن أسماء السور.
+  /// يعيد قائمة بجميع السور التي يكون أسمها أو رقمها أو رفم الصفحة الخاصة بها مطابق للنص المُعطى.
+  ///
+  /// [search] Searches the Qur’an for the names of the surahs.
+  /// Returns a list of all surahs whose name, number, or page number matches the given text.
+  List<AyahModel> surahSearch(String text) => quranCtrl.searchSurah(text);
 
   /// [navigateToAyah] يتيح لك التنقل إلى أي آية.
   /// من الأفضل استدعاء هذه الطريقة أثناء عرض شاشة القرآن،

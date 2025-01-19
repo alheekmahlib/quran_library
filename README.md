@@ -1,4 +1,4 @@
-# quran_library
+<h1><p align="center"> Quran Library - مكتبة القرآن </p></h1>
 <p align="center">
 <img src="https://raw.githubusercontent.com/alheekmahlib/thegarlanded/refs/heads/master/Photos/quran_library.svg" width="150"/>
 </p>
@@ -16,7 +16,7 @@ In the `pubspec.yaml` of your flutter project, add the following dependency:
 ```yaml
 dependencies:
   ...
-  quran_library: ^0.0.1
+  quran_library: ^0.0.5
 ```
 
 

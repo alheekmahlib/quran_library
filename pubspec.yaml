@@ -22,7 +22,6 @@ dependencies:
   flutter_svg: ^2.0.17
 
   #Tools
-  intl: ^0.19.0
   archive: ^4.0.2
   http: ^1.2.2
   path_provider: ^2.1.5

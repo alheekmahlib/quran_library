@@ -1,3 +1,7 @@
+## 0.0.6
+
+* **make collection package: ^1.18.0.**
+
 ## 0.0.5
 
 * **Improve the search and make it also search for the page number and verse number.**

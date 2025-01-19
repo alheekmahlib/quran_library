@@ -31,8 +31,8 @@ class AyahFontsModel {
   final int ayahUQNumber;
   final int ayahNumber;
   final String text;
-  final String aya_text_emlaey;
-  final String code_v2;
+  final String ayaTextEmlaey;
+  final String codeV2;
   final int juz;
   final int page;
   final int hizbQuarter;
@@ -42,8 +42,8 @@ class AyahFontsModel {
     required this.ayahUQNumber,
     required this.ayahNumber,
     required this.text,
-    required this.aya_text_emlaey,
-    required this.code_v2,
+    required this.ayaTextEmlaey,
+    required this.codeV2,
     required this.juz,
     required this.page,
     required this.hizbQuarter,
@@ -55,8 +55,8 @@ class AyahFontsModel {
       ayahUQNumber: json['number'],
       ayahNumber: json['numberInSurah'],
       text: json['text'],
-      aya_text_emlaey: json['aya_text_emlaey'],
-      code_v2: json['code_v2'],
+      ayaTextEmlaey: json['aya_text_emlaey'],
+      codeV2: json['code_v2'],
       juz: json['juz'],
       page: json['page'],
       hizbQuarter: json['hizbQuarter'],
@@ -69,8 +69,8 @@ class AyahFontsModel {
       ayahUQNumber: 0,
       ayahNumber: 0,
       text: '',
-      aya_text_emlaey: '',
-      code_v2: '',
+      ayaTextEmlaey: '',
+      codeV2: '',
       juz: 0,
       page: 0,
       hizbQuarter: 0,

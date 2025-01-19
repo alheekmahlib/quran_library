@@ -9,8 +9,8 @@ import 'extensions.dart';
 import 'text_span_extension.dart';
 
 extension SurahInfoExtension on void {
-  void surahInfoDialogWidget(int surahNumber, SurahInfoStyle surahStyle,
-      {String? languageCode}) {
+  void surahInfoDialogWidget(int surahNumber,
+      {SurahInfoStyle? surahStyle, String? languageCode}) {
     final quranCtrl = QuranCtrl.instance;
     final surah = quranCtrl.surahsList[surahNumber];
     Get.dialog(Directionality(
@@ -23,7 +23,7 @@ extension SurahInfoExtension on void {
           width: double.infinity,
           padding: const EdgeInsets.all(16.0),
           decoration: BoxDecoration(
-            color: surahStyle.backgroundColor ?? Colors.white,
+            color: surahStyle!.backgroundColor ?? Colors.white,
             borderRadius: const BorderRadius.all(Radius.circular(8)),
           ),
           child: Column(

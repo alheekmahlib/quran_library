@@ -190,7 +190,7 @@ class QuranFontsPage extends StatelessWidget {
                                             return span(
                                               isFirstAyah: true,
                                               text:
-                                                  '${ayahs[ayahIndex].code_v2[0]}${ayahs[ayahIndex].code_v2.substring(1)}',
+                                                  '${ayahs[ayahIndex].codeV2[0]}${ayahs[ayahIndex].codeV2.substring(1)}',
                                               pageIndex: pageIndex,
                                               isSelected:
                                                   quranCtrl.state.isSelected,
@@ -274,7 +274,7 @@ class QuranFontsPage extends StatelessWidget {
                                           }
                                           return span(
                                             isFirstAyah: false,
-                                            text: ayahs[ayahIndex].code_v2,
+                                            text: ayahs[ayahIndex].codeV2,
                                             pageIndex: pageIndex,
                                             isSelected:
                                                 quranCtrl.state.isSelected,

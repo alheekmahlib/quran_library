@@ -206,7 +206,7 @@ class QuranLibrary {
   /// and pass the language code to translate the number if you want,
   /// the default language code is 'ar' [languageCode]
   /// and style [DownloadFontsDialogStyle] is optional.
-  void getFontsDownloadDialog(
+  Widget getFontsDownloadDialog(
           DownloadFontsDialogStyle? downloadFontsDialogStyle,
           String? languageCode) =>
       FontsDownloadDialog(
@@ -243,6 +243,11 @@ class QuranLibrary {
   /// To find out whether fonts are downloaded or not, just call [isFontsDownloaded]
   bool get isFontsDownloaded =>
       GetStorage().read(StorageConstants().isDownloadedCodeV2Fonts) ?? false;
+
+  /// لمعرفة الخط الذي تم تحديده، ما عليك سوى إستدعاء [currentFontsSelected]
+  ///
+  /// To find out which font has been selected, just call [currentFontsSelected]
+  bool get currentFontsSelected => quranCtrl.state.fontsSelected.value;
 
   /// يقوم بتعيين علامة مرجعية باستخدام [ayahId] و[page] و[bookmarkId] المحددة.
   ///

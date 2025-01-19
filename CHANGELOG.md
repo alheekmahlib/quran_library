@@ -1,3 +1,8 @@
+## 0.0.7
+
+* **remove collection package.**
+* **add getter to find out which font has been selected [currentFontsSelected].**
+
 ## 0.0.6
 
 * **make collection package: ^1.18.0.**

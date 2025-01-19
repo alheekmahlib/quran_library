@@ -1,18 +1,10 @@
 part of '../../presentation/pages/quran_library_screen.dart';
 
 class ToastUtils {
-  Future<bool?> showToast(String msg,
-          {ToastGravity? gravity, Toast? toastLength}) =>
-      Fluttertoast.showToast(
-          msg: msg,
-          toastLength: toastLength ?? Toast.LENGTH_LONG,
-          gravity: gravity ?? ToastGravity.BOTTOM,
-          timeInSecForIosWeb: 1,
-          backgroundColor: const Color(0xffe8decb),
-          textColor: Colors.black,
-          fontSize: 16.0);
-
-  Future<bool?> hideToast() => Fluttertoast.cancel();
+  SnackbarController showToast(String msg) => Get.showSnackbar(GetSnackBar(
+        message: msg,
+        backgroundColor: const Color(0xffe8decb),
+      ));
 
   ///Singleton factory
   static final ToastUtils _instance = ToastUtils._internal();

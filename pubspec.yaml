@@ -1,6 +1,6 @@
 name: quran_library
 description: "A Quran Package you can put in your app and it will work without the need for any other resources."
-version: 0.0.6
+version: 0.0.7
 homepage: https://github.com/alheekmahlib/quran_library
 
 environment:
@@ -15,12 +15,10 @@ dependencies:
   # state management
   get: ^4.6.6
 
-
   # local storage
   get_storage: ^2.1.1
 
   #UI
-  fluttertoast: ^8.2.10
   flutter_svg: ^2.0.17
 
   #Tools
@@ -28,7 +26,7 @@ dependencies:
   archive: ^4.0.2
   http: ^1.2.2
   path_provider: ^2.1.5
-  collection: ^1.18.0
+
 
 # This package supports all platforms listed below.
 # But note that it works and fits on mobile size devices
@@ -38,7 +36,7 @@ platforms:
   ios:
   linux:
   macos:
-  web:
+#  web:
   windows:
 
 dev_dependencies:

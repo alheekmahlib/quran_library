@@ -10,3 +10,7 @@
 ## 0.0.3
 
 * **add a widget next to the joz (optional).**
+
+## 0.0.4
+
+* **add a getter to Surah info dialog.**

@@ -63,7 +63,7 @@ class QuranLibraryScreen extends StatelessWidget {
     this.surahNameStyle,
     this.backgroundColor,
     this.surahInfoStyle,
-    this.languageCode,
+    this.languageCode = 'ar',
     this.downloadFontsDialogStyle,
     this.juzName,
     this.sajdaName,

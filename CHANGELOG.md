@@ -1,3 +1,7 @@
+## 0.0.9
+
+* **fix null check.**
+
 ## 0.0.8
 
 * **Create fonts download widget.**

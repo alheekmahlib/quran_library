@@ -93,7 +93,7 @@ class QuranLibraryScreen extends StatelessWidget {
   /// إذا تم توفيره فسيتم استدعاؤه عند تغيير صفحة القرآن [onPageChanged]
   ///
   /// [onPageChanged] if provided it will be called when a quran page changed
-  final Function(int)? onPageChanged;
+  final Function(int pageNumper)? onPageChanged;
 
   /// تغيير نمط البسملة بواسطة هذه الفئة [BasmalaStyle]
   ///
@@ -143,12 +143,12 @@ class QuranLibraryScreen extends StatelessWidget {
   /// عند الضغط لفترة طويلة على أي لافتة سورة، يمكنك إضافة بعض التفاصيل حول السورة [onSurahBannerPress]
   ///
   /// [onSurahBannerPress] When you long press on any Surah banner, you can add some details about the surah
-  final Function? onSurahBannerPress;
+  final VoidCallback? onSurahBannerPress;
 
   /// عند الضغط على الصفحة يمكنك إضافة بعض المميزات مثل حذف التظليل عن الآية وغيرها [onPagePress]
   ///
   /// [onPagePress] When you click on the page, you can add some features, such as deleting the shading from the verse and others
-  final Function? onPagePress;
+  final VoidCallback? onPagePress;
 
   /// يمكنك تمرير لون نص القرآن [textColor]
   ///

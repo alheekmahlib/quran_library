@@ -183,9 +183,10 @@ class QuranLibrary {
   /// and style [SurahInfoStyle] is optional.
   void getSurahInfoDialog(
           {required int surahNumber,
+          required BuildContext context,
           SurahInfoStyle? surahInfoStyle,
           String? languageCode}) =>
-      surahInfoDialogWidget(surahNumber - 1,
+      surahInfoDialogWidget(context, surahNumber - 1,
           surahStyle: surahInfoStyle, languageCode: languageCode);
 
   /// [getSurahInfo] تتيح لك الحصول على سورة مع جميع بياناتها.

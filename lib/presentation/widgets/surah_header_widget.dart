@@ -27,7 +27,7 @@ class SurahHeaderWidget extends StatelessWidget {
           if (onSurahBannerPress != null) {
             onSurahBannerPress!();
           } else {
-            surahInfoDialogWidget(surahNumber - 1,
+            surahInfoDialogWidget(context, surahNumber - 1,
                 surahStyle: surahInfoStyle!, deviceWidth: deviceWidth);
           }
         },
@@ -64,7 +64,7 @@ class SurahHeaderWidget extends StatelessWidget {
               if (onSurahBannerPress != null) {
                 onSurahBannerPress!();
               } else {
-                surahInfoDialogWidget(surahNumber - 1,
+                surahInfoDialogWidget(context, surahNumber - 1,
                     surahStyle: surahInfoStyle!, deviceWidth: deviceWidth);
               }
             },

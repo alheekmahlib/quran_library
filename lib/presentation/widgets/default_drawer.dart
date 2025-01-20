@@ -99,31 +99,40 @@ class _DefaultDrawer extends StatelessWidget {
                               : Colors.transparent,
                           child: Row(
                             children: [
-                              Stack(
-                                alignment: Alignment.center,
-                                children: [
-                                  SvgPicture.asset(
-                                    AssetsPath().suraNum,
-                                    width: 50,
-                                    height: 50,
-                                    colorFilter: ColorFilter.mode(
-                                        Colors.black, BlendMode.srcIn),
+                              Expanded(
+                                flex: 2,
+                                child: FittedBox(
+                                  fit: BoxFit.scaleDown,
+                                  child: Stack(
+                                    alignment: Alignment.center,
+                                    children: [
+                                      SvgPicture.asset(
+                                        AssetsPath().suraNum,
+                                        width: 50,
+                                        height: 50,
+                                        colorFilter: ColorFilter.mode(
+                                            Colors.black, BlendMode.srcIn),
+                                      ),
+                                      Text(
+                                          '${index + 1}'.convertNumbers(
+                                              languageCode: languageCode),
+                                          style: QuranLibrary()
+                                              .naskhStyle
+                                              .copyWith(fontSize: 18)),
+                                    ],
                                   ),
-                                  Text(
-                                      '${index + 1}'.convertNumbers(
-                                          languageCode: languageCode),
-                                      style: QuranLibrary()
-                                          .naskhStyle
-                                          .copyWith(fontSize: 18)),
-                                ],
+                                ),
                               ),
-                              SizedBox(width: 46),
-                              SvgPicture.asset(
-                                'packages/quran_library/lib/assets/svg/surah_name/00${index + 1}.svg',
-                                width: 200,
-                                height: 40,
-                                colorFilter: ColorFilter.mode(
-                                    Colors.black, BlendMode.srcIn),
+                              // SizedBox(width: 46),
+                              Expanded(
+                                flex: 8,
+                                child: SvgPicture.asset(
+                                  'packages/quran_library/lib/assets/svg/surah_name/00${index + 1}.svg',
+                                  width: 200,
+                                  height: 40,
+                                  colorFilter: ColorFilter.mode(
+                                      Colors.black, BlendMode.srcIn),
+                                ),
                               ),
                             ],
                           ),

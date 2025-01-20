@@ -20,7 +20,8 @@ import 'presentation/widgets/fonts_download_dialog.dart';
 class QuranLibrary {
   /// [init] تقوم بتهيئة القرآن ويجب استدعاؤها قبل البدء في استخدام الحزمة
   ///
-  /// [init] initializes the FlutterQuran, and must be called before starting using the package
+  /// [init] initializes the FlutterQuran,
+  /// and must be called before starting using the package
 
   Future<void> init(
       {Map<int, List<BookmarkModel>>? userBookmarks,

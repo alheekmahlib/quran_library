@@ -78,16 +78,16 @@ class AyahLongClickDialog extends StatelessWidget {
                 onTap: () {
                   if (QuranCtrl.instance.state.fontsSelected.value) {
                     Clipboard.setData(ClipboardData(text: ayahFonts!.text))
-                        .then((value) =>
-                            ToastUtils().showToast("تم النسخ الى الحافظة"));
+                        .then((value) => ToastUtils()
+                            .showToast(context, "تم النسخ الى الحافظة"));
                   } else {
                     Clipboard.setData(ClipboardData(
                             text: QuranCtrl
                                 .instance.staticPages[ayah!.page - 1].ayahs
                                 .firstWhere((element) => element.id == ayah!.id)
                                 .ayah))
-                        .then((value) =>
-                            ToastUtils().showToast("تم النسخ الى الحافظة"));
+                        .then((value) => ToastUtils()
+                            .showToast(context, "تم النسخ الى الحافظة"));
                   }
                   QuranCtrl.instance.state.overlayEntry?.remove();
                   QuranCtrl.instance.state.overlayEntry = null;

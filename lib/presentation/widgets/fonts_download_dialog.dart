@@ -8,6 +8,7 @@ import '../../core/extensions/fonts_extension.dart';
 import '../../core/utils/storage_constants.dart';
 import '../../data/models/quran_fonts_models/download_fonts_dialog_style.dart';
 import '../controllers/quran/quran_ctrl.dart';
+import '../pages/quran_library_screen.dart';
 
 class FontsDownloadDialog extends StatelessWidget {
   final DownloadFontsDialogStyle? downloadFontsDialogStyle;
@@ -107,12 +108,8 @@ class FontsDownloadDialog extends StatelessWidget {
                       ),
                     ),
                     onChanged: !quranCtrl.state.isDownloadedV2Fonts.value
-                        ? (_) => Get.snackbar(
-                              downloadFontsDialogStyle!.downloadedNotesTitle!,
-                              downloadFontsDialogStyle!.downloadedNotesBody!,
-                              backgroundColor:
-                                  downloadFontsDialogStyle!.backgroundColor,
-                            )
+                        ? (_) => ToastUtils().showToast(context,
+                            '${downloadFontsDialogStyle!.downloadedNotesTitle!}\n${downloadFontsDialogStyle!.downloadedNotesBody!}')
                         : (value) {
                             quranCtrl.state.fontsSelected.value = value!;
                             GetStorage()

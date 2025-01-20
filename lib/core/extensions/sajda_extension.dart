@@ -1,7 +1,7 @@
 part of '../../presentation/pages/quran_library_screen.dart';
 
 extension SajdaExtension on Widget {
-  Widget showSajda(int pageIndex, String sajdaName) {
+  Widget showSajda(context, int pageIndex, String sajdaName) {
     log('checking sajda posision');
     QuranCtrl.instance.getAyahWithSajdaInPage(pageIndex);
     return QuranCtrl.instance.state.isSajda.value
@@ -20,7 +20,7 @@ extension SajdaExtension on Widget {
                   style: TextStyle(
                     color: const Color(0xff77554B),
                     fontFamily: 'kufi',
-                    fontSize: Get.context!.customOrientation(13.0, 18.0),
+                    fontSize: context.customOrientation(13.0, 18.0),
                     package: 'quran_library',
                   ),
                 )

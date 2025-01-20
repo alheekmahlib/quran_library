@@ -41,7 +41,7 @@ extension SurahInfoExtension on void {
                             child: Row(
                               children: [
                                 IconButton(
-                                  onPressed: () => Get.back(),
+                                  onPressed: () => Navigator.pop(context),
                                   icon: Icon(
                                     Icons.close,
                                     color: surahStyle.closeIconColor ??

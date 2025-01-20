@@ -137,7 +137,8 @@ class AllQuranWidget extends StatelessWidget {
                       alignment: Alignment.bottomLeft,
                       child: Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                          child: showSajda(pageIndex, sajdaName ?? 'سجدة')),
+                          child: showSajda(
+                              context, pageIndex, sajdaName ?? 'سجدة')),
                     ),
                   ],
                 )
@@ -148,7 +149,8 @@ class AllQuranWidget extends StatelessWidget {
                       alignment: Alignment.bottomRight,
                       child: Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                          child: showSajda(pageIndex, sajdaName ?? 'سجدة')),
+                          child: showSajda(
+                              context, pageIndex, sajdaName ?? 'سجدة')),
                     ),
                     Align(
                       alignment: Alignment.bottomCenter,

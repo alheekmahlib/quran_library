@@ -10,14 +10,16 @@
 </p>
 
 ### :ملاحظة مهمة قبل البدء بالإستخدام: يرجى جعل 
-### useMaterial3: false
-### لكي لا تسبب أي مشاكل في التشكيل 
-### Important note before starting to use: Please make:
-### useMaterial3: false
-### In order not to cause any formation problems
 ```dart
   useMaterial3: false,
 ```
+### لكي لا تسبب أي مشاكل في التشكيل 
+### Important note before starting to use: Please make:
+```dart
+  useMaterial3: false,
+```
+### In order not to cause any formation problems
+#
 
 ## Getting started - بدء الإستخدام
 
@@ -26,7 +28,7 @@ In the `pubspec.yaml` of your flutter project, add the following dependency:
 ```yaml
 dependencies:
   ...
-  quran_library: ^0.0.7
+  quran_library: ^0.0.8
 ```
 
 
@@ -174,6 +176,11 @@ TextField(
 /// the default language code is 'ar' [languageCode]
 /// and style [DownloadFontsDialogStyle] is optional.
 QuranLibrary().getFontsDownloadDialog(downloadFontsDialogStyle, languageCode);
+
+/// للحصول على الويدجت الخاصة بتنزيل الخطوط فقط قم بإستدعاء [getFontsDownloadWidget]
+///
+/// to get the fonts download widget just call [getFontsDownloadWidget]
+Widget getFontsDownloadWidget(context, {downloadFontsDialogStyle, languageCode});
 
 /// للحصول على طريقة تنزيل الخطوط فقط قم بإستدعاء [fontsDownloadMethod]
 ///

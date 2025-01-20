@@ -1,3 +1,7 @@
+## 0.0.8
+
+* **Create fonts download widget.**
+
 ## 0.0.7
 
 * **remove collection package.**

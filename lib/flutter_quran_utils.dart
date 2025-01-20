@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:quran_library/core/extensions/fonts_download_widget.dart';
 import 'package:quran_library/presentation/controllers/quran/quran_getters.dart';
 
 import 'core/extensions/fonts_extension.dart';
@@ -215,6 +216,16 @@ class QuranLibrary {
         downloadFontsDialogStyle: downloadFontsDialogStyle,
         languageCode: languageCode,
       );
+
+  /// للحصول على الويدجت الخاصة بتنزيل الخطوط فقط قم بإستدعاء [getFontsDownloadWidget]
+  ///
+  /// to get the fonts download widget just call [getFontsDownloadWidget]
+  Widget getFontsDownloadWidget(BuildContext context,
+          {DownloadFontsDialogStyle? downloadFontsDialogStyle,
+          String? languageCode}) =>
+      quranCtrl.fontsDownloadWidget(context,
+          downloadFontsDialogStyle: downloadFontsDialogStyle,
+          languageCode: languageCode);
 
   /// للحصول على طريقة تنزيل الخطوط فقط قم بإستدعاء [fontsDownloadMethod]
   ///

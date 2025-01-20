@@ -46,7 +46,7 @@ class FontsDownloadDialog extends StatelessWidget {
       elevation: 3,
       backgroundColor: downloadFontsDialogStyle!.backgroundColor,
       child: Container(
-        height: 320,
+        height: 340,
         padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
         child: Column(
           children: [
@@ -60,7 +60,9 @@ class FontsDownloadDialog extends StatelessWidget {
                   package: 'quran_library'),
             ),
             SizedBox(height: 8.0),
-            context.hDivider(width: Get.width * .5, color: Colors.blue),
+            context.hDivider(
+                width: MediaQuery.sizeOf(context).width * .5,
+                color: Colors.blue),
             SizedBox(height: 8.0),
             Text(
               downloadFontsDialogStyle!.notes!,

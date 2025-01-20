@@ -43,7 +43,7 @@ class _DefaultDrawer extends StatelessWidget {
                 children: List.generate(
                     jozzList.length,
                     (jozzIndex) => Container(
-                          width: Get.width,
+                          width: MediaQuery.sizeOf(context).width,
                           margin: const EdgeInsets.symmetric(vertical: 4.0),
                           color: jozzIndex.isEven
                               ? const Color(0xfff6d09d).withValues(alpha: .1)
@@ -63,7 +63,7 @@ class _DefaultDrawer extends StatelessWidget {
                                   QuranLibrary().jumpToHizb(hizbIndex + 1);
                                 },
                                 child: Container(
-                                  width: Get.width,
+                                  width: MediaQuery.sizeOf(context).width,
                                   padding:
                                       const EdgeInsets.symmetric(vertical: 4.0),
                                   color: index.isEven
@@ -91,7 +91,7 @@ class _DefaultDrawer extends StatelessWidget {
                     (index) => GestureDetector(
                         onTap: () => QuranLibrary().jumpToSurah(index + 1),
                         child: Container(
-                          width: Get.width,
+                          width: MediaQuery.sizeOf(context).width,
                           padding: const EdgeInsets.symmetric(
                               vertical: 4.0, horizontal: 8.0),
                           color: index.isEven

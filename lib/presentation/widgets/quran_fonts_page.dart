@@ -59,14 +59,15 @@ class QuranFontsPage extends StatelessWidget {
                 quranCtrl.state.overlayEntry = null;
               },
               child: Container(
-                color: const Color(0xfffaf7f3),
                 padding: pageIndex == 0 || pageIndex == 1
-                    ? EdgeInsets.symmetric(horizontal: Get.width * .08)
+                    ? EdgeInsets.symmetric(
+                        horizontal: MediaQuery.sizeOf(context).width * .08)
                     : const EdgeInsets.symmetric(horizontal: 16.0),
                 margin: pageIndex == 0 || pageIndex == 1
                     ? EdgeInsets.symmetric(
                         vertical: context.customOrientation(
-                            Get.width * .16, Get.height * .01))
+                            MediaQuery.sizeOf(context).width * .16,
+                            MediaQuery.sizeOf(context).height * .01))
                     : const EdgeInsets.symmetric(horizontal: 8.0),
                 child: quranCtrl.state.pages.isEmpty
                     ? const CircularProgressIndicator.adaptive()

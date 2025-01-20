@@ -47,7 +47,7 @@ class QuranLinePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: Get.height,
+      height: MediaQuery.sizeOf(context).height,
       padding: EdgeInsets.symmetric(
           horizontal: context.customOrientation(16.0, 64.0), vertical: 6.0),
       child: pageIndex == 0 || pageIndex == 1
@@ -67,10 +67,11 @@ class QuranLinePage extends StatelessWidget {
         isRight: pageIndex.isEven ? true : false,
         topTitleChild: topTitleChild,
         child: Container(
-            height: Get.height * .63,
+            height: MediaQuery.sizeOf(context).height * .63,
             padding: EdgeInsets.symmetric(
                 vertical: context.customOrientation(
-                    Get.width * .16, Get.height * .01)),
+                    MediaQuery.sizeOf(context).width * .16,
+                    MediaQuery.sizeOf(context).height * .01)),
             child: SingleChildScrollView(
                 physics: context.customOrientation(
                     const NeverScrollableScrollPhysics(), null),
@@ -229,7 +230,8 @@ class QuranLinePage extends StatelessWidget {
                         SizedBox(
                           width: deviceSize.width - 30,
                           height: (context.customOrientation(
-                                      constraints.maxHeight * .94, Get.width) -
+                                      constraints.maxHeight * .94,
+                                      MediaQuery.sizeOf(context).width) -
                                   (quranCtrl.staticPages[pageIndex]
                                           .numberOfNewSurahs *
                                       (line.ayahs[0].surahNumber != 9

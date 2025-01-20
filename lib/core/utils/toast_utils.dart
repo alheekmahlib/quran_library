@@ -4,6 +4,8 @@ class ToastUtils {
   SnackbarController showToast(String msg) => Get.showSnackbar(GetSnackBar(
         message: msg,
         backgroundColor: const Color(0xffe8decb),
+        animationDuration: const Duration(milliseconds: 400),
+        duration: const Duration(seconds: 3),
       ));
 
   ///Singleton factory

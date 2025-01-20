@@ -54,10 +54,12 @@ class QuranTextScale extends StatelessWidget {
               child: Container(
                 color: const Color(0xfffaf7f3),
                 padding: pageIndex == 0 || pageIndex == 1
-                    ? EdgeInsets.symmetric(horizontal: Get.width * .13)
+                    ? EdgeInsets.symmetric(
+                        horizontal: MediaQuery.sizeOf(context).width * .13)
                     : const EdgeInsets.symmetric(horizontal: 8.0),
                 margin: pageIndex == 0 || pageIndex == 1
-                    ? EdgeInsets.symmetric(vertical: Get.width * .34)
+                    ? EdgeInsets.symmetric(
+                        vertical: MediaQuery.sizeOf(context).width * .34)
                     : const EdgeInsets.symmetric(horizontal: 8.0),
                 child: quranCtrl.state.pages.isEmpty
                     ? const CircularProgressIndicator.adaptive()

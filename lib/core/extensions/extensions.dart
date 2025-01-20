@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 
 extension ContextExtensions on BuildContext {
   dynamic customOrientation(var n1, var n2) {
@@ -26,7 +25,7 @@ extension ContextExtensions on BuildContext {
       height: height ?? 2,
       width: width ?? MediaQuery.sizeOf(this).width,
       margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
-      color: color ?? Get.theme.colorScheme.surface,
+      color: color ?? Colors.black,
     );
   }
 }

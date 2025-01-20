@@ -20,13 +20,15 @@ class SurahHeaderWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final deviceWidth = MediaQuery.sizeOf(context);
     if (bannerStyle!.isImage ?? false) {
       return GestureDetector(
         onTap: () {
           if (onSurahBannerPress != null) {
             onSurahBannerPress!();
           } else {
-            surahInfoDialogWidget(surahNumber - 1, surahStyle: surahInfoStyle!);
+            surahInfoDialogWidget(surahNumber - 1,
+                surahStyle: surahInfoStyle!, deviceWidth: deviceWidth);
           }
         },
         child: Container(
@@ -63,7 +65,7 @@ class SurahHeaderWidget extends StatelessWidget {
                 onSurahBannerPress!();
               } else {
                 surahInfoDialogWidget(surahNumber - 1,
-                    surahStyle: surahInfoStyle!);
+                    surahStyle: surahInfoStyle!, deviceWidth: deviceWidth);
               }
             },
             child: Stack(

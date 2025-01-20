@@ -9,6 +9,16 @@
 <img src="https://github.com/alheekmahlib/thegarlanded/blob/master/Photos/quran_package_banner.png?raw=true" width="500"/>
 </p>
 
+### :ملاحظة مهمة قبل البدء بالإستخدام: يرجى جعل 
+### useMaterial3: false
+### لكي لا تسبب أي مشاكل في التشكيل 
+### Important note before starting to use: Please make:
+### useMaterial3: false
+### In order not to cause any formation problems
+```dart
+  useMaterial3: false,
+```
+
 ## Getting started - بدء الإستخدام
 
 In the `pubspec.yaml` of your flutter project, add the following dependency:
@@ -16,7 +26,7 @@ In the `pubspec.yaml` of your flutter project, add the following dependency:
 ```yaml
 dependencies:
   ...
-  quran_library: ^0.0.5
+  quran_library: ^0.0.7
 ```
 
 

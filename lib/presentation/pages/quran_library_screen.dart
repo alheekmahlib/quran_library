@@ -203,87 +203,82 @@ class QuranLibraryScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetBuilder<QuranCtrl>(
-      builder: (quranCtrl) {
-        return Directionality(
-          textDirection: TextDirection.rtl,
-          child: Scaffold(
-            backgroundColor: backgroundColor ?? Colors.transparent,
-            appBar: appBar ??
-                (useDefaultAppBar
-                    ? AppBar(
-                        backgroundColor: backgroundColor,
-                        elevation: 0,
-                        actions: [
-                          FontsDownloadDialog(
-                            downloadFontsDialogStyle:
-                                downloadFontsDialogStyle ??
-                                    DownloadFontsDialogStyle(
-                                      iconWidget: Icon(
-                                        quranCtrl
-                                                .state.isDownloadedV2Fonts.value
-                                            ? Icons.settings
-                                            : Icons.downloading_outlined,
-                                        size: 24,
-                                        color: Colors.black,
-                                      ),
-                                      title: 'الخطوط',
-                                      titleColor: Colors.black,
-                                      notes:
-                                          'لجعل مظهر المصحف مشابه لمصحف المدينة يمكنك تحميل خطوط المصحف',
-                                      notesColor: Colors.black,
-                                      linearProgressBackgroundColor:
-                                          Colors.blue.shade100,
-                                      linearProgressColor: Colors.blue,
-                                      downloadButtonBackgroundColor:
-                                          Colors.blue,
-                                      downloadButtonTextColor: Colors.white,
-                                      downloadingText: 'جارِ التحميل',
-                                      downloadButtonText: 'تحميل',
-                                      deleteButtonText: 'حذف الخطوط',
-                                      backgroundColor: const Color(0xFFF7EFE0),
-                                      defaultFontText: 'الخطوط الأساسية',
-                                      downloadedFontsText:
-                                          'خطوط المصحف المحملة',
-                                      downloadedNotesTitle: 'ملاحظة:',
-                                      downloadedNotesBody:
-                                          'يرجى تحميل الخطوط أولًا!',
-                                    ),
-                            languageCode: languageCode,
-                          )
-                        ],
-                      )
-                    : null),
-            drawer: appBar == null && useDefaultAppBar
-                ? _DefaultDrawer(languageCode ?? 'ar')
-                : null,
-            body: SafeArea(
-              child: withPageView!
-                  ? PageView.builder(
-                      itemCount: 604,
-                      controller: quranCtrl.pageController,
-                      physics: const ClampingScrollPhysics(),
-                      onPageChanged: (page) {
-                        if (onPageChanged != null) onPageChanged!(page);
-                        quranCtrl.saveLastPage(page + 1);
-                      },
-                      pageSnapping: true,
-                      itemBuilder: (ctx, index) {
-                        return _pageViewBuild(
-                          context,
-                          index,
-                          quranCtrl,
-                        );
-                      },
+      builder: (quranCtrl) => Directionality(
+        textDirection: TextDirection.rtl,
+        child: Scaffold(
+          backgroundColor: backgroundColor ?? const Color(0xfffaf7f3),
+          appBar: appBar ??
+              (useDefaultAppBar
+                  ? AppBar(
+                      backgroundColor: backgroundColor,
+                      elevation: 0,
+                      actions: [
+                        FontsDownloadDialog(
+                          downloadFontsDialogStyle: downloadFontsDialogStyle ??
+                              DownloadFontsDialogStyle(
+                                iconWidget: Icon(
+                                  quranCtrl.state.isDownloadedV2Fonts.value
+                                      ? Icons.settings
+                                      : Icons.downloading_outlined,
+                                  size: 24,
+                                  color: Colors.black,
+                                ),
+                                title: 'الخطوط',
+                                titleColor: Colors.black,
+                                notes:
+                                    'لجعل مظهر المصحف مشابه لمصحف المدينة يمكنك تحميل خطوط المصحف',
+                                notesColor: Colors.black,
+                                linearProgressBackgroundColor:
+                                    Colors.blue.shade100,
+                                linearProgressColor: Colors.blue,
+                                downloadButtonBackgroundColor: Colors.blue,
+                                downloadButtonTextColor: Colors.white,
+                                downloadingText: 'جارِ التحميل',
+                                downloadButtonText: 'تحميل',
+                                deleteButtonText: 'حذف الخطوط',
+                                backgroundColor: const Color(0xFFF7EFE0),
+                                defaultFontText: 'الخطوط الأساسية',
+                                downloadedFontsText: 'خطوط المصحف المحملة',
+                                downloadedNotesTitle: 'ملاحظة:',
+                                downloadedNotesBody: 'يرجى تحميل الخطوط أولًا!',
+                              ),
+                          languageCode: languageCode,
+                        )
+                      ],
                     )
-                  : _pageViewBuild(
-                      context,
-                      pageIndex!,
-                      quranCtrl,
-                    ),
-            ),
+                  : null),
+          drawer: appBar == null && useDefaultAppBar
+              ? _DefaultDrawer(languageCode ?? 'ar')
+              : null,
+          body: SafeArea(
+            child: withPageView!
+                ? PageView.builder(
+                    itemCount: 604,
+                    controller: quranCtrl.pageController,
+                    physics: const ClampingScrollPhysics(),
+                    onPageChanged: (page) {
+                      if (onPageChanged != null) onPageChanged!(page);
+                      quranCtrl.saveLastPage(page + 1);
+                      quranCtrl.state.overlayEntry?.remove();
+                      quranCtrl.state.overlayEntry = null;
+                    },
+                    pageSnapping: true,
+                    itemBuilder: (ctx, index) {
+                      return _pageViewBuild(
+                        context,
+                        index,
+                        quranCtrl,
+                      );
+                    },
+                  )
+                : _pageViewBuild(
+                    context,
+                    pageIndex!,
+                    quranCtrl,
+                  ),
           ),
-        );
-      },
+        ),
+      ),
     );
   }
 

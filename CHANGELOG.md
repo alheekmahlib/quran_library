@@ -1,6 +1,6 @@
 ## 0.0.9
 
-* **fix null check.**
+* **fix all null check.**
 
 ## 0.0.8
 

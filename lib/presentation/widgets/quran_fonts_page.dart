@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:quran_library/core/extensions/extensions.dart';
 
+import '/core/extensions/extensions.dart';
+import '../../data/models/quran_fonts_models/surahs_model.dart';
 import '../../data/models/styles_models/banner_style.dart';
 import '../../data/models/styles_models/basmala_style.dart';
 import '../../data/models/styles_models/surah_info_style.dart';
 import '../../data/models/styles_models/surah_name_style.dart';
+import '../../data/models/styles_models/surah_names_model.dart';
 import '../../quran_library.dart';
 import '../controllers/bookmark/bookmarks_ctrl.dart';
 import '../controllers/quran/quran_ctrl.dart';
@@ -20,9 +22,10 @@ class QuranFontsPage extends StatelessWidget {
   final SurahInfoStyle? surahInfoStyle;
   final SurahNameStyle? surahNameStyle;
   final BannerStyle? bannerStyle;
-  final Function? onSurahBannerPress;
-  final Function? onAyahLongPress;
-  final Function? onAyahPress;
+  final Function(SurahNamesModel surah)? onSurahBannerPress;
+  final Function(LongPressStartDetails details, AyahFontsModel ayah)?
+      onFontsAyahLongPress;
+  final VoidCallback? onAyahPress;
   final Color? bookmarksColor;
   final Color? textColor;
   final Map<int, List<BookmarkModel>> bookmarks;
@@ -38,7 +41,7 @@ class QuranFontsPage extends StatelessWidget {
       this.surahNameStyle,
       this.bannerStyle,
       this.onSurahBannerPress,
-      this.onAyahLongPress,
+      this.onFontsAyahLongPress,
       this.bookmarksColor,
       this.textColor,
       required this.bookmarks,
@@ -203,8 +206,9 @@ class QuranFontsPage extends StatelessWidget {
                                               ayahUQNum:
                                                   ayahs[ayahIndex].ayahUQNumber,
                                               onLongPressStart: (details) {
-                                                if (onAyahLongPress != null) {
-                                                  onAyahLongPress!(details,
+                                                if (onFontsAyahLongPress !=
+                                                    null) {
+                                                  onFontsAyahLongPress!(details,
                                                       ayahs[ayahIndex]);
                                                   quranCtrl.toggleAyahSelection(
                                                       ayahs[ayahIndex]
@@ -287,8 +291,9 @@ class QuranFontsPage extends StatelessWidget {
                                             ayahUQNum:
                                                 ayahs[ayahIndex].ayahUQNumber,
                                             onLongPressStart: (details) {
-                                              if (onAyahLongPress != null) {
-                                                onAyahLongPress!(
+                                              if (onFontsAyahLongPress !=
+                                                  null) {
+                                                onFontsAyahLongPress!(
                                                     details, ayahs[ayahIndex]);
                                                 quranCtrl.toggleAyahSelection(
                                                     ayahs[ayahIndex]

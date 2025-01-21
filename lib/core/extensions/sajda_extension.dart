@@ -2,7 +2,7 @@ part of '../../presentation/pages/quran_library_screen.dart';
 
 extension SajdaExtension on Widget {
   Widget showSajda(context, int pageIndex, String sajdaName) {
-    log('checking sajda posision');
+    // log('checking sajda posision');
     QuranCtrl.instance.getAyahWithSajdaInPage(pageIndex);
     return QuranCtrl.instance.state.isSajda.value
         ? SizedBox(

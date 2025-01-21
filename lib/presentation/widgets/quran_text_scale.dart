@@ -11,7 +11,7 @@ class QuranTextScale extends StatelessWidget {
       this.surahNameStyle,
       this.bannerStyle,
       this.onSurahBannerPress,
-      this.onAyahLongPress,
+      this.onFontsAyahLongPress,
       this.onAyahPress,
       this.bookmarksColor,
       this.textColor,
@@ -29,9 +29,10 @@ class QuranTextScale extends StatelessWidget {
   final SurahInfoStyle? surahInfoStyle;
   final SurahNameStyle? surahNameStyle;
   final BannerStyle? bannerStyle;
-  final Function? onSurahBannerPress;
-  final Function? onAyahLongPress;
-  final Function? onAyahPress;
+  final Function(SurahNamesModel surah)? onSurahBannerPress;
+  final Function(LongPressStartDetails details, AyahFontsModel ayah)?
+      onFontsAyahLongPress;
+  final VoidCallback? onAyahPress;
   final Color? bookmarksColor;
   final Color? textColor;
   final Map<int, List<BookmarkModel>> bookmarks;
@@ -196,8 +197,9 @@ class QuranTextScale extends StatelessWidget {
                                             ayahUQNum:
                                                 ayahs[ayahIndex].ayahUQNumber,
                                             onLongPressStart: (details) {
-                                              if (onAyahLongPress != null) {
-                                                onAyahLongPress!(
+                                              if (onFontsAyahLongPress !=
+                                                  null) {
+                                                onFontsAyahLongPress!(
                                                     details, ayahs[ayahIndex]);
                                                 quranCtrl.toggleAyahSelection(
                                                     ayahs[ayahIndex]
@@ -281,8 +283,8 @@ class QuranTextScale extends StatelessWidget {
                                           ayahUQNum:
                                               ayahs[ayahIndex].ayahUQNumber,
                                           onLongPressStart: (details) {
-                                            if (onAyahLongPress != null) {
-                                              onAyahLongPress!(
+                                            if (onFontsAyahLongPress != null) {
+                                              onFontsAyahLongPress!(
                                                   details, ayahs[ayahIndex]);
                                               quranCtrl.toggleAyahSelection(
                                                   ayahs[ayahIndex]

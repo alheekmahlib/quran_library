@@ -57,9 +57,9 @@ class AyahLongClickDialog extends StatelessWidget {
                           );
                         } else {
                           BookmarksCtrl.instance.saveBookmark(
-                            surahName: ayah!.surahNameAr,
+                            surahName: ayah!.arabicName,
                             ayahNumber: ayah!.ayahNumber,
-                            ayahId: ayah!.id,
+                            ayahId: ayah!.ayahUQNumber,
                             page: ayah!.page,
                             colorCode: colorCode,
                           );
@@ -83,8 +83,9 @@ class AyahLongClickDialog extends StatelessWidget {
                     Clipboard.setData(ClipboardData(
                         text: QuranCtrl
                             .instance.staticPages[ayah!.page - 1].ayahs
-                            .firstWhere((element) => element.id == ayah!.id)
-                            .ayah));
+                            .firstWhere((element) =>
+                                element.ayahUQNumber == ayah!.ayahUQNumber)
+                            .text));
                     ToastUtils().showToast(context, "تم النسخ الى الحافظة");
                   }
                   QuranCtrl.instance.state.overlayEntry?.remove();

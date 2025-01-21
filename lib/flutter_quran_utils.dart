@@ -77,9 +77,9 @@ class QuranLibrary {
   /// open quran screen it will start from this ayah's page
   void jumpToAyah(AyahModel ayah) {
     quranCtrl.jumpToPage(ayah.page - 1);
-    quranCtrl.toggleAyahSelection(ayah.id);
+    quranCtrl.toggleAyahSelection(ayah.ayahUQNumber);
     Future.delayed(const Duration(seconds: 3))
-        .then((_) => quranCtrl.toggleAyahSelection(ayah.id));
+        .then((_) => quranCtrl.toggleAyahSelection(ayah.ayahUQNumber));
   }
 
   /// [jumpToPage] يتيح لك التنقل إلى أي صفحة في القرآن باستخدام رقم الصفحة.

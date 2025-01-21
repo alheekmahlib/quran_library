@@ -108,22 +108,22 @@ class QuranCtrl extends GetxController {
         ayahs.add(ayah);
         thisSurahAyahs.add(ayah);
         staticPages[ayah.page - 1].ayahs.add(ayah);
-        if (ayah.ayah.contains('۞')) {
+        if (ayah.text.contains('۞')) {
           staticPages[ayah.page - 1].hizb = hizb++;
           quranStops.add(ayah.page);
         }
-        if (ayah.ayah.contains('۩')) {
+        if (ayah.text.contains('۩')) {
           staticPages[ayah.page - 1].hasSajda = true;
         }
         if (ayah.ayahNumber == 1) {
-          ayah.ayah = ayah.ayah.replaceAll('۞', '');
+          ayah.text = ayah.text.replaceAll('۞', '');
           staticPages[ayah.page - 1].numberOfNewSurahs++;
           surahs.add(Surah(
               index: ayah.surahNumber,
               startPage: ayah.page,
               endPage: 0,
-              nameEn: ayah.surahNameEn,
-              nameAr: ayah.surahNameAr,
+              nameEn: ayah.englishName,
+              nameAr: ayah.arabicName,
               ayahs: []));
           surahsStart.add(ayah.page - 1);
         }
@@ -136,8 +136,8 @@ class QuranCtrl extends GetxController {
           if (aya.ayahNumber == 1 && ayas.isNotEmpty) {
             ayas.clear();
           }
-          if (aya.ayah.contains('\n')) {
-            final lines = aya.ayah.split('\n');
+          if (aya.text.contains('\n')) {
+            final lines = aya.text.split('\n');
             for (int i = 0; i < lines.length; i++) {
               bool centered = false;
               if ((aya.centered && i == lines.length - 2)) {
@@ -188,11 +188,12 @@ class QuranCtrl extends GetxController {
 
       final filteredAyahs = ayahs.where((aya) {
         // تطبيع نص الآية واسم السورة
-        final normalizedAyahText = normalizeText(aya.ayahText.toLowerCase());
+        final normalizedAyahText =
+            normalizeText(aya.ayaTextEmlaey.toLowerCase());
         final normalizedSurahNameAr =
-            normalizeText(aya.surahNameAr.toLowerCase());
+            normalizeText(aya.arabicName.toLowerCase());
         final normalizedSurahNameEn =
-            normalizeText(aya.surahNameEn.toLowerCase());
+            normalizeText(aya.englishName.toLowerCase());
 
         // التحقق من تطابق نص الآية
         final containsWord = normalizedAyahText.contains(normalizedSearchText);
@@ -247,9 +248,9 @@ class QuranCtrl extends GetxController {
       final filteredAyahs = ayahs.where((aya) {
         // تطبيع اسم السورة بالعربية والإنجليزية
         final normalizedSurahNameAr =
-            normalizeText(aya.surahNameAr.toLowerCase());
+            normalizeText(aya.arabicName.toLowerCase());
         final normalizedSurahNameEn =
-            normalizeText(aya.surahNameEn.toLowerCase());
+            normalizeText(aya.englishName.toLowerCase());
 
         // التحقق من تطابق اسم السورة بالعربية أو الإنجليزية
         final matchesSurahName =
@@ -288,20 +289,16 @@ class QuranCtrl extends GetxController {
   void toggleAyahSelection(int index) {
     if (selectedAyahIndexes.contains(index)) {
       selectedAyahIndexes.remove(index);
-      update();
     } else {
       selectedAyahIndexes.clear();
       selectedAyahIndexes.add(index);
       selectedAyahIndexes.refresh();
-      update();
     }
     selectedAyahIndexes.refresh();
-    update();
   }
 
   void clearSelection() {
     selectedAyahIndexes.clear();
-    update();
   }
 
   dynamic textScale(dynamic widget1, dynamic widget2) {

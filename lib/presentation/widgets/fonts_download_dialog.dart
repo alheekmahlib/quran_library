@@ -22,7 +22,7 @@ class FontsDownloadDialog extends StatelessWidget {
       icon: Stack(
         alignment: Alignment.center,
         children: [
-          downloadFontsDialogStyle!.iconWidget ??
+          downloadFontsDialogStyle?.iconWidget ??
               Icon(
                 quranCtrl.state.isDownloadedV2Fonts.value
                     ? Icons.settings
@@ -34,9 +34,9 @@ class FontsDownloadDialog extends StatelessWidget {
               builder: (quranCtrl) => CircularProgressIndicator(
                     strokeWidth: 2,
                     value: (quranCtrl.state.fontsDownloadProgress.value / 100),
-                    color: downloadFontsDialogStyle!.linearProgressColor,
+                    color: downloadFontsDialogStyle?.linearProgressColor,
                     backgroundColor:
-                        downloadFontsDialogStyle!.linearProgressBackgroundColor,
+                        downloadFontsDialogStyle?.linearProgressBackgroundColor,
                   )),
         ],
       ),
@@ -47,7 +47,7 @@ class FontsDownloadDialog extends StatelessWidget {
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
       elevation: 3,
-      backgroundColor: downloadFontsDialogStyle!.backgroundColor,
+      backgroundColor: downloadFontsDialogStyle?.backgroundColor,
       child: quranCtrl.fontsDownloadWidget(context,
           downloadFontsDialogStyle: downloadFontsDialogStyle!,
           languageCode: languageCode),

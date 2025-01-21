@@ -1,8 +1,8 @@
 import '../../core/extensions/string_extensions.dart';
 
 class AyahModel {
-  final int id,
-      jozz,
+  final int ayahUQNumber,
+      juz,
       surahNumber,
       page,
       lineStart,
@@ -10,14 +10,14 @@ class AyahModel {
       ayahNumber,
       quarter,
       hizb;
-  final String surahNameEn, surahNameAr, ayahText;
-  String ayah;
+  final String englishName, arabicName, ayaTextEmlaey;
+  String text;
   final bool sajda;
   bool centered;
 
   AyahModel({
-    required this.id,
-    required this.jozz,
+    required this.ayahUQNumber,
+    required this.juz,
     required this.surahNumber,
     required this.page,
     required this.lineStart,
@@ -25,32 +25,32 @@ class AyahModel {
     required this.ayahNumber,
     required this.quarter,
     required this.hizb,
-    required this.surahNameEn,
-    required this.surahNameAr,
-    required this.ayah,
-    required this.ayahText,
+    required this.englishName,
+    required this.arabicName,
+    required this.text,
+    required this.ayaTextEmlaey,
     required this.sajda,
     required this.centered,
   });
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'jozz': jozz,
+        'id': ayahUQNumber,
+        'jozz': juz,
         'sora': surahNumber,
         'page': page,
         'line_start': lineStart,
         'line_end': lineEnd,
         'aya_no': ayahNumber,
-        'sora_name_en': surahNameEn,
-        'sora_name_ar': surahNameAr,
-        'aya_text': ayah,
-        'aya_text_emlaey': ayahText,
+        'sora_name_en': englishName,
+        'sora_name_ar': arabicName,
+        'aya_text': text,
+        'aya_text_emlaey': ayaTextEmlaey,
         'centered': centered,
       };
 
   @override
   String toString() =>
-      "\"id\": $id, \"jozz\": $jozz,\"sora\": $surahNumber,\"page\": $page,\"line_start\": $lineStart,\"line_end\": $lineEnd,\"aya_no\": $ayahNumber,\"sora_name_en\": \"$surahNameEn\",\"sora_name_ar\": \"$surahNameAr\",\"aya_text\": \"${ayah.replaceAll("\n", "\\n")}\",\"aya_text_emlaey\": \"${ayahText.replaceAll("\n", "\\n")}\",\"centered\": $centered";
+      "\"id\": $ayahUQNumber, \"jozz\": $juz,\"sora\": $surahNumber,\"page\": $page,\"line_start\": $lineStart,\"line_end\": $lineEnd,\"aya_no\": $ayahNumber,\"sora_name_en\": \"$englishName\",\"sora_name_ar\": \"$arabicName\",\"aya_text\": \"${text.replaceAll("\n", "\\n")}\",\"aya_text_emlaey\": \"${ayaTextEmlaey.replaceAll("\n", "\\n")}\",\"centered\": $centered";
 
   factory AyahModel.fromJson(Map<String, dynamic> json) {
     String ayahText = json['aya_text'];
@@ -60,8 +60,8 @@ class AyahModel {
       ayahText = '$ayahText ';
     }
     return AyahModel(
-      id: json['id'],
-      jozz: json['jozz'],
+      ayahUQNumber: json['id'],
+      juz: json['jozz'],
       surahNumber: json['sura_no'] ?? 0,
       page: json['page'],
       lineStart: json['line_start'],
@@ -69,10 +69,10 @@ class AyahModel {
       ayahNumber: json['aya_no'],
       quarter: -1,
       hizb: -1,
-      surahNameEn: json['sura_name_en'],
-      surahNameAr: json['sura_name_ar'],
-      ayah: ayahText,
-      ayahText: json['aya_text_emlaey'] ?? '',
+      englishName: json['sura_name_en'],
+      arabicName: json['sura_name_ar'],
+      text: ayahText,
+      ayaTextEmlaey: json['aya_text_emlaey'] ?? '',
       sajda: false,
       centered: json['centered'] ?? false,
     );
@@ -85,8 +85,8 @@ class AyahModel {
     bool centered = false,
   }) =>
       AyahModel(
-        id: ayah.id,
-        jozz: ayah.jozz,
+        ayahUQNumber: ayah.ayahUQNumber,
+        juz: ayah.juz,
         surahNumber: ayah.surahNumber,
         page: ayah.page,
         lineStart: ayah.lineStart,
@@ -94,10 +94,10 @@ class AyahModel {
         ayahNumber: ayah.ayahNumber,
         quarter: ayah.quarter,
         hizb: ayah.hizb,
-        surahNameEn: ayah.surahNameEn,
-        surahNameAr: ayah.surahNameAr,
-        ayah: aya,
-        ayahText: ayaText,
+        englishName: ayah.englishName,
+        arabicName: ayah.arabicName,
+        text: aya,
+        ayaTextEmlaey: ayaText,
         sajda: false,
         centered: centered,
       );

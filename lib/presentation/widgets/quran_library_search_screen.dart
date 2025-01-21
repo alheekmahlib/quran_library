@@ -38,9 +38,9 @@ class QuranLibrarySearchScreen extends StatelessWidget {
                           .map((ayah) => Column(
                                 children: [
                                   ListTile(
-                                    title: Text(ayah.ayah.replaceAll('\n', ' '),
+                                    title: Text(ayah.text.replaceAll('\n', ' '),
                                         style: QuranLibrary().hafsStyle),
-                                    subtitle: Text(ayah.surahNameAr),
+                                    subtitle: Text(ayah.arabicName),
                                     contentPadding: const EdgeInsets.symmetric(
                                         horizontal: 16),
                                     onTap: () {

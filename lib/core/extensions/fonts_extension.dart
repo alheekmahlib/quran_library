@@ -94,7 +94,7 @@ extension FontsExtension on QuranCtrl {
           // حساب نسبة التحميل
           double progress = totalBytesDownloaded / contentLength * 100;
           state.fontsDownloadProgress.value = progress;
-          log('Download progress: ${progress.toStringAsFixed(2)}%');
+          // log('Download progress: ${progress.toStringAsFixed(2)}%');
           update(['fontsDownloadingProgress']);
         },
         onDone: () async {
@@ -127,7 +127,7 @@ extension FontsExtension on QuranCtrl {
                 final outFile = File(filename);
                 await outFile.create(recursive: true);
                 await outFile.writeAsBytes(file.content as List<int>);
-                log('Extracted file: $filename'); // سجل لاستخراج الملف
+                // log('Extracted file: $filename'); // سجل لاستخراج الملف
               } else {
                 log('Skipped directory: ${file.name}');
               }

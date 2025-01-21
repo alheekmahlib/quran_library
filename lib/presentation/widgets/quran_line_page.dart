@@ -6,15 +6,16 @@ class QuranLinePage extends StatelessWidget {
   final BannerStyle? bannerStyle;
   final SurahNameStyle? surahNameStyle;
   final SurahInfoStyle? surahInfoStyle;
-  final Function? onSurahBannerPress;
+  final Function(SurahNamesModel surah)? onSurahBannerPress;
   final BasmalaStyle? basmalaStyle;
   final Size deviceSize;
-  final Function? onAyahLongPress;
+  final Function(LongPressStartDetails details, AyahModel ayah)?
+      onAyahLongPress;
   final Color? bookmarksColor;
   final Color? textColor;
   final List? bookmarkList;
   final Color? ayahSelectedBackgroundColor;
-  final Function? onPagePress;
+  final VoidCallback? onPagePress;
   final List<String> newSurahs;
   final String? languageCode;
   final String? juzName;
@@ -136,7 +137,7 @@ class QuranLinePage extends StatelessWidget {
                                     bookmarkCtrl.bookmarksAyahs,
                                     bookmarkCtrl.bookmarks,
                                     boxFit: BoxFit.scaleDown,
-                                    onAyahLongPress: onAyahLongPress,
+                                    onDefaultAyahLongPress: onAyahLongPress,
                                     bookmarksColor: bookmarksColor,
                                     textColor: textColor,
                                     bookmarkList: bookmarkList,
@@ -171,8 +172,8 @@ class QuranLinePage extends StatelessWidget {
               ...quranCtrl.staticPages[pageIndex].lines.map((line) {
                 bool firstAyah = false;
                 if (line.ayahs[0].ayahNumber == 1 &&
-                    !newSurahs.contains(line.ayahs[0].surahNameAr)) {
-                  newSurahs.add(line.ayahs[0].surahNameAr);
+                    !newSurahs.contains(line.ayahs[0].arabicName)) {
+                  newSurahs.add(line.ayahs[0].arabicName);
                   firstAyah = true;
                 }
                 return GetBuilder<BookmarksCtrl>(
@@ -246,7 +247,7 @@ class QuranLinePage extends StatelessWidget {
                             boxFit: line.ayahs.last.centered
                                 ? BoxFit.scaleDown
                                 : BoxFit.fill,
-                            onAyahLongPress: onAyahLongPress,
+                            onDefaultAyahLongPress: onAyahLongPress,
                             bookmarksColor: bookmarksColor,
                             textColor: textColor,
                             bookmarkList: bookmarkList,

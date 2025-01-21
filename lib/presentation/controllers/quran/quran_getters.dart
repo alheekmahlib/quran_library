@@ -115,7 +115,7 @@ extension QuranGetters on QuranCtrl {
 
     // Find the highest Hizb quarter on the current page
     int? currentMaxHizbQuarter =
-        currentPageAyahs.map((ayah) => ayah.hizbQuarter).reduce(math.max);
+        currentPageAyahs.map((ayah) => ayah.hizb).reduce(math.max);
 
     // Store/update the highest Hizb quarter for this page
     state.pageToHizbQuarterMap[pageNumber] = currentMaxHizbQuarter;

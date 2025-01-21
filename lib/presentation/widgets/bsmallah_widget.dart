@@ -4,11 +4,11 @@ class BasmallahWidget extends StatelessWidget {
   const BasmallahWidget({
     super.key,
     required this.surahNumber,
-    required this.basmalaStyle,
+    this.basmalaStyle,
   });
 
   final int surahNumber;
-  final BasmalaStyle basmalaStyle;
+  final BasmalaStyle? basmalaStyle;
 
   @override
   Widget build(BuildContext context) {
@@ -17,10 +17,10 @@ class BasmallahWidget extends StatelessWidget {
         surahNumber == 95 || surahNumber == 97
             ? AssetsPath().besmAllah2
             : AssetsPath().besmAllah,
-        width: basmalaStyle.basmalaWidth ?? 150,
-        height: basmalaStyle.basmalaHeight ?? 40,
+        width: basmalaStyle?.basmalaWidth ?? 150,
+        height: basmalaStyle?.basmalaHeight ?? 40,
         colorFilter: ColorFilter.mode(
-            basmalaStyle.basmalaColor ?? Colors.black, BlendMode.srcIn),
+            basmalaStyle?.basmalaColor ?? Colors.black, BlendMode.srcIn),
       ),
     );
   }

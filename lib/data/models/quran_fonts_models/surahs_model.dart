@@ -35,7 +35,7 @@ class AyahFontsModel {
   final String codeV2;
   final int juz;
   final int page;
-  final int hizbQuarter;
+  final int hizb;
   dynamic sajda;
 
   AyahFontsModel({
@@ -46,7 +46,7 @@ class AyahFontsModel {
     required this.codeV2,
     required this.juz,
     required this.page,
-    required this.hizbQuarter,
+    required this.hizb,
     required this.sajda,
   });
 
@@ -59,7 +59,7 @@ class AyahFontsModel {
       codeV2: json['code_v2'],
       juz: json['juz'],
       page: json['page'],
-      hizbQuarter: json['hizbQuarter'],
+      hizb: json['hizbQuarter'],
       sajda: json['sajda'],
     );
   }
@@ -73,7 +73,7 @@ class AyahFontsModel {
       codeV2: '',
       juz: 0,
       page: 0,
-      hizbQuarter: 0,
+      hizb: 0,
       sajda: dynamic,
     );
   }

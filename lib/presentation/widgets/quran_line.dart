@@ -4,7 +4,7 @@ class QuranLine extends StatelessWidget {
   QuranLine(this.line, this.bookmarksAyahs, this.bookmarks,
       {super.key,
       this.boxFit = BoxFit.fill,
-      this.onAyahLongPress,
+      this.onDefaultAyahLongPress,
       this.bookmarksColor,
       this.textColor,
       this.ayahSelectedBackgroundColor,
@@ -18,8 +18,9 @@ class QuranLine extends StatelessWidget {
   final List<int> bookmarksAyahs;
   final Map<int, List<BookmarkModel>> bookmarks;
   final BoxFit boxFit;
-  final Function? onAyahLongPress;
-  final Function? onPagePress;
+  final Function(LongPressStartDetails details, AyahModel ayah)?
+      onDefaultAyahLongPress;
+  final VoidCallback? onPagePress;
   final Color? bookmarksColor;
   final Color? textColor;
   final Color? ayahSelectedBackgroundColor;
@@ -45,7 +46,7 @@ class QuranLine extends StatelessWidget {
               text: TextSpan(
             children: line.ayahs.reversed.map((ayah) {
               quranCtrl.isAyahSelected =
-                  quranCtrl.selectedAyahIndexes.contains(ayah.id);
+                  quranCtrl.selectedAyahIndexes.contains(ayah.ayahUQNumber);
               final allBookmarks =
                   bookmarks.values.expand((list) => list).toList();
               // final String lastCharacter =
@@ -61,21 +62,21 @@ class QuranLine extends StatelessWidget {
                     quranCtrl.state.overlayEntry = null;
                   },
                   onLongPressStart: (details) {
-                    if (onAyahLongPress != null) {
-                      onAyahLongPress!(details, ayah);
-                      quranCtrl.toggleAyahSelection(ayah.id);
+                    if (onDefaultAyahLongPress != null) {
+                      onDefaultAyahLongPress!(details, ayah);
+                      quranCtrl.toggleAyahSelection(ayah.ayahUQNumber);
                     } else {
-                      final bookmarkId = allBookmarks
-                              .any((bookmark) => bookmark.ayahId == ayah.id)
+                      final bookmarkId = allBookmarks.any((bookmark) =>
+                              bookmark.ayahId == ayah.ayahUQNumber)
                           ? allBookmarks
-                              .firstWhere(
-                                  (bookmark) => bookmark.ayahId == ayah.id)
+                              .firstWhere((bookmark) =>
+                                  bookmark.ayahId == ayah.ayahUQNumber)
                               .id
                           : null;
                       if (bookmarkId != null) {
                         BookmarksCtrl.instance.removeBookmark(bookmarkId);
                       } else {
-                        quranCtrl.toggleAyahSelection(ayah.id);
+                        quranCtrl.toggleAyahSelection(ayah.ayahUQNumber);
                         quranCtrl.state.overlayEntry?.remove();
                         quranCtrl.state.overlayEntry = null;
 
@@ -98,12 +99,13 @@ class QuranLine extends StatelessWidget {
                   child: Container(
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(4.0),
-                      color: hasBookmark(ayah.surahNumber, ayah.id).value
+                      color: hasBookmark(ayah.surahNumber, ayah.ayahUQNumber)
+                              .value
                           ? bookmarksColor
-                          : (bookmarksAyahs.contains(ayah.id)
+                          : (bookmarksAyahs.contains(ayah.ayahUQNumber)
                               ? Color(allBookmarks
                                       .firstWhere(
-                                        (b) => b.ayahId == ayah.id,
+                                        (b) => b.ayahId == ayah.ayahUQNumber,
                                       )
                                       .colorCode)
                                   .withValues(alpha: 0.7)
@@ -114,7 +116,7 @@ class QuranLine extends StatelessWidget {
                                   : null),
                     ),
                     child: Text(
-                      ayah.ayah,
+                      ayah.text,
                       style: TextStyle(
                         color: textColor ?? Colors.black,
                         fontSize: 23.55,

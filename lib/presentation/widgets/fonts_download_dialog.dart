@@ -1,9 +1,4 @@
-import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:quran_library/core/extensions/fonts_download_widget.dart';
-
-import '../../data/models/quran_fonts_models/download_fonts_dialog_style.dart';
-import '../controllers/quran/quran_ctrl.dart';
+part of '../../quran.dart';
 
 class FontsDownloadDialog extends StatelessWidget {
   final DownloadFontsDialogStyle? downloadFontsDialogStyle;

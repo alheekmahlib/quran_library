@@ -1,4 +1,4 @@
-part of '../pages/quran_library_screen.dart';
+part of '../../quran.dart';
 
 class AllQuranWidget extends StatelessWidget {
   final int pageIndex;

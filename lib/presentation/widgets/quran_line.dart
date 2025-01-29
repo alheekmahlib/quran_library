@@ -1,4 +1,4 @@
-part of '../pages/quran_library_screen.dart';
+part of '../../quran.dart';
 
 class QuranLine extends StatelessWidget {
   QuranLine(this.line, this.bookmarksAyahs, this.bookmarks,

@@ -1,10 +1,4 @@
-import 'package:flutter/gestures.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
-import 'package:quran_library/core/extensions/convert_number_extension.dart';
-
-import '../../quran_library.dart';
-import '../controllers/bookmark/bookmarks_ctrl.dart';
+part of '../../../../quran.dart';
 
 TextSpan span({
   required String text,
@@ -40,17 +34,20 @@ TextSpan span({
     final String lastCharacter = text.substring(text.length - 1);
     final allBookmarks = bookmarks.values.expand((list) => list).toList();
     final bookmarkCtrl = BookmarksCtrl.instance;
+    final quranCtrl = QuranCtrl.instance;
     TextSpan? first;
     TextSpan? second;
     if (isFirstAyah) {
       first = TextSpan(
         text: partOne,
         style: TextStyle(
-          fontFamily: 'p${(pageIndex + 2001)}',
+          fontFamily: quranCtrl.state.fontsSelected2.value == 1
+              ? 'p${(pageIndex + 2001)}'
+              : 'p${(pageIndex + 1)}',
           fontSize: fontSize,
           height: 2,
           letterSpacing: 30,
-          color: textColor ?? Colors.black,
+          color: textColor ?? Colors.transparent,
           backgroundColor:
               bookmarkCtrl.hasBookmark(surahNum, ayahUQNum, bookmarkList).value
                   ? bookmarksColor
@@ -73,12 +70,14 @@ TextSpan span({
       second = TextSpan(
         text: partTwo,
         style: TextStyle(
-          fontFamily: 'p${(pageIndex + 2001)}',
+          fontFamily: quranCtrl.state.fontsSelected2.value == 1
+              ? 'p${(pageIndex + 2001)}'
+              : 'p${(pageIndex + 1)}',
           fontSize: fontSize,
           height: 2,
           letterSpacing: 5,
           // wordSpacing: wordSpacing + 10,
-          color: textColor ?? Colors.black,
+          color: textColor ?? Colors.transparent,
           backgroundColor:
               bookmarkCtrl.hasBookmark(surahNum, ayahUQNum, bookmarkList).value
                   ? bookmarksColor
@@ -103,11 +102,13 @@ TextSpan span({
     final TextSpan initialTextSpan = TextSpan(
       text: initialPart,
       style: TextStyle(
-        fontFamily: 'p${(pageIndex + 2001)}',
+        fontFamily: quranCtrl.state.fontsSelected2.value == 1
+            ? 'p${(pageIndex + 2001)}'
+            : 'p${(pageIndex + 1)}',
         fontSize: fontSize,
         height: 2,
         letterSpacing: 5,
-        color: textColor ?? Colors.black,
+        color: textColor ?? Colors.transparent,
         backgroundColor:
             bookmarkCtrl.hasBookmark(surahNum, ayahUQNum, bookmarkList).value
                 ? bookmarksColor
@@ -144,14 +145,16 @@ TextSpan span({
         : TextSpan(
             text: lastCharacter,
             style: TextStyle(
-              fontFamily: 'p${(pageIndex + 2001)}',
+              fontFamily: quranCtrl.state.fontsSelected2.value == 1
+                  ? 'p${(pageIndex + 2001)}'
+                  : 'p${(pageIndex + 1)}',
               fontSize: fontSize,
               height: 2,
               letterSpacing: 5,
               color: bookmarkCtrl
                       .hasBookmark(surahNum, ayahUQNum, bookmarkList)
                       .value
-                  ? textColor ?? Colors.black
+                  ? textColor ?? Colors.transparent
                   : const Color(0xff77554B),
               backgroundColor: bookmarkCtrl
                       .hasBookmark(surahNum, ayahUQNum, bookmarkList)

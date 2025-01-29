@@ -1,3 +1,5 @@
+part of '../../../quran.dart';
+
 class BookmarkModel {
   final int id;
   final int colorCode;

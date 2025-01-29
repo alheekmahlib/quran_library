@@ -1,11 +1,4 @@
-import 'dart:convert';
-import 'dart:developer';
-
-import 'package:flutter/services.dart' show rootBundle;
-import 'package:get_storage/get_storage.dart';
-
-import '../../core/utils/storage_constants.dart';
-import '../models/styles_models/bookmark.dart';
+part of '../../../quran.dart';
 
 class QuranRepository {
   ///Quran pages number

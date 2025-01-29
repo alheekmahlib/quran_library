@@ -1,3 +1,5 @@
+part of '../../../quran.dart';
+
 class SurahNamesModel {
   final int number;
   final String name;

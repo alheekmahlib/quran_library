@@ -1,26 +1,15 @@
-import 'dart:developer';
-import 'dart:io' show Directory, File;
-
-import 'package:archive/archive.dart';
-import 'package:flutter/services.dart' show ByteData, FontLoader;
-import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
-import 'package:http/http.dart' as http;
-import 'package:path_provider/path_provider.dart';
-
-import '../../presentation/controllers/quran/quran_ctrl.dart';
-import '../utils/storage_constants.dart';
+part of '../../quran.dart';
 
 extension FontsExtension on QuranCtrl {
-  void prepareFonts(int pageIndex) {
-    loadFont(pageIndex);
+  Future<void> prepareFonts(int pageIndex, {bool? isDark = false}) async {
+    await loadFont(pageIndex, isDark: isDark);
     if (pageIndex < 608) {
       for (int i = pageIndex; i < 5; i++) {
-        loadFont(i);
+        await loadFont(i, isDark: isDark);
       }
       if (pageIndex > 5) {
         for (int i = pageIndex; i < 5; i--) {
-          loadFont(i);
+          await loadFont(i, isDark: isDark);
         }
       }
     }
@@ -49,11 +38,11 @@ extension FontsExtension on QuranCtrl {
     }
   }
 
-  Future<void> downloadAllFontsZipFile() async {
-    if (GetStorage().read(StorageConstants().isDownloadedCodeV2Fonts) ??
-        false || state.isDownloadingFonts.value) {
-      return Future.value();
-    }
+  Future<void> downloadAllFontsZipFile(int fontIndex) async {
+    // if (GetStorage().read(StorageConstants().isDownloadedCodeV2Fonts) ??
+    //     false || state.isDownloadingFonts.value) {
+    //   return Future.value();
+    // }
 
     try {
       state.isDownloadingFonts.value = true;
@@ -62,9 +51,11 @@ extension FontsExtension on QuranCtrl {
       // تحميل الملف باستخدام http.Client
       final client = http.Client();
       final response = await client.send(http.Request(
-          'GET',
-          Uri.parse(
-              'https://archive.org/download/quran_fonts/quran_fonts.zip')));
+        'GET',
+        Uri.parse(fontIndex == 1
+            ? 'https://archive.org/download/quran_fonts/quran_fonts.zip'
+            : 'https://archive.org/download/quran_fonts_tajweed_v4_202501/quran_fonts_tajweed_v4.zip'),
+      ));
 
       if (response.statusCode != 200) {
         throw Exception('Failed to download ZIP file: ${response.statusCode}');
@@ -72,13 +63,17 @@ extension FontsExtension on QuranCtrl {
 
       // تحديد المسار الذي سيتم حفظ الملف فيه
       final appDir = await getApplicationDocumentsDirectory();
-      final fontsDir = Directory('${appDir.path}/quran_fonts');
+      final fontsDir = fontIndex == 1
+          ? Directory('${appDir.path}/quran_fonts')
+          : Directory('${appDir.path}/quran_fonts_tajweed_v4_202501');
       if (!await fontsDir.exists()) {
         await fontsDir.create(recursive: true);
       }
 
       // حفظ ملف ZIP إلى التطبيق
-      final zipFile = File('${appDir.path}/quran_fonts.zip');
+      final zipFile = fontIndex == 1
+          ? File('${appDir.path}/quran_fonts.zip')
+          : File('${appDir.path}/quran_fonts_tajweed_v4.zip');
       final fileSink = zipFile.openWrite();
 
       // حجم الملف الإجمالي
@@ -144,6 +139,9 @@ extension FontsExtension on QuranCtrl {
             // حفظ حالة التحميل في التخزين المحلي
             GetStorage()
                 .write(StorageConstants().isDownloadedCodeV2Fonts, true);
+            state.fontsDownloadedList.add(fontIndex);
+            GetStorage().write(StorageConstants().fontsDownloadedList,
+                state.fontsDownloadedList);
             state.isDownloadedV2Fonts.value = true;
             state.isDownloadingFonts.value = false;
             Get.forceAppUpdate();
@@ -177,27 +175,39 @@ extension FontsExtension on QuranCtrl {
     }
   }
 
-  Future<void> loadFont(int pageIndex) async {
-    try {
-      final appDir = await getApplicationDocumentsDirectory();
-      // تعديل المسار ليشمل المجلد الإضافي
-      final fontFile = File(
-          '${appDir.path}/quran_fonts/quran_fonts/p${(pageIndex + 2001)}.ttf');
-      if (!await fontFile.exists()) {
-        throw Exception("Font file not found for page: ${pageIndex + 1}");
-      }
-      final fontLoader = FontLoader('p${(pageIndex + 2001)}');
-      fontLoader.addFont(_getFontLoaderBytes(fontFile));
-      await fontLoader.load();
-    } catch (e) {
-      throw Exception("Failed to load font: $e");
+  Future<void> loadFont(int pageIndex, {bool? isDark = false}) async {
+    // try {
+    final appDir = await getApplicationDocumentsDirectory();
+    // تعديل المسار ليشمل المجلد الإضافي
+    final fontFile = state.fontsSelected2.value == 1
+        ? File(
+            '${appDir.path}/quran_fonts/quran_fonts/p${(pageIndex + 2001)}.ttf')
+        : isDark!
+            ? File(
+                '${appDir.path}/quran_fonts_tajweed_v4_202501/quran_fonts_tajweed_v4/p${(pageIndex + 1)}.ttf')
+            : File(
+                '${appDir.path}/quran_fonts_tajweed_v4_202501/quran_fonts_tajweed_v4/p${(pageIndex + 1)}.ttf');
+    if (!await fontFile.exists()) {
+      throw Exception("Font file not found for page: ${pageIndex + 1}");
     }
+    final fontLoader = state.fontsSelected2.value == 1
+        ? FontLoader('p${(pageIndex + 2001)}')
+        : FontLoader('p${(pageIndex + 1)}');
+    fontLoader.addFont(_getFontLoaderBytes(fontFile));
+    await fontLoader.load();
+    // } catch (e) {
+    //   throw Exception("Failed to load font: $e");
+    // }
   }
 
-  Future<void> deleteFonts() async {
+  Future<void> deleteFonts(int fontIndex) async {
     try {
+      state.fontsDownloadedList.elementAt(fontIndex);
       final appDir = await getApplicationDocumentsDirectory();
-      final fontsDir = Directory('${appDir.path}/quran_fonts');
+      final fontsDir = fontIndex == 1
+          ? Directory('${appDir.path}/quran_fonts')
+          : Directory(
+              '${appDir.path}/quran_fonts_tajweed_v4_202501/quran_fonts_tajweed_v4');
 
       // التحقق من وجود مجلد الخطوط
       if (await fontsDir.exists()) {
@@ -207,9 +217,12 @@ extension FontsExtension on QuranCtrl {
 
         // تحديث حالة التخزين المحلي
         GetStorage().write(StorageConstants().isDownloadedCodeV2Fonts, false);
-        GetStorage().write(StorageConstants().fontsSelected, false);
+        GetStorage().write(StorageConstants().fontsSelected, 0);
+        state.fontsDownloadedList.elementAt(fontIndex);
+        GetStorage().write(
+            StorageConstants().fontsDownloadedList, state.fontsDownloadedList);
         state.isDownloadedV2Fonts.value = false;
-        state.fontsSelected.value = false;
+        state.fontsSelected2.value = 0;
         state.fontsDownloadProgress.value = 0;
         Get.forceAppUpdate();
       } else {

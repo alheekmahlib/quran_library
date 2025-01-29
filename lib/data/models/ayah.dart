@@ -1,4 +1,4 @@
-import '../../core/extensions/string_extensions.dart';
+part of '../../quran.dart';
 
 class AyahModel {
   final int ayahUQNumber,

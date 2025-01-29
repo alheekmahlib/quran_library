@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart' show Color;
+part of '../../../quran.dart';
 
 class SurahInfoStyle {
   final Color? backgroundColor;

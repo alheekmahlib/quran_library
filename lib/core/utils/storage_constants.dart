@@ -1,8 +1,11 @@
+part of '../../quran.dart';
+
 class StorageConstants {
   final String bookmarks = 'bookmarks';
   final String lastPage = 'last_page';
   final String isDownloadedCodeV2Fonts = 'isDownloadedCodeV2Fonts';
-  final String fontsSelected = 'fontsSelected';
+  final String fontsSelected = 'fontsSelected2';
+  final String fontsDownloadedList = 'fontsDownloadedList';
   final String isBold = 'IS_BOLD';
 
   ///Singleton factory

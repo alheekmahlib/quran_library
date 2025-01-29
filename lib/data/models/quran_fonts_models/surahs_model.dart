@@ -1,3 +1,5 @@
+part of '../../../quran.dart';
+
 class SurahFontsModel {
   final int surahNumber;
   final String arabicName;

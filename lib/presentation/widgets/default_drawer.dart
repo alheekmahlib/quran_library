@@ -1,4 +1,4 @@
-part of '../pages/quran_library_screen.dart';
+part of '../../quran.dart';
 
 class _DefaultDrawer extends StatelessWidget {
   final String languageCode;

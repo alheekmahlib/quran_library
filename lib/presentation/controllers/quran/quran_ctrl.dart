@@ -1,16 +1,4 @@
-import 'dart:developer';
-
-import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:quran_library/core/extensions/convert_arabic_to_english_numbers_extension.dart';
-
-import '../../../data/models/ayah.dart';
-import '../../../data/models/quran_fonts_models/surahs_model.dart';
-import '../../../data/models/quran_page.dart';
-import '../../../data/models/styles_models/surah_names_model.dart';
-import '../../../data/models/surah.dart';
-import '../../../data/repositories/quran_repository.dart';
-import 'quran_state.dart';
+part of '../../../quran.dart';
 
 class QuranCtrl extends GetxController {
   static QuranCtrl get instance => Get.isRegistered<QuranCtrl>()

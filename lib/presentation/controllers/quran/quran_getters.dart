@@ -1,10 +1,4 @@
-import 'dart:math' as math;
-
-import 'package:get/get.dart';
-
-import '../../../core/extensions/convert_number_extension.dart';
-import '../../../data/models/quran_fonts_models/surahs_model.dart';
-import 'quran_ctrl.dart';
+part of '../../../quran.dart';
 
 extension QuranGetters on QuranCtrl {
   /// -------- [Getter] ----------
@@ -186,6 +180,11 @@ extension QuranGetters on QuranCtrl {
 
   RxBool getCurrentJuzNumber(int juzNum) =>
       getJuzByPage(state.currentPageNumber.value).juz - 1 == juzNum
+          ? true.obs
+          : false.obs;
+
+  RxBool get isDownloadFonts =>
+      (state.fontsSelected2.value == 1 || state.fontsSelected2.value == 2)
           ? true.obs
           : false.obs;
 

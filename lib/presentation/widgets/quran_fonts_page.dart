@@ -1,18 +1,4 @@
-import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-
-import '/core/extensions/extensions.dart';
-import '../../data/models/quran_fonts_models/surahs_model.dart';
-import '../../data/models/styles_models/banner_style.dart';
-import '../../data/models/styles_models/basmala_style.dart';
-import '../../data/models/styles_models/surah_info_style.dart';
-import '../../data/models/styles_models/surah_name_style.dart';
-import '../../data/models/styles_models/surah_names_model.dart';
-import '../../quran_library.dart';
-import '../controllers/bookmark/bookmarks_ctrl.dart';
-import '../controllers/quran/quran_ctrl.dart';
-import '../controllers/quran/quran_getters.dart';
-import 'custom_span.dart';
+part of '../../../quran.dart';
 
 class QuranFontsPage extends StatelessWidget {
   final int pageIndex;
@@ -168,14 +154,14 @@ class QuranFontsPage extends StatelessWidget {
                                           fontSize: 100,
                                           height: 1.7,
                                           letterSpacing: 2,
-                                          color: textColor ?? Colors.black,
+                                          color: textColor,
                                           shadows: [
                                             Shadow(
                                               blurRadius: 0.5,
                                               color: quranCtrl
                                                           .state.isBold.value ==
                                                       0
-                                                  ? Colors.black
+                                                  ? textColor ?? Colors.black
                                                   : Colors.transparent,
                                               offset: const Offset(0.5, 0.5),
                                             ),

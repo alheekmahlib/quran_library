@@ -1,12 +1,4 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
-import 'package:get/get.dart';
-
-import '../../data/models/styles_models/surah_info_style.dart';
-import '../../presentation/controllers/quran/quran_ctrl.dart';
-import 'convert_number_extension.dart';
-import 'extensions.dart';
-import 'text_span_extension.dart';
+part of '../../quran.dart';
 
 extension SurahInfoExtension on void {
   void surahInfoDialogWidget(BuildContext context, int surahNumber,

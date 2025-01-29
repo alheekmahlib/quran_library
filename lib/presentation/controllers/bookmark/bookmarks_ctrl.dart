@@ -1,8 +1,4 @@
-import 'package:get/get.dart';
-import 'package:quran_library/presentation/controllers/quran/quran_ctrl.dart';
-
-import '../../../data/models/styles_models/bookmark.dart';
-import '../../../data/repositories/quran_repository.dart';
+part of '../../../quran.dart';
 
 class BookmarksCtrl extends GetxController {
   static BookmarksCtrl get instance => Get.isRegistered<BookmarksCtrl>()

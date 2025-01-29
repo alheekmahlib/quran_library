@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart' show Color, Widget;
+part of '../../../quran.dart';
 
 class DownloadFontsDialogStyle {
   final Color? backgroundColor;
@@ -17,11 +17,13 @@ class DownloadFontsDialogStyle {
   final Color? iconColor;
   final double? iconSize;
   final String? downloadedFontsText;
+  final String? downloadedFontsTajweedText;
   final String? defaultFontText;
   final String? downloadedNotesTitle;
   final String? downloadedNotesBody;
 
   DownloadFontsDialogStyle({
+    this.downloadedFontsTajweedText,
     this.downloadedNotesTitle,
     this.downloadedNotesBody,
     this.downloadedFontsText,

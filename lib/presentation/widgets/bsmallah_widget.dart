@@ -1,4 +1,4 @@
-part of '../pages/quran_library_screen.dart';
+part of '../../quran.dart';
 
 class BasmallahWidget extends StatelessWidget {
   const BasmallahWidget({

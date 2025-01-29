@@ -1,22 +1,4 @@
-import 'package:flutter/material.dart';
-import 'package:get_storage/get_storage.dart';
-import 'package:quran_library/core/extensions/fonts_download_widget.dart';
-import 'package:quran_library/presentation/controllers/quran/quran_getters.dart';
-
-import 'core/extensions/fonts_extension.dart';
-import 'core/extensions/surah_info_extension.dart';
-import 'core/utils/storage_constants.dart';
-import 'data/models/ayah.dart';
-import 'data/models/quran_constants.dart';
-import 'data/models/quran_fonts_models/download_fonts_dialog_style.dart';
-import 'data/models/quran_fonts_models/surahs_model.dart';
-import 'data/models/styles_models/bookmark.dart';
-import 'data/models/styles_models/surah_info_style.dart';
-import 'data/models/styles_models/surah_names_model.dart';
-import 'data/repositories/quran_repository.dart';
-import 'presentation/controllers/bookmark/bookmarks_ctrl.dart';
-import 'presentation/controllers/quran/quran_ctrl.dart';
-import 'presentation/widgets/fonts_download_dialog.dart';
+part of '../../quran.dart';
 
 class QuranLibrary {
   /// [init] تقوم بتهيئة القرآن ويجب استدعاؤها قبل البدء في استخدام الحزمة
@@ -39,8 +21,12 @@ class QuranLibrary {
         userBookmarks: userBookmarks, overwrite: overwriteBookmarks);
     QuranCtrl.instance.state.isBold.value =
         GetStorage().read(StorageConstants().isBold) ?? 0;
-    quranCtrl.state.fontsSelected.value =
-        GetStorage().read(StorageConstants().fontsSelected) ?? false;
+    quranCtrl.state.fontsSelected2.value =
+        GetStorage().read(StorageConstants().fontsSelected) ?? 0;
+    quranCtrl.state.fontsDownloadedList.value = (GetStorage()
+            .read<List<dynamic>>(StorageConstants().fontsDownloadedList)
+            ?.cast<int>() ??
+        []);
   }
 
   final quranCtrl = QuranCtrl.instance;
@@ -230,7 +216,8 @@ class QuranLibrary {
   /// للحصول على طريقة تنزيل الخطوط فقط قم بإستدعاء [fontsDownloadMethod]
   ///
   /// to get the fonts download method just call [fontsDownloadMethod]
-  void get fontsDownloadMethod => quranCtrl.downloadAllFontsZipFile();
+  void getFontsDownloadMethod({required int fontIndex}) =>
+      quranCtrl.downloadAllFontsZipFile(fontIndex);
 
   /// للحصول على طريقة تنزيل الخطوط فقط قم بإستدعاء [getFontsPrepareMethod]
   /// مطلوب تمرير رقم الصفحة [pageIndex]
@@ -243,7 +230,8 @@ class QuranLibrary {
   /// لحذف الخطوط فقط قم بإستدعاء [deleteFontsMethod]
   ///
   /// to delete the fonts just call [deleteFontsMethod]
-  void get deleteFontsMethod => quranCtrl.deleteFonts();
+  void getDeleteFontsMethod({required int fontIndex}) =>
+      quranCtrl.deleteFonts(fontIndex);
 
   /// للحصول على تقدم تنزيل الخطوط، ما عليك سوى إستدعاء [fontsDownloadProgress]
   ///
@@ -260,7 +248,7 @@ class QuranLibrary {
   /// لمعرفة الخط الذي تم تحديده، ما عليك سوى إستدعاء [currentFontsSelected]
   ///
   /// To find out which font has been selected, just call [currentFontsSelected]
-  bool get currentFontsSelected => quranCtrl.state.fontsSelected.value;
+  int get currentFontsSelected => quranCtrl.state.fontsSelected2.value;
 
   /// يقوم بتعيين علامة مرجعية باستخدام [ayahId] و[page] و[bookmarkId] المحددة.
   ///

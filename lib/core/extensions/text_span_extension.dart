@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+part of '../../quran.dart';
 
 extension TextSpanExtension on String {
   List<TextSpan> buildTextSpans() {

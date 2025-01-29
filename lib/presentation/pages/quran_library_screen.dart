@@ -1,43 +1,4 @@
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_svg/svg.dart';
-import 'package:get/get.dart';
-import 'package:quran_library/core/extensions/convert_number_extension.dart';
-import 'package:quran_library/core/extensions/extensions.dart';
-
-import '/quran_library.dart';
-import '../../core/extensions/fonts_extension.dart';
-import '../../core/extensions/string_extensions.dart';
-import '../../core/extensions/surah_info_extension.dart';
-import '../../data/models/quran_constants.dart';
-import '../../data/models/quran_fonts_models/download_fonts_dialog_style.dart';
-import '../../data/models/quran_fonts_models/surahs_model.dart';
-import '../../data/models/quran_page.dart';
-import '../../data/models/styles_models/banner_style.dart';
-import '../../data/models/styles_models/basmala_style.dart';
-import '../../data/models/styles_models/surah_info_style.dart';
-import '../../data/models/styles_models/surah_name_style.dart';
-import '../../data/models/styles_models/surah_names_model.dart';
-import '../controllers/bookmark/bookmarks_ctrl.dart';
-import '../controllers/quran/quran_ctrl.dart';
-import '../controllers/quran/quran_getters.dart';
-import '../widgets/custom_span.dart';
-import '../widgets/fonts_download_dialog.dart';
-import '../widgets/quran_fonts_page.dart';
-
-part '../../core/extensions/sajda_extension.dart';
-part '../../core/utils/assets_path.dart';
-part '../../core/utils/toast_utils.dart';
-part '../widgets/all_quran_widget.dart';
-part '../widgets/ayah_long_click_dialog.dart';
-part '../widgets/bsmallah_widget.dart';
-part '../widgets/default_drawer.dart';
-part '../widgets/quran_library_search_screen.dart';
-part '../widgets/quran_line.dart';
-part '../widgets/quran_line_page.dart';
-part '../widgets/quran_page_bottom_info.dart';
-part '../widgets/quran_text_scale.dart';
-part '../widgets/surah_header_widget.dart';
+part of '../../quran.dart';
 
 class QuranLibraryScreen extends StatelessWidget {
   const QuranLibraryScreen({
@@ -253,11 +214,7 @@ class QuranLibraryScreen extends StatelessWidget {
                                 downloadButtonBackgroundColor: Colors.blue,
                                 downloadButtonTextColor: Colors.white,
                                 downloadingText: 'جارِ التحميل',
-                                downloadButtonText: 'تحميل',
-                                deleteButtonText: 'حذف الخطوط',
                                 backgroundColor: const Color(0xFFF7EFE0),
-                                defaultFontText: 'الخطوط الأساسية',
-                                downloadedFontsText: 'خطوط المصحف المحملة',
                                 downloadedNotesTitle: 'ملاحظة:',
                                 downloadedNotesBody: 'يرجى تحميل الخطوط أولًا!',
                               ),
@@ -275,7 +232,7 @@ class QuranLibraryScreen extends StatelessWidget {
                     itemCount: 604,
                     controller: quranCtrl.pageController,
                     physics: const ClampingScrollPhysics(),
-                    onPageChanged: (page) {
+                    onPageChanged: (page) async {
                       if (onPageChanged != null) onPageChanged!(page);
                       quranCtrl.saveLastPage(page + 1);
                       quranCtrl.state.overlayEntry?.remove();
@@ -308,8 +265,8 @@ class QuranLibraryScreen extends StatelessWidget {
   ) {
     final deviceSize = MediaQuery.of(context).size;
     List<String> newSurahs = [];
-    quranCtrl.state.fontsSelected.value
-        ? quranCtrl.prepareFonts(pageIndex)
+    quranCtrl.isDownloadFonts.value
+        ? quranCtrl.prepareFonts(pageIndex, isDark: true)
         : null;
     final bookmarkCtrl = BookmarksCtrl.instance;
     return GetBuilder<QuranCtrl>(
@@ -320,7 +277,7 @@ class QuranLibraryScreen extends StatelessWidget {
         onScaleUpdate: (ScaleUpdateDetails details) =>
             quranCtrl.updateTextScale(details),
         child: quranCtrl.textScale(
-          (quranCtrl.state.fontsSelected.value
+          (quranCtrl.isDownloadFonts.value
               ? quranCtrl.state.allAyahs.isEmpty ||
                       quranCtrl.state.surahs.isEmpty ||
                       quranCtrl.state.pages.isEmpty

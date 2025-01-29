@@ -1,4 +1,4 @@
-part of '../pages/quran_library_screen.dart';
+part of '../../quran.dart';
 
 class AyahLongClickDialog extends StatelessWidget {
   const AyahLongClickDialog(
@@ -43,7 +43,9 @@ class AyahLongClickDialog extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(horizontal: 8.0),
                     child: GestureDetector(
                       onTap: () {
-                        if (QuranCtrl.instance.state.fontsSelected.value ||
+                        if (QuranCtrl.instance.state.fontsSelected2.value == 1 ||
+                            QuranCtrl.instance.state.fontsSelected2.value ==
+                                2 ||
                             QuranCtrl.instance.state.scaleFactor.value > 1.3) {
                           // إضافة العلامة الجديدة
                           BookmarksCtrl.instance.saveBookmark(
@@ -76,7 +78,8 @@ class AyahLongClickDialog extends StatelessWidget {
               context.vDivider(height: 30, color: const Color(0xffe8decb)),
               GestureDetector(
                 onTap: () {
-                  if (QuranCtrl.instance.state.fontsSelected.value) {
+                  if (QuranCtrl.instance.state.fontsSelected2.value == 1 ||
+                      QuranCtrl.instance.state.fontsSelected2.value == 2) {
                     Clipboard.setData(ClipboardData(text: ayahFonts!.text));
                     ToastUtils().showToast(context, "تم النسخ الى الحافظة");
                   } else {

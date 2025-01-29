@@ -1,8 +1,4 @@
-import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
-
-import '../../../data/models/quran_fonts_models/surahs_model.dart';
+part of '../../../quran.dart';
 
 class QuranState {
   /// -------- [Variables] ----------
@@ -47,7 +43,9 @@ class QuranState {
   // RxBool isFontsDownloaded = false.obs;
   RxBool isDownloadingFonts = false.obs;
   RxBool isDownloadedV2Fonts = false.obs;
-  RxBool fontsSelected = false.obs;
+  RxList<int> fontsDownloadedList = <int>[].obs;
+  // RxInt fontsSelected = 0.obs;
+  RxInt fontsSelected2 = 0.obs;
   RxDouble fontsDownloadProgress = 0.0.obs;
   RxInt selectedAyahNumber = 0.obs;
   RxInt selectedSurahNumber = 0.obs;

@@ -1,3 +1,5 @@
+part of '../../../quran.dart';
+
 class QuranConstants {
   static const List<String> quranHizbs = [
     'الأول',

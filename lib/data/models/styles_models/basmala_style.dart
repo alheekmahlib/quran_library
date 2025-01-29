@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart' show Color;
+part of '../../../quran.dart';
 
 class BasmalaStyle {
   ///[basmalaColor] It is required to add the color for the basmalah

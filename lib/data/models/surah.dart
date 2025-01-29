@@ -1,4 +1,4 @@
-import 'ayah.dart';
+part of '../../../quran.dart';
 
 class Surah {
   final int index, startPage;

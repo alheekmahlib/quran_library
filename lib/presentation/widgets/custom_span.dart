@@ -47,7 +47,9 @@ TextSpan span({
           fontSize: fontSize,
           height: 2,
           letterSpacing: 30,
-          color: textColor ?? Colors.transparent,
+          color: quranCtrl.state.fontsSelected2.value == 1
+              ? textColor ?? Colors.transparent
+              : null,
           backgroundColor:
               bookmarkCtrl.hasBookmark(surahNum, ayahUQNum, bookmarkList).value
                   ? bookmarksColor
@@ -77,7 +79,9 @@ TextSpan span({
           height: 2,
           letterSpacing: 5,
           // wordSpacing: wordSpacing + 10,
-          color: textColor ?? Colors.transparent,
+          color: quranCtrl.state.fontsSelected2.value == 1
+              ? textColor ?? Colors.transparent
+              : null,
           backgroundColor:
               bookmarkCtrl.hasBookmark(surahNum, ayahUQNum, bookmarkList).value
                   ? bookmarksColor
@@ -108,7 +112,9 @@ TextSpan span({
         fontSize: fontSize,
         height: 2,
         letterSpacing: 5,
-        color: textColor ?? Colors.transparent,
+        color: quranCtrl.state.fontsSelected2.value == 1
+            ? textColor ?? Colors.transparent
+            : null,
         backgroundColor:
             bookmarkCtrl.hasBookmark(surahNum, ayahUQNum, bookmarkList).value
                 ? bookmarksColor

@@ -75,7 +75,8 @@ class AyahLongClickDialog extends StatelessWidget {
                       ),
                     ),
                   )),
-              context.vDivider(height: 30, color: const Color(0xffe8decb)),
+              context.verticalDivider(
+                  height: 30, color: const Color(0xffe8decb)),
               GestureDetector(
                 onTap: () {
                   if (QuranCtrl.instance.state.fontsSelected2.value == 1 ||

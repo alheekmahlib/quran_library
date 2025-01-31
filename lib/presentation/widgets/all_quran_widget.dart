@@ -39,7 +39,7 @@ class AllQuranWidget extends StatelessWidget {
                         '${juzName ?? 'الجزء'}: ${quranCtrl.getJuzByPage(pageIndex).juz}'
                             .convertNumbers(languageCode: languageCode),
                         style: TextStyle(
-                            fontSize: context.customOrientation(18.0, 22.0),
+                            fontSize: context.currentOrientation(18.0, 22.0),
                             // fontWeight: FontWeight.bold,
                             fontFamily: 'naskh',
                             color: const Color(0xff77554B)),
@@ -51,8 +51,8 @@ class AllQuranWidget extends StatelessWidget {
                             (i) => Text(
                                   ' ${quranCtrl.getSurahsByPage(pageIndex)[i].arabicName.replaceAll('سُورَةُ ', '')} ',
                                   style: TextStyle(
-                                      fontSize:
-                                          context.customOrientation(18.0, 22.0),
+                                      fontSize: context.currentOrientation(
+                                          18.0, 22.0),
                                       // fontWeight: FontWeight.bold,
                                       fontFamily: 'naskh',
                                       color: const Color(0xff77554B)),
@@ -68,8 +68,8 @@ class AllQuranWidget extends StatelessWidget {
                             (i) => Text(
                                   ' ${quranCtrl.getSurahsByPage(pageIndex)[i].arabicName.replaceAll('سُورَةُ ', '')} ',
                                   style: TextStyle(
-                                      fontSize:
-                                          context.customOrientation(18.0, 22.0),
+                                      fontSize: context.currentOrientation(
+                                          18.0, 22.0),
                                       // fontWeight: FontWeight.bold,
                                       fontFamily: 'naskh',
                                       color: const Color(0xff77554B)),
@@ -80,7 +80,7 @@ class AllQuranWidget extends StatelessWidget {
                         '${juzName ?? 'الجزء'}: ${quranCtrl.getJuzByPage(pageIndex).juz}'
                             .convertNumbers(languageCode: languageCode),
                         style: TextStyle(
-                            fontSize: context.customOrientation(18.0, 22.0),
+                            fontSize: context.currentOrientation(18.0, 22.0),
                             // fontWeight: FontWeight.bold,
                             fontFamily: 'naskh',
                             color: const Color(0xff77554B)),
@@ -112,7 +112,7 @@ class AllQuranWidget extends StatelessWidget {
                               .getHizbQuarterDisplayByPage(pageIndex + 1)
                               .convertNumbers(languageCode: languageCode),
                           style: TextStyle(
-                            fontSize: context.customOrientation(18.0, 22.0),
+                            fontSize: context.currentOrientation(18.0, 22.0),
                             fontFamily: 'naskh',
                             color: const Color(0xff77554B),
                             package: 'quran_library',
@@ -126,7 +126,7 @@ class AllQuranWidget extends StatelessWidget {
                         '${pageIndex + 1}'
                             .convertNumbers(languageCode: languageCode),
                         style: TextStyle(
-                          fontSize: context.customOrientation(20.0, 22.0),
+                          fontSize: context.currentOrientation(20.0, 22.0),
                           fontFamily: 'naskh',
                           color: const Color(0xff77554B),
                           package: 'quran_library',
@@ -158,7 +158,7 @@ class AllQuranWidget extends StatelessWidget {
                         '${pageIndex + 1}'
                             .convertNumbers(languageCode: languageCode),
                         style: TextStyle(
-                          fontSize: context.customOrientation(20.0, 22.0),
+                          fontSize: context.currentOrientation(20.0, 22.0),
                           fontFamily: 'naskh',
                           color: const Color(0xff77554B),
                           package: 'quran_library',
@@ -174,7 +174,7 @@ class AllQuranWidget extends StatelessWidget {
                               .getHizbQuarterDisplayByPage(pageIndex + 1)
                               .convertNumbers(languageCode: languageCode),
                           style: TextStyle(
-                            fontSize: context.customOrientation(18.0, 22.0),
+                            fontSize: context.currentOrientation(18.0, 22.0),
                             fontFamily: 'naskh',
                             color: const Color(0xff77554B),
                             package: 'quran_library',

@@ -50,7 +50,7 @@ class QuranLinePage extends StatelessWidget {
     return Container(
       height: MediaQuery.sizeOf(context).height,
       padding: EdgeInsets.symmetric(
-          horizontal: context.customOrientation(16.0, 64.0), vertical: 6.0),
+          horizontal: context.currentOrientation(16.0, 64.0), vertical: 6.0),
       child: pageIndex == 0 || pageIndex == 1
 
           /// This is for first 2 pages of Quran: Al-Fatihah and Al-Baqarah
@@ -70,11 +70,11 @@ class QuranLinePage extends StatelessWidget {
         child: Container(
             height: MediaQuery.sizeOf(context).height * .63,
             padding: EdgeInsets.symmetric(
-                vertical: context.customOrientation(
+                vertical: context.currentOrientation(
                     MediaQuery.sizeOf(context).width * .16,
                     MediaQuery.sizeOf(context).height * .01)),
             child: SingleChildScrollView(
-                physics: context.customOrientation(
+                physics: context.currentOrientation(
                     const NeverScrollableScrollPhysics(), null),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -165,7 +165,7 @@ class QuranLinePage extends StatelessWidget {
         sajdaName: sajdaName,
         topTitleChild: topTitleChild,
         child: SingleChildScrollView(
-          physics: context.customOrientation(
+          physics: context.currentOrientation(
               const NeverScrollableScrollPhysics(), null),
           child: Column(
             children: [
@@ -230,7 +230,7 @@ class QuranLinePage extends StatelessWidget {
                           ),
                         SizedBox(
                           width: deviceSize.width - 30,
-                          height: (context.customOrientation(
+                          height: (context.currentOrientation(
                                       constraints.maxHeight * .94,
                                       MediaQuery.sizeOf(context).width) -
                                   (quranCtrl.staticPages[pageIndex]

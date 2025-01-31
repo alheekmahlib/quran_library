@@ -1,7 +1,7 @@
 part of '../../quran.dart';
 
 extension ContextExtensions on BuildContext {
-  dynamic customOrientation(var n1, var n2) {
+  dynamic currentOrientation(var n1, var n2) {
     Orientation orientation = MediaQuery.orientationOf(this);
     return orientation == Orientation.portrait ? n1 : n2;
   }
@@ -9,7 +9,7 @@ extension ContextExtensions on BuildContext {
   dynamic definePlatform(var p1, var p2) =>
       (Platform.isIOS || Platform.isAndroid || Platform.isFuchsia) ? p1 : p2;
 
-  Widget vDivider({double? height, Color? color}) {
+  Widget verticalDivider({double? height, Color? color}) {
     return Container(
       height: height ?? 20,
       width: 2,
@@ -18,7 +18,7 @@ extension ContextExtensions on BuildContext {
     );
   }
 
-  Widget hDivider({double? width, double? height, Color? color}) {
+  Widget horizontalDivider({double? width, double? height, Color? color}) {
     return Container(
       height: height ?? 2,
       width: width ?? MediaQuery.sizeOf(this).width,

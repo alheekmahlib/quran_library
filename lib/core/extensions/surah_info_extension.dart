@@ -42,7 +42,7 @@ extension SurahInfoExtension on void {
                                   ),
                                 ),
                                 const SizedBox(width: 8.0),
-                                context.vDivider(height: 30),
+                                context.verticalDivider(height: 30),
                               ],
                             ),
                           ),
@@ -128,7 +128,7 @@ extension SurahInfoExtension on void {
                                 ),
                               ),
                             ),
-                            context.vDivider(height: 30),
+                            context.verticalDivider(height: 30),
                             Expanded(
                               flex: 4,
                               child: FittedBox(

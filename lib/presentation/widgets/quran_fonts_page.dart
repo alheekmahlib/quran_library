@@ -54,7 +54,7 @@ class QuranFontsPage extends StatelessWidget {
                     : const EdgeInsets.symmetric(horizontal: 16.0),
                 margin: pageIndex == 0 || pageIndex == 1
                     ? EdgeInsets.symmetric(
-                        vertical: context.customOrientation(
+                        vertical: context.currentOrientation(
                             MediaQuery.sizeOf(context).width * .16,
                             MediaQuery.sizeOf(context).height * .01))
                     : const EdgeInsets.symmetric(horizontal: 8.0),

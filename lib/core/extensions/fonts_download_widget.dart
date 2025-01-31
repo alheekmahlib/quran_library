@@ -28,7 +28,7 @@ extension FontsDownloadWidgetExtension on QuranCtrl {
                 package: 'quran_library'),
           ),
           SizedBox(height: 8.0),
-          context.hDivider(
+          context.horizontalDivider(
               width: MediaQuery.sizeOf(context).width * .5, color: Colors.blue),
           SizedBox(height: 8.0),
           Text(

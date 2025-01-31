@@ -6,12 +6,8 @@ extension FontsDownloadWidgetExtension on QuranCtrl {
       String? languageCode}) {
     final quranCtrl = QuranCtrl.instance;
     List<String> titleList = [
-      // downloadFontsDialogStyle?.defaultFontText ??
-      'الخطوط الأساسية',
-      // downloadFontsDialogStyle?.downloadedFontsText ??
-      'خطوط المصحف',
-      // downloadFontsDialogStyle?.downloadedFontsTajweedText ??
-      'خطوط المصحف ٢',
+      downloadFontsDialogStyle?.defaultFontText ?? 'الخطوط الأساسية',
+      downloadFontsDialogStyle?.downloadedFontsText ?? 'خطوط المصحف',
     ];
     return Container(
       height: 380,
@@ -43,7 +39,7 @@ extension FontsDownloadWidgetExtension on QuranCtrl {
           Spacer(),
           Column(
             children: List.generate(
-              3,
+              titleList.length,
               (i) => CheckboxListTile(
                   value: (quranCtrl.state.fontsSelected2.value == i)
                       ? true
@@ -54,8 +50,7 @@ extension FontsDownloadWidgetExtension on QuranCtrl {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        downloadFontsDialogStyle?.defaultFontText ??
-                            'الخطوط الأساسية', //titleList[i],
+                        titleList[i],
                         style: TextStyle(
                           fontSize: 16,
                           fontFamily: 'naskh',

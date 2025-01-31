@@ -31,7 +31,10 @@ TextSpan span({
     final String? partTwo =
         text.length > 2 ? text.substring(2, text.length - 1) : null;
     final String initialPart = text.substring(0, text.length - 1);
-    final String lastCharacter = text.substring(text.length - 1);
+    final String lastCharacter = surahNum
+        .toString()
+        .convertEnglishNumbersToArabic(
+            surahNum.toString()); //text.substring(text.length - 1);
     final allBookmarks = bookmarks.values.expand((list) => list).toList();
     final bookmarkCtrl = BookmarksCtrl.instance;
     final quranCtrl = QuranCtrl.instance;
@@ -41,9 +44,7 @@ TextSpan span({
       first = TextSpan(
         text: partOne,
         style: TextStyle(
-          fontFamily: quranCtrl.state.fontsSelected2.value == 1
-              ? 'p${(pageIndex + 2001)}'
-              : 'p${(pageIndex + 1)}',
+          fontFamily: 'p${(pageIndex + 1)}',
           fontSize: fontSize,
           height: 2,
           letterSpacing: 30,
@@ -72,9 +73,7 @@ TextSpan span({
       second = TextSpan(
         text: partTwo,
         style: TextStyle(
-          fontFamily: quranCtrl.state.fontsSelected2.value == 1
-              ? 'p${(pageIndex + 2001)}'
-              : 'p${(pageIndex + 1)}',
+          fontFamily: 'p${(pageIndex + 1)}',
           fontSize: fontSize,
           height: 2,
           letterSpacing: 5,
@@ -106,9 +105,7 @@ TextSpan span({
     final TextSpan initialTextSpan = TextSpan(
       text: initialPart,
       style: TextStyle(
-        fontFamily: quranCtrl.state.fontsSelected2.value == 1
-            ? 'p${(pageIndex + 2001)}'
-            : 'p${(pageIndex + 1)}',
+        fontFamily: 'p${(pageIndex + 1)}',
         fontSize: fontSize,
         height: 2,
         letterSpacing: 5,
@@ -151,12 +148,11 @@ TextSpan span({
         : TextSpan(
             text: lastCharacter,
             style: TextStyle(
-              fontFamily: quranCtrl.state.fontsSelected2.value == 1
-                  ? 'p${(pageIndex + 2001)}'
-                  : 'p${(pageIndex + 1)}',
+              fontFamily: 'hafs',
               fontSize: fontSize,
               height: 2,
               letterSpacing: 5,
+              package: 'quran_library',
               color: bookmarkCtrl
                       .hasBookmark(surahNum, ayahUQNum, bookmarkList)
                       .value

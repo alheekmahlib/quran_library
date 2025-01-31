@@ -151,12 +151,28 @@ class QuranFontsPage extends StatelessWidget {
                                 fit: BoxFit.fitWidth,
                                 child: Obx(() => isTajweed!
                                     ? isDark!
-                                        ? ColorFiltered(
-                                            colorFilter: ColorFilter.mode(
-                                                Colors.white,
-                                                BlendMode.exclusion),
-                                            child: _richTextWidget(
-                                                context, quranCtrl, ayahs),
+                                        ? Stack(
+                                            children: [
+                                              _richTextWidget(
+                                                  context, quranCtrl, ayahs),
+                                              ShaderMask(
+                                                shaderCallback: (bounds) =>
+                                                    LinearGradient(
+                                                  colors: [
+                                                    Colors.white,
+                                                    Colors.white
+                                                  ], // اللون الجديد للنص الأسود
+                                                ).createShader(bounds),
+                                                blendMode: BlendMode.srcATop,
+                                                child: Opacity(
+                                                  opacity: 0.7,
+                                                  child: _richTextWidget(
+                                                      context,
+                                                      quranCtrl,
+                                                      ayahs),
+                                                ),
+                                              ),
+                                            ],
                                           )
                                         : _richTextWidget(
                                             context, quranCtrl, ayahs)
@@ -234,11 +250,16 @@ class QuranFontsPage extends StatelessWidget {
       textAlign: TextAlign.center,
       text: TextSpan(
         style: TextStyle(
-          fontFamily: 'p${(pageIndex + 2001)}',
+          fontFamily: 'p${(pageIndex + 1)}',
           fontSize: 100,
           height: 1.7,
           letterSpacing: 2,
-          color: textColor,
+          color: isDark! ? null : textColor,
+          foreground: isDark!
+              ? (Paint()
+                ..color = Colors.white
+                ..blendMode = BlendMode.srcATop)
+              : null,
           shadows: [
             Shadow(
               blurRadius: 0.5,

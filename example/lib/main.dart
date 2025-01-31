@@ -27,6 +27,11 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return const QuranLibraryScreen();
+    return const QuranLibraryScreen(
+      isTajweed: true,
+      isDark: false,
+      // backgroundColor: Colors.white,
+      // textColor: Colors.white,
+    );
   }
 }

@@ -97,7 +97,8 @@ extension FontsDownloadWidgetExtension on QuranCtrl {
                   quranCtrl.state.isDownloadingFonts.value
               ? Text(
                   '${downloadFontsDialogStyle?.downloadingText} ${quranCtrl.state.fontsDownloadProgress.value.toStringAsFixed(1)}%'
-                      .convertNumbers(languageCode: languageCode ?? 'ar'),
+                      .convertNumbersAccordingToLang(
+                          languageCode: languageCode ?? 'ar'),
                   style: TextStyle(
                     color: downloadFontsDialogStyle?.notesColor ?? Colors.black,
                     fontSize: 16,

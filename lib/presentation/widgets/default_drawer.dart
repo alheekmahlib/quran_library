@@ -114,8 +114,9 @@ class _DefaultDrawer extends StatelessWidget {
                                             Colors.black, BlendMode.srcIn),
                                       ),
                                       Text(
-                                          '${index + 1}'.convertNumbers(
-                                              languageCode: languageCode),
+                                          '${index + 1}'
+                                              .convertNumbersAccordingToLang(
+                                                  languageCode: languageCode),
                                           style: QuranLibrary()
                                               .naskhStyle
                                               .copyWith(fontSize: 18)),
@@ -184,7 +185,8 @@ class _DefaultDrawer extends StatelessWidget {
                             Text(
                               bookmark.ayahNumber
                                   .toString()
-                                  .convertNumbers(languageCode: languageCode),
+                                  .convertNumbersAccordingToLang(
+                                      languageCode: languageCode),
                               style: QuranLibrary().naskhStyle,
                             ),
                           ],

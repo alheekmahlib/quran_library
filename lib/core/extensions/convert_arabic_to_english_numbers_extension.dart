@@ -1,7 +1,7 @@
 part of '../../quran.dart';
 
 extension ConvertArabicToEnglishNumbersExtension on String {
-  String convertArabicToEnglishNumbers(String input) {
+  String convertArabicNumbersToEnglish(String input) {
     const arabicNumbers = '٠١٢٣٤٥٦٧٨٩';
     const englishNumbers = '0123456789';
 

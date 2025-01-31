@@ -260,7 +260,7 @@ TextSpan customSpan({
             : TextSpan(
                 text: ayahNumber
                     .toString()
-                    .convertNumbers(languageCode: languageCode),
+                    .convertNumbersAccordingToLang(languageCode: languageCode),
                 style: TextStyle(
                   fontFamily: 'hafs',
                   fontSize: fontSize,

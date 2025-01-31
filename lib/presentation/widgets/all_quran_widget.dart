@@ -37,7 +37,8 @@ class AllQuranWidget extends StatelessWidget {
                       SizedBox(width: 16),
                       Text(
                         '${juzName ?? 'الجزء'}: ${quranCtrl.getJuzByPage(pageIndex).juz}'
-                            .convertNumbers(languageCode: languageCode),
+                            .convertNumbersAccordingToLang(
+                                languageCode: languageCode),
                         style: TextStyle(
                             fontSize: context.currentOrientation(18.0, 22.0),
                             // fontWeight: FontWeight.bold,
@@ -78,7 +79,8 @@ class AllQuranWidget extends StatelessWidget {
                       const Spacer(),
                       Text(
                         '${juzName ?? 'الجزء'}: ${quranCtrl.getJuzByPage(pageIndex).juz}'
-                            .convertNumbers(languageCode: languageCode),
+                            .convertNumbersAccordingToLang(
+                                languageCode: languageCode),
                         style: TextStyle(
                             fontSize: context.currentOrientation(18.0, 22.0),
                             // fontWeight: FontWeight.bold,
@@ -110,7 +112,8 @@ class AllQuranWidget extends StatelessWidget {
                         child: Text(
                           quranCtrl
                               .getHizbQuarterDisplayByPage(pageIndex + 1)
-                              .convertNumbers(languageCode: languageCode),
+                              .convertNumbersAccordingToLang(
+                                  languageCode: languageCode),
                           style: TextStyle(
                             fontSize: context.currentOrientation(18.0, 22.0),
                             fontFamily: 'naskh',
@@ -123,8 +126,8 @@ class AllQuranWidget extends StatelessWidget {
                     Align(
                       alignment: Alignment.bottomCenter,
                       child: Text(
-                        '${pageIndex + 1}'
-                            .convertNumbers(languageCode: languageCode),
+                        '${pageIndex + 1}'.convertNumbersAccordingToLang(
+                            languageCode: languageCode),
                         style: TextStyle(
                           fontSize: context.currentOrientation(20.0, 22.0),
                           fontFamily: 'naskh',
@@ -155,8 +158,8 @@ class AllQuranWidget extends StatelessWidget {
                     Align(
                       alignment: Alignment.bottomCenter,
                       child: Text(
-                        '${pageIndex + 1}'
-                            .convertNumbers(languageCode: languageCode),
+                        '${pageIndex + 1}'.convertNumbersAccordingToLang(
+                            languageCode: languageCode),
                         style: TextStyle(
                           fontSize: context.currentOrientation(20.0, 22.0),
                           fontFamily: 'naskh',
@@ -172,7 +175,8 @@ class AllQuranWidget extends StatelessWidget {
                         child: Text(
                           quranCtrl
                               .getHizbQuarterDisplayByPage(pageIndex + 1)
-                              .convertNumbers(languageCode: languageCode),
+                              .convertNumbersAccordingToLang(
+                                  languageCode: languageCode),
                           style: TextStyle(
                             fontSize: context.currentOrientation(18.0, 22.0),
                             fontFamily: 'naskh',

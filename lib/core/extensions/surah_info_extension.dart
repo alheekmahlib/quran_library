@@ -74,8 +74,10 @@ extension SurahInfoExtension on void {
                                     Transform.translate(
                                       offset: const Offset(0, 1),
                                       child: Text(
-                                        '${surah.number}'.convertNumbers(
-                                            languageCode: languageCode ?? 'ar'),
+                                        '${surah.number}'
+                                            .convertNumbersAccordingToLang(
+                                                languageCode:
+                                                    languageCode ?? 'ar'),
                                         style: TextStyle(
                                             color:
                                                 surahStyle?.surahNumberColor ??
@@ -136,7 +138,7 @@ extension SurahInfoExtension on void {
                                 child: Center(
                                   child: Text(
                                     '${surahStyle?.ayahCount ?? 'عدد الآيات'}: ${surah.ayahsNumber}'
-                                        .convertNumbers(
+                                        .convertNumbersAccordingToLang(
                                             languageCode: languageCode ?? 'ar'),
                                     style: TextStyle(
                                         color: surahStyle?.titleColor ??
@@ -223,7 +225,7 @@ extension SurahInfoExtension on void {
                                             children: [
                                               TextSpan(
                                                 children: surah.surahNames
-                                                    .buildTextSpans(),
+                                                    .customTextSpans(),
                                                 style: TextStyle(
                                                   color:
                                                       surahStyle?.textColor ??
@@ -237,7 +239,7 @@ extension SurahInfoExtension on void {
                                               TextSpan(
                                                 children: surah
                                                     .surahNamesFromBook
-                                                    .buildTextSpans(),
+                                                    .customTextSpans(),
                                                 style: TextStyle(
                                                   color:
                                                       surahStyle?.textColor ??
@@ -263,7 +265,7 @@ extension SurahInfoExtension on void {
                                             children: [
                                               TextSpan(
                                                 children: surah.surahInfo
-                                                    .buildTextSpans(),
+                                                    .customTextSpans(),
                                                 style: TextStyle(
                                                   color:
                                                       surahStyle?.textColor ??
@@ -277,7 +279,7 @@ extension SurahInfoExtension on void {
                                               TextSpan(
                                                 children: surah
                                                     .surahInfoFromBook
-                                                    .buildTextSpans(),
+                                                    .customTextSpans(),
                                                 style: TextStyle(
                                                   color:
                                                       surahStyle?.textColor ??

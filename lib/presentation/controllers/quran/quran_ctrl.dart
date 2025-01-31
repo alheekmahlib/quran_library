@@ -189,7 +189,7 @@ class QuranCtrl extends GetxController {
         // التحقق من تطابق رقم الصفحة
         final matchesPage = aya.page.toString() ==
             normalizedSearchText
-                .convertArabicToEnglishNumbers(normalizedSearchText);
+                .convertArabicNumbersToEnglish(normalizedSearchText);
 
         // التحقق من تطابق اسم السورة بالعربية أو الإنجليزية
         final matchesSurahName =
@@ -199,7 +199,7 @@ class QuranCtrl extends GetxController {
         // التحقق من رقم الآية
         final matchesAyahNumber = aya.ayahNumber.toString() ==
             normalizedSearchText
-                .convertArabicToEnglishNumbers(normalizedSearchText);
+                .convertArabicNumbersToEnglish(normalizedSearchText);
 
         // إذا تحقق أي شرط من الشروط أعلاه باستثناء رقم السورة
         return containsWord ||
@@ -248,7 +248,7 @@ class QuranCtrl extends GetxController {
         // التحقق من تطابق رقم السورة
         final matchesSurahNumber = aya.surahNumber.toString() ==
             normalizedSearchText
-                .convertArabicToEnglishNumbers(normalizedSearchText);
+                .convertArabicNumbersToEnglish(normalizedSearchText);
         ;
 
         // إذا تحقق أي شرط من الشرطين أعلاه

@@ -1,7 +1,7 @@
 part of '../../quran.dart';
 
 extension TextSpanExtension on String {
-  List<TextSpan> buildTextSpans() {
+  List<TextSpan> customTextSpans() {
     String text = this;
 
     // Insert line breaks after specific punctuation marks unless they are within square brackets

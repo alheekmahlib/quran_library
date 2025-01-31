@@ -1,7 +1,7 @@
 part of '../../quran.dart';
 
 extension ConvertNumberExtension on String {
-  String convertNumbers({String? languageCode}) {
+  String convertNumbersAccordingToLang({String? languageCode}) {
     Map<String, Map<String, String>> numberSets = {
       'ar': {
         // Arabic

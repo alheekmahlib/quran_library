@@ -123,13 +123,13 @@ extension QuranGetters on QuranCtrl {
 
       switch (quarterPosition) {
         case 0:
-          return "الحزب ${'$hizbNumber'.convertNumbers()}";
+          return "الحزب ${'$hizbNumber'.convertNumbersAccordingToLang()}";
         case 1:
-          return "١/٤ الحزب ${'$hizbNumber'.convertNumbers()}";
+          return "١/٤ الحزب ${'$hizbNumber'.convertNumbersAccordingToLang()}";
         case 2:
-          return "١/٢ الحزب ${'$hizbNumber'.convertNumbers()}";
+          return "١/٢ الحزب ${'$hizbNumber'.convertNumbersAccordingToLang()}";
         case 3:
-          return "٣/٤ الحزب ${'$hizbNumber'.convertNumbers()}";
+          return "٣/٤ الحزب ${'$hizbNumber'.convertNumbersAccordingToLang()}";
         default:
           return "";
       }

@@ -29,6 +29,8 @@ class QuranLibraryScreen extends StatelessWidget {
     this.sajdaName,
     this.topTitleChild,
     this.onFontsAyahLongPress,
+    this.isDark = false,
+    this.isTajweed = false,
   });
 
   // /// متغير لتعطيل أو تمكين الويدجت السفلية الافتراضية [showBottomWidget]
@@ -180,6 +182,18 @@ class QuranLibraryScreen extends StatelessWidget {
   ///
   final Widget? topTitleChild;
 
+  /// إذا كنت تريد إضافة ويدجت بجانب اسم السورة [isDark]
+  ///
+  /// If you want to add a widget next to the surah name [isDark]
+  ///
+  final bool? isDark;
+
+  /// إذا كنت تريد إضافة ويدجت بجانب اسم السورة [isDark]
+  ///
+  /// If you want to add a widget next to the surah name [isDark]
+  ///
+  final bool? isTajweed;
+
   @override
   Widget build(BuildContext context) {
     return GetBuilder<QuranCtrl>(
@@ -265,9 +279,7 @@ class QuranLibraryScreen extends StatelessWidget {
   ) {
     final deviceSize = MediaQuery.of(context).size;
     List<String> newSurahs = [];
-    quranCtrl.isDownloadFonts.value
-        ? quranCtrl.prepareFonts(pageIndex, isDark: true)
-        : null;
+    quranCtrl.isDownloadFonts.value ? quranCtrl.prepareFonts(pageIndex) : null;
     final bookmarkCtrl = BookmarksCtrl.instance;
     return GetBuilder<QuranCtrl>(
       init: QuranCtrl.instance,
@@ -308,6 +320,8 @@ class QuranLibraryScreen extends StatelessWidget {
                           ayahSelectedBackgroundColor:
                               ayahSelectedBackgroundColor,
                           onAyahPress: onPagePress,
+                          isDark: isDark,
+                          isTajweed: isTajweed,
                         ),
                       ))
               : quranCtrl.staticPages.isEmpty || quranCtrl.isLoading.value

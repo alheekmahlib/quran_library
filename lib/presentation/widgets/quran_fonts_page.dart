@@ -17,6 +17,8 @@ class QuranFontsPage extends StatelessWidget {
   final Map<int, List<BookmarkModel>> bookmarks;
   final List<int> bookmarksAyahs;
   final Color? ayahSelectedBackgroundColor;
+  final bool? isDark;
+  final bool? isTajweed;
   const QuranFontsPage(
       {super.key,
       required this.pageIndex,
@@ -33,7 +35,9 @@ class QuranFontsPage extends StatelessWidget {
       required this.bookmarks,
       required this.bookmarksAyahs,
       this.ayahSelectedBackgroundColor,
-      this.onAyahPress});
+      this.onAyahPress,
+      this.isDark,
+      this.isTajweed});
 
   @override
   Widget build(BuildContext context) {
@@ -145,209 +149,30 @@ class QuranFontsPage extends StatelessWidget {
                                     ),
                               FittedBox(
                                 fit: BoxFit.fitWidth,
-                                child: Obx(() => RichText(
-                                      textDirection: TextDirection.rtl,
-                                      textAlign: TextAlign.center,
-                                      text: TextSpan(
-                                        style: TextStyle(
-                                          fontFamily: 'p${(pageIndex + 2001)}',
-                                          fontSize: 100,
-                                          height: 1.7,
-                                          letterSpacing: 2,
-                                          color: textColor,
-                                          shadows: [
-                                            Shadow(
-                                              blurRadius: 0.5,
-                                              color: quranCtrl
-                                                          .state.isBold.value ==
-                                                      0
-                                                  ? textColor ?? Colors.black
-                                                  : Colors.transparent,
-                                              offset: const Offset(0.5, 0.5),
-                                            ),
-                                          ],
-                                        ),
-                                        children: List.generate(ayahs.length,
-                                            (ayahIndex) {
-                                          quranCtrl.state.isSelected = quranCtrl
-                                              .selectedAyahIndexes
-                                              .contains(ayahs[ayahIndex]
-                                                  .ayahUQNumber);
-                                          final allBookmarks = bookmarks.values
-                                              .expand((list) => list)
-                                              .toList();
-                                          if (ayahIndex == 0) {
-                                            return span(
-                                              isFirstAyah: true,
-                                              text:
-                                                  '${ayahs[ayahIndex].codeV2[0]}${ayahs[ayahIndex].codeV2.substring(1)}',
-                                              pageIndex: pageIndex,
-                                              isSelected:
-                                                  quranCtrl.state.isSelected,
-                                              fontSize: 100,
-                                              surahNum: quranCtrl
-                                                  .getCurrentSurahByPage(
-                                                      pageIndex)
-                                                  .surahNumber,
-                                              ayahUQNum:
-                                                  ayahs[ayahIndex].ayahUQNumber,
-                                              onLongPressStart: (details) {
-                                                if (onFontsAyahLongPress !=
-                                                    null) {
-                                                  onFontsAyahLongPress!(details,
-                                                      ayahs[ayahIndex]);
-                                                  quranCtrl.toggleAyahSelection(
-                                                      ayahs[ayahIndex]
-                                                          .ayahUQNumber);
-                                                  quranCtrl.state.overlayEntry
-                                                      ?.remove();
-                                                  quranCtrl.state.overlayEntry =
-                                                      null;
-                                                } else {
-                                                  final bookmarkId = allBookmarks
-                                                          .any((bookmark) =>
-                                                              bookmark.ayahId ==
-                                                              ayahs[ayahIndex]
-                                                                  .ayahUQNumber)
-                                                      ? allBookmarks
-                                                          .firstWhere((bookmark) =>
-                                                              bookmark.ayahId ==
-                                                              ayahs[ayahIndex]
-                                                                  .ayahUQNumber)
-                                                          .id
-                                                      : null;
-                                                  if (bookmarkId != null) {
-                                                    BookmarksCtrl.instance
-                                                        .removeBookmark(
-                                                            bookmarkId);
-                                                  } else {
-                                                    quranCtrl
-                                                        .toggleAyahSelection(
-                                                            ayahs[ayahIndex]
-                                                                .ayahUQNumber);
-                                                    quranCtrl.state.overlayEntry
-                                                        ?.remove();
-                                                    quranCtrl.state
-                                                        .overlayEntry = null;
-
-                                                    // إنشاء OverlayEntry جديد
-                                                    final overlay =
-                                                        Overlay.of(context);
-                                                    final newOverlayEntry =
-                                                        OverlayEntry(
-                                                      builder: (context) =>
-                                                          AyahLongClickDialog(
-                                                        ayahFonts:
-                                                            ayahs[ayahIndex],
-                                                        position: details
-                                                            .globalPosition,
-                                                      ),
-                                                    );
-
-                                                    quranCtrl.state
-                                                            .overlayEntry =
-                                                        newOverlayEntry;
-
-                                                    // إدخال OverlayEntry في Overlay
-                                                    overlay.insert(
-                                                        newOverlayEntry);
-                                                  }
-                                                }
-                                              },
-                                              bookmarkList: bookmarkList,
-                                              textColor: textColor,
-                                              bookmarks: bookmarks,
-                                              bookmarksAyahs: bookmarksAyahs,
-                                              bookmarksColor: bookmarksColor,
-                                              ayahSelectedBackgroundColor:
-                                                  ayahSelectedBackgroundColor,
-                                            );
-                                          }
-                                          return span(
-                                            isFirstAyah: false,
-                                            text: ayahs[ayahIndex].codeV2,
-                                            pageIndex: pageIndex,
-                                            isSelected:
-                                                quranCtrl.state.isSelected,
-                                            fontSize: 100,
-                                            surahNum: quranCtrl
-                                                .getCurrentSurahByPage(
-                                                    pageIndex)
-                                                .surahNumber,
-                                            ayahUQNum:
-                                                ayahs[ayahIndex].ayahUQNumber,
-                                            onLongPressStart: (details) {
-                                              if (onFontsAyahLongPress !=
-                                                  null) {
-                                                onFontsAyahLongPress!(
-                                                    details, ayahs[ayahIndex]);
-                                                quranCtrl.toggleAyahSelection(
-                                                    ayahs[ayahIndex]
-                                                        .ayahUQNumber);
-                                                quranCtrl.state.overlayEntry
-                                                    ?.remove();
-                                                quranCtrl.state.overlayEntry =
-                                                    null;
-                                              } else {
-                                                final bookmarkId = allBookmarks
-                                                        .any((bookmark) =>
-                                                            bookmark.ayahId ==
-                                                            ayahs[ayahIndex]
-                                                                .ayahUQNumber)
-                                                    ? allBookmarks
-                                                        .firstWhere((bookmark) =>
-                                                            bookmark.ayahId ==
-                                                            ayahs[ayahIndex]
-                                                                .ayahUQNumber)
-                                                        .id
-                                                    : null;
-                                                if (bookmarkId != null) {
-                                                  BookmarksCtrl.instance
-                                                      .removeBookmark(
-                                                          bookmarkId);
-                                                } else {
-                                                  quranCtrl.toggleAyahSelection(
-                                                      ayahs[ayahIndex]
-                                                          .ayahUQNumber);
-                                                  quranCtrl.state.overlayEntry
-                                                      ?.remove();
-                                                  quranCtrl.state.overlayEntry =
-                                                      null;
-
-                                                  // إنشاء OverlayEntry جديد
-                                                  final overlay =
-                                                      Overlay.of(context);
-                                                  final newOverlayEntry =
-                                                      OverlayEntry(
-                                                    builder: (context) =>
-                                                        AyahLongClickDialog(
-                                                      ayahFonts:
-                                                          ayahs[ayahIndex],
-                                                      position: details
-                                                          .globalPosition,
-                                                    ),
-                                                  );
-
-                                                  quranCtrl.state.overlayEntry =
-                                                      newOverlayEntry;
-
-                                                  // إدخال OverlayEntry في Overlay
-                                                  overlay
-                                                      .insert(newOverlayEntry);
-                                                }
-                                              }
-                                            },
-                                            bookmarkList: bookmarkList,
-                                            textColor: textColor,
-                                            bookmarks: bookmarks,
-                                            bookmarksAyahs: bookmarksAyahs,
-                                            bookmarksColor: bookmarksColor,
-                                            ayahSelectedBackgroundColor:
-                                                ayahSelectedBackgroundColor,
-                                          );
-                                        }),
-                                      ),
-                                    )),
+                                child: Obx(() => isTajweed!
+                                    ? isDark!
+                                        ? ColorFiltered(
+                                            colorFilter: ColorFilter.mode(
+                                                Colors.white,
+                                                BlendMode.exclusion),
+                                            child: _richTextWidget(
+                                                context, quranCtrl, ayahs),
+                                          )
+                                        : _richTextWidget(
+                                            context, quranCtrl, ayahs)
+                                    : isDark!
+                                        ? ColorFiltered(
+                                            colorFilter: ColorFilter.mode(
+                                                Colors.white, BlendMode.srcIn),
+                                            child: _richTextWidget(
+                                                context, quranCtrl, ayahs),
+                                          )
+                                        : ColorFiltered(
+                                            colorFilter: ColorFilter.mode(
+                                                Colors.black, BlendMode.srcIn),
+                                            child: _richTextWidget(
+                                                context, quranCtrl, ayahs),
+                                          )),
                               ),
                               quranCtrl.downThePageIndex.contains(pageIndex)
                                   ? SurahHeaderWidget(
@@ -400,5 +225,144 @@ class QuranFontsPage extends StatelessWidget {
                       ),
               ),
             ));
+  }
+
+  Widget _richTextWidget(
+      BuildContext context, QuranCtrl quranCtrl, List<AyahFontsModel> ayahs) {
+    return RichText(
+      textDirection: TextDirection.rtl,
+      textAlign: TextAlign.center,
+      text: TextSpan(
+        style: TextStyle(
+          fontFamily: 'p${(pageIndex + 2001)}',
+          fontSize: 100,
+          height: 1.7,
+          letterSpacing: 2,
+          color: textColor,
+          shadows: [
+            Shadow(
+              blurRadius: 0.5,
+              color: quranCtrl.state.isBold.value == 0
+                  ? textColor ?? Colors.black
+                  : Colors.transparent,
+              offset: const Offset(0.5, 0.5),
+            ),
+          ],
+        ),
+        children: List.generate(ayahs.length, (ayahIndex) {
+          quranCtrl.state.isSelected = quranCtrl.selectedAyahIndexes
+              .contains(ayahs[ayahIndex].ayahUQNumber);
+          final allBookmarks = bookmarks.values.expand((list) => list).toList();
+          if (ayahIndex == 0) {
+            return span(
+              isFirstAyah: true,
+              text:
+                  '${ayahs[ayahIndex].codeV2[0]}${ayahs[ayahIndex].codeV2.substring(1)}',
+              pageIndex: pageIndex,
+              isSelected: quranCtrl.state.isSelected,
+              fontSize: 100,
+              surahNum: quranCtrl.getCurrentSurahByPage(pageIndex).surahNumber,
+              ayahUQNum: ayahs[ayahIndex].ayahUQNumber,
+              onLongPressStart: (details) {
+                if (onFontsAyahLongPress != null) {
+                  onFontsAyahLongPress!(details, ayahs[ayahIndex]);
+                  quranCtrl.toggleAyahSelection(ayahs[ayahIndex].ayahUQNumber);
+                  quranCtrl.state.overlayEntry?.remove();
+                  quranCtrl.state.overlayEntry = null;
+                } else {
+                  final bookmarkId = allBookmarks.any((bookmark) =>
+                          bookmark.ayahId == ayahs[ayahIndex].ayahUQNumber)
+                      ? allBookmarks
+                          .firstWhere((bookmark) =>
+                              bookmark.ayahId == ayahs[ayahIndex].ayahUQNumber)
+                          .id
+                      : null;
+                  if (bookmarkId != null) {
+                    BookmarksCtrl.instance.removeBookmark(bookmarkId);
+                  } else {
+                    quranCtrl
+                        .toggleAyahSelection(ayahs[ayahIndex].ayahUQNumber);
+                    quranCtrl.state.overlayEntry?.remove();
+                    quranCtrl.state.overlayEntry = null;
+
+                    // إنشاء OverlayEntry جديد
+                    final overlay = Overlay.of(context);
+                    final newOverlayEntry = OverlayEntry(
+                      builder: (context) => AyahLongClickDialog(
+                        ayahFonts: ayahs[ayahIndex],
+                        position: details.globalPosition,
+                      ),
+                    );
+
+                    quranCtrl.state.overlayEntry = newOverlayEntry;
+
+                    // إدخال OverlayEntry في Overlay
+                    overlay.insert(newOverlayEntry);
+                  }
+                }
+              },
+              bookmarkList: bookmarkList,
+              textColor: textColor,
+              bookmarks: bookmarks,
+              bookmarksAyahs: bookmarksAyahs,
+              bookmarksColor: bookmarksColor,
+              ayahSelectedBackgroundColor: ayahSelectedBackgroundColor,
+            );
+          }
+          return span(
+            isFirstAyah: false,
+            text: ayahs[ayahIndex].codeV2,
+            pageIndex: pageIndex,
+            isSelected: quranCtrl.state.isSelected,
+            fontSize: 100,
+            surahNum: quranCtrl.getCurrentSurahByPage(pageIndex).surahNumber,
+            ayahUQNum: ayahs[ayahIndex].ayahUQNumber,
+            onLongPressStart: (details) {
+              if (onFontsAyahLongPress != null) {
+                onFontsAyahLongPress!(details, ayahs[ayahIndex]);
+                quranCtrl.toggleAyahSelection(ayahs[ayahIndex].ayahUQNumber);
+                quranCtrl.state.overlayEntry?.remove();
+                quranCtrl.state.overlayEntry = null;
+              } else {
+                final bookmarkId = allBookmarks.any((bookmark) =>
+                        bookmark.ayahId == ayahs[ayahIndex].ayahUQNumber)
+                    ? allBookmarks
+                        .firstWhere((bookmark) =>
+                            bookmark.ayahId == ayahs[ayahIndex].ayahUQNumber)
+                        .id
+                    : null;
+                if (bookmarkId != null) {
+                  BookmarksCtrl.instance.removeBookmark(bookmarkId);
+                } else {
+                  quranCtrl.toggleAyahSelection(ayahs[ayahIndex].ayahUQNumber);
+                  quranCtrl.state.overlayEntry?.remove();
+                  quranCtrl.state.overlayEntry = null;
+
+                  // إنشاء OverlayEntry جديد
+                  final overlay = Overlay.of(context);
+                  final newOverlayEntry = OverlayEntry(
+                    builder: (context) => AyahLongClickDialog(
+                      ayahFonts: ayahs[ayahIndex],
+                      position: details.globalPosition,
+                    ),
+                  );
+
+                  quranCtrl.state.overlayEntry = newOverlayEntry;
+
+                  // إدخال OverlayEntry في Overlay
+                  overlay.insert(newOverlayEntry);
+                }
+              }
+            },
+            bookmarkList: bookmarkList,
+            textColor: textColor,
+            bookmarks: bookmarks,
+            bookmarksAyahs: bookmarksAyahs,
+            bookmarksColor: bookmarksColor,
+            ayahSelectedBackgroundColor: ayahSelectedBackgroundColor,
+          );
+        }),
+      ),
+    );
   }
 }

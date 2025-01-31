@@ -1,15 +1,15 @@
 part of '../../quran.dart';
 
 extension FontsExtension on QuranCtrl {
-  Future<void> prepareFonts(int pageIndex, {bool? isDark = false}) async {
-    await loadFont(pageIndex, isDark: isDark);
+  Future<void> prepareFonts(int pageIndex) async {
+    await loadFont(pageIndex);
     if (pageIndex < 608) {
       for (int i = pageIndex; i < 5; i++) {
-        await loadFont(i, isDark: isDark);
+        await loadFont(i);
       }
       if (pageIndex > 5) {
         for (int i = pageIndex; i < 5; i--) {
-          await loadFont(i, isDark: isDark);
+          await loadFont(i);
         }
       }
     }
@@ -175,18 +175,15 @@ extension FontsExtension on QuranCtrl {
     }
   }
 
-  Future<void> loadFont(int pageIndex, {bool? isDark = false}) async {
+  Future<void> loadFont(int pageIndex) async {
     try {
       final appDir = await getApplicationDocumentsDirectory();
       // تعديل المسار ليشمل المجلد الإضافي
       final fontFile = state.fontsSelected2.value == 1
           ? File(
               '${appDir.path}/quran_fonts/quran_fonts/p${(pageIndex + 2001)}.ttf')
-          : isDark!
-              ? File(
-                  '${appDir.path}/quran_fonts_tajweed_v4_hafs/quran_fonts_tajweed_v4_hafs/p${(pageIndex + 1)}.ttf')
-              : File(
-                  '${appDir.path}/quran_fonts_tajweed_v4_hafs/quran_fonts_tajweed_v4_hafs/p${(pageIndex + 1)}.ttf');
+          : File(
+              '${appDir.path}/quran_fonts_tajweed_v4_hafs/quran_fonts_tajweed_v4_hafs/p${(pageIndex + 1)}.ttf');
       if (!await fontFile.exists()) {
         throw Exception("Font file not found for page: ${pageIndex + 1}");
       }

@@ -54,7 +54,7 @@ extension FontsExtension on QuranCtrl {
         'GET',
         Uri.parse(fontIndex == 1
             ? 'https://archive.org/download/quran_fonts/quran_fonts.zip'
-            : 'https://archive.org/download/quran_fonts_tajweed_v4_202501/quran_fonts_tajweed_v4.zip'),
+            : 'https://archive.org/download/quran_fonts_tajweed_v4_hafs/quran_fonts_tajweed_v4_hafs.zip'),
       ));
 
       if (response.statusCode != 200) {
@@ -65,7 +65,7 @@ extension FontsExtension on QuranCtrl {
       final appDir = await getApplicationDocumentsDirectory();
       final fontsDir = fontIndex == 1
           ? Directory('${appDir.path}/quran_fonts')
-          : Directory('${appDir.path}/quran_fonts_tajweed_v4_202501');
+          : Directory('${appDir.path}/quran_fonts_tajweed_v4_hafs');
       if (!await fontsDir.exists()) {
         await fontsDir.create(recursive: true);
       }
@@ -73,7 +73,7 @@ extension FontsExtension on QuranCtrl {
       // حفظ ملف ZIP إلى التطبيق
       final zipFile = fontIndex == 1
           ? File('${appDir.path}/quran_fonts.zip')
-          : File('${appDir.path}/quran_fonts_tajweed_v4.zip');
+          : File('${appDir.path}/quran_fonts_tajweed_v4_hafs.zip');
       final fileSink = zipFile.openWrite();
 
       // حجم الملف الإجمالي
@@ -176,28 +176,28 @@ extension FontsExtension on QuranCtrl {
   }
 
   Future<void> loadFont(int pageIndex, {bool? isDark = false}) async {
-    // try {
-    final appDir = await getApplicationDocumentsDirectory();
-    // تعديل المسار ليشمل المجلد الإضافي
-    final fontFile = state.fontsSelected2.value == 1
-        ? File(
-            '${appDir.path}/quran_fonts/quran_fonts/p${(pageIndex + 2001)}.ttf')
-        : isDark!
-            ? File(
-                '${appDir.path}/quran_fonts_tajweed_v4_202501/quran_fonts_tajweed_v4/p${(pageIndex + 1)}.ttf')
-            : File(
-                '${appDir.path}/quran_fonts_tajweed_v4_202501/quran_fonts_tajweed_v4/p${(pageIndex + 1)}.ttf');
-    if (!await fontFile.exists()) {
-      throw Exception("Font file not found for page: ${pageIndex + 1}");
+    try {
+      final appDir = await getApplicationDocumentsDirectory();
+      // تعديل المسار ليشمل المجلد الإضافي
+      final fontFile = state.fontsSelected2.value == 1
+          ? File(
+              '${appDir.path}/quran_fonts/quran_fonts/p${(pageIndex + 2001)}.ttf')
+          : isDark!
+              ? File(
+                  '${appDir.path}/quran_fonts_tajweed_v4_hafs/quran_fonts_tajweed_v4_hafs/p${(pageIndex + 1)}.ttf')
+              : File(
+                  '${appDir.path}/quran_fonts_tajweed_v4_hafs/quran_fonts_tajweed_v4_hafs/p${(pageIndex + 1)}.ttf');
+      if (!await fontFile.exists()) {
+        throw Exception("Font file not found for page: ${pageIndex + 1}");
+      }
+      final fontLoader = state.fontsSelected2.value == 1
+          ? FontLoader('p${(pageIndex + 2001)}')
+          : FontLoader('p${(pageIndex + 1)}');
+      fontLoader.addFont(_getFontLoaderBytes(fontFile));
+      await fontLoader.load();
+    } catch (e) {
+      throw Exception("Failed to load font: $e");
     }
-    final fontLoader = state.fontsSelected2.value == 1
-        ? FontLoader('p${(pageIndex + 2001)}')
-        : FontLoader('p${(pageIndex + 1)}');
-    fontLoader.addFont(_getFontLoaderBytes(fontFile));
-    await fontLoader.load();
-    // } catch (e) {
-    //   throw Exception("Failed to load font: $e");
-    // }
   }
 
   Future<void> deleteFonts(int fontIndex) async {
@@ -206,8 +206,7 @@ extension FontsExtension on QuranCtrl {
       final appDir = await getApplicationDocumentsDirectory();
       final fontsDir = fontIndex == 1
           ? Directory('${appDir.path}/quran_fonts')
-          : Directory(
-              '${appDir.path}/quran_fonts_tajweed_v4_202501/quran_fonts_tajweed_v4');
+          : Directory('${appDir.path}/quran_fonts_tajweed_v4_hafs');
 
       // التحقق من وجود مجلد الخطوط
       if (await fontsDir.exists()) {

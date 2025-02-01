@@ -6,6 +6,7 @@ TextSpan span({
   required bool isSelected,
   double? fontSize,
   required int surahNum,
+  required int ayahNum,
   required int ayahUQNum,
   LongPressStartDetailsFunction? onLongPressStart,
   required bool isFirstAyah,
@@ -31,10 +32,9 @@ TextSpan span({
     final String? partTwo =
         text.length > 2 ? text.substring(2, text.length - 1) : null;
     final String initialPart = text.substring(0, text.length - 1);
-    final String lastCharacter = surahNum
-        .toString()
-        .convertEnglishNumbersToArabic(
-            surahNum.toString()); //text.substring(text.length - 1);
+    final String lastCharacter =
+        ayahNum.toString().convertEnglishNumbersToArabic(ayahNum.toString()) +
+            ' '; //text.substring(text.length - 1);
     final allBookmarks = bookmarks.values.expand((list) => list).toList();
     final bookmarkCtrl = BookmarksCtrl.instance;
     final quranCtrl = QuranCtrl.instance;

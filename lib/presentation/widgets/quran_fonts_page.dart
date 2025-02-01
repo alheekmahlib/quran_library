@@ -153,8 +153,13 @@ class QuranFontsPage extends StatelessWidget {
                                     ? isDark!
                                         ? Stack(
                                             children: [
-                                              _richTextWidget(
-                                                  context, quranCtrl, ayahs),
+                                              ColorFiltered(
+                                                colorFilter: ColorFilter.mode(
+                                                    Colors.white,
+                                                    BlendMode.modulate),
+                                                child: _richTextWidget(
+                                                    context, quranCtrl, ayahs),
+                                              ),
                                               ShaderMask(
                                                 shaderCallback: (bounds) =>
                                                     LinearGradient(
@@ -165,7 +170,7 @@ class QuranFontsPage extends StatelessWidget {
                                                 ).createShader(bounds),
                                                 blendMode: BlendMode.srcATop,
                                                 child: Opacity(
-                                                  opacity: 0.7,
+                                                  opacity: 0.6,
                                                   child: _richTextWidget(
                                                       context,
                                                       quranCtrl,
@@ -284,6 +289,7 @@ class QuranFontsPage extends StatelessWidget {
               fontSize: 100,
               surahNum: quranCtrl.getCurrentSurahByPage(pageIndex).surahNumber,
               ayahUQNum: ayahs[ayahIndex].ayahUQNumber,
+              ayahNum: ayahs[ayahIndex].ayahNumber,
               onLongPressStart: (details) {
                 if (onFontsAyahLongPress != null) {
                   onFontsAyahLongPress!(details, ayahs[ayahIndex]);
@@ -338,6 +344,7 @@ class QuranFontsPage extends StatelessWidget {
             fontSize: 100,
             surahNum: quranCtrl.getCurrentSurahByPage(pageIndex).surahNumber,
             ayahUQNum: ayahs[ayahIndex].ayahUQNumber,
+            ayahNum: ayahs[ayahIndex].ayahNumber,
             onLongPressStart: (details) {
               if (onFontsAyahLongPress != null) {
                 onFontsAyahLongPress!(details, ayahs[ayahIndex]);

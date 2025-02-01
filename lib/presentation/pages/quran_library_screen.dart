@@ -182,15 +182,15 @@ class QuranLibraryScreen extends StatelessWidget {
   ///
   final Widget? topTitleChild;
 
-  /// إذا كنت تريد إضافة ويدجت بجانب اسم السورة [isDark]
+  /// قم بتمكين هذا المتغير إذا كنت تريد عرض القرآن في النمط المظلم [isDark]
   ///
-  /// If you want to add a widget next to the surah name [isDark]
+  /// [isDark] Enable this variable if you want to display the Quran with dark mode
   ///
   final bool? isDark;
 
-  /// إذا كنت تريد إضافة ويدجت بجانب اسم السورة [isDark]
+  /// قم بتمكين هذا المتغير إذا كنت تريد عرض القرآن مع التجويد [isTajweed]
   ///
-  /// If you want to add a widget next to the surah name [isDark]
+  /// [isTajweed] Enable this variable if you want to display the Quran with Tajweed
   ///
   final bool? isTajweed;
 

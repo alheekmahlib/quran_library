@@ -186,13 +186,13 @@ class QuranLibraryScreen extends StatelessWidget {
   ///
   /// [isDark] Enable this variable if you want to display the Quran with dark mode
   ///
-  final bool? isDark;
+  final bool isDark;
 
   /// قم بتمكين هذا المتغير إذا كنت تريد عرض القرآن مع التجويد [isTajweed]
   ///
   /// [isTajweed] Enable this variable if you want to display the Quran with Tajweed
   ///
-  final bool? isTajweed;
+  final bool isTajweed;
 
   @override
   Widget build(BuildContext context) {

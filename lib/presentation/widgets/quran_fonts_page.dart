@@ -17,27 +17,28 @@ class QuranFontsPage extends StatelessWidget {
   final Map<int, List<BookmarkModel>> bookmarks;
   final List<int> bookmarksAyahs;
   final Color? ayahSelectedBackgroundColor;
-  final bool? isDark;
-  final bool? isTajweed;
-  const QuranFontsPage(
-      {super.key,
-      required this.pageIndex,
-      this.bookmarkList,
-      this.basmalaStyle,
-      this.surahNumber,
-      this.surahInfoStyle,
-      this.surahNameStyle,
-      this.bannerStyle,
-      this.onSurahBannerPress,
-      this.onFontsAyahLongPress,
-      this.bookmarksColor,
-      this.textColor,
-      required this.bookmarks,
-      required this.bookmarksAyahs,
-      this.ayahSelectedBackgroundColor,
-      this.onAyahPress,
-      this.isDark,
-      this.isTajweed});
+  final bool isDark;
+  final bool isTajweed;
+  const QuranFontsPage({
+    super.key,
+    required this.pageIndex,
+    this.bookmarkList,
+    this.basmalaStyle,
+    this.surahNumber,
+    this.surahInfoStyle,
+    this.surahNameStyle,
+    this.bannerStyle,
+    this.onSurahBannerPress,
+    this.onFontsAyahLongPress,
+    this.bookmarksColor,
+    this.textColor,
+    required this.bookmarks,
+    required this.bookmarksAyahs,
+    this.ayahSelectedBackgroundColor,
+    this.onAyahPress,
+    this.isDark = false,
+    this.isTajweed = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -76,9 +77,7 @@ class QuranFontsPage extends StatelessWidget {
                                 .getCurrentPageAyahsSeparatedForBasmalah(
                                     pageIndex)[i];
                             return Column(children: [
-                              ayahs.first.ayahNumber == 1 &&
-                                      !quranCtrl.topOfThePageIndex
-                                          .contains(pageIndex)
+                              ayahs.first.ayahNumber == 1
                                   ? SurahHeaderWidget(
                                       surahNumber ??
                                           quranCtrl
@@ -140,7 +139,9 @@ class QuranFontsPage extends StatelessWidget {
                                                   .surahNumber,
                                               basmalaStyle: basmalaStyle ??
                                                   BasmalaStyle(
-                                                    basmalaColor: Colors.black,
+                                                    basmalaColor: isDark
+                                                        ? Colors.white
+                                                        : Colors.black,
                                                     basmalaWidth: 160.0,
                                                     basmalaHeight: 45.0,
                                                   ),
@@ -149,8 +150,8 @@ class QuranFontsPage extends StatelessWidget {
                                     ),
                               FittedBox(
                                 fit: BoxFit.fitWidth,
-                                child: Obx(() => isTajweed!
-                                    ? isDark!
+                                child: Obx(() => isTajweed
+                                    ? isDark
                                         ? Stack(
                                             children: [
                                               ColorFiltered(
@@ -181,7 +182,7 @@ class QuranFontsPage extends StatelessWidget {
                                           )
                                         : _richTextWidget(
                                             context, quranCtrl, ayahs)
-                                    : isDark!
+                                    : isDark
                                         ? ColorFiltered(
                                             colorFilter: ColorFilter.mode(
                                                 Colors.white, BlendMode.srcIn),
@@ -195,51 +196,6 @@ class QuranFontsPage extends StatelessWidget {
                                                 context, quranCtrl, ayahs),
                                           )),
                               ),
-                              quranCtrl.downThePageIndex.contains(pageIndex)
-                                  ? SurahHeaderWidget(
-                                      surahNumber ??
-                                          quranCtrl
-                                                  .getSurahDataByAyah(
-                                                      ayahs.first)
-                                                  .surahNumber +
-                                              1,
-                                      bannerStyle: bannerStyle ??
-                                          BannerStyle(
-                                            isImage: false,
-                                            bannerSvgPath:
-                                                AssetsPath().surahSvgBanner,
-                                            bannerSvgHeight: 40.0,
-                                            bannerSvgWidth: 150.0,
-                                            bannerImagePath: '',
-                                            bannerImageHeight: 50,
-                                            bannerImageWidth: double.infinity,
-                                          ),
-                                      surahNameStyle: surahNameStyle ??
-                                          SurahNameStyle(
-                                            surahNameWidth: 70,
-                                            surahNameHeight: 37,
-                                            surahNameColor: Colors.black,
-                                          ),
-                                      surahInfoStyle: surahInfoStyle ??
-                                          SurahInfoStyle(
-                                            ayahCount: 'عدد الآيات',
-                                            secondTabText: 'عن السورة',
-                                            firstTabText: 'أسماء السورة',
-                                            backgroundColor: Colors.white,
-                                            closeIconColor: Colors.black,
-                                            indicatorColor: Colors.amber
-                                                .withValues(alpha: 2),
-                                            primaryColor: Colors.amber
-                                                .withValues(alpha: 2),
-                                            surahNameColor: Colors.black,
-                                            surahNumberColor: Colors.black,
-                                            textColor: Colors.black,
-                                            titleColor: Colors.black,
-                                          ),
-                                      onSurahBannerPress: onSurahBannerPress,
-                                    )
-                                  : const SizedBox.shrink(),
-                              // context.surahBannerLastPlace(pageIndex, i),
                             ]);
                           }),
                         ),
@@ -259,8 +215,8 @@ class QuranFontsPage extends StatelessWidget {
           fontSize: 100,
           height: 1.7,
           letterSpacing: 2,
-          color: isDark! ? null : textColor,
-          foreground: isDark!
+          color: isDark ? null : textColor,
+          foreground: isDark
               ? (Paint()
                 ..color = Colors.white
                 ..blendMode = BlendMode.srcATop)
@@ -279,7 +235,11 @@ class QuranFontsPage extends StatelessWidget {
           quranCtrl.state.isSelected = quranCtrl.selectedAyahIndexes
               .contains(ayahs[ayahIndex].ayahUQNumber);
           final allBookmarks = bookmarks.values.expand((list) => list).toList();
-          if (ayahIndex == 0) {
+          if (ayahIndex == 0 &&
+              (ayahs[ayahIndex].ayahNumber != 1 ||
+                  quranCtrl.startSurahsNumbers.contains(quranCtrl
+                      .getSurahDataByAyah(ayahs[ayahIndex])
+                      .surahNumber))) {
             return span(
               isFirstAyah: true,
               text:

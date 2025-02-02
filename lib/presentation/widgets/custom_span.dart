@@ -47,7 +47,7 @@ TextSpan span({
           fontFamily: 'p${(pageIndex + 1)}',
           fontSize: fontSize,
           height: 2,
-          letterSpacing: 30,
+          letterSpacing: pageIndex == 54 || pageIndex == 75 ? 0 : 30,
           color: quranCtrl.state.fontsSelected2.value == 1
               ? textColor ?? Colors.transparent
               : null,
@@ -76,7 +76,7 @@ TextSpan span({
           fontFamily: 'p${(pageIndex + 1)}',
           fontSize: fontSize,
           height: 2,
-          letterSpacing: 5,
+          letterSpacing: 0,
           // wordSpacing: wordSpacing + 10,
           color: quranCtrl.state.fontsSelected2.value == 1
               ? textColor ?? Colors.transparent
@@ -108,7 +108,7 @@ TextSpan span({
         fontFamily: 'p${(pageIndex + 1)}',
         fontSize: fontSize,
         height: 2,
-        letterSpacing: 5,
+        letterSpacing: 0,
         color: quranCtrl.state.fontsSelected2.value == 1
             ? textColor ?? Colors.transparent
             : null,
@@ -151,7 +151,7 @@ TextSpan span({
               fontFamily: 'hafs',
               fontSize: fontSize,
               height: 2,
-              letterSpacing: 5,
+              letterSpacing: -10,
               package: 'quran_library',
               color: bookmarkCtrl
                       .hasBookmark(surahNum, ayahUQNum, bookmarkList)

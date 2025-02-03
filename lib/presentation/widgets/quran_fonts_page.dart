@@ -225,8 +225,8 @@ class QuranFontsPage extends StatelessWidget {
               ? isDark
                   ? (Paint()
                     ..color = Colors.white
-                    ..colorFilter =
-                        ColorFilter.mode(Colors.white, BlendMode.srcATop))
+                    //exclusion or difference
+                    ..blendMode = BlendMode.exclusion)
                   : (Paint()
                     ..color = Colors.black
                     ..blendMode = BlendMode.srcATop)

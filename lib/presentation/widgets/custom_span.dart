@@ -32,9 +32,7 @@ TextSpan span({
     final String? partTwo =
         text.length > 2 ? text.substring(2, text.length - 1) : null;
     final String initialPart = text.substring(0, text.length - 1);
-    final String lastCharacter =
-        ayahNum.toString().convertEnglishNumbersToArabic(ayahNum.toString()) +
-            ' '; //text.substring(text.length - 1);
+    final String lastCharacter = text.substring(text.length - 1);
     final allBookmarks = bookmarks.values.expand((list) => list).toList();
     final bookmarkCtrl = BookmarksCtrl.instance;
     final quranCtrl = QuranCtrl.instance;
@@ -151,14 +149,11 @@ TextSpan span({
         TextSpan(
       text: lastCharacter,
       style: TextStyle(
-        fontFamily: 'hafs',
+        fontFamily: 'p${(pageIndex + 1)}',
         fontSize: fontSize,
         height: 2,
-        letterSpacing: 0,
-        package: 'quran_library',
-        color: bookmarkCtrl.hasBookmark(surahNum, ayahUQNum, bookmarkList).value
-            ? textColor ?? Colors.transparent
-            : const Color(0xff77554B),
+        letterSpacing: -10,
+        foreground: Paint(),
         backgroundColor:
             bookmarkCtrl.hasBookmark(surahNum, ayahUQNum, bookmarkList).value
                 ? bookmarksColor

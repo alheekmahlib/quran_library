@@ -21,6 +21,7 @@ class QuranLinePage extends StatelessWidget {
   final String? juzName;
   final String? sajdaName;
   final Widget? topTitleChild;
+  final bool isDark;
   QuranLinePage(
       {super.key,
       required this.pageIndex,
@@ -41,7 +42,8 @@ class QuranLinePage extends StatelessWidget {
       this.languageCode,
       this.juzName,
       this.sajdaName,
-      this.topTitleChild});
+      this.topTitleChild,
+      required this.isDark});
 
   final quranCtrl = QuranCtrl.instance;
 
@@ -85,7 +87,9 @@ class QuranLinePage extends StatelessWidget {
                       bannerStyle: bannerStyle ??
                           BannerStyle(
                             isImage: false,
-                            bannerSvgPath: AssetsPath().surahSvgBanner,
+                            bannerSvgPath: isDark
+                                ? AssetsPath().surahSvgBannerDark
+                                : AssetsPath().surahSvgBanner,
                             bannerSvgHeight: 40.0,
                             bannerSvgWidth: 150.0,
                             bannerImagePath: '',
@@ -96,7 +100,8 @@ class QuranLinePage extends StatelessWidget {
                           SurahNameStyle(
                             surahNameWidth: 70,
                             surahNameHeight: 37,
-                            surahNameColor: Colors.black,
+                            surahNameColor:
+                                isDark ? Colors.white : Colors.black,
                           ),
                       surahInfoStyle: surahInfoStyle ??
                           SurahInfoStyle(
@@ -113,6 +118,7 @@ class QuranLinePage extends StatelessWidget {
                             titleColor: Colors.black,
                           ),
                       onSurahBannerPress: onSurahBannerPress,
+                      isDark: isDark,
                     ),
                     if (pageIndex == 1)
                       BasmallahWidget(
@@ -139,7 +145,8 @@ class QuranLinePage extends StatelessWidget {
                                     boxFit: BoxFit.scaleDown,
                                     onDefaultAyahLongPress: onAyahLongPress,
                                     bookmarksColor: bookmarksColor,
-                                    textColor: textColor,
+                                    textColor: textColor ??
+                                        (isDark ? Colors.white : Colors.black),
                                     bookmarkList: bookmarkList,
                                     pageIndex: pageIndex,
                                     ayahSelectedBackgroundColor:
@@ -186,7 +193,9 @@ class QuranLinePage extends StatelessWidget {
                             bannerStyle: bannerStyle ??
                                 BannerStyle(
                                   isImage: false,
-                                  bannerSvgPath: AssetsPath().surahSvgBanner,
+                                  bannerSvgPath: isDark
+                                      ? AssetsPath().surahSvgBannerDark
+                                      : AssetsPath().surahSvgBanner,
                                   bannerSvgHeight: 40.0,
                                   bannerSvgWidth: 150.0,
                                   bannerImagePath: '',
@@ -197,7 +206,8 @@ class QuranLinePage extends StatelessWidget {
                                 SurahNameStyle(
                                   surahNameWidth: 70,
                                   surahNameHeight: 37,
-                                  surahNameColor: Colors.black,
+                                  surahNameColor:
+                                      isDark ? Colors.white : Colors.black,
                                 ),
                             surahInfoStyle: surahInfoStyle ??
                                 SurahInfoStyle(
@@ -216,6 +226,7 @@ class QuranLinePage extends StatelessWidget {
                                   titleColor: Colors.black,
                                 ),
                             onSurahBannerPress: onSurahBannerPress,
+                            isDark: isDark,
                           ),
                         if (firstAyah && (line.ayahs[0].surahNumber != 9))
                           BasmallahWidget(
@@ -249,7 +260,8 @@ class QuranLinePage extends StatelessWidget {
                                 : BoxFit.fill,
                             onDefaultAyahLongPress: onAyahLongPress,
                             bookmarksColor: bookmarksColor,
-                            textColor: textColor,
+                            textColor: textColor ??
+                                (isDark ? Colors.white : Colors.black),
                             bookmarkList: bookmarkList,
                             pageIndex: pageIndex,
                             ayahSelectedBackgroundColor:

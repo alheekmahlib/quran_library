@@ -18,7 +18,7 @@ class QuranFontsPage extends StatelessWidget {
   final List<int> bookmarksAyahs;
   final Color? ayahSelectedBackgroundColor;
   final bool isDark;
-  final bool isTajweed;
+  final Widget? circularProgressWidget;
   const QuranFontsPage({
     super.key,
     required this.pageIndex,
@@ -37,7 +37,7 @@ class QuranFontsPage extends StatelessWidget {
     this.ayahSelectedBackgroundColor,
     this.onAyahPress,
     this.isDark = false,
-    this.isTajweed = false,
+    this.circularProgressWidget,
   });
 
   @override
@@ -64,7 +64,8 @@ class QuranFontsPage extends StatelessWidget {
                             MediaQuery.sizeOf(context).height * .01))
                     : const EdgeInsets.symmetric(horizontal: 8.0),
                 child: quranCtrl.state.pages.isEmpty
-                    ? const CircularProgressIndicator.adaptive()
+                    ? circularProgressWidget ??
+                        const CircularProgressIndicator.adaptive()
                     : SingleChildScrollView(
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
@@ -86,8 +87,10 @@ class QuranFontsPage extends StatelessWidget {
                                       bannerStyle: bannerStyle ??
                                           BannerStyle(
                                             isImage: false,
-                                            bannerSvgPath:
-                                                AssetsPath().surahSvgBanner,
+                                            bannerSvgPath: isDark
+                                                ? AssetsPath()
+                                                    .surahSvgBannerDark
+                                                : AssetsPath().surahSvgBanner,
                                             bannerSvgHeight: 40.0,
                                             bannerSvgWidth: 150.0,
                                             bannerImagePath: '',
@@ -98,7 +101,9 @@ class QuranFontsPage extends StatelessWidget {
                                           SurahNameStyle(
                                             surahNameWidth: 70,
                                             surahNameHeight: 37,
-                                            surahNameColor: Colors.black,
+                                            surahNameColor: isDark
+                                                ? Colors.white
+                                                : Colors.black,
                                           ),
                                       surahInfoStyle: surahInfoStyle ??
                                           SurahInfoStyle(
@@ -117,6 +122,7 @@ class QuranFontsPage extends StatelessWidget {
                                             titleColor: Colors.black,
                                           ),
                                       onSurahBannerPress: onSurahBannerPress,
+                                      isDark: isDark,
                                     )
                                   : const SizedBox.shrink(),
                               quranCtrl
@@ -150,51 +156,50 @@ class QuranFontsPage extends StatelessWidget {
                                     ),
                               FittedBox(
                                 fit: BoxFit.fitWidth,
-                                child: Obx(() => isTajweed
-                                    ? isDark
-                                        ? Stack(
-                                            children: [
-                                              ColorFiltered(
-                                                colorFilter: ColorFilter.mode(
-                                                    Colors.white,
-                                                    BlendMode.modulate),
-                                                child: _richTextWidget(
-                                                    context, quranCtrl, ayahs),
-                                              ),
-                                              ShaderMask(
-                                                shaderCallback: (bounds) =>
-                                                    LinearGradient(
-                                                  colors: [
-                                                    Colors.white,
-                                                    Colors.white
-                                                  ], // اللون الجديد للنص الأسود
-                                                ).createShader(bounds),
-                                                blendMode: BlendMode.srcATop,
-                                                child: Opacity(
-                                                  opacity: 0.6,
-                                                  child: _richTextWidget(
-                                                      context,
-                                                      quranCtrl,
-                                                      ayahs),
-                                                ),
-                                              ),
-                                            ],
-                                          )
-                                        : _richTextWidget(
-                                            context, quranCtrl, ayahs)
-                                    : isDark
-                                        ? ColorFiltered(
-                                            colorFilter: ColorFilter.mode(
-                                                Colors.white, BlendMode.srcIn),
-                                            child: _richTextWidget(
-                                                context, quranCtrl, ayahs),
-                                          )
-                                        : ColorFiltered(
-                                            colorFilter: ColorFilter.mode(
-                                                Colors.black, BlendMode.srcIn),
-                                            child: _richTextWidget(
-                                                context, quranCtrl, ayahs),
-                                          )),
+                                child: Obx(() => _richTextWidget(
+                                        context, quranCtrl, ayahs)
+                                    // isTajweed
+                                    // ? isDark
+                                    //     ? Stack(
+                                    //         children: [
+                                    //           ColorFiltered(
+                                    //             colorFilter: ColorFilter.mode(
+                                    //                 Colors.white,
+                                    //                 BlendMode.modulate),
+                                    //             child: _richTextWidget(
+                                    //                 context, quranCtrl, ayahs),
+                                    //           ),
+                                    //           ShaderMask(
+                                    //             shaderCallback: (bounds) =>
+                                    //                 LinearGradient(
+                                    //               colors: [
+                                    //                 Colors.white,
+                                    //                 Colors.white
+                                    //               ], // اللون الجديد للنص الأسود
+                                    //             ).createShader(bounds),
+                                    //             blendMode: BlendMode.srcATop,
+                                    //             child: Opacity(
+                                    //               opacity: 0.6,
+                                    //               child: _richTextWidget(
+                                    //                   context,
+                                    //                   quranCtrl,
+                                    //                   ayahs),
+                                    //             ),
+                                    //           ),
+                                    //         ],
+                                    //       )
+                                    //     : _richTextWidget(
+                                    //         context, quranCtrl, ayahs)
+                                    // : isDark
+                                    //     ? ColorFiltered(
+                                    //         colorFilter: ColorFilter.mode(
+                                    //             Colors.white, BlendMode.srcIn),
+                                    //         child: _richTextWidget(
+                                    //             context, quranCtrl, ayahs),
+                                    //       )
+                                    //     : _richTextWidget(
+                                    //         context, quranCtrl, ayahs),
+                                    ),
                               ),
                             ]);
                           }),
@@ -215,17 +220,30 @@ class QuranFontsPage extends StatelessWidget {
           fontSize: 100,
           height: 1.7,
           letterSpacing: 2,
-          color: isDark ? null : textColor,
-          foreground: isDark
-              ? (Paint()
-                ..color = Colors.white
-                ..blendMode = BlendMode.srcATop)
-              : null,
+          // color: isDark ? null : textColor,
+          foreground: quranCtrl.state.isTajweed.value == 0
+              ? isDark
+                  ? (Paint()
+                    ..color = Colors.white
+                    ..colorFilter =
+                        ColorFilter.mode(Colors.white, BlendMode.srcATop))
+                  : (Paint()
+                    ..color = Colors.black
+                    ..blendMode = BlendMode.srcATop)
+              : isDark
+                  ? (Paint()
+                    ..color = Colors.white
+                    ..colorFilter =
+                        ColorFilter.mode(Colors.white, BlendMode.srcATop))
+                  : (Paint()
+                    ..color = Colors.black
+                    ..colorFilter =
+                        ColorFilter.mode(Colors.black, BlendMode.srcATop)),
           shadows: [
             Shadow(
               blurRadius: 0.5,
               color: quranCtrl.state.isBold.value == 0
-                  ? textColor ?? Colors.black
+                  ? textColor ?? (isDark ? Colors.white : Colors.black)
                   : Colors.transparent,
               offset: const Offset(0.5, 0.5),
             ),
@@ -289,7 +307,7 @@ class QuranFontsPage extends StatelessWidget {
                 }
               },
               bookmarkList: bookmarkList,
-              textColor: textColor,
+              textColor: textColor ?? (isDark ? Colors.white : Colors.black),
               bookmarks: bookmarks,
               bookmarksAyahs: bookmarksAyahs,
               bookmarksColor: bookmarksColor,
@@ -343,7 +361,7 @@ class QuranFontsPage extends StatelessWidget {
               }
             },
             bookmarkList: bookmarkList,
-            textColor: textColor,
+            textColor: textColor ?? (isDark ? Colors.white : Colors.black),
             bookmarks: bookmarks,
             bookmarksAyahs: bookmarksAyahs,
             bookmarksColor: bookmarksColor,

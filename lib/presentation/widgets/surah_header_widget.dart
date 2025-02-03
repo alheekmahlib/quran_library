@@ -8,6 +8,7 @@ class SurahHeaderWidget extends StatelessWidget {
     this.surahNameStyle,
     this.onSurahBannerPress,
     this.surahInfoStyle,
+    required this.isDark,
   });
 
   final int surahNumber;
@@ -15,6 +16,7 @@ class SurahHeaderWidget extends StatelessWidget {
   final SurahNameStyle? surahNameStyle;
   final Function(SurahNamesModel surah)? onSurahBannerPress;
   final SurahInfoStyle? surahInfoStyle;
+  final bool isDark;
 
   final quranCtrl = QuranCtrl.instance;
 
@@ -42,8 +44,7 @@ class SurahHeaderWidget extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: 0.0),
           decoration: BoxDecoration(
             image: DecorationImage(
-                image: AssetImage(bannerStyle?.bannerImagePath ??
-                    AssetsPath().surahSvgBanner),
+                image: AssetImage(bannerStyle!.bannerImagePath!),
                 fit: BoxFit.fill),
           ),
           alignment: Alignment.center,
@@ -52,7 +53,8 @@ class SurahHeaderWidget extends StatelessWidget {
             width: surahNameStyle?.surahNameWidth ?? 70,
             height: surahNameStyle?.surahNameHeight ?? 37,
             colorFilter: ColorFilter.mode(
-                surahNameStyle?.surahNameColor ?? Colors.black,
+                surahNameStyle?.surahNameColor ??
+                    (isDark ? Colors.white : Colors.black),
                 BlendMode.srcIn),
           ),
         ),
@@ -78,7 +80,10 @@ class SurahHeaderWidget extends StatelessWidget {
               alignment: Alignment.center,
               children: [
                 SvgPicture.asset(
-                  bannerStyle?.bannerSvgPath ?? AssetsPath().surahSvgBanner,
+                  bannerStyle?.bannerSvgPath ??
+                      (isDark
+                          ? AssetsPath().surahSvgBannerDark
+                          : AssetsPath().surahSvgBanner),
                   width: bannerStyle?.bannerSvgWidth ?? 150.0,
                   height: bannerStyle?.bannerSvgHeight ?? 40.0,
                 ),
@@ -87,7 +92,8 @@ class SurahHeaderWidget extends StatelessWidget {
                   width: surahNameStyle?.surahNameWidth ?? 70,
                   height: surahNameStyle?.surahNameHeight ?? 37,
                   colorFilter: ColorFilter.mode(
-                      surahNameStyle?.surahNameColor ?? Colors.black,
+                      surahNameStyle?.surahNameColor ??
+                          (isDark ? Colors.white : Colors.black),
                       BlendMode.srcIn),
                 ),
               ],

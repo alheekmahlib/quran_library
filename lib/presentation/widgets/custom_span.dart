@@ -60,7 +60,7 @@ TextSpan span({
                                 (b) => b.ayahId == ayahUQNum,
                               )
                               .colorCode)
-                          .withValues(alpha: 0.7)
+                          .withValues(alpha: 0.3)
                       : isSelected
                           ? ayahSelectedBackgroundColor ??
                               const Color(0xffCDAD80).withValues(alpha: 0.25)
@@ -90,7 +90,7 @@ TextSpan span({
                                 (b) => b.ayahId == ayahUQNum,
                               )
                               .colorCode)
-                          .withValues(alpha: 0.7)
+                          .withValues(alpha: 0.3)
                       : isSelected
                           ? ayahSelectedBackgroundColor ??
                               const Color(0xffCDAD80).withValues(alpha: 0.25)
@@ -121,7 +121,7 @@ TextSpan span({
                               (b) => b.ayahId == ayahUQNum,
                             )
                             .colorCode)
-                        .withValues(alpha: 0.7)
+                        .withValues(alpha: 0.3)
                     : isSelected
                         ? ayahSelectedBackgroundColor ??
                             const Color(0xffCDAD80).withValues(alpha: 0.25)
@@ -132,52 +132,52 @@ TextSpan span({
         ..onLongPressStart = onLongPressStart,
     );
 
-    var lastCharacterSpan = bookmarkCtrl
-                .hasBookmark(surahNum, ayahUQNum, bookmarkList)
-                .value ||
-            bookmarksAyahs.contains(ayahUQNum)
-        ? WidgetSpan(
-            child: Padding(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 8.0, vertical: 30.0),
-            child: SvgPicture.asset(
-              AssetsPath().ayahBookmarked,
-              height: 100,
-            ),
-          ))
-        : TextSpan(
-            text: lastCharacter,
-            style: TextStyle(
-              fontFamily: 'hafs',
-              fontSize: fontSize,
-              height: 2,
-              letterSpacing: -10,
-              package: 'quran_library',
-              color: bookmarkCtrl
-                      .hasBookmark(surahNum, ayahUQNum, bookmarkList)
-                      .value
-                  ? textColor ?? Colors.transparent
-                  : const Color(0xff77554B),
-              backgroundColor: bookmarkCtrl
-                      .hasBookmark(surahNum, ayahUQNum, bookmarkList)
-                      .value
-                  ? bookmarksColor
-                  : (bookmarksAyahs.contains(ayahUQNum)
-                      ? Color(allBookmarks
-                              .firstWhere(
-                                (b) => b.ayahId == ayahUQNum,
-                              )
-                              .colorCode)
-                          .withValues(alpha: 0.7)
-                      : isSelected
-                          ? ayahSelectedBackgroundColor ??
-                              const Color(0xffCDAD80).withValues(alpha: 0.25)
-                          : null),
-            ),
-            recognizer: LongPressGestureRecognizer(
-                duration: const Duration(milliseconds: 500))
-              ..onLongPressStart = onLongPressStart,
-          );
+    var lastCharacterSpan =
+        // bookmarkCtrl
+        //         .hasBookmark(surahNum, ayahUQNum, bookmarkList)
+        //         .value ||
+        //     bookmarksAyahs.contains(ayahUQNum)
+        // ? WidgetSpan(
+        //     child: Padding(
+        //     padding:
+        //         const EdgeInsets.symmetric(horizontal: 8.0, vertical: 60.0),
+        //     child: SvgPicture.asset(
+        //       AssetsPath().ayahBookmarked,
+        //       height: 100,
+        //       width: 100,
+        //     ),
+        //   ))
+        // :
+        TextSpan(
+      text: lastCharacter,
+      style: TextStyle(
+        fontFamily: 'hafs',
+        fontSize: fontSize,
+        height: 2,
+        letterSpacing: 0,
+        package: 'quran_library',
+        color: bookmarkCtrl.hasBookmark(surahNum, ayahUQNum, bookmarkList).value
+            ? textColor ?? Colors.transparent
+            : const Color(0xff77554B),
+        backgroundColor:
+            bookmarkCtrl.hasBookmark(surahNum, ayahUQNum, bookmarkList).value
+                ? bookmarksColor
+                : (bookmarksAyahs.contains(ayahUQNum)
+                    ? Color(allBookmarks
+                            .firstWhere(
+                              (b) => b.ayahId == ayahUQNum,
+                            )
+                            .colorCode)
+                        .withValues(alpha: 0.3)
+                    : isSelected
+                        ? ayahSelectedBackgroundColor ??
+                            const Color(0xffCDAD80).withValues(alpha: 0.25)
+                        : null),
+      ),
+      recognizer: LongPressGestureRecognizer(
+          duration: const Duration(milliseconds: 500))
+        ..onLongPressStart = onLongPressStart,
+    );
 
     return TextSpan(
       children: isFirstAyah
@@ -232,7 +232,7 @@ TextSpan customSpan({
                               (b) => b.ayahId == ayahUQNum,
                             )
                             .colorCode)
-                        .withValues(alpha: 0.7)
+                        .withValues(alpha: 0.3)
                     : isSelected
                         ? ayahSelectedBackgroundColor ??
                             const Color(0xffCDAD80).withValues(alpha: 0.25)
@@ -276,7 +276,7 @@ TextSpan customSpan({
                                     (b) => b.ayahId == ayahUQNum,
                                   )
                                   .colorCode)
-                              .withValues(alpha: 0.7)
+                              .withValues(alpha: 0.3)
                           : isSelected
                               ? ayahSelectedBackgroundColor ??
                                   const Color(0xffCDAD80)

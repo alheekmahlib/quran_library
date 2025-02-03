@@ -30,7 +30,7 @@ class QuranLibraryScreen extends StatelessWidget {
     this.topTitleChild,
     this.onFontsAyahLongPress,
     this.isDark = false,
-    this.isTajweed = false,
+    this.circularProgressWidget,
   });
 
   // /// متغير لتعطيل أو تمكين الويدجت السفلية الافتراضية [showBottomWidget]
@@ -188,23 +188,31 @@ class QuranLibraryScreen extends StatelessWidget {
   ///
   final bool isDark;
 
-  /// قم بتمكين هذا المتغير إذا كنت تريد عرض القرآن مع التجويد [isTajweed]
+  /// إذا كنت تريد إضافة ويدجت بدلًا من الويدجت الإفتراضية [circularProgressWidget]
   ///
-  /// [isTajweed] Enable this variable if you want to display the Quran with Tajweed
+  /// If you want to add a widget instead of the default widget [circularProgressWidget]
   ///
-  final bool isTajweed;
+  final Widget? circularProgressWidget;
 
   @override
   Widget build(BuildContext context) {
+    // if (isDark!) {
+    //   QuranCtrl.instance.state.isTajweed.value = 1;
+    //   GetStorage().write(StorageConstants().isTajweed, 1);
+    // }
     return GetBuilder<QuranCtrl>(
       builder: (quranCtrl) => Directionality(
         textDirection: TextDirection.rtl,
         child: Scaffold(
-          backgroundColor: backgroundColor ?? const Color(0xfffaf7f3),
+          backgroundColor: backgroundColor ??
+              (isDark ? const Color(0xff202020) : const Color(0xfffaf7f3)),
           appBar: appBar ??
               (useDefaultAppBar
                   ? AppBar(
-                      backgroundColor: backgroundColor,
+                      backgroundColor: backgroundColor ??
+                          (isDark
+                              ? const Color(0xff202020)
+                              : const Color(0xfffaf7f3)),
                       elevation: 0,
                       actions: [
                         FontsDownloadDialog(
@@ -233,6 +241,7 @@ class QuranLibraryScreen extends StatelessWidget {
                                 downloadedNotesBody: 'يرجى تحميل الخطوط أولًا!',
                               ),
                           languageCode: languageCode,
+                          isDark: isDark,
                         )
                       ],
                     )
@@ -293,7 +302,9 @@ class QuranLibraryScreen extends StatelessWidget {
               ? quranCtrl.state.allAyahs.isEmpty ||
                       quranCtrl.state.surahs.isEmpty ||
                       quranCtrl.state.pages.isEmpty
-                  ? const Center(child: CircularProgressIndicator())
+                  ? Center(
+                      child:
+                          circularProgressWidget ?? CircularProgressIndicator())
                   : Align(
                       alignment: Alignment.topCenter,
                       child: AllQuranWidget(
@@ -321,11 +332,12 @@ class QuranLibraryScreen extends StatelessWidget {
                               ayahSelectedBackgroundColor,
                           onAyahPress: onPagePress,
                           isDark: isDark,
-                          isTajweed: isTajweed,
                         ),
                       ))
               : quranCtrl.staticPages.isEmpty || quranCtrl.isLoading.value
-                  ? const Center(child: CircularProgressIndicator())
+                  ? Center(
+                      child:
+                          circularProgressWidget ?? CircularProgressIndicator())
                   : QuranLinePage(
                       pageIndex: pageIndex,
                       bookmarkList: bookmarkList,
@@ -346,6 +358,7 @@ class QuranLibraryScreen extends StatelessWidget {
                       juzName: juzName,
                       sajdaName: sajdaName,
                       topTitleChild: topTitleChild,
+                      isDark: isDark,
                     )),
           AllQuranWidget(
             pageIndex: pageIndex,
@@ -371,6 +384,7 @@ class QuranLibraryScreen extends StatelessWidget {
               ayahSelectedBackgroundColor: ayahSelectedBackgroundColor,
               onAyahPress: onPagePress,
               languageCode: languageCode,
+              isDark: isDark,
             ),
           ),
         ),

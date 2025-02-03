@@ -23,6 +23,8 @@ class QuranLibrary {
         GetStorage().read(StorageConstants().isBold) ?? 0;
     quranCtrl.state.fontsSelected2.value =
         GetStorage().read(StorageConstants().fontsSelected) ?? 0;
+    quranCtrl.state.isTajweed.value =
+        GetStorage().read(StorageConstants().isTajweed) ?? 0;
     quranCtrl.state.fontsDownloadedList.value = (GetStorage()
             .read<List<dynamic>>(StorageConstants().fontsDownloadedList)
             ?.cast<int>() ??

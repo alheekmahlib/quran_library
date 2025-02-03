@@ -18,7 +18,9 @@ class QuranTextScale extends StatelessWidget {
       required this.bookmarks,
       required this.bookmarksAyahs,
       this.ayahSelectedBackgroundColor,
-      this.languageCode});
+      this.languageCode,
+      this.circularProgressWidget,
+      required this.isDark});
 
   final quranCtrl = QuranCtrl.instance;
 
@@ -39,6 +41,8 @@ class QuranTextScale extends StatelessWidget {
   final List<int> bookmarksAyahs;
   final Color? ayahSelectedBackgroundColor;
   final String? languageCode;
+  final Widget? circularProgressWidget;
+  final bool isDark;
 
   @override
   Widget build(BuildContext context) {
@@ -63,7 +67,8 @@ class QuranTextScale extends StatelessWidget {
                         vertical: MediaQuery.sizeOf(context).width * .34)
                     : const EdgeInsets.symmetric(horizontal: 8.0),
                 child: quranCtrl.state.pages.isEmpty
-                    ? const CircularProgressIndicator.adaptive()
+                    ? circularProgressWidget ??
+                        CircularProgressIndicator.adaptive()
                     : SingleChildScrollView(
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
@@ -87,8 +92,10 @@ class QuranTextScale extends StatelessWidget {
                                       bannerStyle: bannerStyle ??
                                           BannerStyle(
                                             isImage: false,
-                                            bannerSvgPath:
-                                                AssetsPath().surahSvgBanner,
+                                            bannerSvgPath: isDark
+                                                ? AssetsPath()
+                                                    .surahSvgBannerDark
+                                                : AssetsPath().surahSvgBanner,
                                             bannerSvgHeight: 40.0,
                                             bannerSvgWidth: 150.0,
                                             bannerImagePath: '',
@@ -99,7 +106,9 @@ class QuranTextScale extends StatelessWidget {
                                           SurahNameStyle(
                                             surahNameWidth: 70,
                                             surahNameHeight: 37,
-                                            surahNameColor: Colors.black,
+                                            surahNameColor: isDark
+                                                ? Colors.white
+                                                : Colors.black,
                                           ),
                                       surahInfoStyle: surahInfoStyle ??
                                           SurahInfoStyle(
@@ -118,6 +127,7 @@ class QuranTextScale extends StatelessWidget {
                                             titleColor: Colors.black,
                                           ),
                                       onSurahBannerPress: onSurahBannerPress,
+                                      isDark: isDark,
                                     )
                                   : const SizedBox.shrink(),
                               quranCtrl
@@ -157,7 +167,10 @@ class QuranTextScale extends StatelessWidget {
                                               quranCtrl.state.scaleFactor.value,
                                           height: 1.7,
                                           letterSpacing: 2,
-                                          color: textColor ?? Colors.black,
+                                          color: textColor ??
+                                              (isDark
+                                                  ? Colors.white
+                                                  : Colors.black),
                                           shadows: [
                                             Shadow(
                                               blurRadius: 0.5,
@@ -258,7 +271,10 @@ class QuranTextScale extends StatelessWidget {
                                               }
                                             },
                                             bookmarkList: bookmarkList,
-                                            textColor: textColor,
+                                            textColor: textColor ??
+                                                (isDark
+                                                    ? Colors.white
+                                                    : Colors.black),
                                             bookmarks: bookmarks,
                                             bookmarksAyahs: bookmarksAyahs,
                                             bookmarksColor: bookmarksColor,
@@ -340,7 +356,10 @@ class QuranTextScale extends StatelessWidget {
                                             }
                                           },
                                           bookmarkList: bookmarkList,
-                                          textColor: textColor,
+                                          textColor: textColor ??
+                                              (isDark
+                                                  ? Colors.white
+                                                  : Colors.black),
                                           bookmarks: bookmarks,
                                           bookmarksAyahs: bookmarksAyahs,
                                           bookmarksColor: bookmarksColor,
@@ -364,8 +383,10 @@ class QuranTextScale extends StatelessWidget {
                                       bannerStyle: bannerStyle ??
                                           BannerStyle(
                                             isImage: false,
-                                            bannerSvgPath:
-                                                AssetsPath().surahSvgBanner,
+                                            bannerSvgPath: isDark
+                                                ? AssetsPath()
+                                                    .surahSvgBannerDark
+                                                : AssetsPath().surahSvgBanner,
                                             bannerSvgHeight: 40.0,
                                             bannerSvgWidth: 150.0,
                                             bannerImagePath: '',
@@ -376,7 +397,9 @@ class QuranTextScale extends StatelessWidget {
                                           SurahNameStyle(
                                             surahNameWidth: 70,
                                             surahNameHeight: 37,
-                                            surahNameColor: Colors.black,
+                                            surahNameColor: isDark
+                                                ? Colors.white
+                                                : Colors.black,
                                           ),
                                       surahInfoStyle: surahInfoStyle ??
                                           SurahInfoStyle(
@@ -395,6 +418,7 @@ class QuranTextScale extends StatelessWidget {
                                             titleColor: Colors.black,
                                           ),
                                       onSurahBannerPress: onSurahBannerPress,
+                                      isDark: isDark,
                                     )
                                   : const SizedBox.shrink(),
                               // context.surahBannerLastPlace(pageIndex, i),

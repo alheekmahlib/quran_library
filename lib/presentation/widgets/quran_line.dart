@@ -108,7 +108,7 @@ class QuranLine extends StatelessWidget {
                                         (b) => b.ayahId == ayah.ayahUQNumber,
                                       )
                                       .colorCode)
-                                  .withValues(alpha: 0.7)
+                                  .withValues(alpha: 0.3)
                               : quranCtrl.isAyahSelected
                                   ? ayahSelectedBackgroundColor ??
                                       const Color(0xffCDAD80)

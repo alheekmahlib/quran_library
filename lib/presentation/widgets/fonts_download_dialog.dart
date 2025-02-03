@@ -3,9 +3,13 @@ part of '../../quran.dart';
 class FontsDownloadDialog extends StatelessWidget {
   final DownloadFontsDialogStyle? downloadFontsDialogStyle;
   final String? languageCode;
+  final bool? isDark;
 
   FontsDownloadDialog(
-      {super.key, this.downloadFontsDialogStyle, this.languageCode});
+      {super.key,
+      this.downloadFontsDialogStyle,
+      this.languageCode,
+      this.isDark = false});
 
   final quranCtrl = QuranCtrl.instance;
 
@@ -45,7 +49,8 @@ class FontsDownloadDialog extends StatelessWidget {
       backgroundColor: downloadFontsDialogStyle?.backgroundColor,
       child: quranCtrl.fontsDownloadWidget(context,
           downloadFontsDialogStyle: downloadFontsDialogStyle!,
-          languageCode: languageCode),
+          languageCode: languageCode,
+          isDark: isDark),
     );
   }
 }

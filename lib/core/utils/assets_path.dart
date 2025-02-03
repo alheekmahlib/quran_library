@@ -3,6 +3,8 @@ part of '../../quran.dart';
 class AssetsPath {
   final surahSvgBanner =
       'packages/quran_library/lib/assets/svg/surah_banner.svg';
+  final surahSvgBannerDark =
+      'packages/quran_library/lib/assets/svg/surah_banner_dark.svg';
   final besmAllah2 = 'packages/quran_library/lib/assets/svg/besmAllah2.svg';
   final besmAllah = 'packages/quran_library/lib/assets/svg/besmAllah.svg';
   final ayahBookmarked =

@@ -14,7 +14,7 @@ class SurahHeaderWidget extends StatelessWidget {
   final int surahNumber;
   final BannerStyle? bannerStyle;
   final SurahNameStyle? surahNameStyle;
-  final Function(SurahNamesModel surah)? onSurahBannerPress;
+  final void Function(SurahNamesModel surah)? onSurahBannerPress;
   final SurahInfoStyle? surahInfoStyle;
   final bool isDark;
 

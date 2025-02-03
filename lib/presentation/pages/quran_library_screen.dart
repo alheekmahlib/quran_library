@@ -11,7 +11,7 @@ class QuranLibraryScreen extends StatelessWidget {
     this.basmalaStyle,
     this.bannerStyle,
     this.withPageView = true,
-    this.pageIndex,
+    this.pageIndex = 0,
     this.bookmarksColor,
     this.onDefaultAyahLongPress,
     this.textColor,
@@ -86,12 +86,12 @@ class QuranLibraryScreen extends StatelessWidget {
   /// قم بتمكين هذا المتغير إذا كنت تريد عرض القرآن باستخدام PageView [withPageView]
   ///
   /// [withPageView] Enable this variable if you want to display the Quran with PageView
-  final bool? withPageView;
+  final bool withPageView;
 
   /// قم بتمرير رقم الصفحة إذا كنت لا تريد عرض القرآن باستخدام PageView [pageIndex]
   ///
   /// [pageIndex] pass the page number if you do not want to display the Quran with PageView
-  final int? pageIndex;
+  final int pageIndex;
 
   /// تغيير لون الإشارة المرجعية (اختياري) [bookmarksColor]
   ///
@@ -105,7 +105,7 @@ class QuranLibraryScreen extends StatelessWidget {
   /// * Used with default fonts *
   /// When long-pressing on any verse with the default fonts, you can enable additional features
   /// such as copying the verse, sharing it, and more using [onDefaultAyahLongPress].
-  final Function(LongPressStartDetails details, AyahModel ayah)?
+  final void Function(LongPressStartDetails details, AyahModel ayah)?
       onDefaultAyahLongPress;
 
   /// * تُستخدم مع الخطوط المحملة *
@@ -115,7 +115,7 @@ class QuranLibraryScreen extends StatelessWidget {
   /// * Used with loaded fonts *
   /// When long-pressing on any verse with the loaded fonts, you can enable additional features
   /// such as copying the verse, sharing it, and more using [onFontsAyahLongPress].
-  final Function(LongPressStartDetails details, AyahFontsModel ayah)?
+  final void Function(LongPressStartDetails details, AyahFontsModel ayah)?
       onFontsAyahLongPress;
 
   /// * تُستخدم مع الخطوط المحملة *
@@ -124,7 +124,7 @@ class QuranLibraryScreen extends StatelessWidget {
   /// * Used with loaded fonts *
   /// [onSurahBannerPress] When you press on any Surah banner with the loaded fonts,
   /// you can add some details about the surah
-  final Function(SurahNamesModel surah)? onSurahBannerPress;
+  final void Function(SurahNamesModel surah)? onSurahBannerPress;
 
   /// عند الضغط على الصفحة يمكنك إضافة بعض المميزات مثل حذف التظليل عن الآية وغيرها [onPagePress]
   ///
@@ -250,7 +250,7 @@ class QuranLibraryScreen extends StatelessWidget {
               ? _DefaultDrawer(languageCode ?? 'ar')
               : null,
           body: SafeArea(
-            child: withPageView!
+            child: withPageView
                 ? PageView.builder(
                     itemCount: 604,
                     controller: quranCtrl.pageController,
@@ -272,7 +272,7 @@ class QuranLibraryScreen extends StatelessWidget {
                   )
                 : _pageViewBuild(
                     context,
-                    pageIndex!,
+                    pageIndex,
                     quranCtrl,
                   ),
           ),

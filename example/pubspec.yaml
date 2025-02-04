@@ -15,6 +15,7 @@ dependencies:
 
   quran_library:
     path: ../
+  floating_draggable_widget: ^2.3.0
 
 dev_dependencies:
   flutter_test:

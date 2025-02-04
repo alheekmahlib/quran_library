@@ -14,6 +14,7 @@ import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 
 import '/quran_library.dart';
+import 'core/utils/tajweed_rules_list.dart';
 
 part '../../core/extensions/convert_arabic_to_english_numbers_extension.dart';
 part '../../core/extensions/convert_number_extension.dart';

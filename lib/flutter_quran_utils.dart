@@ -337,6 +337,14 @@ class QuranLibrary {
   List<AyahFontsModel> getPageAyahsByPageNumber({required int pageNumber}) =>
       quranCtrl.getPageAyahsByIndex(pageNumber);
 
+  /// لجلب آيات الصفحة عن طريق رقم الصفحة
+  /// يمكنك إستخدام [getTajweedRules].
+  ///
+  /// To fetch the Ayahs in the page by page number,
+  /// you can use [getTajweedRules].
+  List<TajweedRuleModel> getTajweedRules({required String languageCode}) =>
+      quranCtrl.getTajweedRules(languageCode: languageCode);
+
   /// [hafsStyle] هو النمط الافتراضي للقرآن، مما يضمن عرض جميع الأحرف الخاصة بشكل صحيح.
   ///
   /// [hafsStyle] is the default style for Quran so all special characters will be rendered correctly

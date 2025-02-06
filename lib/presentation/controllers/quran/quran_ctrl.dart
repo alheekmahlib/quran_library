@@ -306,20 +306,20 @@ class QuranCtrl extends GetxController {
     update();
   }
 
-  List<TajweedRuleModel> getTajweedRules({required String languageCode}) {
-    if (languageCode == "ar") {
-      return tajweedRulesListAr;
-    } else if (languageCode == "en") {
-      return tajweedRulesListEn;
-    } else if (languageCode == "bn") {
-      return tajweedRulesListBn;
-    } else if (languageCode == "id") {
-      return tajweedRulesListId;
-    } else if (languageCode == "tr") {
-      return tajweedRulesListTr;
-    } else if (languageCode == "ur") {
-      return tajweedRulesListUr;
-    }
-    return tajweedRulesListAr;
-  }
+  // List<TajweedRuleModel> getTajweedRules({required String languageCode}) {
+  //   if (languageCode == "ar") {
+  //     return tajweedRulesListAr;
+  //   } else if (languageCode == "en") {
+  //     return tajweedRulesListEn;
+  //   } else if (languageCode == "bn") {
+  //     return tajweedRulesListBn;
+  //   } else if (languageCode == "id") {
+  //     return tajweedRulesListId;
+  //   } else if (languageCode == "tr") {
+  //     return tajweedRulesListTr;
+  //   } else if (languageCode == "ur") {
+  //     return tajweedRulesListUr;
+  //   }
+  //   return tajweedRulesListAr;
+  // }
 }

@@ -342,8 +342,8 @@ class QuranLibrary {
   ///
   /// To fetch the Ayahs in the page by page number,
   /// you can use [getTajweedRules].
-  List<TajweedRuleModel> getTajweedRules({required String languageCode}) =>
-      quranCtrl.getTajweedRules(languageCode: languageCode);
+  // List<TajweedRuleModel> getTajweedRules({required String languageCode}) =>
+  //     quranCtrl.getTajweedRules(languageCode: languageCode);
 
   /// [hafsStyle] هو النمط الافتراضي للقرآن، مما يضمن عرض جميع الأحرف الخاصة بشكل صحيح.
   ///

@@ -224,7 +224,7 @@ class QuranFontsPage extends StatelessWidget {
           foreground: quranCtrl.state.isTajweed.value == 0
               ? isDark
                   ? (Paint()
-                    ..color = Colors.black
+                    ..color = Colors.white
                     //exclusion or difference
                     ..blendMode = BlendMode.exclusion)
                   : (Paint()

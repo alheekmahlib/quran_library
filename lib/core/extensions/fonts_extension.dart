@@ -52,8 +52,7 @@ extension FontsExtension on QuranCtrl {
       final client = http.Client();
       final response = await client.send(http.Request(
         'GET',
-        Uri.parse(
-            'https://archive.org/download/quran_fonts_tajweed_v4_hafs/quran_fonts_tajweed_v4_hafs.zip'),
+        Uri.parse('https://archive.org/download/quran_fonts/quran_fonts.zip'),
       ));
 
       if (response.statusCode != 200) {
@@ -62,13 +61,13 @@ extension FontsExtension on QuranCtrl {
 
       // تحديد المسار الذي سيتم حفظ الملف فيه
       final appDir = await getApplicationDocumentsDirectory();
-      final fontsDir = Directory('${appDir.path}/quran_fonts_tajweed_v4_hafs');
+      final fontsDir = Directory('${appDir.path}/quran_fonts');
       if (!await fontsDir.exists()) {
         await fontsDir.create(recursive: true);
       }
 
       // حفظ ملف ZIP إلى التطبيق
-      final zipFile = File('${appDir.path}/quran_fonts_tajweed_v4_hafs.zip');
+      final zipFile = File('${appDir.path}/quran_fonts.zip');
       final fileSink = zipFile.openWrite();
 
       // حجم الملف الإجمالي
@@ -175,11 +174,11 @@ extension FontsExtension on QuranCtrl {
       final appDir = await getApplicationDocumentsDirectory();
       // تعديل المسار ليشمل المجلد الإضافي
       final fontFile = File(
-          '${appDir.path}/quran_fonts_tajweed_v4_hafs/quran_fonts_tajweed_v4_hafs/p${(pageIndex + 1)}.ttf');
+          '${appDir.path}/quran_fonts/quran_fonts/p${(pageIndex + 2001)}.ttf');
       if (!await fontFile.exists()) {
-        throw Exception("Font file not found for page: ${pageIndex + 1}");
+        throw Exception("Font file not found for page: ${pageIndex + 2001}");
       }
-      final fontLoader = FontLoader('p${(pageIndex + 1)}');
+      final fontLoader = FontLoader('p${(pageIndex + 2001)}');
       fontLoader.addFont(_getFontLoaderBytes(fontFile));
       await fontLoader.load();
     } catch (e) {
@@ -191,7 +190,7 @@ extension FontsExtension on QuranCtrl {
     try {
       state.fontsDownloadedList.elementAt(fontIndex);
       final appDir = await getApplicationDocumentsDirectory();
-      final fontsDir = Directory('${appDir.path}/quran_fonts_tajweed_v4_hafs');
+      final fontsDir = Directory('${appDir.path}/quran_fonts');
 
       // التحقق من وجود مجلد الخطوط
       if (await fontsDir.exists()) {

@@ -42,7 +42,7 @@ TextSpan span({
       first = TextSpan(
         text: partOne,
         style: TextStyle(
-          fontFamily: 'p${(pageIndex + 1)}',
+          fontFamily: 'p${(pageIndex + 2001)}',
           fontSize: fontSize,
           height: 2,
           letterSpacing: pageIndex == 54 || pageIndex == 75 ? 0 : 30,
@@ -71,7 +71,7 @@ TextSpan span({
       second = TextSpan(
         text: partTwo,
         style: TextStyle(
-          fontFamily: 'p${(pageIndex + 1)}',
+          fontFamily: 'p${(pageIndex + 2001)}',
           fontSize: fontSize,
           height: 2,
           letterSpacing: 0,
@@ -103,7 +103,7 @@ TextSpan span({
     final TextSpan initialTextSpan = TextSpan(
       text: initialPart,
       style: TextStyle(
-        fontFamily: 'p${(pageIndex + 1)}',
+        fontFamily: 'p${(pageIndex + 2001)}',
         fontSize: fontSize,
         height: 2,
         letterSpacing: 0,
@@ -130,49 +130,48 @@ TextSpan span({
         ..onLongPressStart = onLongPressStart,
     );
 
-    var lastCharacterSpan =
-        // bookmarkCtrl
-        //         .hasBookmark(surahNum, ayahUQNum, bookmarkList)
-        //         .value ||
-        //     bookmarksAyahs.contains(ayahUQNum)
-        // ? WidgetSpan(
-        //     child: Padding(
-        //     padding:
-        //         const EdgeInsets.symmetric(horizontal: 8.0, vertical: 60.0),
-        //     child: SvgPicture.asset(
-        //       AssetsPath().ayahBookmarked,
-        //       height: 100,
-        //       width: 100,
-        //     ),
-        //   ))
-        // :
-        TextSpan(
-      text: lastCharacter,
-      style: TextStyle(
-        fontFamily: 'p${(pageIndex + 1)}',
-        fontSize: fontSize,
-        height: 2,
-        letterSpacing: -10,
-        foreground: Paint(),
-        backgroundColor:
-            bookmarkCtrl.hasBookmark(surahNum, ayahUQNum, bookmarkList).value
-                ? bookmarksColor
-                : (bookmarksAyahs.contains(ayahUQNum)
-                    ? Color(allBookmarks
-                            .firstWhere(
-                              (b) => b.ayahId == ayahUQNum,
-                            )
-                            .colorCode)
-                        .withValues(alpha: 0.3)
-                    : isSelected
-                        ? ayahSelectedBackgroundColor ??
-                            const Color(0xffCDAD80).withValues(alpha: 0.25)
-                        : null),
-      ),
-      recognizer: LongPressGestureRecognizer(
-          duration: const Duration(milliseconds: 500))
-        ..onLongPressStart = onLongPressStart,
-    );
+    var lastCharacterSpan = bookmarkCtrl
+                .hasBookmark(surahNum, ayahUQNum, bookmarkList)
+                .value ||
+            bookmarksAyahs.contains(ayahUQNum)
+        ? WidgetSpan(
+            child: Padding(
+            padding:
+                const EdgeInsets.symmetric(horizontal: 8.0, vertical: 20.0),
+            child: SvgPicture.asset(
+              AssetsPath().ayahBookmarked,
+              height: 100,
+              width: 100,
+            ),
+          ))
+        : TextSpan(
+            text: lastCharacter,
+            style: TextStyle(
+              fontFamily: 'p${(pageIndex + 2001)}',
+              fontSize: fontSize,
+              height: 2,
+              // letterSpacing: -10,
+              color: textColor,
+              backgroundColor: bookmarkCtrl
+                      .hasBookmark(surahNum, ayahUQNum, bookmarkList)
+                      .value
+                  ? bookmarksColor
+                  : (bookmarksAyahs.contains(ayahUQNum)
+                      ? Color(allBookmarks
+                              .firstWhere(
+                                (b) => b.ayahId == ayahUQNum,
+                              )
+                              .colorCode)
+                          .withValues(alpha: 0.3)
+                      : isSelected
+                          ? ayahSelectedBackgroundColor ??
+                              const Color(0xffCDAD80).withValues(alpha: 0.25)
+                          : null),
+            ),
+            recognizer: LongPressGestureRecognizer(
+                duration: const Duration(milliseconds: 500))
+              ..onLongPressStart = onLongPressStart,
+          );
 
     return TextSpan(
       children: isFirstAyah

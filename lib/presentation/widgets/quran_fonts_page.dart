@@ -156,50 +156,8 @@ class QuranFontsPage extends StatelessWidget {
                                     ),
                               FittedBox(
                                 fit: BoxFit.fitWidth,
-                                child: Obx(() => _richTextWidget(
-                                        context, quranCtrl, ayahs)
-                                    // isTajweed
-                                    // ? isDark
-                                    //     ? Stack(
-                                    //         children: [
-                                    //           ColorFiltered(
-                                    //             colorFilter: ColorFilter.mode(
-                                    //                 Colors.white,
-                                    //                 BlendMode.modulate),
-                                    //             child: _richTextWidget(
-                                    //                 context, quranCtrl, ayahs),
-                                    //           ),
-                                    //           ShaderMask(
-                                    //             shaderCallback: (bounds) =>
-                                    //                 LinearGradient(
-                                    //               colors: [
-                                    //                 Colors.white,
-                                    //                 Colors.white
-                                    //               ], // اللون الجديد للنص الأسود
-                                    //             ).createShader(bounds),
-                                    //             blendMode: BlendMode.srcATop,
-                                    //             child: Opacity(
-                                    //               opacity: 0.6,
-                                    //               child: _richTextWidget(
-                                    //                   context,
-                                    //                   quranCtrl,
-                                    //                   ayahs),
-                                    //             ),
-                                    //           ),
-                                    //         ],
-                                    //       )
-                                    //     : _richTextWidget(
-                                    //         context, quranCtrl, ayahs)
-                                    // : isDark
-                                    //     ? ColorFiltered(
-                                    //         colorFilter: ColorFilter.mode(
-                                    //             Colors.white, BlendMode.srcIn),
-                                    //         child: _richTextWidget(
-                                    //             context, quranCtrl, ayahs),
-                                    //       )
-                                    //     : _richTextWidget(
-                                    //         context, quranCtrl, ayahs),
-                                    ),
+                                child: Obx(() =>
+                                    _richTextWidget(context, quranCtrl, ayahs)),
                               ),
                             ]);
                           }),
@@ -216,29 +174,11 @@ class QuranFontsPage extends StatelessWidget {
       textAlign: TextAlign.center,
       text: TextSpan(
         style: TextStyle(
-          fontFamily: 'p${(pageIndex + 1)}',
+          fontFamily: 'p${(pageIndex + 2001)}',
           fontSize: 100,
           height: 1.7,
           letterSpacing: 2,
-          // color: isDark ? null : textColor,
-          foreground: quranCtrl.state.isTajweed.value == 0
-              ? isDark
-                  ? (Paint()
-                    ..color = Colors.black
-                    //exclusion or difference
-                    ..blendMode = BlendMode.exclusion)
-                  : (Paint()
-                    ..color = Colors.black
-                    ..blendMode = BlendMode.srcATop)
-              : isDark
-                  ? (Paint()
-                    ..color = Colors.white
-                    ..colorFilter =
-                        ColorFilter.mode(Colors.white, BlendMode.srcATop))
-                  : (Paint()
-                    ..color = Colors.black
-                    ..colorFilter =
-                        ColorFilter.mode(Colors.black, BlendMode.srcATop)),
+          color: isDark ? Colors.white : textColor,
           shadows: [
             Shadow(
               blurRadius: 0.5,

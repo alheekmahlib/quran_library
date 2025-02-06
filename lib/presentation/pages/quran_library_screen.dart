@@ -2,61 +2,51 @@ part of '../../quran.dart';
 
 class QuranLibraryScreen extends StatelessWidget {
   const QuranLibraryScreen({
-    // this.showBottomWidget = true,
-    this.useDefaultAppBar = true,
-    // this.bottomWidget,
-    this.appBar,
-    this.onPageChanged,
     super.key,
-    this.basmalaStyle,
-    this.bannerStyle,
-    this.withPageView = true,
-    this.pageIndex = 0,
-    this.bookmarksColor,
-    this.onDefaultAyahLongPress,
-    this.textColor,
-    this.surahNumber,
+    this.appBar,
+    this.ayahIconColor,
     this.ayahSelectedBackgroundColor,
-    this.bookmarkList = const [],
-    this.onSurahBannerPress,
-    this.onPagePress,
-    this.surahNameStyle,
+    this.bannerStyle,
+    this.basmalaStyle,
     this.backgroundColor,
-    this.surahInfoStyle,
-    this.languageCode = 'ar',
-    this.downloadFontsDialogStyle,
-    this.juzName,
-    this.sajdaName,
-    this.topTitleChild,
-    this.onFontsAyahLongPress,
-    this.isDark = false,
+    this.bookmarkList = const [],
+    this.bookmarksColor,
     this.circularProgressWidget,
+    this.downloadFontsDialogStyle,
+    this.isDark = false,
+    this.juzName,
+    this.languageCode = 'ar',
+    this.onDefaultAyahLongPress,
+    this.onFontsAyahLongPress,
+    this.onPageChanged,
+    this.onPagePress,
+    this.onSurahBannerPress,
+    this.pageIndex = 0,
+    this.sajdaName,
+    this.showAyahBookmarkedIcon = true,
+    this.surahInfoStyle,
+    this.surahNameStyle,
+    this.surahNumber,
+    this.textColor,
+    this.topTitleChild,
+    this.useDefaultAppBar = true,
+    this.withPageView = true,
   });
-
-  // /// متغير لتعطيل أو تمكين الويدجت السفلية الافتراضية [showBottomWidget]
-  // ///
-  // /// [showBottomWidget] is a bool to disable or enable the default bottom widget
-  // final bool showBottomWidget;
-
-  /// متغير لتعطيل أو تمكين شريط التطبيقات الافتراضية [useDefaultAppBar]
-  ///
-  /// [useDefaultAppBar] is a bool to disable or enable the default app bar widget
-  final bool useDefaultAppBar;
-
-  // /// إذا قمت بإضافة قطعة هنا فإنه سيحل محل القطعة السفلية الافتراضية [bottomWidget]
-  // ///
-  // /// [bottomWidget] if if provided it will replace the default bottom widget
-  // final Widget? bottomWidget;
 
   /// إذا قمت بإضافة شريط التطبيقات هنا فإنه سيحل محل شريط التطبيقات الافتراضية [appBar]
   ///
   /// [appBar] if if provided it will replace the default app bar
   final PreferredSizeWidget? appBar;
 
-  /// إذا تم توفيره فسيتم استدعاؤه عند تغيير صفحة القرآن [onPageChanged]
+  /// يمكنك تمرير لون لأيقونة الآية [ayahIconColor]
   ///
-  /// [onPageChanged] if provided it will be called when a quran page changed
-  final Function(int pageNumper)? onPageChanged;
+  /// [ayahIconColor] You can pass the color of the Ayah icon
+  final Color? ayahIconColor;
+
+  /// يمكنك تمرير لون خلفية الآية المحدد [ayahSelectedBackgroundColor]
+  ///
+  /// [ayahSelectedBackgroundColor] You can pass the color of the Ayah selected background
+  final Color? ayahSelectedBackgroundColor;
 
   /// تغيير نمط البسملة بواسطة هذه الفئة [BasmalaStyle]
   ///
@@ -68,35 +58,64 @@ class QuranLibraryScreen extends StatelessWidget {
   /// [BannerStyle] Change the style of banner by BannerStyle class
   final BannerStyle? bannerStyle;
 
-  /// تغيير نمط اسم السورة بهذه الفئة [SurahNameStyle]
+  /// إذا كنت تريد إضافة قائمة إشارات مرجعية خاصة، فقط قم بتمريرها لـ [bookmarkList]
   ///
-  /// [SurahNameStyle] Change the style of surah name by SurahNameStyle class
-  final SurahNameStyle? surahNameStyle;
+  /// If you want to add a private bookmark list, just pass it to [bookmarkList]
+  final List bookmarkList;
 
-  /// تغيير نمط معلومات السورة بواسطة هذه الفئة [SurahInfoStyle]
+  /// تغيير لون الإشارة المرجعية (اختياري) [bookmarksColor]
   ///
-  /// [SurahInfoStyle] Change the style of surah information by SurahInfoStyle class
-  final SurahInfoStyle? surahInfoStyle;
+  /// [bookmarksColor] Change the bookmark color (optional)
+  final Color? bookmarksColor;
+
+  /// إذا كنت تريد تغيير لون خلفية صفحة القرآن [backgroundColor]
+  ///
+  /// [backgroundColor] if you wanna change the background color of Quran page
+  final Color? backgroundColor;
+
+  /// إذا كنت تريد إضافة ويدجت بدلًا من الويدجت الإفتراضية [circularProgressWidget]
+  ///
+  /// If you want to add a widget instead of the default widget [circularProgressWidget]
+  final Widget? circularProgressWidget;
 
   /// تغيير نمط نافذة تحميل الخطوط بواسطة هذه الفئة [DownloadFontsDialogStyle]
   ///
   /// [DownloadFontsDialogStyle] Change the style of Download fonts dialog by DownloadFontsDialogStyle class
   final DownloadFontsDialogStyle? downloadFontsDialogStyle;
 
-  /// قم بتمكين هذا المتغير إذا كنت تريد عرض القرآن باستخدام PageView [withPageView]
-  ///
-  /// [withPageView] Enable this variable if you want to display the Quran with PageView
-  final bool withPageView;
-
   /// قم بتمرير رقم الصفحة إذا كنت لا تريد عرض القرآن باستخدام PageView [pageIndex]
   ///
   /// [pageIndex] pass the page number if you do not want to display the Quran with PageView
   final int pageIndex;
 
-  /// تغيير لون الإشارة المرجعية (اختياري) [bookmarksColor]
+  /// قم بتمكين هذا المتغير إذا كنت تريد عرض القرآن في النمط المظلم [isDark]
   ///
-  /// [bookmarksColor] Change the bookmark color (optional)
-  final Color? bookmarksColor;
+  /// [isDark] Enable this variable if you want to display the Quran with dark mode
+  final bool isDark;
+
+  /// إذا كنت تريد تمرير كود اللغة الخاصة بالتطبيق لتغيير الأرقام على حسب اللغة،
+  /// :رمز اللغة الإفتراضي هو 'ar' [languageCode]
+  ///
+  /// [languageCode] If you want to pass the application's language code to change the numbers according to the language,
+  /// the default language code is 'ar'
+  final String? languageCode;
+
+  /// إذا كنت تريد تغيير كلمة "الجزء" إلى كلمة أخرى أو ترجمتها فقط قم بتمريرها لـ [juzName]
+  ///
+  /// If you want to change the word “الجزء” to another word or translate it just pass it to [juzName].
+  ///
+  final String? juzName;
+
+  /// إذا تم توفيره فسيتم استدعاؤه عند تغيير صفحة القرآن [onPageChanged]
+  ///
+  /// [onPageChanged] if provided it will be called when a quran page changed
+  final Function(int pageNumper)? onPageChanged;
+
+  /// عند الضغط على الصفحة يمكنك إضافة بعض المميزات مثل حذف التظليل عن الآية وغيرها [onPagePress]
+  ///
+  /// [onPagePress] When you click on the page, you can add some features,
+  /// such as deleting the shading from the verse and others
+  final VoidCallback? onPagePress;
 
   /// * تُستخدم مع الخطوط الأساسية *
   /// عند الضغط المطوّل على أي آية باستخدام الخطوط الأساسية، يمكنك تفعيل ميزات إضافية
@@ -126,55 +145,31 @@ class QuranLibraryScreen extends StatelessWidget {
   /// you can add some details about the surah
   final void Function(SurahNamesModel surah)? onSurahBannerPress;
 
-  /// عند الضغط على الصفحة يمكنك إضافة بعض المميزات مثل حذف التظليل عن الآية وغيرها [onPagePress]
+  /// إذا كنت تريد تغيير كلمة "سجدة" إلى كلمة أخرى أو ترجمتها فقط قم بتمريرها لـ [sajdaName]
   ///
-  /// [onPagePress] When you click on the page, you can add some features,
-  /// such as deleting the shading from the verse and others
-  final VoidCallback? onPagePress;
+  /// If you want to change the word “سجدة” to another word or translate it just pass it to [sajdaName].
+  ///
+  final String? sajdaName;
 
-  /// يمكنك تمرير لون نص القرآن [textColor]
+  /// يمكنك تمكين أو تعطيل عرض أيقونة الإشارة المرجعية للآية [showAyahBookmarkedIcon]
   ///
-  /// [textColor] You can pass the color of the Quran text
-  final Color? textColor;
+  /// [showAyahBookmarkedIcon] You can enable or disable the display of the Ayah bookmarked icon
+  final bool showAyahBookmarkedIcon;
 
   /// يمكنك تمرير رقم السورة [surahNumber]
   ///
   /// [surahNumber] You can pass the Surah number
   final int? surahNumber;
 
-  /// يمكنك تمرير لون خلفية الآية المحدد [ayahSelectedBackgroundColor]
+  /// تغيير نمط معلومات السورة بواسطة هذه الفئة [SurahInfoStyle]
   ///
-  /// [ayahSelectedBackgroundColor] You can pass the color of the Ayah selected background
-  final Color? ayahSelectedBackgroundColor;
+  /// [SurahInfoStyle] Change the style of surah information by SurahInfoStyle class
+  final SurahInfoStyle? surahInfoStyle;
 
-  /// إذا كنت تريد إضافة قائمة إشارات مرجعية خاصة، فقط قم بتمريرها لـ [bookmarkList]
+  /// تغيير نمط اسم السورة بهذه الفئة [SurahNameStyle]
   ///
-  /// If you want to add a private bookmark list, just pass it to [bookmarkList]
-  final List bookmarkList;
-
-  /// إذا كنت تريد تغيير لون خلفية صفحة القرآن [backgroundColor]
-  ///
-  /// [backgroundColor] if you wanna change the background color of Quran page
-  final Color? backgroundColor;
-
-  /// إذا كنت تريد تمرير كود اللغة الخاصة بالتطبيق لتغيير الأرقام على حسب اللغة،
-  /// :رمز اللغة الإفتراضي هو 'ar' [languageCode]
-  ///
-  /// [languageCode] If you want to pass the application's language code to change the numbers according to the language,
-  /// the default language code is 'ar'
-  final String? languageCode;
-
-  /// إذا كنت تريد تغيير كلمة "الجزء" إلى كلمة أخرى أو ترجمتها فقط قم بتمريرها لـ [juzName]
-  ///
-  /// If you want to change the word “الجزء” to another word or translate it just pass it to [juzName].
-  ///
-  final String? juzName;
-
-  /// إذا كنت تريد تغيير كلمة "سجدة" إلى كلمة أخرى أو ترجمتها فقط قم بتمريرها لـ [sajdaName]
-  ///
-  /// If you want to change the word “سجدة” to another word or translate it just pass it to [juzName].
-  ///
-  final String? sajdaName;
+  /// [SurahNameStyle] Change the style of surah name by SurahNameStyle class
+  final SurahNameStyle? surahNameStyle;
 
   /// إذا كنت تريد إضافة ويدجت بجانب اسم السورة [topTitleChild]
   ///
@@ -182,17 +177,21 @@ class QuranLibraryScreen extends StatelessWidget {
   ///
   final Widget? topTitleChild;
 
-  /// قم بتمكين هذا المتغير إذا كنت تريد عرض القرآن في النمط المظلم [isDark]
+  /// يمكنك تمرير لون نص القرآن [textColor]
   ///
-  /// [isDark] Enable this variable if you want to display the Quran with dark mode
-  ///
-  final bool isDark;
+  /// [textColor] You can pass the color of the Quran text
+  final Color? textColor;
 
-  /// إذا كنت تريد إضافة ويدجت بدلًا من الويدجت الإفتراضية [circularProgressWidget]
+  /// متغير لتعطيل أو تمكين شريط التطبيقات الافتراضية [useDefaultAppBar]
   ///
-  /// If you want to add a widget instead of the default widget [circularProgressWidget]
+  /// [useDefaultAppBar] is a bool to disable or enable the default app bar widget
   ///
-  final Widget? circularProgressWidget;
+  final bool useDefaultAppBar;
+
+  /// قم بتمكين هذا المتغير إذا كنت تريد عرض القرآن باستخدام PageView [withPageView]
+  ///
+  /// [withPageView] Enable this variable if you want to display the Quran with PageView
+  final bool withPageView;
 
   @override
   Widget build(BuildContext context) {
@@ -318,6 +317,8 @@ class QuranLibraryScreen extends StatelessWidget {
                           pageIndex: pageIndex,
                           bookmarkList: bookmarkList,
                           textColor: textColor,
+                          ayahIconColor: ayahIconColor,
+                          showAyahBookmarkedIcon: showAyahBookmarkedIcon,
                           bookmarks: bookmarkCtrl.bookmarks,
                           onFontsAyahLongPress: onFontsAyahLongPress,
                           bookmarksColor: bookmarksColor,
@@ -371,6 +372,8 @@ class QuranLibraryScreen extends StatelessWidget {
               pageIndex: pageIndex,
               bookmarkList: bookmarkList,
               textColor: textColor,
+              ayahIconColor: ayahIconColor,
+              showAyahBookmarkedIcon: showAyahBookmarkedIcon,
               bookmarks: bookmarkCtrl.bookmarks,
               onFontsAyahLongPress: onFontsAyahLongPress,
               bookmarksColor: bookmarksColor,

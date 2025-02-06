@@ -78,4 +78,7 @@ flutter:
     - family: naskh
       fonts:
         - asset: packages/quran_library/assets/fonts/NotoNaskhArabic-VariableFont_wght.ttf
+    - family: uthmanic2
+      fonts:
+        - asset: packages/quran_library/assets/fonts/UthmanicHafs_V20.ttf
 

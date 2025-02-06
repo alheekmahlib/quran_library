@@ -126,9 +126,10 @@ class QuranLinePage extends StatelessWidget {
                             .staticPages[pageIndex].ayahs[0].surahNumber,
                         basmalaStyle: basmalaStyle ??
                             BasmalaStyle(
-                              basmalaColor: Colors.black,
-                              basmalaWidth: 150.0,
-                              basmalaHeight: 30.0,
+                              basmalaColor:
+                                  isDark ? Colors.white : Colors.black,
+                              basmalaWidth: 160.0,
+                              basmalaHeight: 40.0,
                             ),
                       ),
                     ...quranCtrl.staticPages[pageIndex].lines.map((line) {
@@ -231,12 +232,15 @@ class QuranLinePage extends StatelessWidget {
                         if (firstAyah && (line.ayahs[0].surahNumber != 9))
                           BasmallahWidget(
                             surahNumber: quranCtrl
-                                .staticPages[pageIndex].ayahs[0].surahNumber,
+                                .getSurahDataByAyahUQ(
+                                    line.ayahs[0].ayahUQNumber)
+                                .surahNumber,
                             basmalaStyle: basmalaStyle ??
                                 BasmalaStyle(
-                                  basmalaColor: Colors.black,
-                                  basmalaWidth: 150.0,
-                                  basmalaHeight: 30.0,
+                                  basmalaColor:
+                                      isDark ? Colors.white : Colors.black,
+                                  basmalaWidth: 160.0,
+                                  basmalaHeight: 40.0,
                                 ),
                           ),
                         SizedBox(

@@ -10,8 +10,10 @@ TextSpan span({
   required int ayahUQNum,
   LongPressStartDetailsFunction? onLongPressStart,
   required bool isFirstAyah,
+  required bool showAyahBookmarkedIcon,
   required List? bookmarkList,
   required Color? textColor,
+  required Color? ayahIconColor,
   required Map<int, List<BookmarkModel>> bookmarks,
   required List<int> bookmarksAyahs,
   Color? bookmarksColor,
@@ -130,28 +132,31 @@ TextSpan span({
         ..onLongPressStart = onLongPressStart,
     );
 
-    var lastCharacterSpan = bookmarkCtrl
-                .hasBookmark(surahNum, ayahUQNum, bookmarkList)
-                .value ||
-            bookmarksAyahs.contains(ayahUQNum)
+    var lastCharacterSpan = (bookmarkCtrl
+                    .hasBookmark(surahNum, ayahUQNum, bookmarkList)
+                    .value ||
+                bookmarksAyahs.contains(ayahUQNum)) &&
+            showAyahBookmarkedIcon
         ? WidgetSpan(
+            alignment: PlaceholderAlignment.middle,
             child: Padding(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 8.0, vertical: 20.0),
-            child: SvgPicture.asset(
-              AssetsPath().ayahBookmarked,
-              height: 100,
-              width: 100,
-            ),
-          ))
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              child: SvgPicture.asset(
+                AssetsPath().ayahBookmarked,
+                height: 100,
+                width: 100,
+              ),
+            ))
         : TextSpan(
             text: lastCharacter,
             style: TextStyle(
               fontFamily: 'p${(pageIndex + 2001)}',
               fontSize: fontSize,
               height: 2,
-              // letterSpacing: -10,
-              color: textColor,
+              letterSpacing: isFirstAyah && (pageIndex == 1 || pageIndex == 49)
+                  ? 20
+                  : null,
+              color: ayahIconColor,
               backgroundColor: bookmarkCtrl
                       .hasBookmark(surahNum, ayahUQNum, bookmarkList)
                       .value
@@ -190,14 +195,15 @@ TextSpan customSpan({
   required String text,
   required int pageIndex,
   required bool isSelected,
+  required bool showAyahBookmarkedIcon,
   double? fontSize,
   required int surahNum,
   required int ayahUQNum,
   required int ayahNumber,
   LongPressStartDetailsFunction? onLongPressStart,
-  required bool isFirstAyah,
   required List? bookmarkList,
   required Color? textColor,
+  required Color? ayahIconColor,
   required Map<int, List<BookmarkModel>> bookmarks,
   required List<int> bookmarksAyahs,
   Color? bookmarksColor,
@@ -212,7 +218,7 @@ TextSpan customSpan({
         TextSpan(
           text: text,
           style: TextStyle(
-            fontFamily: 'hafs',
+            fontFamily: 'uthmanic2',
             fontSize: fontSize,
             height: 2,
             color: textColor ?? Colors.black,
@@ -237,7 +243,9 @@ TextSpan customSpan({
               duration: const Duration(milliseconds: 500))
             ..onLongPressStart = onLongPressStart,
         ),
-        bookmarkCtrl.hasBookmark(surahNum, ayahUQNum, bookmarkList).value
+        (bookmarkCtrl.hasBookmark(surahNum, ayahUQNum, bookmarkList).value ||
+                    bookmarksAyahs.contains(ayahUQNum)) &&
+                showAyahBookmarkedIcon
             ? WidgetSpan(
                 child: Padding(
                 padding:
@@ -252,14 +260,10 @@ TextSpan customSpan({
                     .toString()
                     .convertNumbersAccordingToLang(languageCode: languageCode),
                 style: TextStyle(
-                  fontFamily: 'hafs',
+                  fontFamily: 'uthmanic2',
                   fontSize: fontSize,
                   height: 2,
-                  color: bookmarkCtrl
-                          .hasBookmark(surahNum, ayahUQNum, bookmarkList)
-                          .value
-                      ? textColor ?? Colors.black
-                      : const Color(0xff77554B),
+                  color: ayahIconColor,
                   backgroundColor: bookmarkCtrl
                           .hasBookmark(surahNum, ayahUQNum, bookmarkList)
                           .value

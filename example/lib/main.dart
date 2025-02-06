@@ -6,6 +6,7 @@ void main() => runApp(
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
           primaryColor: Colors.blue,
+          useMaterial3: false,
         ),
         home: const MyApp(),
       ),
@@ -28,7 +29,9 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return QuranLibraryScreen(
-      isDark: true,
+      // isDark: true,
+      showAyahBookmarkedIcon: false,
+      ayahIconColor: Color(0xffcdad80),
       // backgroundColor: Colors.black,
       // textColor: Colors.white,
     );

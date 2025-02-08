@@ -4,22 +4,22 @@ extension FontsDownloadWidgetExtension on QuranCtrl {
   Widget fontsDownloadWidget(BuildContext context,
       {DownloadFontsDialogStyle? downloadFontsDialogStyle,
       String? languageCode,
-      bool? isDark = false}) {
+      bool isDark = false}) {
     final quranCtrl = QuranCtrl.instance;
 
     List<String> titleList = [
-      downloadFontsDialogStyle?.defaultFontText ?? 'الخط الأساسية',
-      downloadFontsDialogStyle?.downloadedFontsText ?? 'خط المصحف مع التجويد',
+      downloadFontsDialogStyle?.defaultFontText ?? 'الخط الأساسي',
+      downloadFontsDialogStyle?.downloadedFontsText ?? 'خط المصحف',
     ];
     // List<String> tajweedList = [
     //   downloadFontsDialogStyle?.withTajweedText ?? 'مع التجويد',
     //   downloadFontsDialogStyle?.withoutTajweedText ?? 'بدون تجويد',
     // ];
-    return Container(
-      height: 390,
+    return Padding(
       padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
         children: [
           Text(
             downloadFontsDialogStyle?.title ?? 'الخطوط',
@@ -27,7 +27,8 @@ extension FontsDownloadWidgetExtension on QuranCtrl {
               fontSize: 16.0,
               fontWeight: FontWeight.bold,
               fontFamily: 'kufi',
-              color: downloadFontsDialogStyle?.titleColor ?? Colors.black,
+              color: downloadFontsDialogStyle?.titleColor ??
+                  (isDark ? Colors.white : Colors.black),
               package: 'quran_library',
             ),
             textAlign: TextAlign.center,
@@ -42,11 +43,15 @@ extension FontsDownloadWidgetExtension on QuranCtrl {
             style: TextStyle(
                 fontSize: 16.0,
                 fontFamily: 'naskh',
-                color: downloadFontsDialogStyle?.notesColor ?? Colors.black,
+                color: downloadFontsDialogStyle?.notesColor ??
+                    (isDark ? Colors.white : Colors.black),
                 package: 'quran_library'),
           ),
-          Spacer(),
+          SizedBox(
+            height: 100,
+          ),
           Column(
+            mainAxisSize: MainAxisSize.min,
             children: List.generate(
               titleList.length,
               (i) => Container(
@@ -54,9 +59,14 @@ extension FontsDownloadWidgetExtension on QuranCtrl {
                 decoration: BoxDecoration(
                   border: Border.all(
                     color: downloadFontsDialogStyle
-                            ?.downloadButtonBackgroundColor!
-                            .withValues(alpha: .2) ??
-                        Colors.blue.withValues(alpha: .2),
+                                ?.downloadButtonBackgroundColor !=
+                            null
+                        ? downloadFontsDialogStyle!
+                            .downloadButtonBackgroundColor!
+                            .withValues(alpha: .2)
+                        : isDark
+                            ? Colors.blue.withValues(alpha: .4)
+                            : Colors.blue.withValues(alpha: .2),
                     width: 1.0,
                   ),
                   borderRadius: BorderRadius.circular(8.0),
@@ -73,9 +83,10 @@ extension FontsDownloadWidgetExtension on QuranCtrl {
                   height: 50,
                   margin: EdgeInsets.symmetric(vertical: 4.0),
                   color: quranCtrl.state.fontsSelected2.value == i
-                      ? downloadFontsDialogStyle?.linearProgressColor!
-                              .withValues(alpha: .05) ??
-                          Colors.blue.withValues(alpha: .05)
+                      ? downloadFontsDialogStyle?.linearProgressColor != null
+                          ? downloadFontsDialogStyle?.linearProgressColor!
+                              .withValues(alpha: .05)
+                          : Colors.blue.withValues(alpha: .05)
                       : null,
                   child: CheckboxListTile(
                       value: (quranCtrl.state.fontsSelected2.value == i)
@@ -106,7 +117,7 @@ extension FontsDownloadWidgetExtension on QuranCtrl {
                           fontSize: 16,
                           fontFamily: 'naskh',
                           color: downloadFontsDialogStyle?.titleColor ??
-                              Colors.black,
+                              (isDark ? Colors.white : Colors.black),
                           package: 'quran_library',
                         ),
                       ),
@@ -242,14 +253,14 @@ extension FontsDownloadWidgetExtension on QuranCtrl {
               ),
             ),
           ),
-          Obx(() => quranCtrl.state.fontsDownloadProgress.value != 0.0 &&
-                  quranCtrl.state.isDownloadingFonts.value
+          Obx(() => quranCtrl.state.isDownloadingFonts.value
               ? Text(
-                  '${downloadFontsDialogStyle?.downloadingText} ${quranCtrl.state.fontsDownloadProgress.value.toStringAsFixed(1)}%'
+                  '${downloadFontsDialogStyle?.downloadingText ?? 'جاري التحميل'} ${quranCtrl.state.fontsDownloadProgress.value.toStringAsFixed(1)}%'
                       .convertNumbersAccordingToLang(
                           languageCode: languageCode ?? 'ar'),
                   style: TextStyle(
-                    color: downloadFontsDialogStyle?.notesColor ?? Colors.black,
+                    color: downloadFontsDialogStyle?.notesColor ??
+                        (isDark ? Colors.white : Colors.black),
                     fontSize: 16,
                     fontFamily: 'naskh',
                     package: 'quran_library',

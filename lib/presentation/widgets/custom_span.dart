@@ -47,7 +47,8 @@ TextSpan span({
           fontFamily: 'p${(pageIndex + 2001)}',
           fontSize: fontSize,
           height: 2,
-          letterSpacing: pageIndex == 54 || pageIndex == 75 ? 0 : 30,
+          letterSpacing:
+              pageIndex == 54 || pageIndex == 75 || pageIndex == 539 ? 0 : 30,
           color: quranCtrl.state.fontsSelected2.value == 1
               ? textColor ?? Colors.transparent
               : null,
@@ -153,7 +154,13 @@ TextSpan span({
               fontFamily: 'p${(pageIndex + 2001)}',
               fontSize: fontSize,
               height: 2,
-              letterSpacing: isFirstAyah && (pageIndex == 1 || pageIndex == 49)
+              letterSpacing: isFirstAyah &&
+                      (pageIndex == 1 ||
+                          pageIndex == 49 ||
+                          pageIndex == 476 ||
+                          pageIndex == 482 ||
+                          pageIndex == 495 ||
+                          pageIndex == 498)
                   ? 20
                   : null,
               color: ayahIconColor,
@@ -247,14 +254,14 @@ TextSpan customSpan({
                     bookmarksAyahs.contains(ayahUQNum)) &&
                 showAyahBookmarkedIcon
             ? WidgetSpan(
+                alignment: PlaceholderAlignment.middle,
                 child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 8.0, vertical: 15.0),
-                child: SvgPicture.asset(
-                  AssetsPath().ayahBookmarked,
-                  height: 35,
-                ),
-              ))
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: SvgPicture.asset(
+                    AssetsPath().ayahBookmarked,
+                    height: 35,
+                  ),
+                ))
             : TextSpan(
                 text: ayahNumber
                     .toString()

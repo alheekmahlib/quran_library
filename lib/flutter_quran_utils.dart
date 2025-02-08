@@ -174,9 +174,12 @@ class QuranLibrary {
           {required int surahNumber,
           required BuildContext context,
           SurahInfoStyle? surahInfoStyle,
-          String? languageCode}) =>
+          String? languageCode,
+          bool isDark = false}) =>
       surahInfoDialogWidget(context, surahNumber - 1,
-          surahStyle: surahInfoStyle, languageCode: languageCode);
+          surahStyle: surahInfoStyle,
+          languageCode: languageCode,
+          isDark: isDark);
 
   /// [getSurahInfo] تتيح لك الحصول على سورة مع جميع بياناتها.
   /// ملاحظة: تستقبل هذه الطريقة رقم السورة وليس فهرس السورة.
@@ -199,10 +202,12 @@ class QuranLibrary {
   /// and style [DownloadFontsDialogStyle] is optional.
   Widget getFontsDownloadDialog(
           DownloadFontsDialogStyle? downloadFontsDialogStyle,
-          String? languageCode) =>
+          String? languageCode,
+          {bool isDark = false}) =>
       FontsDownloadDialog(
         downloadFontsDialogStyle: downloadFontsDialogStyle,
         languageCode: languageCode,
+        isDark: isDark,
       );
 
   /// للحصول على الويدجت الخاصة بتنزيل الخطوط فقط قم بإستدعاء [getFontsDownloadWidget]
@@ -210,10 +215,14 @@ class QuranLibrary {
   /// to get the fonts download widget just call [getFontsDownloadWidget]
   Widget getFontsDownloadWidget(BuildContext context,
           {DownloadFontsDialogStyle? downloadFontsDialogStyle,
-          String? languageCode}) =>
-      quranCtrl.fontsDownloadWidget(context,
-          downloadFontsDialogStyle: downloadFontsDialogStyle,
-          languageCode: languageCode);
+          String? languageCode,
+          bool isDark = false}) =>
+      quranCtrl.fontsDownloadWidget(
+        context,
+        downloadFontsDialogStyle: downloadFontsDialogStyle,
+        languageCode: languageCode,
+        isDark: isDark,
+      );
 
   /// للحصول على طريقة تنزيل الخطوط فقط قم بإستدعاء [fontsDownloadMethod]
   ///

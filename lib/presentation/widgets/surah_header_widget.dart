@@ -30,7 +30,9 @@ class SurahHeaderWidget extends StatelessWidget {
             onSurahBannerPress!(quranCtrl.surahsList[surahNumber - 1]);
           } else {
             surahInfoDialogWidget(context, surahNumber - 1,
-                surahStyle: surahInfoStyle!, deviceWidth: deviceWidth);
+                surahStyle: surahInfoStyle!,
+                deviceWidth: deviceWidth,
+                isDark: isDark);
           }
         },
         child: Container(
@@ -67,7 +69,9 @@ class SurahHeaderWidget extends StatelessWidget {
                 onSurahBannerPress!(quranCtrl.surahsList[surahNumber - 1]);
               } else {
                 surahInfoDialogWidget(context, surahNumber - 1,
-                    surahStyle: surahInfoStyle!, deviceWidth: deviceWidth);
+                    surahStyle: surahInfoStyle!,
+                    deviceWidth: deviceWidth,
+                    isDark: isDark);
               }
             },
             child: Stack(

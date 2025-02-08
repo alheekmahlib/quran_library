@@ -212,6 +212,17 @@ class QuranLibraryScreen extends StatelessWidget {
                           (isDark
                               ? const Color(0xff202020)
                               : const Color(0xfffaf7f3)),
+                      leading: Builder(
+                        builder: (context) => IconButton(
+                          icon: Icon(
+                            Icons.menu,
+                            color: isDark ? Colors.white : Colors.black,
+                          ),
+                          onPressed: () {
+                            Scaffold.of(context).openDrawer();
+                          },
+                        ),
+                      ),
                       elevation: 0,
                       actions: [
                         FontsDownloadDialog(
@@ -222,20 +233,24 @@ class QuranLibraryScreen extends StatelessWidget {
                                       ? Icons.settings
                                       : Icons.downloading_outlined,
                                   size: 24,
-                                  color: Colors.black,
+                                  color: isDark ? Colors.white : Colors.black,
                                 ),
                                 title: 'الخطوط',
-                                titleColor: Colors.black,
+                                titleColor:
+                                    isDark ? Colors.white : Colors.black,
                                 notes:
                                     'لجعل مظهر المصحف مشابه لمصحف المدينة يمكنك تحميل خطوط المصحف',
-                                notesColor: Colors.black,
+                                notesColor:
+                                    isDark ? Colors.white : Colors.black,
                                 linearProgressBackgroundColor:
                                     Colors.blue.shade100,
                                 linearProgressColor: Colors.blue,
                                 downloadButtonBackgroundColor: Colors.blue,
                                 downloadButtonTextColor: Colors.white,
                                 downloadingText: 'جارِ التحميل',
-                                backgroundColor: const Color(0xFFF7EFE0),
+                                backgroundColor: isDark
+                                    ? Color(0xff202020)
+                                    : const Color(0xFFF7EFE0),
                                 downloadedNotesTitle: 'ملاحظة:',
                                 downloadedNotesBody: 'يرجى تحميل الخطوط أولًا!',
                               ),
@@ -246,7 +261,7 @@ class QuranLibraryScreen extends StatelessWidget {
                     )
                   : null),
           drawer: appBar == null && useDefaultAppBar
-              ? _DefaultDrawer(languageCode ?? 'ar')
+              ? _DefaultDrawer(languageCode ?? 'ar', isDark)
               : null,
           body: SafeArea(
             child: withPageView

@@ -116,16 +116,28 @@ class QuranFontsPage extends StatelessWidget {
                                           ayahCount: 'عدد الآيات',
                                           secondTabText: 'عن السورة',
                                           firstTabText: 'أسماء السورة',
-                                          backgroundColor: Colors.white,
-                                          closeIconColor: Colors.black,
-                                          indicatorColor:
-                                              Colors.amber.withValues(alpha: 2),
-                                          primaryColor:
-                                              Colors.amber.withValues(alpha: 2),
-                                          surahNameColor: Colors.black,
-                                          surahNumberColor: Colors.black,
-                                          textColor: Colors.black,
-                                          titleColor: Colors.black,
+                                          backgroundColor: isDark
+                                              ? const Color(0xff202020)
+                                              : const Color(0xfffaf7f3),
+                                          closeIconColor: isDark
+                                              ? Colors.white
+                                              : Colors.black,
+                                          indicatorColor: Colors.amber
+                                              .withValues(alpha: .2),
+                                          primaryColor: Colors.amber
+                                              .withValues(alpha: .2),
+                                          surahNameColor: isDark
+                                              ? Colors.white
+                                              : Colors.black,
+                                          surahNumberColor: isDark
+                                              ? Colors.white
+                                              : Colors.black,
+                                          textColor: isDark
+                                              ? Colors.white
+                                              : Colors.black,
+                                          titleColor: isDark
+                                              ? Colors.white
+                                              : Colors.black,
                                         ),
                                     onSurahBannerPress: onSurahBannerPress,
                                     isDark: isDark,
@@ -195,16 +207,28 @@ class QuranFontsPage extends StatelessWidget {
                                           ayahCount: 'عدد الآيات',
                                           secondTabText: 'عن السورة',
                                           firstTabText: 'أسماء السورة',
-                                          backgroundColor: Colors.white,
-                                          closeIconColor: Colors.black,
+                                          backgroundColor: isDark
+                                              ? const Color(0xff202020)
+                                              : const Color(0xfffaf7f3),
+                                          closeIconColor: isDark
+                                              ? Colors.white
+                                              : Colors.black,
                                           indicatorColor: Colors.amber
                                               .withValues(alpha: .2),
                                           primaryColor: Colors.amber
                                               .withValues(alpha: .2),
-                                          surahNameColor: Colors.black,
-                                          surahNumberColor: Colors.black,
-                                          textColor: Colors.black,
-                                          titleColor: Colors.black,
+                                          surahNameColor: isDark
+                                              ? Colors.white
+                                              : Colors.black,
+                                          surahNumberColor: isDark
+                                              ? Colors.white
+                                              : Colors.black,
+                                          textColor: isDark
+                                              ? Colors.white
+                                              : Colors.black,
+                                          titleColor: isDark
+                                              ? Colors.white
+                                              : Colors.black,
                                         ),
                                     onSurahBannerPress: onSurahBannerPress,
                                     isDark: isDark,

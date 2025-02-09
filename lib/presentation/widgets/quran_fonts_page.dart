@@ -257,7 +257,6 @@ class QuranFontsPage extends StatelessWidget {
           fontSize: 100,
           height: 1.7,
           letterSpacing: 2,
-          color: isDark ? Colors.white : textColor,
           shadows: [
             Shadow(
               blurRadius: 0.5,

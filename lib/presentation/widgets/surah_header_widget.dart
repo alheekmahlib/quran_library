@@ -36,11 +36,7 @@ class SurahHeaderWidget extends StatelessWidget {
         child: Container(
           height: bannerStyle?.bannerImageHeight ?? 50.0,
           width: bannerStyle?.bannerImageWidth ?? double.infinity,
-          margin: EdgeInsets.symmetric(
-              vertical: quranCtrl.state.fontsSelected2.value == 1 ||
-                      quranCtrl.state.fontsSelected2.value == 2
-                  ? 8.0
-                  : 16.0),
+          margin: EdgeInsets.symmetric(vertical: 8.0),
           padding: const EdgeInsets.symmetric(vertical: 0.0),
           decoration: BoxDecoration(
             image: DecorationImage(
@@ -61,43 +57,36 @@ class SurahHeaderWidget extends StatelessWidget {
       );
     } else {
       return Center(
-        child: Padding(
-          padding: EdgeInsets.symmetric(
-              vertical: quranCtrl.state.fontsSelected2.value == 1 ||
-                      quranCtrl.state.fontsSelected2.value == 2
-                  ? 0.0
-                  : 16.0),
-          child: GestureDetector(
-            onTap: () {
-              if (onSurahBannerPress != null) {
-                onSurahBannerPress!(quranCtrl.surahsList[surahNumber - 1]);
-              } else {
-                surahInfoDialogWidget(context, surahNumber - 1,
-                    surahStyle: surahInfoStyle!, deviceWidth: deviceWidth);
-              }
-            },
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                SvgPicture.asset(
-                  bannerStyle?.bannerSvgPath ??
-                      (isDark
-                          ? AssetsPath().surahSvgBannerDark
-                          : AssetsPath().surahSvgBanner),
-                  width: bannerStyle?.bannerSvgWidth ?? 150.0,
-                  height: bannerStyle?.bannerSvgHeight ?? 40.0,
-                ),
-                SvgPicture.asset(
-                  'packages/quran_library/lib/assets/svg/surah_name/00$surahNumber.svg',
-                  width: surahNameStyle?.surahNameWidth ?? 70,
-                  height: surahNameStyle?.surahNameHeight ?? 37,
-                  colorFilter: ColorFilter.mode(
-                      surahNameStyle?.surahNameColor ??
-                          (isDark ? Colors.white : Colors.black),
-                      BlendMode.srcIn),
-                ),
-              ],
-            ),
+        child: GestureDetector(
+          onTap: () {
+            if (onSurahBannerPress != null) {
+              onSurahBannerPress!(quranCtrl.surahsList[surahNumber - 1]);
+            } else {
+              surahInfoDialogWidget(context, surahNumber - 1,
+                  surahStyle: surahInfoStyle!, deviceWidth: deviceWidth);
+            }
+          },
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              SvgPicture.asset(
+                bannerStyle?.bannerSvgPath ??
+                    (isDark
+                        ? AssetsPath().surahSvgBannerDark
+                        : AssetsPath().surahSvgBanner),
+                width: bannerStyle?.bannerSvgWidth ?? 150.0,
+                height: bannerStyle?.bannerSvgHeight ?? 40.0,
+              ),
+              SvgPicture.asset(
+                'packages/quran_library/lib/assets/svg/surah_name/00$surahNumber.svg',
+                width: surahNameStyle?.surahNameWidth ?? 70,
+                height: surahNameStyle?.surahNameHeight ?? 37,
+                colorFilter: ColorFilter.mode(
+                    surahNameStyle?.surahNameColor ??
+                        (isDark ? Colors.white : Colors.black),
+                    BlendMode.srcIn),
+              ),
+            ],
           ),
         ),
       );

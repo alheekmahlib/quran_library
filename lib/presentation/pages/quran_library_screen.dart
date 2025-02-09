@@ -3,7 +3,6 @@ part of '../../quran.dart';
 class QuranLibraryScreen extends StatelessWidget {
   const QuranLibraryScreen({
     // this.showBottomWidget = true,
-    this.useDefaultAppBar = true,
     // this.bottomWidget,
     this.appBar,
     this.onPageChanged,
@@ -13,7 +12,6 @@ class QuranLibraryScreen extends StatelessWidget {
     this.withPageView = true,
     this.pageIndex = 0,
     this.bookmarksColor,
-    this.onDefaultAyahLongPress,
     this.textColor,
     this.surahNumber,
     this.ayahSelectedBackgroundColor,
@@ -31,17 +29,14 @@ class QuranLibraryScreen extends StatelessWidget {
     this.onFontsAyahLongPress,
     this.isDark = false,
     this.circularProgressWidget,
+    required this.fFamily,
   });
 
   // /// متغير لتعطيل أو تمكين الويدجت السفلية الافتراضية [showBottomWidget]
   // ///
   // /// [showBottomWidget] is a bool to disable or enable the default bottom widget
   // final bool showBottomWidget;
-
-  /// متغير لتعطيل أو تمكين شريط التطبيقات الافتراضية [useDefaultAppBar]
-  ///
-  /// [useDefaultAppBar] is a bool to disable or enable the default app bar widget
-  final bool useDefaultAppBar;
+  final String fFamily;
 
   // /// إذا قمت بإضافة قطعة هنا فإنه سيحل محل القطعة السفلية الافتراضية [bottomWidget]
   // ///
@@ -97,16 +92,6 @@ class QuranLibraryScreen extends StatelessWidget {
   ///
   /// [bookmarksColor] Change the bookmark color (optional)
   final Color? bookmarksColor;
-
-  /// * تُستخدم مع الخطوط الأساسية *
-  /// عند الضغط المطوّل على أي آية باستخدام الخطوط الأساسية، يمكنك تفعيل ميزات إضافية
-  /// مثل نسخ الآية أو مشاركتها وغير ذلك عبر [onDefaultAyahLongPress].
-  ///
-  /// * Used with default fonts *
-  /// When long-pressing on any verse with the default fonts, you can enable additional features
-  /// such as copying the verse, sharing it, and more using [onDefaultAyahLongPress].
-  final void Function(LongPressStartDetails details, AyahModel ayah)?
-      onDefaultAyahLongPress;
 
   /// * تُستخدم مع الخطوط المحملة *
   /// عند الضغط المطوّل على أي آية باستخدام الخطوط المحملة، يمكنك تفعيل ميزات إضافية
@@ -206,49 +191,6 @@ class QuranLibraryScreen extends StatelessWidget {
         child: Scaffold(
           backgroundColor: backgroundColor ??
               (isDark ? const Color(0xff202020) : const Color(0xfffaf7f3)),
-          appBar: appBar ??
-              (useDefaultAppBar
-                  ? AppBar(
-                      backgroundColor: backgroundColor ??
-                          (isDark
-                              ? const Color(0xff202020)
-                              : const Color(0xfffaf7f3)),
-                      elevation: 0,
-                      actions: [
-                        FontsDownloadDialog(
-                          downloadFontsDialogStyle: downloadFontsDialogStyle ??
-                              DownloadFontsDialogStyle(
-                                iconWidget: Icon(
-                                  quranCtrl.state.isDownloadedV2Fonts.value
-                                      ? Icons.settings
-                                      : Icons.downloading_outlined,
-                                  size: 24,
-                                  color: Colors.black,
-                                ),
-                                title: 'الخطوط',
-                                titleColor: Colors.black,
-                                notes:
-                                    'لجعل مظهر المصحف مشابه لمصحف المدينة يمكنك تحميل خطوط المصحف',
-                                notesColor: Colors.black,
-                                linearProgressBackgroundColor:
-                                    Colors.blue.shade100,
-                                linearProgressColor: Colors.blue,
-                                downloadButtonBackgroundColor: Colors.blue,
-                                downloadButtonTextColor: Colors.white,
-                                downloadingText: 'جارِ التحميل',
-                                backgroundColor: const Color(0xFFF7EFE0),
-                                downloadedNotesTitle: 'ملاحظة:',
-                                downloadedNotesBody: 'يرجى تحميل الخطوط أولًا!',
-                              ),
-                          languageCode: languageCode,
-                          isDark: isDark,
-                        )
-                      ],
-                    )
-                  : null),
-          drawer: appBar == null && useDefaultAppBar
-              ? _DefaultDrawer(languageCode ?? 'ar')
-              : null,
           body: SafeArea(
             child: withPageView
                 ? PageView.builder(
@@ -286,9 +228,6 @@ class QuranLibraryScreen extends StatelessWidget {
     int pageIndex,
     QuranCtrl quranCtrl,
   ) {
-    final deviceSize = MediaQuery.of(context).size;
-    List<String> newSurahs = [];
-    quranCtrl.isDownloadFonts.value ? quranCtrl.prepareFonts(pageIndex) : null;
     final bookmarkCtrl = BookmarksCtrl.instance;
     return GetBuilder<QuranCtrl>(
       init: QuranCtrl.instance,
@@ -298,52 +237,27 @@ class QuranLibraryScreen extends StatelessWidget {
         onScaleUpdate: (ScaleUpdateDetails details) =>
             quranCtrl.updateTextScale(details),
         child: quranCtrl.textScale(
-          (quranCtrl.isDownloadFonts.value
-              ? quranCtrl.state.allAyahs.isEmpty ||
-                      quranCtrl.state.surahs.isEmpty ||
-                      quranCtrl.state.pages.isEmpty
-                  ? Center(
-                      child:
-                          circularProgressWidget ?? CircularProgressIndicator())
-                  : Align(
-                      alignment: Alignment.topCenter,
-                      child: AllQuranWidget(
-                        pageIndex: pageIndex,
-                        languageCode: languageCode,
-                        juzName: juzName,
-                        sajdaName: sajdaName,
-                        isRight: pageIndex.isEven ? true : false,
-                        topTitleChild: topTitleChild,
-                        child: QuranFontsPage(
-                          pageIndex: pageIndex,
-                          bookmarkList: bookmarkList,
-                          textColor: textColor,
-                          bookmarks: bookmarkCtrl.bookmarks,
-                          onFontsAyahLongPress: onFontsAyahLongPress,
-                          bookmarksColor: bookmarksColor,
-                          surahInfoStyle: surahInfoStyle,
-                          surahNameStyle: surahNameStyle,
-                          bannerStyle: bannerStyle,
-                          basmalaStyle: basmalaStyle,
-                          onSurahBannerPress: onSurahBannerPress,
-                          surahNumber: surahNumber,
-                          bookmarksAyahs: bookmarkCtrl.bookmarksAyahs,
-                          ayahSelectedBackgroundColor:
-                              ayahSelectedBackgroundColor,
-                          onAyahPress: onPagePress,
-                          isDark: isDark,
-                        ),
-                      ))
-              : quranCtrl.staticPages.isEmpty || quranCtrl.isLoading.value
-                  ? Center(
-                      child:
-                          circularProgressWidget ?? CircularProgressIndicator())
-                  : QuranLinePage(
+          quranCtrl.state.allAyahs.isEmpty ||
+                  quranCtrl.state.surahs.isEmpty ||
+                  quranCtrl.state.pages.isEmpty
+              ? Center(
+                  child: circularProgressWidget ?? CircularProgressIndicator())
+              : Align(
+                  alignment: Alignment.topCenter,
+                  child: AllQuranWidget(
+                    pageIndex: pageIndex,
+                    languageCode: languageCode,
+                    juzName: juzName,
+                    sajdaName: sajdaName,
+                    isRight: pageIndex.isEven ? true : false,
+                    topTitleChild: topTitleChild,
+                    child: QuranFontsPage(
+                      fFamily: fFamily,
                       pageIndex: pageIndex,
                       bookmarkList: bookmarkList,
                       textColor: textColor,
-                      languageCode: languageCode,
-                      onAyahLongPress: onDefaultAyahLongPress,
+                      bookmarks: bookmarkCtrl.bookmarks,
+                      onFontsAyahLongPress: onFontsAyahLongPress,
                       bookmarksColor: bookmarksColor,
                       surahInfoStyle: surahInfoStyle,
                       surahNameStyle: surahNameStyle,
@@ -351,15 +265,12 @@ class QuranLibraryScreen extends StatelessWidget {
                       basmalaStyle: basmalaStyle,
                       onSurahBannerPress: onSurahBannerPress,
                       surahNumber: surahNumber,
-                      newSurahs: newSurahs,
+                      bookmarksAyahs: bookmarkCtrl.bookmarksAyahs,
                       ayahSelectedBackgroundColor: ayahSelectedBackgroundColor,
-                      onPagePress: onPagePress,
-                      deviceSize: deviceSize,
-                      juzName: juzName,
-                      sajdaName: sajdaName,
-                      topTitleChild: topTitleChild,
+                      onAyahPress: onPagePress,
                       isDark: isDark,
-                    )),
+                    ),
+                  )),
           AllQuranWidget(
             pageIndex: pageIndex,
             languageCode: languageCode,

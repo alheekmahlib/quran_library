@@ -1,3 +1,3 @@
-library quran_library;
+library;
 
 export 'quran.dart';

@@ -16,6 +16,7 @@ TextSpan span({
   required List<int> bookmarksAyahs,
   Color? bookmarksColor,
   Color? ayahSelectedBackgroundColor,
+  required String fFamily,
 }) {
   // if (bookmarkList!.isEmpty) {
   //   bookmarkList = bookmarks as List<BookmarkModel>;
@@ -42,13 +43,11 @@ TextSpan span({
       first = TextSpan(
         text: partOne,
         style: TextStyle(
-          fontFamily: 'p${(pageIndex + 1)}',
+          fontFamily: fFamily,
           fontSize: fontSize,
           height: 2,
           letterSpacing: pageIndex == 54 || pageIndex == 75 ? 0 : 30,
-          color: quranCtrl.state.fontsSelected2.value == 1
-              ? textColor ?? Colors.transparent
-              : null,
+          color: null,
           backgroundColor:
               bookmarkCtrl.hasBookmark(surahNum, ayahUQNum, bookmarkList).value
                   ? bookmarksColor
@@ -71,14 +70,12 @@ TextSpan span({
       second = TextSpan(
         text: partTwo,
         style: TextStyle(
-          fontFamily: 'p${(pageIndex + 1)}',
+          fontFamily: fFamily,
           fontSize: fontSize,
           height: 2,
           letterSpacing: 0,
           // wordSpacing: wordSpacing + 10,
-          color: quranCtrl.state.fontsSelected2.value == 1
-              ? textColor ?? Colors.transparent
-              : null,
+          color: null,
           backgroundColor:
               bookmarkCtrl.hasBookmark(surahNum, ayahUQNum, bookmarkList).value
                   ? bookmarksColor
@@ -103,13 +100,11 @@ TextSpan span({
     final TextSpan initialTextSpan = TextSpan(
       text: initialPart,
       style: TextStyle(
-        fontFamily: 'p${(pageIndex + 1)}',
+        fontFamily: fFamily,
         fontSize: fontSize,
         height: 2,
         letterSpacing: 0,
-        color: quranCtrl.state.fontsSelected2.value == 1
-            ? textColor ?? Colors.transparent
-            : null,
+        color: null,
         backgroundColor:
             bookmarkCtrl.hasBookmark(surahNum, ayahUQNum, bookmarkList).value
                 ? bookmarksColor
@@ -149,7 +144,7 @@ TextSpan span({
         TextSpan(
       text: lastCharacter,
       style: TextStyle(
-        fontFamily: 'p${(pageIndex + 1)}',
+        fontFamily: fFamily,
         fontSize: fontSize,
         height: 2,
         letterSpacing: -10,

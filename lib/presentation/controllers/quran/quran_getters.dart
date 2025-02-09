@@ -235,11 +235,6 @@ extension QuranGetters on QuranCtrl {
           ? true.obs
           : false.obs;
 
-  RxBool get isDownloadFonts =>
-      (state.fontsSelected2.value == 1 || state.fontsSelected2.value == 2)
-          ? true.obs
-          : false.obs;
-
   // PageController get pageController {
   //   return state.quranPageController = PageController(
   //       viewportFraction: Responsive.isDesktop(Get.context!) ? 1 / 2 : 1,

@@ -15,7 +15,6 @@ dependencies:
 
   quran_library:
     path: ../
-  floating_draggable_widget: ^2.3.0
 
 dev_dependencies:
   flutter_test:
@@ -24,3 +23,7 @@ dev_dependencies:
 flutter:
   uses-material-design: true
 
+  fonts:
+    - family: p603
+      fonts:
+        - asset: assets/fonts/p603.ttf

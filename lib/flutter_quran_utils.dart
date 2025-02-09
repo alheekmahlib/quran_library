@@ -11,24 +11,17 @@ class QuranLibrary {
       bool overwriteBookmarks = false}) async {
     // Get.put(QuranController());
     await GetStorage.init();
-    QuranCtrl.instance.state.isDownloadedV2Fonts.value =
-        GetStorage().read(StorageConstants().isDownloadedCodeV2Fonts) ?? false;
+
     QuranRepository().getLastPage();
     await QuranCtrl.instance.loadFontsQuran();
-    await QuranCtrl.instance.loadQuran();
     await QuranCtrl.instance.fetchSurahs();
     BookmarksCtrl.instance.initBookmarks(
         userBookmarks: userBookmarks, overwrite: overwriteBookmarks);
     QuranCtrl.instance.state.isBold.value =
         GetStorage().read(StorageConstants().isBold) ?? 0;
-    quranCtrl.state.fontsSelected2.value =
-        GetStorage().read(StorageConstants().fontsSelected) ?? 0;
+
     quranCtrl.state.isTajweed.value =
         GetStorage().read(StorageConstants().isTajweed) ?? 0;
-    quranCtrl.state.fontsDownloadedList.value = (GetStorage()
-            .read<List<dynamic>>(StorageConstants().fontsDownloadedList)
-            ?.cast<int>() ??
-        []);
   }
 
   final quranCtrl = QuranCtrl.instance;
@@ -45,14 +38,12 @@ class QuranLibrary {
   ///
   /// [search] searches the Qur’an for verses by word or page number.
   /// Returns a list of all verses whose texts contain the given text.
-  List<AyahModel> search(String text) => quranCtrl.search(text);
 
   /// [search] يبحث في القرآن عن أسماء السور.
   /// يعيد قائمة بجميع السور التي يكون أسمها أو رقمها أو رفم الصفحة الخاصة بها مطابق للنص المُعطى.
   ///
   /// [search] Searches the Qur’an for the names of the surahs.
   /// Returns a list of all surahs whose name, number, or page number matches the given text.
-  List<AyahModel> surahSearch(String text) => quranCtrl.searchSurah(text);
 
   /// [navigateToAyah] يتيح لك التنقل إلى أي آية.
   /// من الأفضل استدعاء هذه الطريقة أثناء عرض شاشة القرآن،
@@ -63,12 +54,6 @@ class QuranLibrary {
   /// It's better to call this method while Quran screen is displayed
   /// and if it's called and the Quran screen is not displayed, the next time you
   /// open quran screen it will start from this ayah's page
-  void jumpToAyah(AyahModel ayah) {
-    quranCtrl.jumpToPage(ayah.page - 1);
-    quranCtrl.toggleAyahSelection(ayah.ayahUQNumber);
-    Future.delayed(const Duration(seconds: 3))
-        .then((_) => quranCtrl.toggleAyahSelection(ayah.ayahUQNumber));
-  }
 
   /// [jumpToPage] يتيح لك التنقل إلى أي صفحة في القرآن باستخدام رقم الصفحة.
   /// ملاحظة: تستقبل هذه الطريقة رقم الصفحة وليس فهرس الصفحة.
@@ -185,72 +170,6 @@ class QuranLibrary {
   /// Note it receives surah number not surah index
   SurahNamesModel getSurahInfo({required int surahNumber}) =>
       quranCtrl.surahsList[surahNumber];
-
-  /// للحصول على نافذة حوار خاصة بتحميل الخطوط، قم فقط باستدعاء: [getFontsDownloadDialog].
-  ///
-  /// قم بتمرير رمز اللغة ليتم عرض الأرقام على حسب اللغة،
-  /// رمز اللغة الإفتراضي هو: 'ar' [languageCode].
-  /// كما أن التمرير الاختياري لنمط [DownloadFontsDialogStyle] ممكن.
-  ///
-  /// to get the fonts download dialog just call [getFontsDownloadDialog]
-  ///
-  /// and pass the language code to translate the number if you want,
-  /// the default language code is 'ar' [languageCode]
-  /// and style [DownloadFontsDialogStyle] is optional.
-  Widget getFontsDownloadDialog(
-          DownloadFontsDialogStyle? downloadFontsDialogStyle,
-          String? languageCode) =>
-      FontsDownloadDialog(
-        downloadFontsDialogStyle: downloadFontsDialogStyle,
-        languageCode: languageCode,
-      );
-
-  /// للحصول على الويدجت الخاصة بتنزيل الخطوط فقط قم بإستدعاء [getFontsDownloadWidget]
-  ///
-  /// to get the fonts download widget just call [getFontsDownloadWidget]
-  Widget getFontsDownloadWidget(BuildContext context,
-          {DownloadFontsDialogStyle? downloadFontsDialogStyle,
-          String? languageCode}) =>
-      quranCtrl.fontsDownloadWidget(context,
-          downloadFontsDialogStyle: downloadFontsDialogStyle,
-          languageCode: languageCode);
-
-  /// للحصول على طريقة تنزيل الخطوط فقط قم بإستدعاء [fontsDownloadMethod]
-  ///
-  /// to get the fonts download method just call [fontsDownloadMethod]
-  void getFontsDownloadMethod({required int fontIndex}) =>
-      quranCtrl.downloadAllFontsZipFile(fontIndex);
-
-  /// للحصول على طريقة تنزيل الخطوط فقط قم بإستدعاء [getFontsPrepareMethod]
-  /// مطلوب تمرير رقم الصفحة [pageIndex]
-  ///
-  /// to prepare the fonts was downloaded before just call [getFontsPrepareMethod]
-  /// required to pass [pageIndex]
-  void getFontsPrepareMethod({required int pageIndex}) =>
-      quranCtrl.prepareFonts(pageIndex);
-
-  /// لحذف الخطوط فقط قم بإستدعاء [deleteFontsMethod]
-  ///
-  /// to delete the fonts just call [deleteFontsMethod]
-  void getDeleteFontsMethod({required int fontIndex}) =>
-      quranCtrl.deleteFonts(fontIndex);
-
-  /// للحصول على تقدم تنزيل الخطوط، ما عليك سوى إستدعاء [fontsDownloadProgress]
-  ///
-  /// to get fonts download progress just call [fontsDownloadProgress]
-  double get fontsDownloadProgress =>
-      quranCtrl.state.fontsDownloadProgress.value;
-
-  /// لمعرفة ما إذا كانت الخطوط محملة او لا، ما عليك سوى إستدعاء [isFontsDownloaded]
-  ///
-  /// To find out whether fonts are downloaded or not, just call [isFontsDownloaded]
-  bool get isFontsDownloaded =>
-      GetStorage().read(StorageConstants().isDownloadedCodeV2Fonts) ?? false;
-
-  /// لمعرفة الخط الذي تم تحديده، ما عليك سوى إستدعاء [currentFontsSelected]
-  ///
-  /// To find out which font has been selected, just call [currentFontsSelected]
-  int get currentFontsSelected => quranCtrl.state.fontsSelected2.value;
 
   /// يقوم بتعيين علامة مرجعية باستخدام [ayahId] و[page] و[bookmarkId] المحددة.
   ///

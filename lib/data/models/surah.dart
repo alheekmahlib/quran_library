@@ -4,7 +4,6 @@ class Surah {
   final int index, startPage;
   int endPage;
   final String nameEn, nameAr;
-  List<AyahModel> ayahs;
 
   Surah({
     required this.index,
@@ -12,7 +11,6 @@ class Surah {
     required this.endPage,
     required this.nameEn,
     required this.nameAr,
-    required this.ayahs,
   });
 
   factory Surah.fromJson(Map<String, dynamic> json) => Surah(
@@ -21,9 +19,6 @@ class Surah {
         endPage: json['end_page'],
         nameEn: json['name_en'],
         nameAr: json['name_ar'],
-        ayahs: json['ayahs']
-            .map<AyahModel>((ayah) => AyahModel.fromJson(ayah))
-            .toList(),
       );
 
   Map<String, dynamic> toJson() => {
@@ -32,6 +27,5 @@ class Surah {
         "end_page": endPage,
         "name_en": nameEn,
         "name_ar": nameAr,
-        "ayahs": ayahs.map((ayah) => ayah.toJson()).toList(),
       };
 }

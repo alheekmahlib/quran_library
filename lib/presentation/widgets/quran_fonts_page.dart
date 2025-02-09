@@ -19,6 +19,7 @@ class QuranFontsPage extends StatelessWidget {
   final Color? ayahSelectedBackgroundColor;
   final bool isDark;
   final Widget? circularProgressWidget;
+  final String fFamily;
   const QuranFontsPage({
     super.key,
     required this.pageIndex,
@@ -38,6 +39,7 @@ class QuranFontsPage extends StatelessWidget {
     this.onAyahPress,
     this.isDark = false,
     this.circularProgressWidget,
+    required this.fFamily,
   });
 
   @override
@@ -216,7 +218,7 @@ class QuranFontsPage extends StatelessWidget {
       textAlign: TextAlign.center,
       text: TextSpan(
         style: TextStyle(
-          fontFamily: 'p${(pageIndex + 1)}',
+          fontFamily: fFamily,
           fontSize: 100,
           height: 1.7,
           letterSpacing: 2,
@@ -259,6 +261,7 @@ class QuranFontsPage extends StatelessWidget {
                       .getSurahDataByAyah(ayahs[ayahIndex])
                       .surahNumber))) {
             return span(
+              fFamily: fFamily,
               isFirstAyah: true,
               text:
                   '${ayahs[ayahIndex].codeV2[0]}${ayahs[ayahIndex].codeV2.substring(1)}',
@@ -315,6 +318,7 @@ class QuranFontsPage extends StatelessWidget {
             );
           }
           return span(
+            fFamily: fFamily,
             isFirstAyah: false,
             text: ayahs[ayahIndex].codeV2,
             pageIndex: pageIndex,

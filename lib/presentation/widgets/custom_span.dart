@@ -10,8 +10,10 @@ TextSpan span({
   required int ayahUQNum,
   LongPressStartDetailsFunction? onLongPressStart,
   required bool isFirstAyah,
+  required bool showAyahBookmarkedIcon,
   required List? bookmarkList,
   required Color? textColor,
+  required Color? ayahIconColor,
   required Map<int, List<BookmarkModel>> bookmarks,
   required List<int> bookmarksAyahs,
   Color? bookmarksColor,
@@ -42,10 +44,11 @@ TextSpan span({
       first = TextSpan(
         text: partOne,
         style: TextStyle(
-          fontFamily: 'p${(pageIndex + 1)}',
+          fontFamily: 'p${(pageIndex + 2001)}',
           fontSize: fontSize,
           height: 2,
-          letterSpacing: pageIndex == 54 || pageIndex == 75 ? 0 : 30,
+          letterSpacing:
+              pageIndex == 54 || pageIndex == 75 || pageIndex == 539 ? 0 : 30,
           color: quranCtrl.state.fontsSelected2.value == 1
               ? textColor ?? Colors.transparent
               : null,
@@ -71,7 +74,7 @@ TextSpan span({
       second = TextSpan(
         text: partTwo,
         style: TextStyle(
-          fontFamily: 'p${(pageIndex + 1)}',
+          fontFamily: 'p${(pageIndex + 2001)}',
           fontSize: fontSize,
           height: 2,
           letterSpacing: 0,
@@ -103,7 +106,7 @@ TextSpan span({
     final TextSpan initialTextSpan = TextSpan(
       text: initialPart,
       style: TextStyle(
-        fontFamily: 'p${(pageIndex + 1)}',
+        fontFamily: 'p${(pageIndex + 2001)}',
         fontSize: fontSize,
         height: 2,
         letterSpacing: 0,
@@ -130,49 +133,57 @@ TextSpan span({
         ..onLongPressStart = onLongPressStart,
     );
 
-    var lastCharacterSpan =
-        // bookmarkCtrl
-        //         .hasBookmark(surahNum, ayahUQNum, bookmarkList)
-        //         .value ||
-        //     bookmarksAyahs.contains(ayahUQNum)
-        // ? WidgetSpan(
-        //     child: Padding(
-        //     padding:
-        //         const EdgeInsets.symmetric(horizontal: 8.0, vertical: 60.0),
-        //     child: SvgPicture.asset(
-        //       AssetsPath().ayahBookmarked,
-        //       height: 100,
-        //       width: 100,
-        //     ),
-        //   ))
-        // :
-        TextSpan(
-      text: lastCharacter,
-      style: TextStyle(
-        fontFamily: 'p${(pageIndex + 1)}',
-        fontSize: fontSize,
-        height: 2,
-        letterSpacing: -10,
-        foreground: Paint(),
-        backgroundColor:
-            bookmarkCtrl.hasBookmark(surahNum, ayahUQNum, bookmarkList).value
-                ? bookmarksColor
-                : (bookmarksAyahs.contains(ayahUQNum)
-                    ? Color(allBookmarks
-                            .firstWhere(
-                              (b) => b.ayahId == ayahUQNum,
-                            )
-                            .colorCode)
-                        .withValues(alpha: 0.3)
-                    : isSelected
-                        ? ayahSelectedBackgroundColor ??
-                            const Color(0xffCDAD80).withValues(alpha: 0.25)
-                        : null),
-      ),
-      recognizer: LongPressGestureRecognizer(
-          duration: const Duration(milliseconds: 500))
-        ..onLongPressStart = onLongPressStart,
-    );
+    var lastCharacterSpan = (bookmarkCtrl
+                    .hasBookmark(surahNum, ayahUQNum, bookmarkList)
+                    .value ||
+                bookmarksAyahs.contains(ayahUQNum)) &&
+            showAyahBookmarkedIcon
+        ? WidgetSpan(
+            alignment: PlaceholderAlignment.middle,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              child: SvgPicture.asset(
+                AssetsPath().ayahBookmarked,
+                height: 100,
+                width: 100,
+              ),
+            ))
+        : TextSpan(
+            text: lastCharacter,
+            style: TextStyle(
+              fontFamily: 'p${(pageIndex + 2001)}',
+              fontSize: fontSize,
+              height: 2,
+              letterSpacing: isFirstAyah &&
+                      (pageIndex == 1 ||
+                          pageIndex == 49 ||
+                          pageIndex == 476 ||
+                          pageIndex == 482 ||
+                          pageIndex == 495 ||
+                          pageIndex == 498)
+                  ? 20
+                  : null,
+              color: ayahIconColor,
+              backgroundColor: bookmarkCtrl
+                      .hasBookmark(surahNum, ayahUQNum, bookmarkList)
+                      .value
+                  ? bookmarksColor
+                  : (bookmarksAyahs.contains(ayahUQNum)
+                      ? Color(allBookmarks
+                              .firstWhere(
+                                (b) => b.ayahId == ayahUQNum,
+                              )
+                              .colorCode)
+                          .withValues(alpha: 0.3)
+                      : isSelected
+                          ? ayahSelectedBackgroundColor ??
+                              const Color(0xffCDAD80).withValues(alpha: 0.25)
+                          : null),
+            ),
+            recognizer: LongPressGestureRecognizer(
+                duration: const Duration(milliseconds: 500))
+              ..onLongPressStart = onLongPressStart,
+          );
 
     return TextSpan(
       children: isFirstAyah
@@ -191,14 +202,15 @@ TextSpan customSpan({
   required String text,
   required int pageIndex,
   required bool isSelected,
+  required bool showAyahBookmarkedIcon,
   double? fontSize,
   required int surahNum,
   required int ayahUQNum,
   required int ayahNumber,
   LongPressStartDetailsFunction? onLongPressStart,
-  required bool isFirstAyah,
   required List? bookmarkList,
   required Color? textColor,
+  required Color? ayahIconColor,
   required Map<int, List<BookmarkModel>> bookmarks,
   required List<int> bookmarksAyahs,
   Color? bookmarksColor,
@@ -238,16 +250,18 @@ TextSpan customSpan({
               duration: const Duration(milliseconds: 500))
             ..onLongPressStart = onLongPressStart,
         ),
-        bookmarkCtrl.hasBookmark(surahNum, ayahUQNum, bookmarkList).value
+        (bookmarkCtrl.hasBookmark(surahNum, ayahUQNum, bookmarkList).value ||
+                    bookmarksAyahs.contains(ayahUQNum)) &&
+                showAyahBookmarkedIcon
             ? WidgetSpan(
+                alignment: PlaceholderAlignment.middle,
                 child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 8.0, vertical: 15.0),
-                child: SvgPicture.asset(
-                  AssetsPath().ayahBookmarked,
-                  height: 35,
-                ),
-              ))
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: SvgPicture.asset(
+                    AssetsPath().ayahBookmarked,
+                    height: 35,
+                  ),
+                ))
             : TextSpan(
                 text: ayahNumber
                     .toString()
@@ -256,11 +270,7 @@ TextSpan customSpan({
                   fontFamily: 'hafs',
                   fontSize: fontSize,
                   height: 2,
-                  color: bookmarkCtrl
-                          .hasBookmark(surahNum, ayahUQNum, bookmarkList)
-                          .value
-                      ? textColor ?? Colors.black
-                      : const Color(0xff77554B),
+                  color: ayahIconColor,
                   backgroundColor: bookmarkCtrl
                           .hasBookmark(surahNum, ayahUQNum, bookmarkList)
                           .value

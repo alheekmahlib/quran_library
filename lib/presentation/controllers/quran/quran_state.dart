@@ -50,5 +50,5 @@ class QuranState {
   RxInt selectedAyahNumber = 0.obs;
   RxInt selectedSurahNumber = 0.obs;
   OverlayEntry? overlayEntry;
-  RxInt isTajweed = 0.obs;
+  // RxInt isTajweed = 0.obs;
 }

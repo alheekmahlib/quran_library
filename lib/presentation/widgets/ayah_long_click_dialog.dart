@@ -79,8 +79,7 @@ class AyahLongClickDialog extends StatelessWidget {
                   height: 30, color: const Color(0xffe8decb)),
               GestureDetector(
                 onTap: () {
-                  if (QuranCtrl.instance.state.fontsSelected2.value == 1 ||
-                      QuranCtrl.instance.state.fontsSelected2.value == 2) {
+                  if (QuranCtrl.instance.state.fontsSelected2.value == 1) {
                     Clipboard.setData(ClipboardData(text: ayahFonts!.text));
                     ToastUtils().showToast(context, "تم النسخ الى الحافظة");
                   } else {

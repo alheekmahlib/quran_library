@@ -1,16 +1,31 @@
 part of '../../quran.dart';
 
 class QuranLibrarySearchScreen extends StatelessWidget {
-  const QuranLibrarySearchScreen({super.key});
-
+  const QuranLibrarySearchScreen({super.key, this.isDark = false});
+  final bool isDark;
   @override
   Widget build(BuildContext context) {
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
+        backgroundColor:
+            isDark ? const Color(0xff202020) : const Color(0xfffaf7f3),
         appBar: AppBar(
-          title: const Text('بحث'),
+          leading: IconButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              icon: Icon(
+                Icons.arrow_back,
+                color: isDark ? Colors.white : Colors.black,
+              )),
+          title: Text(
+            'بحث',
+            style: TextStyle(color: isDark ? Colors.white : Colors.black),
+          ),
           centerTitle: true,
+          backgroundColor:
+              isDark ? const Color(0xff202020) : const Color(0xfffaf7f3),
         ),
         body: SafeArea(
           child: Padding(
@@ -19,41 +34,77 @@ class QuranLibrarySearchScreen extends StatelessWidget {
               mainAxisSize: MainAxisSize.max,
               children: [
                 GetBuilder<QuranCtrl>(
-                    builder: (quranCtrl) => TextField(
-                          onChanged: (txt) {
-                            final searchResult = QuranLibrary().search(txt);
-                            quranCtrl.ayahsList.value = [...searchResult];
-                          },
-                          decoration: const InputDecoration(
-                            border: OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.black),
-                            ),
-                            hintText: 'بحث',
-                          ),
-                        )),
+                  builder: (quranCtrl) => TextField(
+                    onChanged: (txt) {
+                      final searchResult = QuranLibrary().search(txt);
+                      quranCtrl.ayahsList.value = [...searchResult];
+                    },
+                    style: TextStyle(
+                      color: isDark ? Colors.white : Colors.black,
+                    ),
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: isDark ? Colors.white : Colors.black,
+                        ),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: isDark ? Colors.white : Colors.black,
+                        ),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: isDark ? Colors.white : Colors.black,
+                        ),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      hintText: 'بحث',
+                      hintStyle: TextStyle(
+                          color: isDark ? Colors.white : Colors.black),
+                    ),
+                  ),
+                ),
                 Expanded(
                   child: GetX<QuranCtrl>(
                     builder: (quranCtrl) => ListView(
                       children: quranCtrl.ayahsList
-                          .map((ayah) => Column(
-                                children: [
-                                  ListTile(
-                                    title: Text(ayah.text.replaceAll('\n', ' '),
-                                        style: QuranLibrary().hafsStyle),
-                                    subtitle: Text(ayah.arabicName),
-                                    contentPadding: const EdgeInsets.symmetric(
-                                        horizontal: 16),
-                                    onTap: () {
-                                      Navigator.of(context).pop();
-                                      QuranLibrary().jumpToAyah(ayah);
-                                    },
+                          .map(
+                            (ayah) => Column(
+                              children: [
+                                ListTile(
+                                  title: Text(
+                                    ayah.text.replaceAll('\n', ' '),
+                                    style: QuranLibrary().hafsStyle.copyWith(
+                                          color: isDark
+                                              ? Colors.white
+                                              : Colors.black,
+                                        ),
                                   ),
-                                  const Divider(
-                                    color: Colors.grey,
-                                    thickness: 1,
+                                  subtitle: Text(
+                                    ayah.arabicName,
+                                    style: TextStyle(
+                                      color:
+                                          isDark ? Colors.white : Colors.black,
+                                    ),
                                   ),
-                                ],
-                              ))
+                                  contentPadding: const EdgeInsets.symmetric(
+                                      horizontal: 16),
+                                  onTap: () {
+                                    Navigator.pop(context);
+                                    quranCtrl.ayahsList.value = [];
+                                    QuranLibrary().jumpToAyah(ayah);
+                                  },
+                                ),
+                                const Divider(
+                                  color: Colors.grey,
+                                  thickness: 1,
+                                ),
+                              ],
+                            ),
+                          )
                           .toList(),
                     ),
                   ),

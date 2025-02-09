@@ -6,6 +6,7 @@ extension QuranGetters on QuranCtrl {
   List<int> get startSurahsNumbers => [
         1,
         2,
+        3,
         4,
         6,
         7,
@@ -236,9 +237,7 @@ extension QuranGetters on QuranCtrl {
           : false.obs;
 
   RxBool get isDownloadFonts =>
-      (state.fontsSelected2.value == 1 || state.fontsSelected2.value == 2)
-          ? true.obs
-          : false.obs;
+      (state.fontsSelected2.value == 1) ? true.obs : false.obs;
 
   // PageController get pageController {
   //   return state.quranPageController = PageController(

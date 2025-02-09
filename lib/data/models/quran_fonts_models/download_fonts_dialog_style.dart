@@ -21,8 +21,8 @@ class DownloadFontsDialogStyle {
   final String? defaultFontText;
   final String? downloadedNotesTitle;
   final String? downloadedNotesBody;
-  final String? withTajweedText;
-  final String? withoutTajweedText;
+  // final String? withTajweedText;
+  // final String? withoutTajweedText;
 
   DownloadFontsDialogStyle({
     this.downloadedFontsTajweedText,
@@ -45,7 +45,7 @@ class DownloadFontsDialogStyle {
     this.iconWidget,
     this.iconColor,
     this.iconSize,
-    this.withTajweedText,
-    this.withoutTajweedText,
+    // this.withTajweedText,
+    // this.withoutTajweedText,
   });
 }

@@ -2,7 +2,8 @@ part of '../../quran.dart';
 
 class _DefaultDrawer extends StatelessWidget {
   final String languageCode;
-  const _DefaultDrawer(this.languageCode);
+  final bool isDark;
+  const _DefaultDrawer(this.languageCode, this.isDark);
 
   @override
   Widget build(BuildContext context) {
@@ -10,22 +11,28 @@ class _DefaultDrawer extends StatelessWidget {
     final hizbList = QuranLibrary().allHizb;
     final surahs = QuranLibrary().getAllSurahs();
     return Drawer(
-      backgroundColor: const Color(0xfffaf7f3),
+      backgroundColor:
+          isDark ? const Color(0xff202020) : const Color(0xfffaf7f3),
       child: ListView(
         children: [
           Container(
             margin: EdgeInsets.all(8.0),
             decoration: BoxDecoration(
-                color: const Color(0xfff6d09d).withValues(alpha: .3),
+                color:
+                    const Color(0xfff6d09d).withValues(alpha: isDark ? .5 : .3),
                 border: Border.all(width: 1, color: const Color(0xfff6d09d)),
                 borderRadius: BorderRadius.all(Radius.circular(8))),
             child: ListTile(
               trailing: const Icon(Icons.search_outlined),
-              title: Text('بحث', style: QuranLibrary().naskhStyle),
+              title: Text('البحث', style: QuranLibrary().naskhStyle),
               onTap: () {
-                Navigator.of(context).pop();
-                Navigator.of(context).push(MaterialPageRoute(
-                    builder: (ctx) => const QuranLibrarySearchScreen()));
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (ctx) => QuranLibrarySearchScreen(isDark: isDark),
+                  ),
+                );
               },
             ),
           ),
@@ -33,13 +40,15 @@ class _DefaultDrawer extends StatelessWidget {
           ExpansionTile(
             title: Text('الفهرس', style: QuranLibrary().naskhStyle),
             expandedCrossAxisAlignment: CrossAxisAlignment.start,
-            backgroundColor: const Color(0xfff6d09d).withValues(alpha: .1),
+            backgroundColor:
+                const Color(0xfff6d09d).withValues(alpha: isDark ? .6 : .1),
             collapsedBackgroundColor:
-                const Color(0xfff6d09d).withValues(alpha: .3),
+                const Color(0xfff6d09d).withValues(alpha: isDark ? .8 : .3),
             children: [
               ExpansionTile(
-                title: Text('الجزء', style: QuranLibrary().naskhStyle),
+                title: Text('الأجزاء', style: QuranLibrary().naskhStyle),
                 expandedCrossAxisAlignment: CrossAxisAlignment.start,
+                iconColor: Colors.black,
                 children: List.generate(
                     jozzList.length,
                     (jozzIndex) => Container(
@@ -51,8 +60,9 @@ class _DefaultDrawer extends StatelessWidget {
                           child: ExpansionTile(
                             title: Text(
                               jozzList[jozzIndex],
-                              style:
-                                  const TextStyle(fontWeight: FontWeight.bold),
+                              style: const TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold),
                             ),
                             children: List.generate(2, (index) {
                               final hizbIndex = (index == 0 && jozzIndex == 0)
@@ -84,7 +94,7 @@ class _DefaultDrawer extends StatelessWidget {
                     ),
               ),
               ExpansionTile(
-                title: Text('السورة', style: QuranLibrary().naskhStyle),
+                title: Text('السور', style: QuranLibrary().naskhStyle),
                 expandedCrossAxisAlignment: CrossAxisAlignment.start,
                 children: List.generate(
                     surahs.length,
@@ -145,9 +155,10 @@ class _DefaultDrawer extends StatelessWidget {
           ExpansionTile(
             title: Text('العلامات', style: QuranLibrary().naskhStyle),
             expandedCrossAxisAlignment: CrossAxisAlignment.start,
-            backgroundColor: const Color(0xfff6d09d).withValues(alpha: .1),
+            backgroundColor:
+                const Color(0xfff6d09d).withValues(alpha: isDark ? .6 : .1),
             collapsedBackgroundColor:
-                const Color(0xfff6d09d).withValues(alpha: .3),
+                const Color(0xfff6d09d).withValues(alpha: isDark ? .8 : .3),
             children: [
               ...BookmarksCtrl.instance.bookmarks.entries.map((entry) {
                 final colorCode = entry.key; // اللون
@@ -160,7 +171,7 @@ class _DefaultDrawer extends StatelessWidget {
                         : colorCode == 0xAAF36077
                             ? 'العلامات الحمراء'
                             : 'العلامات الخضراء',
-                    style: QuranLibrary().naskhStyle,
+                    style: QuranLibrary().naskhStyle.copyWith(fontSize: 18),
                   ),
                   leading: Icon(
                     Icons.bookmark,
@@ -194,7 +205,7 @@ class _DefaultDrawer extends StatelessWidget {
                       ),
                       title: Text(
                         bookmark.name,
-                        style: QuranLibrary().naskhStyle,
+                        style: QuranLibrary().naskhStyle.copyWith(fontSize: 17),
                       ),
                       onTap: () => QuranLibrary()
                           .jumpToBookmark(bookmark), // التنقل إلى العلامة

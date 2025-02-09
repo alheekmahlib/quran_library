@@ -249,7 +249,6 @@ class QuranCtrl extends GetxController {
         final matchesSurahNumber = aya.surahNumber.toString() ==
             normalizedSearchText
                 .convertArabicNumbersToEnglish(normalizedSearchText);
-        ;
 
         // إذا تحقق أي شرط من الشرطين أعلاه
         return matchesSurahName || matchesSurahNumber;
@@ -301,25 +300,27 @@ class QuranCtrl extends GetxController {
     double newScaleFactor = state.baseScaleFactor.value * details.scale;
     if (newScaleFactor < 1.0) {
       newScaleFactor = 1.0;
+    } else if (newScaleFactor < 4) {
+      state.scaleFactor.value = newScaleFactor;
     }
-    state.scaleFactor.value = newScaleFactor;
+
     update();
   }
 
-  List<TajweedRuleModel> getTajweedRules({required String languageCode}) {
-    if (languageCode == "ar") {
-      return tajweedRulesListAr;
-    } else if (languageCode == "en") {
-      return tajweedRulesListEn;
-    } else if (languageCode == "bn") {
-      return tajweedRulesListBn;
-    } else if (languageCode == "id") {
-      return tajweedRulesListId;
-    } else if (languageCode == "tr") {
-      return tajweedRulesListTr;
-    } else if (languageCode == "ur") {
-      return tajweedRulesListUr;
-    }
-    return tajweedRulesListAr;
-  }
+  // List<TajweedRuleModel> getTajweedRules({required String languageCode}) {
+  //   if (languageCode == "ar") {
+  //     return tajweedRulesListAr;
+  //   } else if (languageCode == "en") {
+  //     return tajweedRulesListEn;
+  //   } else if (languageCode == "bn") {
+  //     return tajweedRulesListBn;
+  //   } else if (languageCode == "id") {
+  //     return tajweedRulesListId;
+  //   } else if (languageCode == "tr") {
+  //     return tajweedRulesListTr;
+  //   } else if (languageCode == "ur") {
+  //     return tajweedRulesListUr;
+  //   }
+  //   return tajweedRulesListAr;
+  // }
 }

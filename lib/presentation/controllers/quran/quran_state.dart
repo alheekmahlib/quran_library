@@ -49,6 +49,6 @@ class QuranState {
   // RxDouble fontsDownloadProgress = 0.0.obs;
   RxInt selectedAyahNumber = 0.obs;
   RxInt selectedSurahNumber = 0.obs;
-  OverlayEntry? overlayEntry;
+  // OverlayEntry? overlayEntry;
   RxInt isTajweed = 0.obs;
 }

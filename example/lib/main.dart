@@ -34,7 +34,9 @@ class _MyAppState extends State<MyApp> {
         children: [
           const QuranLibraryScreen(
             isDark: false,
-            fFamily: 'pr603',
+            fFamily: 'p603',
+            pageIndex: 602,
+            withPageView: false,
             // backgroundColor: Colors.black,
             // textColor: Colors.white,
           ),

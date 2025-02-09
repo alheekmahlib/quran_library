@@ -66,7 +66,7 @@ flutter:
     - lib/assets/fonts/NotoNaskhArabic-VariableFont_wght.ttf
     - lib/assets/jsons/
     - lib/assets/svg/
-    - lib/assets/svg/surah_name/
+
 
   fonts:
     - family: hafs

@@ -7,7 +7,6 @@ class QuranTextScale extends StatelessWidget {
       this.bookmarkList,
       this.basmalaStyle,
       this.surahNumber,
-      this.surahInfoStyle,
       this.surahNameStyle,
       this.bannerStyle,
       this.onSurahBannerPress,
@@ -28,7 +27,6 @@ class QuranTextScale extends StatelessWidget {
   final List? bookmarkList;
   final BasmalaStyle? basmalaStyle;
   final int? surahNumber;
-  final SurahInfoStyle? surahInfoStyle;
   final SurahNameStyle? surahNameStyle;
   final BannerStyle? bannerStyle;
   final Function(SurahNamesModel surah)? onSurahBannerPress;
@@ -53,8 +51,6 @@ class QuranTextScale extends StatelessWidget {
                   onAyahPress!();
                 }
                 quranCtrl.clearSelection();
-                quranCtrl.state.overlayEntry?.remove();
-                quranCtrl.state.overlayEntry = null;
               },
               child: Container(
                 color: const Color(0xfffaf7f3),
@@ -109,22 +105,6 @@ class QuranTextScale extends StatelessWidget {
                                             surahNameColor: isDark
                                                 ? Colors.white
                                                 : Colors.black,
-                                          ),
-                                      surahInfoStyle: surahInfoStyle ??
-                                          SurahInfoStyle(
-                                            ayahCount: 'عدد الآيات',
-                                            secondTabText: 'عن السورة',
-                                            firstTabText: 'أسماء السورة',
-                                            backgroundColor: Colors.white,
-                                            closeIconColor: Colors.black,
-                                            indicatorColor: Colors.amber
-                                                .withValues(alpha: .2),
-                                            primaryColor: Colors.amber
-                                                .withValues(alpha: .2),
-                                            surahNameColor: Colors.black,
-                                            surahNumberColor: Colors.black,
-                                            textColor: Colors.black,
-                                            titleColor: Colors.black,
                                           ),
                                       onSurahBannerPress: onSurahBannerPress,
                                       isDark: isDark,
@@ -217,10 +197,6 @@ class QuranTextScale extends StatelessWidget {
                                                 quranCtrl.toggleAyahSelection(
                                                     ayahs[ayahIndex]
                                                         .ayahUQNumber);
-                                                quranCtrl.state.overlayEntry
-                                                    ?.remove();
-                                                quranCtrl.state.overlayEntry =
-                                                    null;
                                               } else {
                                                 final bookmarkId = allBookmarks
                                                         .any((bookmark) =>
@@ -242,31 +218,6 @@ class QuranTextScale extends StatelessWidget {
                                                   quranCtrl.toggleAyahSelection(
                                                       ayahs[ayahIndex]
                                                           .ayahUQNumber);
-                                                  quranCtrl.state.overlayEntry
-                                                      ?.remove();
-                                                  quranCtrl.state.overlayEntry =
-                                                      null;
-
-                                                  // إنشاء OverlayEntry جديد
-                                                  final overlay =
-                                                      Overlay.of(context);
-                                                  final newOverlayEntry =
-                                                      OverlayEntry(
-                                                    builder: (context) =>
-                                                        AyahLongClickDialog(
-                                                      ayahFonts:
-                                                          ayahs[ayahIndex],
-                                                      position: details
-                                                          .globalPosition,
-                                                    ),
-                                                  );
-
-                                                  quranCtrl.state.overlayEntry =
-                                                      newOverlayEntry;
-
-                                                  // إدخال OverlayEntry في Overlay
-                                                  overlay
-                                                      .insert(newOverlayEntry);
                                                 }
                                               }
                                             },
@@ -305,10 +256,6 @@ class QuranTextScale extends StatelessWidget {
                                               quranCtrl.toggleAyahSelection(
                                                   ayahs[ayahIndex]
                                                       .ayahUQNumber);
-                                              quranCtrl.state.overlayEntry
-                                                  ?.remove();
-                                              quranCtrl.state.overlayEntry =
-                                                  null;
                                             } else {
                                               final bookmarkId = allBookmarks
                                                       .any((bookmark) =>
@@ -329,29 +276,6 @@ class QuranTextScale extends StatelessWidget {
                                                 quranCtrl.toggleAyahSelection(
                                                     ayahs[ayahIndex]
                                                         .ayahUQNumber);
-                                                quranCtrl.state.overlayEntry
-                                                    ?.remove();
-                                                quranCtrl.state.overlayEntry =
-                                                    null;
-
-                                                // إنشاء OverlayEntry جديد
-                                                final overlay =
-                                                    Overlay.of(context);
-                                                final newOverlayEntry =
-                                                    OverlayEntry(
-                                                  builder: (context) =>
-                                                      AyahLongClickDialog(
-                                                    ayahFonts: ayahs[ayahIndex],
-                                                    position:
-                                                        details.globalPosition,
-                                                  ),
-                                                );
-
-                                                quranCtrl.state.overlayEntry =
-                                                    newOverlayEntry;
-
-                                                // إدخال OverlayEntry في Overlay
-                                                overlay.insert(newOverlayEntry);
                                               }
                                             }
                                           },
@@ -400,22 +324,6 @@ class QuranTextScale extends StatelessWidget {
                                             surahNameColor: isDark
                                                 ? Colors.white
                                                 : Colors.black,
-                                          ),
-                                      surahInfoStyle: surahInfoStyle ??
-                                          SurahInfoStyle(
-                                            ayahCount: 'عدد الآيات',
-                                            secondTabText: 'عن السورة',
-                                            firstTabText: 'أسماء السورة',
-                                            backgroundColor: Colors.white,
-                                            closeIconColor: Colors.black,
-                                            indicatorColor: Colors.amber
-                                                .withValues(alpha: .2),
-                                            primaryColor: Colors.amber
-                                                .withValues(alpha: .2),
-                                            surahNameColor: Colors.black,
-                                            surahNumberColor: Colors.black,
-                                            textColor: Colors.black,
-                                            titleColor: Colors.black,
                                           ),
                                       onSurahBannerPress: onSurahBannerPress,
                                       isDark: isDark,

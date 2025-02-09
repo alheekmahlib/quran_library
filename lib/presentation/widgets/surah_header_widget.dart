@@ -7,7 +7,6 @@ class SurahHeaderWidget extends StatelessWidget {
     this.bannerStyle,
     this.surahNameStyle,
     this.onSurahBannerPress,
-    this.surahInfoStyle,
     required this.isDark,
   });
 
@@ -15,7 +14,6 @@ class SurahHeaderWidget extends StatelessWidget {
   final BannerStyle? bannerStyle;
   final SurahNameStyle? surahNameStyle;
   final void Function(SurahNamesModel surah)? onSurahBannerPress;
-  final SurahInfoStyle? surahInfoStyle;
   final bool isDark;
 
   final quranCtrl = QuranCtrl.instance;
@@ -28,9 +26,6 @@ class SurahHeaderWidget extends StatelessWidget {
         onTap: () {
           if (onSurahBannerPress != null) {
             onSurahBannerPress!(quranCtrl.surahsList[surahNumber - 1]);
-          } else {
-            surahInfoDialogWidget(context, surahNumber - 1,
-                surahStyle: surahInfoStyle!, deviceWidth: deviceWidth);
           }
         },
         child: Container(
@@ -61,9 +56,6 @@ class SurahHeaderWidget extends StatelessWidget {
           onTap: () {
             if (onSurahBannerPress != null) {
               onSurahBannerPress!(quranCtrl.surahsList[surahNumber - 1]);
-            } else {
-              surahInfoDialogWidget(context, surahNumber - 1,
-                  surahStyle: surahInfoStyle!, deviceWidth: deviceWidth);
             }
           },
           child: Stack(

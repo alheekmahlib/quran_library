@@ -20,9 +20,7 @@ class QuranLibraryScreen extends StatelessWidget {
     this.onPagePress,
     this.surahNameStyle,
     this.backgroundColor,
-    this.surahInfoStyle,
     this.languageCode = 'ar',
-    this.downloadFontsDialogStyle,
     this.juzName,
     this.sajdaName,
     this.topTitleChild,
@@ -67,16 +65,6 @@ class QuranLibraryScreen extends StatelessWidget {
   ///
   /// [SurahNameStyle] Change the style of surah name by SurahNameStyle class
   final SurahNameStyle? surahNameStyle;
-
-  /// تغيير نمط معلومات السورة بواسطة هذه الفئة [SurahInfoStyle]
-  ///
-  /// [SurahInfoStyle] Change the style of surah information by SurahInfoStyle class
-  final SurahInfoStyle? surahInfoStyle;
-
-  /// تغيير نمط نافذة تحميل الخطوط بواسطة هذه الفئة [DownloadFontsDialogStyle]
-  ///
-  /// [DownloadFontsDialogStyle] Change the style of Download fonts dialog by DownloadFontsDialogStyle class
-  final DownloadFontsDialogStyle? downloadFontsDialogStyle;
 
   /// قم بتمكين هذا المتغير إذا كنت تريد عرض القرآن باستخدام PageView [withPageView]
   ///
@@ -200,8 +188,6 @@ class QuranLibraryScreen extends StatelessWidget {
                     onPageChanged: (page) async {
                       if (onPageChanged != null) onPageChanged!(page);
                       quranCtrl.saveLastPage(page + 1);
-                      quranCtrl.state.overlayEntry?.remove();
-                      quranCtrl.state.overlayEntry = null;
                     },
                     pageSnapping: true,
                     itemBuilder: (ctx, index) {
@@ -259,7 +245,6 @@ class QuranLibraryScreen extends StatelessWidget {
                       bookmarks: bookmarkCtrl.bookmarks,
                       onFontsAyahLongPress: onFontsAyahLongPress,
                       bookmarksColor: bookmarksColor,
-                      surahInfoStyle: surahInfoStyle,
                       surahNameStyle: surahNameStyle,
                       bannerStyle: bannerStyle,
                       basmalaStyle: basmalaStyle,
@@ -285,7 +270,6 @@ class QuranLibraryScreen extends StatelessWidget {
               bookmarks: bookmarkCtrl.bookmarks,
               onFontsAyahLongPress: onFontsAyahLongPress,
               bookmarksColor: bookmarksColor,
-              surahInfoStyle: surahInfoStyle,
               surahNameStyle: surahNameStyle,
               bannerStyle: bannerStyle,
               basmalaStyle: basmalaStyle,

@@ -30,7 +30,6 @@ class QuranCtrl extends GetxController {
   @override
   void onClose() {
     state.quranPageController.dispose();
-    state.overlayEntry!.remove();
     super.onClose();
   }
 

@@ -146,23 +146,6 @@ class QuranLibrary {
           .where((bookmark) => bookmark.page != -1)
           .toList();
 
-  /// للحصول على معلومات السورة في نافذة حوار، قم فقط باستدعاء: [getSurahInfoDialog].
-  ///
-  /// مطلوب تمرير رقم السورة [surahNumber].
-  /// كما أن التمرير الاختياري لنمط [SurahInfoStyle] ممكن.
-  ///
-  /// to get the Surah information dialog just call [getSurahInfoDialog]
-  ///
-  /// and required to pass the Surah number [surahNumber]
-  /// and style [SurahInfoStyle] is optional.
-  void getSurahInfoDialog(
-          {required int surahNumber,
-          required BuildContext context,
-          SurahInfoStyle? surahInfoStyle,
-          String? languageCode}) =>
-      surahInfoDialogWidget(context, surahNumber - 1,
-          surahStyle: surahInfoStyle, languageCode: languageCode);
-
   /// [getSurahInfo] تتيح لك الحصول على سورة مع جميع بياناتها.
   /// ملاحظة: تستقبل هذه الطريقة رقم السورة وليس فهرس السورة.
   ///

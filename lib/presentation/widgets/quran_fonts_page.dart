@@ -5,7 +5,7 @@ class QuranFontsPage extends StatelessWidget {
   final List? bookmarkList;
   final BasmalaStyle? basmalaStyle;
   final int? surahNumber;
-  final SurahInfoStyle? surahInfoStyle;
+
   final SurahNameStyle? surahNameStyle;
   final BannerStyle? bannerStyle;
   final Function(SurahNamesModel surah)? onSurahBannerPress;
@@ -26,7 +26,6 @@ class QuranFontsPage extends StatelessWidget {
     this.bookmarkList,
     this.basmalaStyle,
     this.surahNumber,
-    this.surahInfoStyle,
     this.surahNameStyle,
     this.bannerStyle,
     this.onSurahBannerPress,
@@ -51,8 +50,6 @@ class QuranFontsPage extends StatelessWidget {
                   onAyahPress!();
                 }
                 quranCtrl.clearSelection();
-                quranCtrl.state.overlayEntry?.remove();
-                quranCtrl.state.overlayEntry = null;
               },
               child: Container(
                 padding: pageIndex == 0 || pageIndex == 1
@@ -106,22 +103,6 @@ class QuranFontsPage extends StatelessWidget {
                                             surahNameColor: isDark
                                                 ? Colors.white
                                                 : Colors.black,
-                                          ),
-                                      surahInfoStyle: surahInfoStyle ??
-                                          SurahInfoStyle(
-                                            ayahCount: 'عدد الآيات',
-                                            secondTabText: 'عن السورة',
-                                            firstTabText: 'أسماء السورة',
-                                            backgroundColor: Colors.white,
-                                            closeIconColor: Colors.black,
-                                            indicatorColor: Colors.amber
-                                                .withValues(alpha: 2),
-                                            primaryColor: Colors.amber
-                                                .withValues(alpha: 2),
-                                            surahNameColor: Colors.black,
-                                            surahNumberColor: Colors.black,
-                                            textColor: Colors.black,
-                                            titleColor: Colors.black,
                                           ),
                                       onSurahBannerPress: onSurahBannerPress,
                                       isDark: isDark,
@@ -275,8 +256,6 @@ class QuranFontsPage extends StatelessWidget {
                 if (onFontsAyahLongPress != null) {
                   onFontsAyahLongPress!(details, ayahs[ayahIndex]);
                   quranCtrl.toggleAyahSelection(ayahs[ayahIndex].ayahUQNumber);
-                  quranCtrl.state.overlayEntry?.remove();
-                  quranCtrl.state.overlayEntry = null;
                 } else {
                   final bookmarkId = allBookmarks.any((bookmark) =>
                           bookmark.ayahId == ayahs[ayahIndex].ayahUQNumber)
@@ -290,22 +269,6 @@ class QuranFontsPage extends StatelessWidget {
                   } else {
                     quranCtrl
                         .toggleAyahSelection(ayahs[ayahIndex].ayahUQNumber);
-                    quranCtrl.state.overlayEntry?.remove();
-                    quranCtrl.state.overlayEntry = null;
-
-                    // إنشاء OverlayEntry جديد
-                    final overlay = Overlay.of(context);
-                    final newOverlayEntry = OverlayEntry(
-                      builder: (context) => AyahLongClickDialog(
-                        ayahFonts: ayahs[ayahIndex],
-                        position: details.globalPosition,
-                      ),
-                    );
-
-                    quranCtrl.state.overlayEntry = newOverlayEntry;
-
-                    // إدخال OverlayEntry في Overlay
-                    overlay.insert(newOverlayEntry);
                   }
                 }
               },
@@ -331,8 +294,6 @@ class QuranFontsPage extends StatelessWidget {
               if (onFontsAyahLongPress != null) {
                 onFontsAyahLongPress!(details, ayahs[ayahIndex]);
                 quranCtrl.toggleAyahSelection(ayahs[ayahIndex].ayahUQNumber);
-                quranCtrl.state.overlayEntry?.remove();
-                quranCtrl.state.overlayEntry = null;
               } else {
                 final bookmarkId = allBookmarks.any((bookmark) =>
                         bookmark.ayahId == ayahs[ayahIndex].ayahUQNumber)
@@ -345,22 +306,6 @@ class QuranFontsPage extends StatelessWidget {
                   BookmarksCtrl.instance.removeBookmark(bookmarkId);
                 } else {
                   quranCtrl.toggleAyahSelection(ayahs[ayahIndex].ayahUQNumber);
-                  quranCtrl.state.overlayEntry?.remove();
-                  quranCtrl.state.overlayEntry = null;
-
-                  // إنشاء OverlayEntry جديد
-                  final overlay = Overlay.of(context);
-                  final newOverlayEntry = OverlayEntry(
-                    builder: (context) => AyahLongClickDialog(
-                      ayahFonts: ayahs[ayahIndex],
-                      position: details.globalPosition,
-                    ),
-                  );
-
-                  quranCtrl.state.overlayEntry = newOverlayEntry;
-
-                  // إدخال OverlayEntry في Overlay
-                  overlay.insert(newOverlayEntry);
                 }
               }
             },

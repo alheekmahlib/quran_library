@@ -61,24 +61,21 @@ flutter:
   assets:
     - lib/assets/
     - lib/assets/fonts/
-    - lib/assets/fonts/hafs.ttf
     - lib/assets/fonts/Kufam-Regular.ttf
     - lib/assets/fonts/NotoNaskhArabic-VariableFont_wght.ttf
+    - lib/assets/fonts/UthmanicHafs_V20.ttf
     - lib/assets/jsons/
     - lib/assets/svg/
     - lib/assets/svg/surah_name/
 
   fonts:
-    - family: hafs
-      fonts:
-        - asset: packages/quran_library/assets/fonts/hafs.ttf
     - family: kufi
       fonts:
         - asset: packages/quran_library/assets/fonts/Kufam-Regular.ttf
     - family: naskh
       fonts:
         - asset: packages/quran_library/assets/fonts/NotoNaskhArabic-VariableFont_wght.ttf
-    - family: uthmanic2
+    - family: hafs
       fonts:
         - asset: packages/quran_library/assets/fonts/UthmanicHafs_V20.ttf
 

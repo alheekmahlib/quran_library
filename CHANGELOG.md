@@ -1,3 +1,9 @@
+## 0.1.0
+
+* **Modifications and improvements in the code.**
+* **Organizing the imports.**
+* **Adding dark mode.**
+
 ## 0.0.9
 
 * **fix all null check.**

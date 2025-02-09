@@ -225,7 +225,7 @@ TextSpan customSpan({
         TextSpan(
           text: text,
           style: TextStyle(
-            fontFamily: 'uthmanic2',
+            fontFamily: 'hafs',
             fontSize: fontSize,
             height: 2,
             color: textColor ?? Colors.black,
@@ -267,7 +267,7 @@ TextSpan customSpan({
                     .toString()
                     .convertNumbersAccordingToLang(languageCode: languageCode),
                 style: TextStyle(
-                  fontFamily: 'uthmanic2',
+                  fontFamily: 'hafs',
                   fontSize: fontSize,
                   height: 2,
                   color: ayahIconColor,

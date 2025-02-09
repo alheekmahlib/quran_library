@@ -172,22 +172,23 @@ class QuranTextScale extends StatelessWidget {
                                 textAlign: TextAlign.center,
                                 text: TextSpan(
                                   style: TextStyle(
-                                    fontFamily: 'uthmanic2',
+                                    fontFamily: 'hafs',
                                     fontSize:
                                         20 * quranCtrl.state.scaleFactor.value,
                                     height: 1.7,
-                                    letterSpacing: 2,
+                                    // letterSpacing: 2,
+                                    fontWeight: FontWeight.bold,
                                     color: textColor ??
                                         (isDark ? Colors.white : Colors.black),
-                                    shadows: [
-                                      Shadow(
-                                        blurRadius: 0.5,
-                                        color: quranCtrl.state.isBold.value == 0
-                                            ? Colors.black
-                                            : Colors.transparent,
-                                        offset: const Offset(0.5, 0.5),
-                                      ),
-                                    ],
+                                    // shadows: [
+                                    //   Shadow(
+                                    //     blurRadius: 0.5,
+                                    //     color: quranCtrl.state.isBold.value == 0
+                                    //         ? Colors.black
+                                    //         : Colors.transparent,
+                                    //     offset: const Offset(0.5, 0.5),
+                                    //   ),
+                                    // ],
                                     package: 'quran_library',
                                   ),
                                   children:

@@ -29,11 +29,11 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return QuranLibraryScreen(
-      // isDark: true,
-      showAyahBookmarkedIcon: false,
+      isDark: false,
+      showAyahBookmarkedIcon: true,
       ayahIconColor: Color(0xffcdad80),
-      // backgroundColor: Colors.black,
-      // textColor: Colors.white,
+      backgroundColor: Colors.white,
+      textColor: Colors.black,
     );
   }
 }

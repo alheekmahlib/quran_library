@@ -1,9 +1,8 @@
 part of '../../../quran.dart';
 
 class QuranCtrl extends GetxController {
-  static QuranCtrl get instance => Get.isRegistered<QuranCtrl>()
-      ? Get.find<QuranCtrl>()
-      : Get.put<QuranCtrl>(QuranCtrl());
+  static QuranCtrl get instance => GetInstance().putOrFind(() => QuranCtrl());
+
   QuranCtrl({QuranRepository? quranRepository})
       : _quranRepository = quranRepository ?? QuranRepository(),
         super();
@@ -31,8 +30,16 @@ class QuranCtrl extends GetxController {
 
   @override
   void onClose() {
-    state.quranPageController.dispose();
-    state.overlayEntry!.remove();
+    staticPages.close();
+    quranStops.close();
+    surahsStart.close();
+    surahs.close();
+    ayahs.close();
+    scaleFactor.close();
+    baseScaleFactor.close();
+    isLoading.close();
+    surahsList.close();
+    state.dispose();
     super.onClose();
   }
 

@@ -50,5 +50,38 @@ class QuranState {
   RxInt selectedAyahNumber = 0.obs;
   RxInt selectedSurahNumber = 0.obs;
   OverlayEntry? overlayEntry;
-  // RxInt isTajweed = 0.obs;
+
+  void dispose() {
+    quranPageController.dispose();
+    scrollIndicatorController.dispose();
+    ayahsScrollController.dispose();
+    surahController?.dispose();
+    juzListController?.dispose();
+    currentPageNumber.close();
+    lastReadSurahNumber.close();
+    selectedAyahIndexes.close();
+    selectedIndicatorIndex.close();
+    textWidgetPosition.close();
+    isPlayExpanded.close();
+    isSajda.close();
+    isPages.close();
+    isBold.close();
+    isMoreOptions.close();
+    moreOptionsMap.close();
+    selectMushafSettingsPage.close();
+    ayahsWidgetHeight.close();
+    currentListPage.close();
+    scaleFactor.close();
+    baseScaleFactor.close();
+    isPageMode.close();
+    isScrolling.close();
+    isDownloadingFonts.close();
+    isDownloadedV2Fonts.close();
+    fontsDownloadedList.close();
+    fontsSelected2.close();
+    fontsDownloadProgress.close();
+    selectedAyahNumber.close();
+    selectedSurahNumber.close();
+    overlayEntry?.remove();
+  }
 }

@@ -16,12 +16,12 @@ class _DefaultDrawer extends StatelessWidget {
       child: ListView(
         children: [
           Container(
-            margin: EdgeInsets.all(8.0),
+            margin: const EdgeInsets.all(8.0),
             decoration: BoxDecoration(
                 color:
                     const Color(0xfff6d09d).withValues(alpha: isDark ? .5 : .3),
                 border: Border.all(width: 1, color: const Color(0xfff6d09d)),
-                borderRadius: BorderRadius.all(Radius.circular(8))),
+                borderRadius:const BorderRadius.all(Radius.circular(8))),
             child: ListTile(
               trailing: const Icon(Icons.search_outlined),
               title: Text('البحث', style: QuranLibrary().naskhStyle),
@@ -151,7 +151,7 @@ class _DefaultDrawer extends StatelessWidget {
               ),
             ],
           ),
-          SizedBox(height: 8),
+          const SizedBox(height: 8),
           ExpansionTile(
             title: Text('العلامات', style: QuranLibrary().naskhStyle),
             expandedCrossAxisAlignment: CrossAxisAlignment.start,

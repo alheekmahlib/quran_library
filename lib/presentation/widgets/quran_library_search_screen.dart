@@ -92,9 +92,13 @@ class QuranLibrarySearchScreen extends StatelessWidget {
                                   ),
                                   contentPadding: const EdgeInsets.symmetric(
                                       horizontal: 16),
-                                  onTap: () {
+                                  onTap: () async {
                                     Navigator.pop(context);
                                     quranCtrl.ayahsList.value = [];
+                                    quranCtrl.isDownloadFonts.value
+                                        ? await quranCtrl
+                                            .prepareFonts(ayah.page)
+                                        : null;
                                     QuranLibrary().jumpToAyah(ayah);
                                   },
                                 ),

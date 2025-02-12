@@ -28,7 +28,7 @@ In the `pubspec.yaml` of your flutter project, add the following dependency:
 ```yaml
 dependencies:
   ...
-  quran_library: ^0.1.0
+  quran_library: ^0.1.1
 ```
 
 
@@ -225,4 +225,5 @@ QuranLibrary().hafsStyle;
 QuranLibrary().naskhStyle;
 ```
 
+<h4><p align="center"></p></h4>
 <h2><p align="center"> لا تنسونا من صالح الدعاء </p></h2>

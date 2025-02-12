@@ -317,8 +317,8 @@ class QuranLibraryScreen extends StatelessWidget {
                       quranCtrl.state.surahs.isEmpty ||
                       quranCtrl.state.pages.isEmpty
                   ? Center(
-                      child:
-                          circularProgressWidget ?? const CircularProgressIndicator())
+                      child: circularProgressWidget ??
+                          const CircularProgressIndicator())
                   : Align(
                       alignment: Alignment.topCenter,
                       child: AllQuranWidget(
@@ -352,8 +352,8 @@ class QuranLibraryScreen extends StatelessWidget {
                       ))
               : quranCtrl.staticPages.isEmpty || quranCtrl.isLoading.value
                   ? Center(
-                      child:
-                          circularProgressWidget ?? const CircularProgressIndicator())
+                      child: circularProgressWidget ??
+                          const CircularProgressIndicator())
                   : QuranLinePage(
                       pageIndex: pageIndex,
                       bookmarkList: bookmarkList,
@@ -378,7 +378,8 @@ class QuranLibraryScreen extends StatelessWidget {
                     )),
           quranCtrl.staticPages.isEmpty || quranCtrl.isLoading.value
               ? Center(
-                  child: circularProgressWidget ?? const CircularProgressIndicator())
+                  child: circularProgressWidget ??
+                      const CircularProgressIndicator())
               : AllQuranWidget(
                   pageIndex: pageIndex,
                   languageCode: languageCode,

@@ -3,6 +3,7 @@ part of '../../quran.dart';
 class _DefaultDrawer extends StatelessWidget {
   final String languageCode;
   final bool isDark;
+
   const _DefaultDrawer(this.languageCode, this.isDark);
 
   @override
@@ -21,7 +22,7 @@ class _DefaultDrawer extends StatelessWidget {
                 color:
                     const Color(0xfff6d09d).withValues(alpha: isDark ? .5 : .3),
                 border: Border.all(width: 1, color: const Color(0xfff6d09d)),
-                borderRadius:const BorderRadius.all(Radius.circular(8))),
+                borderRadius: const BorderRadius.all(Radius.circular(8))),
             child: ListTile(
               trailing: const Icon(Icons.search_outlined),
               title: Text('البحث', style: QuranLibrary().naskhStyle),

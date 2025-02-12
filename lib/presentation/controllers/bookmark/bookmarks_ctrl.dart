@@ -1,7 +1,8 @@
 part of '../../../quran.dart';
 
 class BookmarksCtrl extends GetxController {
-  static BookmarksCtrl get instance => GetInstance().putOrFind(() => BookmarksCtrl());
+  static BookmarksCtrl get instance =>
+      GetInstance().putOrFind(() => BookmarksCtrl());
 
   BookmarksCtrl({QuranRepository? quranRepository})
       : _quranRepository = quranRepository ?? QuranRepository(),
@@ -62,7 +63,8 @@ class BookmarksCtrl extends GetxController {
     required int colorCode,
   }) {
     final bookmark = BookmarkModel(
-      id: DateTime.now().millisecondsSinceEpoch, // إنشاء ID فريد
+      id: DateTime.now().millisecondsSinceEpoch,
+      // إنشاء ID فريد
       colorCode: colorCode,
       name: surahName,
       ayahNumber: ayahNumber,

@@ -76,6 +76,7 @@ extension QuranGetters on QuranCtrl {
         556,
         583
       ];
+
   List<int> get topOfThePageIndex => [
         76,
         207,
@@ -239,52 +240,52 @@ extension QuranGetters on QuranCtrl {
   RxBool get isDownloadFonts =>
       (state.fontsSelected2.value == 1) ? true.obs : false.obs;
 
-  // PageController get pageController {
-  //   return state.quranPageController = PageController(
-  //       viewportFraction: Responsive.isDesktop(Get.context!) ? 1 / 2 : 1,
-  //       initialPage: state.currentPageNumber.value - 1,
-  //       keepPage: true);
-  // }
-  //
-  // ScrollController get surahController {
-  //   final suraNumber =
-  //       getCurrentSurahByPage(state.currentPageNumber.value - 1).surahNumber -
-  //           1;
-  //   if (state.surahController == null) {
-  //     state.surahController = ScrollController(
-  //       initialScrollOffset: state.surahItemHeight * suraNumber,
-  //     );
-  //   }
-  //   return state.surahController!;
-  // }
-  //
-  // ScrollController get juzController {
-  //   if (state.juzListController == null) {
-  //     state.juzListController = ScrollController(
-  //       initialScrollOffset: state.surahItemHeight *
-  //           getJuzByPage(state.currentPageNumber.value).juz,
-  //     );
-  //   }
-  //   return state.juzListController!;
-  // }
+// PageController get pageController {
+//   return state.quranPageController = PageController(
+//       viewportFraction: Responsive.isDesktop(Get.context!) ? 1 / 2 : 1,
+//       initialPage: state.currentPageNumber.value - 1,
+//       keepPage: true);
+// }
+//
+// ScrollController get surahController {
+//   final suraNumber =
+//       getCurrentSurahByPage(state.currentPageNumber.value - 1).surahNumber -
+//           1;
+//   if (state.surahController == null) {
+//     state.surahController = ScrollController(
+//       initialScrollOffset: state.surahItemHeight * suraNumber,
+//     );
+//   }
+//   return state.surahController!;
+// }
+//
+// ScrollController get juzController {
+//   if (state.juzListController == null) {
+//     state.juzListController = ScrollController(
+//       initialScrollOffset: state.surahItemHeight *
+//           getJuzByPage(state.currentPageNumber.value).juz,
+//     );
+//   }
+//   return state.juzListController!;
+// }
 
-  // Color get backgroundColor => state.backgroundPickerColor.value == 0xfffaf7f3
-  //     ? Get.theme.colorScheme.surfaceContainer
-  //     : ThemeController.instance.isDarkMode
-  //         ? Get.theme.colorScheme.surfaceContainer
-  //         : Color(state.backgroundPickerColor.value);
+// Color get backgroundColor => state.backgroundPickerColor.value == 0xfffaf7f3
+//     ? Get.theme.colorScheme.surfaceContainer
+//     : ThemeController.instance.isDarkMode
+//         ? Get.theme.colorScheme.surfaceContainer
+//         : Color(state.backgroundPickerColor.value);
 
-  // String get surahBannerPath {
-  //   if (themeCtrl.isBlueMode) {
-  //     return SvgPath.svgSurahBanner1;
-  //   } else if (themeCtrl.isBrownMode) {
-  //     return SvgPath.svgSurahBanner2;
-  //   } else if (themeCtrl.isOldMode) {
-  //     return SvgPath.svgSurahBanner4;
-  //   } else {
-  //     return SvgPath.svgSurahBanner3;
-  //   }
-  // }
+// String get surahBannerPath {
+//   if (themeCtrl.isBlueMode) {
+//     return SvgPath.svgSurahBanner1;
+//   } else if (themeCtrl.isBrownMode) {
+//     return SvgPath.svgSurahBanner2;
+//   } else if (themeCtrl.isOldMode) {
+//     return SvgPath.svgSurahBanner4;
+//   } else {
+//     return SvgPath.svgSurahBanner3;
+//   }
+// }
 }
 
 extension SplitBetweenExtension<T> on List<T> {

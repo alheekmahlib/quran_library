@@ -17,11 +17,11 @@ class QuranCtrl extends GetxController {
   int lastPage = 1;
   int? initialPage;
   RxList<AyahModel> ayahsList = <AyahModel>[].obs;
-  var selectedAyahIndexes = <int>[].obs;
+  final selectedAyahIndexes = <int>[].obs;
   bool isAyahSelected = false;
   RxDouble scaleFactor = 1.0.obs;
   RxDouble baseScaleFactor = 1.0.obs;
-  var isLoading = true.obs;
+  final isLoading = true.obs;
   RxList<SurahNamesModel> surahsList = <SurahNamesModel>[].obs;
 
   PageController _pageController = PageController();
@@ -33,13 +33,16 @@ class QuranCtrl extends GetxController {
     staticPages.close();
     quranStops.close();
     surahsStart.close();
+    selectedAyahIndexes.close();
     surahs.close();
     ayahs.close();
+    ayahsList.close();
     scaleFactor.close();
     baseScaleFactor.close();
     isLoading.close();
     surahsList.close();
     state.dispose();
+    _pageController.dispose();
     super.onClose();
   }
 

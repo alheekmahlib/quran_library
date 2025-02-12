@@ -33,10 +33,10 @@ extension FontsDownloadWidgetExtension on QuranCtrl {
             ),
             textAlign: TextAlign.center,
           ),
-          SizedBox(height: 8.0),
+          const SizedBox(height: 8.0),
           context.horizontalDivider(
               width: MediaQuery.sizeOf(context).width * .5, color: Colors.blue),
-          SizedBox(height: 8.0),
+          const SizedBox(height: 8.0),
           Text(
             downloadFontsDialogStyle?.notes ??
                 'لجعل مظهر المصحف مشابه لمصحف المدينة يمكنك تحميل خطوط المصحف',
@@ -47,7 +47,7 @@ extension FontsDownloadWidgetExtension on QuranCtrl {
                     (isDark ? Colors.white : Colors.black),
                 package: 'quran_library'),
           ),
-          SizedBox(
+          const SizedBox(
             height: 100,
           ),
           Column(
@@ -96,7 +96,7 @@ extension FontsDownloadWidgetExtension on QuranCtrl {
                           downloadFontsDialogStyle?.linearProgressColor ??
                               Colors.blue,
                       secondary: i == 0
-                          ? SizedBox.shrink()
+                          ? const SizedBox.shrink()
                           : IconButton(
                               onPressed: () async {
                                 quranCtrl.state.fontsDownloadedList.contains(i)

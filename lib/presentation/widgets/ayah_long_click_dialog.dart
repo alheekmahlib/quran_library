@@ -15,21 +15,21 @@ class AyahLongClickDialog extends StatelessWidget {
       left: position.dx - 100,
       child: Container(
         decoration: BoxDecoration(
-            borderRadius: BorderRadius.all(Radius.circular(8.0)),
+            borderRadius: const BorderRadius.all(Radius.circular(8.0)),
             color: const Color(0xfffff5ee),
             boxShadow: [
               BoxShadow(
                 color: Colors.grey.withValues(alpha: .3),
                 blurRadius: 10,
                 spreadRadius: 5,
-                offset: Offset(0, 5),
+                offset: const Offset(0, 5),
               )
             ]),
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 6.0, vertical: 2.0),
           margin: const EdgeInsets.all(4.0),
           decoration: BoxDecoration(
-              borderRadius: BorderRadius.all(Radius.circular(6.0)),
+              borderRadius: const BorderRadius.all(Radius.circular(6.0)),
               border: Border.all(width: 2, color: const Color(0xffe8decb))),
           child: Row(
             mainAxisSize: MainAxisSize.min,
@@ -94,7 +94,7 @@ class AyahLongClickDialog extends StatelessWidget {
                   QuranCtrl.instance.state.overlayEntry?.remove();
                   QuranCtrl.instance.state.overlayEntry = null;
                 },
-                child: Icon(
+                child: const Icon(
                   Icons.copy_rounded,
                   color: Colors.grey,
                 ),

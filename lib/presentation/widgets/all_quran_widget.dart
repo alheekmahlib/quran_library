@@ -33,8 +33,8 @@ class AllQuranWidget extends StatelessWidget {
             child: isRight
                 ? Row(
                     children: [
-                      topTitleChild ?? SizedBox.shrink(),
-                      SizedBox(width: 16),
+                      topTitleChild ?? const SizedBox.shrink(),
+                      const SizedBox(width: 16),
                       Text(
                         '${juzName ?? 'الجزء'}: ${quranCtrl.getJuzByPage(pageIndex).juz}'
                             .convertNumbersAccordingToLang(
@@ -87,8 +87,8 @@ class AllQuranWidget extends StatelessWidget {
                             fontFamily: 'naskh',
                             color: const Color(0xff77554B)),
                       ),
-                      SizedBox(width: 16),
-                      topTitleChild ?? SizedBox.shrink(),
+                      const SizedBox(width: 16),
+                      topTitleChild ?? const SizedBox.shrink(),
                     ],
                   ),
           ),

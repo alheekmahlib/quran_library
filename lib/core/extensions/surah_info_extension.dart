@@ -115,7 +115,9 @@ extension SurahInfoExtension on void {
                       const SizedBox(height: 8.0),
                       Container(
                         height: 35,
-                        width: deviceWidth!.width,
+                        width: deviceWidth?.width == null
+                            ? double.infinity
+                            : deviceWidth!.width,
                         alignment: Alignment.center,
                         padding: const EdgeInsets.symmetric(horizontal: 8.0),
                         margin: const EdgeInsets.symmetric(horizontal: 8.0),

@@ -1,3 +1,8 @@
+## 0.1.1
+
+* **dispose QuranState, QuranCtrl, BookmarksCtrl.**
+* **some refactoring.**
+
 ## 0.1.0
 
 * **Modifications and improvements in the code.**

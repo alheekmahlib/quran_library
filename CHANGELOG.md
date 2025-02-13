@@ -1,3 +1,7 @@
+## 0.1.3
+
+* **Modify DownloadFontsDialogStyle.**
+
 ## 0.1.2
 
 * **Improvements in the code.**

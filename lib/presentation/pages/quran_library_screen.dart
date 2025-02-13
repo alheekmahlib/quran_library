@@ -228,13 +228,6 @@ class QuranLibraryScreen extends StatelessWidget {
                         FontsDownloadDialog(
                           downloadFontsDialogStyle: downloadFontsDialogStyle ??
                               DownloadFontsDialogStyle(
-                                iconWidget: Icon(
-                                  quranCtrl.state.isDownloadedV2Fonts.value
-                                      ? Icons.settings
-                                      : Icons.downloading_outlined,
-                                  size: 24,
-                                  color: isDark ? Colors.white : Colors.black,
-                                ),
                                 title: 'الخطوط',
                                 titleColor:
                                     isDark ? Colors.white : Colors.black,
@@ -246,13 +239,10 @@ class QuranLibraryScreen extends StatelessWidget {
                                     Colors.blue.shade100,
                                 linearProgressColor: Colors.blue,
                                 downloadButtonBackgroundColor: Colors.blue,
-                                downloadButtonTextColor: Colors.white,
                                 downloadingText: 'جارِ التحميل',
                                 backgroundColor: isDark
                                     ? Color(0xff202020)
                                     : const Color(0xFFF7EFE0),
-                                downloadedNotesTitle: 'ملاحظة:',
-                                downloadedNotesBody: 'يرجى تحميل الخطوط أولًا!',
                               ),
                           languageCode: languageCode,
                           isDark: isDark,

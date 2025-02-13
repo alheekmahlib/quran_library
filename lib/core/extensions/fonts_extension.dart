@@ -188,7 +188,7 @@ extension FontsExtension on QuranCtrl {
 
   Future<void> deleteFonts(int fontIndex) async {
     try {
-      state.fontsDownloadedList.elementAt(fontIndex);
+      state.fontsDownloadedList.value = [];
       final appDir = await getApplicationDocumentsDirectory();
       final fontsDir = Directory('${appDir.path}/quran_fonts');
 
@@ -201,7 +201,7 @@ extension FontsExtension on QuranCtrl {
         // تحديث حالة التخزين المحلي
         GetStorage().write(StorageConstants().isDownloadedCodeV2Fonts, false);
         GetStorage().write(StorageConstants().fontsSelected, 0);
-        state.fontsDownloadedList.elementAt(fontIndex);
+        // state.fontsDownloadedList.elementAt(fontIndex);
         GetStorage().write(
             StorageConstants().fontsDownloadedList, state.fontsDownloadedList);
         state.isDownloadedV2Fonts.value = false;

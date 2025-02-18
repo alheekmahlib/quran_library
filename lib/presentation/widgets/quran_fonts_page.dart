@@ -11,7 +11,8 @@ class QuranFontsPage extends StatelessWidget {
   final Function(SurahNamesModel surah)? onSurahBannerPress;
   final Function(LongPressStartDetails details, AyahFontsModel ayah)?
       onFontsAyahLongPress;
-  final VoidCallback? onAyahPress;
+
+  final VoidCallback? onPagePress;
   final Color? bookmarksColor;
   final Color? textColor;
   final Color? ayahIconColor;
@@ -39,7 +40,7 @@ class QuranFontsPage extends StatelessWidget {
     required this.bookmarks,
     required this.bookmarksAyahs,
     this.ayahSelectedBackgroundColor,
-    this.onAyahPress,
+    this.onPagePress,
     this.isDark = false,
     this.circularProgressWidget,
   });
@@ -49,12 +50,13 @@ class QuranFontsPage extends StatelessWidget {
     return GetBuilder<QuranCtrl>(
       builder: (quranCtrl) => GestureDetector(
         onTap: () {
-          if (onAyahPress != null) {
-            onAyahPress!();
+          if (onPagePress != null) {
+            onPagePress!();
+          } else {
+            quranCtrl.clearSelection();
+            quranCtrl.state.overlayEntry?.remove();
+            quranCtrl.state.overlayEntry = null;
           }
-          quranCtrl.clearSelection();
-          quranCtrl.state.overlayEntry?.remove();
-          quranCtrl.state.overlayEntry = null;
         },
         child: Container(
           padding: pageIndex == 0 || pageIndex == 1

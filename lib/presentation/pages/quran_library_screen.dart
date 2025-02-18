@@ -336,7 +336,7 @@ class QuranLibraryScreen extends StatelessWidget {
                           bookmarksAyahs: bookmarkCtrl.bookmarksAyahs,
                           ayahSelectedBackgroundColor:
                               ayahSelectedBackgroundColor,
-                          onAyahPress: onPagePress,
+                          onPagePress: onPagePress,
                           isDark: isDark,
                         ),
                       ))

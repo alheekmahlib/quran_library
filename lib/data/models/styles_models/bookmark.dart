@@ -99,28 +99,69 @@ class BookmarkModel {
 /// The [BookmarksAyahs] class is used to store and retrieve bookmarks
 /// in the Quran.
 class BookmarksAyahs {
+  /// The unique identifier for the bookmark in the Quran.
+  ///
+  /// This identifier is used to differentiate between different bookmarks
+  /// in the Quran.
+  final int? id;
+
   /// The unique identifier for the Ayah in the Quran.
   final int ayahUQNumber;
 
   /// The number of the Surah in the Quran.
   final int surahNumber;
 
+  /// The name of the Surah in the Quran.
+  ///
+  /// This property is useful for displaying the name of the Surah that
+  /// the bookmarked Ayah belongs to.
+  final String? surahName;
+
+  /// The page number in the Quran that the bookmarked Ayah is located.
+  ///
+  /// This property is useful for displaying the correct page when the
+  /// bookmark is opened.
+  final int? pageNumber;
+
+  /// The number of the Ayah in the Surah.
+  ///
+  /// This property is useful for displaying the correct Ayah number when the
+  /// bookmark is opened.
+  final int? ayahNumber;
+
+  /// The last read timestamp for the bookmarked Ayah.
+  ///
+  /// This property is used to keep track of when the Ayah was last read,
+  /// which can be useful for reading history and tracking progress.
+  final String? lastRead;
   // final int? bookMarkColorCode;
 
-  /// Creates a new [BookmarksAyahs] object.
+  /// Creates a new instance of [BookmarksAyahs].
   ///
-  /// This class contains properties that identify the bookmarked Ayah
-  /// in the Quran, such as the Surah number and Ayah number in the
-  /// Quran.
+  /// The [id], [ayahUQNumber], [surahNumber], [surahName], [pageNumber],
+  /// [ayahNumber], and [lastRead] must be provided.
   ///
-  /// The properties of this class are used to store and retrieve bookmarks
-  /// in the Quran.
+  /// The [id] is the unique identifier for the bookmark in the Quran.
   ///
-  /// - The [ayahUQNumber] is the unique identifier for the Ayah in the Quran.
-  /// - The [surahNumber] is the number of the Surah in the Quran.
+  /// The [ayahUQNumber] is the unique identifier for the Ayah in the Quran.
+  ///
+  /// The [surahNumber] is the number of the Surah in the Quran.
+  ///
+  /// The [surahName] is the name of the Surah in the Quran.
+  ///
+  /// The [pageNumber] is the page number in the Quran that the bookmarked Ayah is located.
+  ///
+  /// The [ayahNumber] is the number of the Ayah in the Surah.
+  ///
+  /// The [lastRead] is the last read timestamp for the bookmarked Ayah.
   BookmarksAyahs({
+    this.id,
     required this.ayahUQNumber,
     required this.surahNumber,
+    this.surahName,
+    this.pageNumber,
+    this.ayahNumber,
+    this.lastRead,
     // this.bookMarkColorCode,
   });
 }

@@ -22,7 +22,7 @@ class Surah {
         nameEn: json['name_en'],
         nameAr: json['name_ar'],
         ayahs: json['ayahs']
-            .map<AyahModel>((ayah) => AyahModel.fromJson(ayah))
+            .map<AyahModel>((ayah) => AyahModel._fromJson(ayah))
             .toList(),
       );
 
@@ -32,6 +32,6 @@ class Surah {
         "end_page": endPage,
         "name_en": nameEn,
         "name_ar": nameAr,
-        "ayahs": ayahs.map((ayah) => ayah.toJson()).toList(),
+        "ayahs": ayahs.map((ayah) => ayah._toJson()).toList(),
       };
 }

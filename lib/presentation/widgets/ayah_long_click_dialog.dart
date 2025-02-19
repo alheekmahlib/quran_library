@@ -1,11 +1,34 @@
 part of '../../quran.dart';
 
+/// A dialog displayed on long click of an Ayah to provide options like bookmarking and copying text.
+///
+/// This widget shows a dialog at a specified position with options to bookmark the Ayah in different colors
+/// or copy the Ayah text to the clipboard. The appearance and behavior are influenced by the state of QuranCtrl.
 class AyahLongClickDialog extends StatelessWidget {
-  const AyahLongClickDialog(
-      {super.key, this.ayah, this.ayahFonts, required this.position});
+  /// Creates a dialog displayed on long click of an Ayah to provide options like bookmarking and copying text.
+  ///
+  /// This widget shows a dialog at a specified position with options to bookmark the Ayah in different colors
+  /// or copy the Ayah text to the clipboard. The appearance and behavior are influenced by the state of QuranCtrl.
+  const AyahLongClickDialog({
+    super.key,
+    this.ayah,
+    this.ayahFonts,
+    required this.position,
+  });
 
+  /// The AyahModel that is the target of the long click event.
+  ///
+  /// This is for the original fonts.
   final AyahModel? ayah;
+
+  /// The AyahFontsModel that is the target of the long click event.
+  ///
+  /// This is for the downloaded fonts.
   final AyahFontsModel? ayahFonts;
+
+  /// The position where the dialog should appear on the screen.
+  ///
+  /// This is typically the position of the long click event.
   final Offset position;
 
   @override
@@ -19,7 +42,7 @@ class AyahLongClickDialog extends StatelessWidget {
             color: const Color(0xfffff5ee),
             boxShadow: [
               BoxShadow(
-                color: Colors.grey.withValues(alpha: .3),
+                color: Colors.grey.withValues(alpha: 0.3),
                 blurRadius: 10,
                 spreadRadius: 5,
                 offset: const Offset(0, 5),
@@ -47,7 +70,6 @@ class AyahLongClickDialog extends StatelessWidget {
                             QuranCtrl.instance.state.fontsSelected2.value ==
                                 2 ||
                             QuranCtrl.instance.state.scaleFactor.value > 1.3) {
-                          // إضافة العلامة الجديدة
                           BookmarksCtrl.instance.saveBookmark(
                             surahName: QuranCtrl.instance
                                 .getSurahDataByAyah(ayahFonts!)
@@ -81,7 +103,7 @@ class AyahLongClickDialog extends StatelessWidget {
                 onTap: () {
                   if (QuranCtrl.instance.state.fontsSelected2.value == 1) {
                     Clipboard.setData(ClipboardData(text: ayahFonts!.text));
-                    ToastUtils().showToast(context, "تم النسخ الى الحافظة");
+                    _ToastUtils().showToast(context, "تم النسخ الى الحافظة");
                   } else {
                     Clipboard.setData(ClipboardData(
                         text: QuranCtrl
@@ -89,7 +111,7 @@ class AyahLongClickDialog extends StatelessWidget {
                             .firstWhere((element) =>
                                 element.ayahUQNumber == ayah!.ayahUQNumber)
                             .text));
-                    ToastUtils().showToast(context, "تم النسخ الى الحافظة");
+                    _ToastUtils().showToast(context, "تم النسخ الى الحافظة");
                   }
                   QuranCtrl.instance.state.overlayEntry?.remove();
                   QuranCtrl.instance.state.overlayEntry = null;

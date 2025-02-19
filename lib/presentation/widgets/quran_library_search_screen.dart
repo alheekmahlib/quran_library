@@ -1,8 +1,24 @@
 part of '../../quran.dart';
 
+/// A widget that displays the Quran library search screen.
+///
+/// This screen is used to search for specific parts of the Quran.
+/// It contains a text field where the user can enter the text to search for,
+/// and a list of results that match the search.
 class QuranLibrarySearchScreen extends StatelessWidget {
+  /// Creates a [QuranLibrarySearchScreen].
+  ///
+  /// The [isDark] parameter allows you to set the screen's color scheme.
+  /// If [isDark] is `true`, the screen will be dark. If it is `false` or null,
+  /// the screen will be light.
   const QuranLibrarySearchScreen({super.key, this.isDark = false});
+
+  /// Whether the screen should be dark or not.
+  ///
+  /// If [isDark] is `true`, the screen will be dark. If it is `false` or null,
+  /// the screen will be light.
   final bool isDark;
+
   @override
   Widget build(BuildContext context) {
     return Directionality(
@@ -95,11 +111,12 @@ class QuranLibrarySearchScreen extends StatelessWidget {
                                   onTap: () async {
                                     Navigator.pop(context);
                                     quranCtrl.ayahsList.value = [];
-                                    quranCtrl.isDownloadFonts.value
+                                    quranCtrl.isDownloadFonts
                                         ? await quranCtrl
                                             .prepareFonts(ayah.page)
                                         : null;
-                                    QuranLibrary().jumpToAyah(ayah);
+                                    QuranLibrary().jumpToAyah(
+                                        ayah.page, ayah.ayahUQNumber);
                                   },
                                 ),
                                 const Divider(

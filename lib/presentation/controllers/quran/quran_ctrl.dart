@@ -56,7 +56,7 @@ class QuranCtrl extends GetxController {
     if (state.surahs.isEmpty) {
       List<dynamic> surahsJson = await _quranRepository.getFontsQuran();
       state.surahs =
-          surahsJson.map((s) => SurahFontsModel.fromJson(s)).toList();
+          surahsJson.map((s) => SurahFontsModel._fromJson(s)).toList();
 
       for (final surah in state.surahs) {
         state.allAyahs.addAll(surah.ayahs);
@@ -96,7 +96,7 @@ class QuranCtrl extends GetxController {
       int surahsIndex = 1;
       List<AyahModel> thisSurahAyahs = [];
       for (int i = 0; i < quranJson.length; i++) {
-        final ayah = AyahModel.fromJson(quranJson[i]);
+        final ayah = AyahModel._fromJson(quranJson[i]);
         if (ayah.surahNumber != surahsIndex) {
           surahs.last.endPage = ayahs.last.page;
           surahs.last.ayahs = thisSurahAyahs;
@@ -141,7 +141,7 @@ class QuranCtrl extends GetxController {
               if ((aya.centered && i == lines.length - 2)) {
                 centered = true;
               }
-              final a = AyahModel.fromAya(
+              final a = AyahModel._fromAya(
                   ayah: aya,
                   aya: lines[i],
                   ayaText: lines[i],
@@ -298,7 +298,7 @@ class QuranCtrl extends GetxController {
     selectedAyahIndexes.clear();
   }
 
-  dynamic textScale(dynamic widget1, dynamic widget2) {
+  Widget textScale(dynamic widget1, dynamic widget2) {
     if (state.scaleFactor.value <= 1.3) {
       return widget1;
     } else {

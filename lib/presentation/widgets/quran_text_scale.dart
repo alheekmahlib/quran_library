@@ -1,33 +1,32 @@
 part of '../../quran.dart';
 
-class QuranTextScale extends StatelessWidget {
-  QuranTextScale(
-      {super.key,
-      required this.pageIndex,
-      this.bookmarkList,
-      this.basmalaStyle,
-      this.surahNumber,
-      this.surahInfoStyle,
-      this.surahNameStyle,
-      this.bannerStyle,
-      this.onSurahBannerPress,
-      this.onFontsAyahLongPress,
-      this.onAyahPress,
-      this.bookmarksColor,
-      this.textColor,
-      this.ayahIconColor,
-      this.showAyahBookmarkedIcon = true,
-      required this.bookmarks,
-      required this.bookmarksAyahs,
-      this.ayahSelectedBackgroundColor,
-      this.languageCode,
-      this.circularProgressWidget,
-      required this.isDark});
+class _QuranTextScale extends StatelessWidget {
+  _QuranTextScale({
+    required this.pageIndex,
+    this.bookmarkList,
+    this.basmalaStyle,
+    this.surahNumber,
+    this.surahInfoStyle,
+    this.surahNameStyle,
+    this.bannerStyle,
+    this.onSurahBannerPress,
+    this.onFontsAyahLongPress,
+    this.onAyahPress,
+    this.bookmarksColor,
+    this.textColor,
+    this.ayahIconColor,
+    this.showAyahBookmarkedIcon = true,
+    required this.bookmarks,
+    required this.bookmarksAyahs,
+    this.ayahSelectedBackgroundColor,
+    this.languageCode,
+    this.circularProgressWidget,
+    required this.isDark,
+  });
 
   final quranCtrl = QuranCtrl.instance;
-
   final int pageIndex;
-  final List? bookmarkList;
+  final List<BookmarksAyahs>? bookmarkList;
   final BasmalaStyle? basmalaStyle;
   final int? surahNumber;
   final SurahInfoStyle? surahInfoStyle;
@@ -78,7 +77,7 @@ class QuranTextScale extends StatelessWidget {
                         return Column(
                           children: [
                             ayahs.first.ayahNumber == 1 &&
-                                    (!quranCtrl.topOfThePageIndex
+                                    (!quranCtrl._topOfThePageIndex
                                             .contains(pageIndex) ||
                                         quranCtrl.state.fontsSelected2.value ==
                                             0)
@@ -91,8 +90,8 @@ class QuranTextScale extends StatelessWidget {
                                         BannerStyle(
                                           isImage: false,
                                           bannerSvgPath: isDark
-                                              ? AssetsPath().surahSvgBannerDark
-                                              : AssetsPath().surahSvgBanner,
+                                              ? _AssetsPath().surahSvgBannerDark
+                                              : _AssetsPath().surahSvgBanner,
                                           bannerSvgHeight: 40.0,
                                           bannerSvgWidth: 150.0,
                                           bannerImagePath: '',
@@ -199,7 +198,7 @@ class QuranTextScale extends StatelessWidget {
                                     final allBookmarks = bookmarks.values
                                         .expand((list) => list)
                                         .toList();
-                                    return customSpan(
+                                    return _customSpan(
                                       text: ayahs[ayahIndex].text,
                                       pageIndex: pageIndex,
                                       isSelected: quranCtrl.state.isSelected,
@@ -284,7 +283,7 @@ class QuranTextScale extends StatelessWidget {
                                 ),
                               ),
                             ),
-                            quranCtrl.downThePageIndex.contains(pageIndex) &&
+                            quranCtrl._downThePageIndex.contains(pageIndex) &&
                                     quranCtrl.state.fontsSelected2.value == 1
                                 ? SurahHeaderWidget(
                                     surahNumber ??
@@ -296,8 +295,8 @@ class QuranTextScale extends StatelessWidget {
                                         BannerStyle(
                                           isImage: false,
                                           bannerSvgPath: isDark
-                                              ? AssetsPath().surahSvgBannerDark
-                                              : AssetsPath().surahSvgBanner,
+                                              ? _AssetsPath().surahSvgBannerDark
+                                              : _AssetsPath().surahSvgBanner,
                                           bannerSvgHeight: 40.0,
                                           bannerSvgWidth: 150.0,
                                           bannerImagePath: '',

@@ -1,6 +1,22 @@
 part of '../../quran.dart';
 
+/// A widget that displays the Quran library screen.
+///
+/// This screen is used to display the Quran library, which includes
+/// the text of the Quran, bookmarks, and other relevant information.
+///
+/// The screen is customizable, with options to set the app bar,
+/// ayah icon color, ayah selected background color, banner style,
+/// basmala style, background color, bookmarks color, circular progress
+/// widget, download fonts dialog style, and language code.
+///
+/// The screen also provides a callback for when the default ayah is
+/// long pressed.
 class QuranLibraryScreen extends StatelessWidget {
+  /// Creates a new instance of [QuranLibraryScreen].
+  ///
+  /// This constructor is used to create a new instance of the
+  /// [QuranLibraryScreen] widget.
   const QuranLibraryScreen({
     super.key,
     this.appBar,
@@ -61,7 +77,7 @@ class QuranLibraryScreen extends StatelessWidget {
   /// إذا كنت تريد إضافة قائمة إشارات مرجعية خاصة، فقط قم بتمريرها لـ [bookmarkList]
   ///
   /// If you want to add a private bookmark list, just pass it to [bookmarkList]
-  final List bookmarkList;
+  final List<BookmarksAyahs> bookmarkList;
 
   /// تغيير لون الإشارة المرجعية (اختياري) [bookmarksColor]
   ///
@@ -109,7 +125,7 @@ class QuranLibraryScreen extends StatelessWidget {
   /// إذا تم توفيره فسيتم استدعاؤه عند تغيير صفحة القرآن [onPageChanged]
   ///
   /// [onPageChanged] if provided it will be called when a quran page changed
-  final Function(int pageNumper)? onPageChanged;
+  final Function(int pageNumber)? onPageChanged;
 
   /// عند الضغط على الصفحة يمكنك إضافة بعض المميزات مثل حذف التظليل عن الآية وغيرها [onPagePress]
   ///
@@ -260,10 +276,13 @@ class QuranLibraryScreen extends StatelessWidget {
                     controller: quranCtrl.pageController,
                     physics: const ClampingScrollPhysics(),
                     onPageChanged: (page) async {
-                      if (onPageChanged != null) onPageChanged!(page);
+                      if (onPageChanged != null) {
+                        onPageChanged!(page);
+                      } else {
+                        quranCtrl.state.overlayEntry?.remove();
+                        quranCtrl.state.overlayEntry = null;
+                      }
                       quranCtrl.saveLastPage(page + 1);
-                      quranCtrl.state.overlayEntry?.remove();
-                      quranCtrl.state.overlayEntry = null;
                     },
                     pageSnapping: true,
                     itemBuilder: (ctx, index) {
@@ -292,7 +311,7 @@ class QuranLibraryScreen extends StatelessWidget {
   ) {
     final deviceSize = MediaQuery.of(context).size;
     List<String> newSurahs = [];
-    quranCtrl.isDownloadFonts.value ? quranCtrl.prepareFonts(pageIndex) : null;
+    quranCtrl.isDownloadFonts ? quranCtrl.prepareFonts(pageIndex) : null;
     final bookmarkCtrl = BookmarksCtrl.instance;
     return GetBuilder<QuranCtrl>(
       init: QuranCtrl.instance,
@@ -302,7 +321,7 @@ class QuranLibraryScreen extends StatelessWidget {
         onScaleUpdate: (ScaleUpdateDetails details) =>
             quranCtrl.updateTextScale(details),
         child: quranCtrl.textScale(
-          (quranCtrl.isDownloadFonts.value
+          (quranCtrl.isDownloadFonts
               ? quranCtrl.state.allAyahs.isEmpty ||
                       quranCtrl.state.surahs.isEmpty ||
                       quranCtrl.state.pages.isEmpty
@@ -318,7 +337,7 @@ class QuranLibraryScreen extends StatelessWidget {
                         sajdaName: sajdaName,
                         isRight: pageIndex.isEven ? true : false,
                         topTitleChild: topTitleChild,
-                        child: QuranFontsPage(
+                        child: _QuranFontsPage(
                           pageIndex: pageIndex,
                           bookmarkList: bookmarkList,
                           textColor: textColor,
@@ -338,13 +357,14 @@ class QuranLibraryScreen extends StatelessWidget {
                               ayahSelectedBackgroundColor,
                           onPagePress: onPagePress,
                           isDark: isDark,
+                          circularProgressWidget: circularProgressWidget,
                         ),
                       ))
               : quranCtrl.staticPages.isEmpty || quranCtrl.isLoading.value
                   ? Center(
                       child: circularProgressWidget ??
                           const CircularProgressIndicator())
-                  : QuranLinePage(
+                  : _QuranLinePage(
                       pageIndex: pageIndex,
                       bookmarkList: bookmarkList,
                       textColor: textColor,
@@ -377,7 +397,7 @@ class QuranLibraryScreen extends StatelessWidget {
                   sajdaName: sajdaName,
                   isRight: pageIndex.isEven ? true : false,
                   topTitleChild: topTitleChild,
-                  child: QuranTextScale(
+                  child: _QuranTextScale(
                     pageIndex: pageIndex,
                     bookmarkList: bookmarkList,
                     textColor: textColor,
@@ -397,6 +417,7 @@ class QuranLibraryScreen extends StatelessWidget {
                     onAyahPress: onPagePress,
                     languageCode: languageCode,
                     isDark: isDark,
+                    circularProgressWidget: circularProgressWidget,
                   ),
                 ),
         ),

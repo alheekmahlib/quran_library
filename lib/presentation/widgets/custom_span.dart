@@ -1,6 +1,6 @@
 part of '../../../../quran.dart';
 
-TextSpan span({
+TextSpan _span({
   required String text,
   required int pageIndex,
   required bool isSelected,
@@ -8,10 +8,10 @@ TextSpan span({
   required int surahNum,
   required int ayahNum,
   required int ayahUQNum,
-  LongPressStartDetailsFunction? onLongPressStart,
+  _LongPressStartDetailsFunction? onLongPressStart,
   required bool isFirstAyah,
   required bool showAyahBookmarkedIcon,
-  required List? bookmarkList,
+  required List<BookmarksAyahs>? bookmarkList,
   required Color? textColor,
   required Color? ayahIconColor,
   required Map<int, List<BookmarkModel>> bookmarks,
@@ -53,15 +53,16 @@ TextSpan span({
               ? textColor ?? Colors.transparent
               : null,
           backgroundColor:
-              bookmarkCtrl.hasBookmark(surahNum, ayahUQNum, bookmarkList).value
+              bookmarkCtrl.hasBookmark(surahNum, ayahUQNum, bookmarkList)
                   ? bookmarksColor
                   : (bookmarksAyahs.contains(ayahUQNum)
-                      ? Color(allBookmarks
-                              .firstWhere(
-                                (b) => b.ayahId == ayahUQNum,
-                              )
-                              .colorCode)
-                          .withValues(alpha: 0.3)
+                      ? bookmarksColor ??
+                          Color(allBookmarks
+                                  .firstWhere(
+                                    (b) => b.ayahId == ayahUQNum,
+                                  )
+                                  .colorCode)
+                              .withValues(alpha: 0.3)
                       : isSelected
                           ? ayahSelectedBackgroundColor ??
                               const Color(0xffCDAD80).withValues(alpha: 0.25)
@@ -83,15 +84,16 @@ TextSpan span({
               ? textColor ?? Colors.transparent
               : null,
           backgroundColor:
-              bookmarkCtrl.hasBookmark(surahNum, ayahUQNum, bookmarkList).value
+              bookmarkCtrl.hasBookmark(surahNum, ayahUQNum, bookmarkList)
                   ? bookmarksColor
                   : (bookmarksAyahs.contains(ayahUQNum)
-                      ? Color(allBookmarks
-                              .firstWhere(
-                                (b) => b.ayahId == ayahUQNum,
-                              )
-                              .colorCode)
-                          .withValues(alpha: 0.3)
+                      ? bookmarksColor ??
+                          Color(allBookmarks
+                                  .firstWhere(
+                                    (b) => b.ayahId == ayahUQNum,
+                                  )
+                                  .colorCode)
+                              .withValues(alpha: 0.3)
                       : isSelected
                           ? ayahSelectedBackgroundColor ??
                               const Color(0xffCDAD80).withValues(alpha: 0.25)
@@ -114,15 +116,16 @@ TextSpan span({
             ? textColor ?? Colors.transparent
             : null,
         backgroundColor:
-            bookmarkCtrl.hasBookmark(surahNum, ayahUQNum, bookmarkList).value
+            bookmarkCtrl.hasBookmark(surahNum, ayahUQNum, bookmarkList)
                 ? bookmarksColor
                 : (bookmarksAyahs.contains(ayahUQNum)
-                    ? Color(allBookmarks
-                            .firstWhere(
-                              (b) => b.ayahId == ayahUQNum,
-                            )
-                            .colorCode)
-                        .withValues(alpha: 0.3)
+                    ? bookmarksColor ??
+                        Color(allBookmarks
+                                .firstWhere(
+                                  (b) => b.ayahId == ayahUQNum,
+                                )
+                                .colorCode)
+                            .withValues(alpha: 0.3)
                     : isSelected
                         ? ayahSelectedBackgroundColor ??
                             const Color(0xffCDAD80).withValues(alpha: 0.25)
@@ -133,9 +136,8 @@ TextSpan span({
         ..onLongPressStart = onLongPressStart,
     );
 
-    var lastCharacterSpan = (bookmarkCtrl
-                    .hasBookmark(surahNum, ayahUQNum, bookmarkList)
-                    .value ||
+    var lastCharacterSpan = (bookmarkCtrl.hasBookmark(
+                    surahNum, ayahUQNum, bookmarkList) ||
                 bookmarksAyahs.contains(ayahUQNum)) &&
             showAyahBookmarkedIcon
         ? WidgetSpan(
@@ -143,7 +145,7 @@ TextSpan span({
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8.0),
               child: SvgPicture.asset(
-                AssetsPath().ayahBookmarked,
+                _AssetsPath().ayahBookmarked,
                 height: 100,
                 width: 100,
               ),
@@ -164,17 +166,17 @@ TextSpan span({
                   ? 20
                   : null,
               color: ayahIconColor,
-              backgroundColor: bookmarkCtrl
-                      .hasBookmark(surahNum, ayahUQNum, bookmarkList)
-                      .value
+              backgroundColor: bookmarkCtrl.hasBookmark(
+                      surahNum, ayahUQNum, bookmarkList)
                   ? bookmarksColor
                   : (bookmarksAyahs.contains(ayahUQNum)
-                      ? Color(allBookmarks
-                              .firstWhere(
-                                (b) => b.ayahId == ayahUQNum,
-                              )
-                              .colorCode)
-                          .withValues(alpha: 0.3)
+                      ? bookmarksColor ??
+                          Color(allBookmarks
+                                  .firstWhere(
+                                    (b) => b.ayahId == ayahUQNum,
+                                  )
+                                  .colorCode)
+                              .withValues(alpha: 0.3)
                       : isSelected
                           ? ayahSelectedBackgroundColor ??
                               const Color(0xffCDAD80).withValues(alpha: 0.25)
@@ -198,7 +200,7 @@ TextSpan span({
   }
 }
 
-TextSpan customSpan({
+TextSpan _customSpan({
   required String text,
   required int pageIndex,
   required bool isSelected,
@@ -207,8 +209,8 @@ TextSpan customSpan({
   required int surahNum,
   required int ayahUQNum,
   required int ayahNumber,
-  LongPressStartDetailsFunction? onLongPressStart,
-  required List? bookmarkList,
+  _LongPressStartDetailsFunction? onLongPressStart,
+  required List<BookmarksAyahs>? bookmarkList,
   required Color? textColor,
   required Color? ayahIconColor,
   required Map<int, List<BookmarkModel>> bookmarks,
@@ -229,28 +231,28 @@ TextSpan customSpan({
             fontSize: fontSize,
             height: 2,
             color: textColor ?? Colors.black,
-            backgroundColor: bookmarkCtrl
-                    .hasBookmark(surahNum, ayahUQNum, bookmarkList)
-                    .value
-                ? bookmarksColor
-                : (bookmarksAyahs.contains(ayahUQNum)
-                    ? Color(allBookmarks
-                            .firstWhere(
-                              (b) => b.ayahId == ayahUQNum,
-                            )
-                            .colorCode)
-                        .withValues(alpha: 0.3)
-                    : isSelected
-                        ? ayahSelectedBackgroundColor ??
-                            const Color(0xffCDAD80).withValues(alpha: 0.25)
-                        : null),
+            backgroundColor:
+                bookmarkCtrl.hasBookmark(surahNum, ayahUQNum, bookmarkList)
+                    ? bookmarksColor
+                    : (bookmarksAyahs.contains(ayahUQNum)
+                        ? bookmarksColor ??
+                            Color(allBookmarks
+                                    .firstWhere(
+                                      (b) => b.ayahId == ayahUQNum,
+                                    )
+                                    .colorCode)
+                                .withValues(alpha: 0.3)
+                        : isSelected
+                            ? ayahSelectedBackgroundColor ??
+                                const Color(0xffCDAD80).withValues(alpha: 0.25)
+                            : null),
             package: "quran_library",
           ),
           recognizer: LongPressGestureRecognizer(
               duration: const Duration(milliseconds: 500))
             ..onLongPressStart = onLongPressStart,
         ),
-        (bookmarkCtrl.hasBookmark(surahNum, ayahUQNum, bookmarkList).value ||
+        (bookmarkCtrl.hasBookmark(surahNum, ayahUQNum, bookmarkList) ||
                     bookmarksAyahs.contains(ayahUQNum)) &&
                 showAyahBookmarkedIcon
             ? WidgetSpan(
@@ -258,7 +260,7 @@ TextSpan customSpan({
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
                   child: SvgPicture.asset(
-                    AssetsPath().ayahBookmarked,
+                    _AssetsPath().ayahBookmarked,
                     height: 35,
                   ),
                 ))
@@ -271,17 +273,17 @@ TextSpan customSpan({
                   fontSize: fontSize,
                   height: 2,
                   color: ayahIconColor,
-                  backgroundColor: bookmarkCtrl
-                          .hasBookmark(surahNum, ayahUQNum, bookmarkList)
-                          .value
+                  backgroundColor: bookmarkCtrl.hasBookmark(
+                          surahNum, ayahUQNum, bookmarkList)
                       ? bookmarksColor
                       : (bookmarksAyahs.contains(ayahUQNum)
-                          ? Color(allBookmarks
-                                  .firstWhere(
-                                    (b) => b.ayahId == ayahUQNum,
-                                  )
-                                  .colorCode)
-                              .withValues(alpha: 0.3)
+                          ? bookmarksColor ??
+                              Color(allBookmarks
+                                      .firstWhere(
+                                        (b) => b.ayahId == ayahUQNum,
+                                      )
+                                      .colorCode)
+                                  .withValues(alpha: 0.3)
                           : isSelected
                               ? ayahSelectedBackgroundColor ??
                                   const Color(0xffCDAD80)
@@ -303,4 +305,4 @@ TextSpan customSpan({
   }
 }
 
-typedef LongPressStartDetailsFunction = void Function(LongPressStartDetails)?;
+typedef _LongPressStartDetailsFunction = void Function(LongPressStartDetails)?;

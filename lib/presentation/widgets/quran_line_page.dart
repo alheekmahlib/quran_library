@@ -1,6 +1,6 @@
 part of '../../quran.dart';
 
-class QuranLinePage extends StatelessWidget {
+class _QuranLinePage extends StatelessWidget {
   final int pageIndex;
   final int? surahNumber;
   final BannerStyle? bannerStyle;
@@ -22,28 +22,29 @@ class QuranLinePage extends StatelessWidget {
   final String? sajdaName;
   final Widget? topTitleChild;
   final bool isDark;
-  QuranLinePage(
-      {super.key,
-      required this.pageIndex,
-      this.surahNumber,
-      this.bannerStyle,
-      this.surahNameStyle,
-      this.surahInfoStyle,
-      this.onSurahBannerPress,
-      this.basmalaStyle,
-      required this.deviceSize,
-      this.onAyahLongPress,
-      this.bookmarksColor,
-      this.textColor,
-      this.bookmarkList,
-      this.ayahSelectedBackgroundColor,
-      this.onPagePress,
-      required this.newSurahs,
-      this.languageCode,
-      this.juzName,
-      this.sajdaName,
-      this.topTitleChild,
-      required this.isDark});
+
+  _QuranLinePage({
+    required this.pageIndex,
+    this.surahNumber,
+    this.bannerStyle,
+    this.surahNameStyle,
+    this.surahInfoStyle,
+    this.onSurahBannerPress,
+    this.basmalaStyle,
+    required this.deviceSize,
+    this.onAyahLongPress,
+    this.bookmarksColor,
+    this.textColor,
+    this.bookmarkList,
+    this.ayahSelectedBackgroundColor,
+    this.onPagePress,
+    required this.newSurahs,
+    this.languageCode,
+    this.juzName,
+    this.sajdaName,
+    this.topTitleChild,
+    required this.isDark,
+  });
 
   final quranCtrl = QuranCtrl.instance;
 
@@ -88,8 +89,8 @@ class QuranLinePage extends StatelessWidget {
                     BannerStyle(
                       isImage: false,
                       bannerSvgPath: isDark
-                          ? AssetsPath().surahSvgBannerDark
-                          : AssetsPath().surahSvgBanner,
+                          ? _AssetsPath().surahSvgBannerDark
+                          : _AssetsPath().surahSvgBanner,
                       bannerSvgHeight: 40.0,
                       bannerSvgWidth: 150.0,
                       bannerImagePath: '',
@@ -138,22 +139,23 @@ class QuranLinePage extends StatelessWidget {
                     return Column(
                       children: [
                         SizedBox(
-                            width: deviceSize.width - 32,
-                            child: QuranLine(
-                              line,
-                              bookmarkCtrl.bookmarksAyahs,
-                              bookmarkCtrl.bookmarks,
-                              boxFit: BoxFit.scaleDown,
-                              onDefaultAyahLongPress: onAyahLongPress,
-                              bookmarksColor: bookmarksColor,
-                              textColor: textColor ??
-                                  (isDark ? Colors.white : Colors.black),
-                              bookmarkList: bookmarkList,
-                              pageIndex: pageIndex,
-                              ayahSelectedBackgroundColor:
-                                  ayahSelectedBackgroundColor,
-                              onPagePress: onPagePress,
-                            )),
+                          width: deviceSize.width - 32,
+                          child: QuranLine(
+                            line,
+                            bookmarkCtrl.bookmarksAyahs,
+                            bookmarkCtrl.bookmarks,
+                            boxFit: BoxFit.scaleDown,
+                            onDefaultAyahLongPress: onAyahLongPress,
+                            bookmarksColor: bookmarksColor,
+                            textColor: textColor ??
+                                (isDark ? Colors.white : Colors.black),
+                            bookmarkList: bookmarkList,
+                            pageIndex: pageIndex,
+                            ayahSelectedBackgroundColor:
+                                ayahSelectedBackgroundColor,
+                            onPagePress: onPagePress,
+                          ),
+                        ),
                       ],
                     );
                   },
@@ -200,8 +202,8 @@ class QuranLinePage extends StatelessWidget {
                                     BannerStyle(
                                       isImage: false,
                                       bannerSvgPath: isDark
-                                          ? AssetsPath().surahSvgBannerDark
-                                          : AssetsPath().surahSvgBanner,
+                                          ? _AssetsPath().surahSvgBannerDark
+                                          : _AssetsPath().surahSvgBanner,
                                       bannerSvgHeight: 40.0,
                                       bannerSvgWidth: 150.0,
                                       bannerImagePath: '',

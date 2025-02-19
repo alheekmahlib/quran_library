@@ -1,6 +1,17 @@
 part of '../../quran.dart';
 
+/// Extension on `QuranCtrl` to provide additional functionality related to fonts download widget.
+///
+/// This extension adds methods and properties to the `QuranCtrl` class that are
+/// specifically related to handling the fonts download widget in the application.
 extension FontsDownloadWidgetExtension on QuranCtrl {
+  /// A widget that displays the fonts download option.
+  ///
+  /// This widget provides a UI element for downloading fonts.
+  ///
+  /// [context] is the BuildContext in which the widget is built.
+  ///
+  /// Returns a Widget that represents the fonts download option.
   Widget fontsDownloadWidget(BuildContext context,
       {DownloadFontsDialogStyle? downloadFontsDialogStyle,
       String? languageCode,
@@ -104,7 +115,7 @@ extension FontsDownloadWidgetExtension on QuranCtrl {
                         : IconButton(
                             onPressed: () async {
                               quranCtrl.state.isDownloadedV2Fonts.value
-                                  ? await quranCtrl.deleteFonts(i - 1)
+                                  ? await quranCtrl.deleteFonts()
                                   : quranCtrl.state.isDownloadingFonts.value
                                       ? null
                                       : await quranCtrl
@@ -137,7 +148,7 @@ extension FontsDownloadWidgetExtension on QuranCtrl {
                         : (value) {
                             quranCtrl.state.fontsSelected2.value = i;
                             GetStorage()
-                                .write(StorageConstants().fontsSelected, i);
+                                .write(_StorageConstants().fontsSelected, i);
                             log('fontsSelected: $i');
                             Get.forceAppUpdate();
                           },

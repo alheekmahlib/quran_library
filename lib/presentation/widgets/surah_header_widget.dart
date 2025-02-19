@@ -80,8 +80,8 @@ class SurahHeaderWidget extends StatelessWidget {
                 SvgPicture.asset(
                   bannerStyle?.bannerSvgPath ??
                       (isDark
-                          ? AssetsPath().surahSvgBannerDark
-                          : AssetsPath().surahSvgBanner),
+                          ? _AssetsPath().surahSvgBannerDark
+                          : _AssetsPath().surahSvgBanner),
                   width: bannerStyle?.bannerSvgWidth ?? 150.0,
                   height: bannerStyle?.bannerSvgHeight ?? 40.0,
                 ),

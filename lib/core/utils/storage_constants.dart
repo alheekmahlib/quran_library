@@ -1,6 +1,6 @@
 part of '../../quran.dart';
 
-class StorageConstants {
+class _StorageConstants {
   final String bookmarks = 'bookmarks';
   final String lastPage = 'last_page';
   final String isDownloadedCodeV2Fonts = 'isDownloadedCodeV2Fonts';
@@ -10,11 +10,11 @@ class StorageConstants {
   final String isBold = 'IS_BOLD';
 
   ///Singleton factory
-  static final StorageConstants _instance = StorageConstants._internal();
+  static final _StorageConstants _instance = _StorageConstants._internal();
 
-  factory StorageConstants() {
+  factory _StorageConstants() {
     return _instance;
   }
 
-  StorageConstants._internal();
+  _StorageConstants._internal();
 }

@@ -118,7 +118,7 @@ class _DefaultDrawer extends StatelessWidget {
                                     alignment: Alignment.center,
                                     children: [
                                       SvgPicture.asset(
-                                        AssetsPath().suraNum,
+                                        _AssetsPath().suraNum,
                                         width: 50,
                                         height: 50,
                                         colorFilter: ColorFilter.mode(

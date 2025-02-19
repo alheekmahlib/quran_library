@@ -1,6 +1,6 @@
 part of '../../quran.dart';
 
-class ToastUtils {
+class _ToastUtils {
   void showToast(BuildContext context, String msg) {
     final snackBar = SnackBar(
       content: Text(
@@ -14,11 +14,11 @@ class ToastUtils {
   }
 
   ///Singleton factory
-  static final ToastUtils _instance = ToastUtils._internal();
+  static final _ToastUtils _instance = _ToastUtils._internal();
 
-  factory ToastUtils() {
+  factory _ToastUtils() {
     return _instance;
   }
 
-  ToastUtils._internal();
+  _ToastUtils._internal();
 }

@@ -1,18 +1,32 @@
 part of '../../quran.dart';
 
+/// A class that provides utility functions for interacting with the Quran library.
+///
+/// This class includes methods and properties that facilitate various operations
+/// related to the Quran, such as retrieving verses, chapters, and other relevant
+/// information.
+///
+/// Example usage:
+///
+/// ```dart
+/// QuranLibrary quranLibrary = QuranLibrary();
+/// // Use quranLibrary to access various Quran-related utilities.
+/// ```
+///
+/// Note: Ensure that you have the necessary dependencies and configurations
+/// set up in your Flutter project to use this class effectively.
 class QuranLibrary {
   /// [init] تقوم بتهيئة القرآن ويجب استدعاؤها قبل البدء في استخدام الحزمة
   ///
   /// [init] initializes the FlutterQuran,
   /// and must be called before starting using the package
-
   Future<void> init(
       {Map<int, List<BookmarkModel>>? userBookmarks,
       bool overwriteBookmarks = false}) async {
     // Get.put(QuranController());
     await GetStorage.init();
     QuranCtrl.instance.state.isDownloadedV2Fonts.value =
-        GetStorage().read(StorageConstants().isDownloadedCodeV2Fonts) ?? false;
+        GetStorage().read(_StorageConstants().isDownloadedCodeV2Fonts) ?? false;
     QuranRepository().getLastPage();
     await QuranCtrl.instance.loadFontsQuran();
     await QuranCtrl.instance.loadQuran();
@@ -20,17 +34,21 @@ class QuranLibrary {
     BookmarksCtrl.instance.initBookmarks(
         userBookmarks: userBookmarks, overwrite: overwriteBookmarks);
     QuranCtrl.instance.state.isBold.value =
-        GetStorage().read(StorageConstants().isBold) ?? 0;
+        GetStorage().read(_StorageConstants().isBold) ?? 0;
     quranCtrl.state.fontsSelected2.value =
-        GetStorage().read(StorageConstants().fontsSelected) ?? 0;
+        GetStorage().read(_StorageConstants().fontsSelected) ?? 0;
     // quranCtrl.state.isTajweed.value =
     //     GetStorage().read(StorageConstants().isTajweed) ?? 0;
     quranCtrl.state.fontsDownloadedList.value = (GetStorage()
-            .read<List<dynamic>>(StorageConstants().fontsDownloadedList)
+            .read<List<dynamic>>(_StorageConstants().fontsDownloadedList)
             ?.cast<int>() ??
         []);
   }
 
+  /// A singleton instance of the `QuranCtrl` class.
+  ///
+  /// This instance is used to access the functionalities provided by the
+  /// `QuranCtrl` class throughout the application.
   final quranCtrl = QuranCtrl.instance;
 
   /// [currentPageNumber] تعيد رقم الصفحة التي يكون المستخدم عليها حاليًا.
@@ -63,11 +81,11 @@ class QuranLibrary {
   /// It's better to call this method while Quran screen is displayed
   /// and if it's called and the Quran screen is not displayed, the next time you
   /// open quran screen it will start from this ayah's page
-  void jumpToAyah(AyahModel ayah) {
-    quranCtrl.jumpToPage(ayah.page - 1);
-    quranCtrl.toggleAyahSelection(ayah.ayahUQNumber);
+  void jumpToAyah(int pageNumber, int ayahUQNumber) {
+    quranCtrl.jumpToPage(pageNumber - 1);
+    quranCtrl.toggleAyahSelection(ayahUQNumber);
     Future.delayed(const Duration(seconds: 3))
-        .then((_) => quranCtrl.toggleAyahSelection(ayah.ayahUQNumber));
+        .then((_) => quranCtrl.toggleAyahSelection(ayahUQNumber));
   }
 
   /// [jumpToPage] يتيح لك التنقل إلى أي صفحة في القرآن باستخدام رقم الصفحة.
@@ -118,7 +136,7 @@ class QuranLibrary {
       jumpToPage(quranCtrl.surahsStart[surah - 1] + 1);
 
   /// [allJoz] returns list of all Quran joz' names
-  List<String> get allJoz => QuranConstants.quranHizbs
+  List<String> get allJoz => _QuranConstants.quranHizbs
       .sublist(0, 30)
       .map((jozz) => "الجزء $jozz")
       .toList();
@@ -127,7 +145,7 @@ class QuranLibrary {
   ///
   /// [allHizb] returns list of all Quran hizbs' names
   List<String> get allHizb =>
-      QuranConstants.quranHizbs.map((jozz) => "الحزب $jozz").toList();
+      _QuranConstants.quranHizbs.map((jozz) => "الحزب $jozz").toList();
 
   /// [getAllSurahs] يعيد قائمة بأسماء السور.
   ///
@@ -241,8 +259,7 @@ class QuranLibrary {
   /// لحذف الخطوط فقط قم بإستدعاء [deleteFontsMethod]
   ///
   /// to delete the fonts just call [deleteFontsMethod]
-  void getDeleteFontsMethod({required int fontIndex}) =>
-      quranCtrl.deleteFonts(fontIndex);
+  void getDeleteFontsMethod() => quranCtrl.deleteFonts();
 
   /// للحصول على تقدم تنزيل الخطوط، ما عليك سوى إستدعاء [fontsDownloadProgress]
   ///
@@ -254,7 +271,7 @@ class QuranLibrary {
   ///
   /// To find out whether fonts are downloaded or not, just call [isFontsDownloaded]
   bool get isFontsDownloaded =>
-      GetStorage().read(StorageConstants().isDownloadedCodeV2Fonts) ?? false;
+      GetStorage().read(_StorageConstants().isDownloadedCodeV2Fonts) ?? false;
 
   /// لمعرفة الخط الذي تم تحديده، ما عليك سوى إستدعاء [currentFontsSelected]
   ///
@@ -377,6 +394,9 @@ class QuranLibrary {
   ///Singleton factory
   static final QuranLibrary _instance = QuranLibrary._internal();
 
+  /// Factory constructor for creating a new instance of [QuranLibrary].
+  ///
+  /// This constructor is used to create an instance of the [QuranLibrary] class.
   factory QuranLibrary() {
     return _instance;
   }

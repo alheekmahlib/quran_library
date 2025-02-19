@@ -1,6 +1,6 @@
 part of '../../quran.dart';
 
-extension TextSpanExtension on String {
+extension _TextSpanExtension on String {
   List<TextSpan> customTextSpans() {
     String text = this;
 

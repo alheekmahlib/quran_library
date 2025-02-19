@@ -1,6 +1,56 @@
 part of '../../quran.dart';
 
+/// An extension on the `String` class to convert numbers in the string
+/// according to the specified language code.
+///
+/// This extension provides a method to convert numeric characters in a string
+/// to their corresponding characters in different languages such as Arabic,
+/// English, Bengali, and Urdu.
+///
+/// Example usage:
+/// ```dart
+/// String number = "123";
+/// String convertedNumber = number.convertNumbersAccordingToLang(languageCode: 'ar');
+/// print(convertedNumber); // Output: ١٢٣
+/// ```
+///
+/// The `convertNumbersAccordingToLang` method takes an optional `languageCode`
+/// parameter to specify the target language for conversion. If the `languageCode`
+/// is not provided or is not supported, the original string is returned.
+///
+/// Supported language codes:
+/// - 'ar' for Arabic
+/// - 'en' for English
+/// - 'bn' for Bengali
+/// - 'ur' for Urdu
+///
+/// If the `languageCode` is not supported, the method returns the original string.
+///
+/// - Parameters:
+///   - languageCode: The code of the language to which the numbers should be converted.
+/// - Returns: A new string with the numbers converted according to the specified language code.
 extension ConvertNumberExtension on String {
+  /// Converts the numeric characters in the string to their corresponding
+  /// characters in the specified language.
+  ///
+  /// The [languageCode] parameter specifies the language to which the numbers
+  /// should be converted. Supported language codes are:
+  /// - 'ar' for Arabic
+  /// - 'en' for English
+  /// - 'bn' for Bengali
+  /// - 'ur' for Urdu
+  ///
+  /// If [languageCode] is null or not supported, the original string is returned.
+  ///
+  /// Example:
+  /// ```dart
+  /// String number = "123";
+  /// String converted = number.convertNumbersAccordingToLang(languageCode: 'ar');
+  /// print(converted); // Output: ١٢٣
+  /// ```
+  ///
+  /// Returns a new string with the numeric characters converted to the specified
+  /// language.
   String convertNumbersAccordingToLang({String? languageCode}) {
     Map<String, Map<String, String>> numberSets = {
       'ar': {

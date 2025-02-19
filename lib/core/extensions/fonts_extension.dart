@@ -1,20 +1,42 @@
 part of '../../quran.dart';
 
+/// Extension to handle font-related operations for the QuranCtrl class.
 extension FontsExtension on QuranCtrl {
+  /// Prepares fonts for the specified page index and adjacent pages.
+  ///
+  /// This method asynchronously loads the font for the given [pageIndex] and
+  /// additionally preloads fonts for the next four pages if the [pageIndex] is
+  /// less than 600, and the previous four pages if the [pageIndex] is greater
+  /// than or equal to 4. This ensures smoother font loading experience as the
+  /// user navigates through pages.
+  ///
+  /// [pageIndex] - The index of the page for which the font and its adjacent
+  /// pages' fonts should be prepared.
+  ///
+  /// Returns a [Future] that completes when all specified fonts have been
+  /// successfully loaded.
   Future<void> prepareFonts(int pageIndex) async {
     await loadFont(pageIndex);
-    if (pageIndex < 608) {
-      for (int i = pageIndex; i < 5; i++) {
+    if (pageIndex < 600) {
+      for (int i = pageIndex + 1; i < pageIndex + 5; i++) {
         await loadFont(i);
       }
-      if (pageIndex > 5) {
-        for (int i = pageIndex; i < 5; i--) {
-          await loadFont(i);
-        }
+    }
+    if (pageIndex >= 4) {
+      for (int i = pageIndex - 1; i > pageIndex - 5; i--) {
+        await loadFont(i);
       }
     }
   }
 
+  /// Loads a font from a ZIP file for the specified page index.
+  ///
+  /// This method asynchronously loads a font from a ZIP file based on the given
+  /// [pageIndex]. The font is then available for use within the application.
+  ///
+  /// [pageIndex] - The index of the page for which the font should be loaded.
+  ///
+  /// Returns a [Future] that completes when the font has been successfully loaded.
   Future<void> loadFontFromZip(int pageIndex) async {
     try {
       final appDir = await getApplicationDocumentsDirectory();
@@ -38,6 +60,15 @@ extension FontsExtension on QuranCtrl {
     }
   }
 
+  /// Downloads a zip file containing all fonts for the specified font index.
+  ///
+  /// This method asynchronously downloads a zip file that contains all the fonts
+  /// associated with the given [fontIndex]. The downloaded file will be saved
+  /// locally for later use.
+  ///
+  /// [fontIndex] - The index of the font set to be downloaded.
+  ///
+  /// Returns a [Future] that completes when the download is finished.
   Future<void> downloadAllFontsZipFile(int fontIndex) async {
     // if (GetStorage().read(StorageConstants().isDownloadedCodeV2Fonts) ??
     //     false || state.isDownloadingFonts.value) {
@@ -132,9 +163,9 @@ extension FontsExtension on QuranCtrl {
             await QuranCtrl.instance.loadFontsQuran();
             // حفظ حالة التحميل في التخزين المحلي
             GetStorage()
-                .write(StorageConstants().isDownloadedCodeV2Fonts, true);
+                .write(_StorageConstants().isDownloadedCodeV2Fonts, true);
             state.fontsDownloadedList.add(fontIndex);
-            GetStorage().write(StorageConstants().fontsDownloadedList,
+            GetStorage().write(_StorageConstants().fontsDownloadedList,
                 state.fontsDownloadedList);
             state.isDownloadedV2Fonts.value = true;
             state.isDownloadingFonts.value = false;
@@ -169,6 +200,14 @@ extension FontsExtension on QuranCtrl {
     }
   }
 
+  /// Loads the font for the specified page index.
+  ///
+  /// This method asynchronously loads the font for the given [pageIndex].
+  /// The font is then available for use within the application.
+  ///
+  /// [pageIndex] - The index of the page for which the font should be loaded.
+  ///
+  /// Returns a [Future] that completes when the font has been successfully loaded.
   Future<void> loadFont(int pageIndex) async {
     try {
       final appDir = await getApplicationDocumentsDirectory();
@@ -186,7 +225,15 @@ extension FontsExtension on QuranCtrl {
     }
   }
 
-  Future<void> deleteFonts(int fontIndex) async {
+  /// Deletes the font at the specified index.
+  ///
+  /// This method asynchronously deletes the font from the storage or database
+  /// based on the provided [fontIndex].
+  ///
+  /// [fontIndex]: The index of the font to be deleted.
+  ///
+  /// Returns a [Future] that completes when the font has been deleted.
+  Future<void> deleteFonts() async {
     try {
       state.fontsDownloadedList.value = [];
       final appDir = await getApplicationDocumentsDirectory();
@@ -199,11 +246,11 @@ extension FontsExtension on QuranCtrl {
         log('Fonts directory deleted successfully.');
 
         // تحديث حالة التخزين المحلي
-        GetStorage().write(StorageConstants().isDownloadedCodeV2Fonts, false);
-        GetStorage().write(StorageConstants().fontsSelected, 0);
+        GetStorage().write(_StorageConstants().isDownloadedCodeV2Fonts, false);
+        GetStorage().write(_StorageConstants().fontsSelected, 0);
         // state.fontsDownloadedList.elementAt(fontIndex);
         GetStorage().write(
-            StorageConstants().fontsDownloadedList, state.fontsDownloadedList);
+            _StorageConstants().fontsDownloadedList, state.fontsDownloadedList);
         state.isDownloadedV2Fonts.value = false;
         state.fontsSelected2.value = 0;
         state.fontsDownloadProgress.value = 0;

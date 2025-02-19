@@ -1,8 +1,8 @@
 part of '../../../quran.dart';
 
-class QuranFontsPage extends StatelessWidget {
+class _QuranFontsPage extends StatelessWidget {
   final int pageIndex;
-  final List? bookmarkList;
+  final List<BookmarksAyahs>? bookmarkList;
   final BasmalaStyle? basmalaStyle;
   final int? surahNumber;
   final SurahInfoStyle? surahInfoStyle;
@@ -22,8 +22,8 @@ class QuranFontsPage extends StatelessWidget {
   final bool isDark;
   final bool showAyahBookmarkedIcon;
   final Widget? circularProgressWidget;
-  const QuranFontsPage({
-    super.key,
+
+  const _QuranFontsPage({
     required this.pageIndex,
     this.bookmarkList,
     this.basmalaStyle,
@@ -86,7 +86,7 @@ class QuranFontsPage extends StatelessWidget {
                         return Column(
                           children: [
                             ayahs.first.ayahNumber == 1 &&
-                                    !quranCtrl.topOfThePageIndex
+                                    !quranCtrl._topOfThePageIndex
                                         .contains(pageIndex)
                                 ? SurahHeaderWidget(
                                     surahNumber ??
@@ -97,8 +97,8 @@ class QuranFontsPage extends StatelessWidget {
                                         BannerStyle(
                                           isImage: false,
                                           bannerSvgPath: isDark
-                                              ? AssetsPath().surahSvgBannerDark
-                                              : AssetsPath().surahSvgBanner,
+                                              ? _AssetsPath().surahSvgBannerDark
+                                              : _AssetsPath().surahSvgBanner,
                                           bannerSvgHeight: 40.0,
                                           bannerSvgWidth: 150.0,
                                           bannerImagePath: '',
@@ -177,7 +177,7 @@ class QuranFontsPage extends StatelessWidget {
                               child: Obx(() =>
                                   _richTextWidget(context, quranCtrl, ayahs)),
                             ),
-                            quranCtrl.downThePageIndex.contains(pageIndex)
+                            quranCtrl._downThePageIndex.contains(pageIndex)
                                 ? SurahHeaderWidget(
                                     surahNumber ??
                                         quranCtrl
@@ -188,8 +188,8 @@ class QuranFontsPage extends StatelessWidget {
                                         BannerStyle(
                                           isImage: false,
                                           bannerSvgPath: isDark
-                                              ? AssetsPath().surahSvgBannerDark
-                                              : AssetsPath().surahSvgBanner,
+                                              ? _AssetsPath().surahSvgBannerDark
+                                              : _AssetsPath().surahSvgBanner,
                                           bannerSvgHeight: 40.0,
                                           bannerSvgWidth: 150.0,
                                           bannerImagePath: '',
@@ -275,13 +275,13 @@ class QuranFontsPage extends StatelessWidget {
           final allBookmarks = bookmarks.values.expand((list) => list).toList();
           bool isFirstAyah = ayahIndex == 0 &&
               (ayahs[ayahIndex].ayahNumber != 1 ||
-                  quranCtrl.startSurahsNumbers.contains(quranCtrl
+                  quranCtrl._startSurahsNumbers.contains(quranCtrl
                       .getSurahDataByAyah(ayahs[ayahIndex])
                       .surahNumber));
           String text = isFirstAyah
               ? '${ayahs[ayahIndex].codeV2[0]}${ayahs[ayahIndex].codeV2.substring(1)}'
               : ayahs[ayahIndex].codeV2;
-          return span(
+          return _span(
             isFirstAyah: isFirstAyah,
             text: text,
             pageIndex: pageIndex,

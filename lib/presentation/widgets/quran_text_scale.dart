@@ -26,7 +26,7 @@ class _QuranTextScale extends StatelessWidget {
 
   final quranCtrl = QuranCtrl.instance;
   final int pageIndex;
-  final List<BookmarksAyahs>? bookmarkList;
+  final List? bookmarkList;
   final BasmalaStyle? basmalaStyle;
   final int? surahNumber;
   final SurahInfoStyle? surahInfoStyle;

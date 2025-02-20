@@ -2,7 +2,7 @@ part of '../../../quran.dart';
 
 class _QuranFontsPage extends StatelessWidget {
   final int pageIndex;
-  final List<BookmarksAyahs>? bookmarkList;
+  final List? bookmarkList;
   final BasmalaStyle? basmalaStyle;
   final int? surahNumber;
   final SurahInfoStyle? surahInfoStyle;

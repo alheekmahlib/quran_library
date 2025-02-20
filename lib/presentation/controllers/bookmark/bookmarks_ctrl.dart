@@ -170,8 +170,7 @@ class BookmarksCtrl extends GetxController {
   ///
   /// Returns:
   ///   `true` if the bookmark exists, `false` otherwise.
-  bool hasBookmark(
-          int surahNum, int ayahUQNum, List<BookmarksAyahs>? bookmarkList) =>
+  bool hasBookmark(int surahNum, int ayahUQNum, List? bookmarkList) =>
       (bookmarkList!.firstWhereOrNull(((element) =>
                   element.surahNumber == surahNum &&
                   element.ayahUQNumber == ayahUQNum)) !=

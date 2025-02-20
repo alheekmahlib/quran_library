@@ -77,7 +77,7 @@ class QuranLibraryScreen extends StatelessWidget {
   /// إذا كنت تريد إضافة قائمة إشارات مرجعية خاصة، فقط قم بتمريرها لـ [bookmarkList]
   ///
   /// If you want to add a private bookmark list, just pass it to [bookmarkList]
-  final List<BookmarksAyahs> bookmarkList;
+  final List bookmarkList;
 
   /// تغيير لون الإشارة المرجعية (اختياري) [bookmarksColor]
   ///

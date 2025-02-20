@@ -411,7 +411,7 @@ extension QuranGetters on QuranCtrl {
 // }
 }
 
-extension _SplitBetweenExtension<T> on List<T> {
+extension SplitBetweenExtension<T> on List<T> {
   List<List<T>> splitBetween(bool Function(T first, T second) condition) {
     if (isEmpty) return []; // إذا كانت القائمة فارغة، إرجاع قائمة فارغة.
 

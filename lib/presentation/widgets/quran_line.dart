@@ -120,10 +120,10 @@ class QuranLine extends StatelessWidget {
                     child: Text(
                       ayah.text,
                       style: TextStyle(
-                        color: quranCtrl.isAyahSelected &&
-                                null != ayahSelectedFontColor
-                            ? ayahSelectedFontColor ?? textColor
-                            : Colors.black,
+                        color: quranCtrl.selectedAyahsByUnequeNumber
+                                .contains(ayah.ayahUQNumber)
+                            ? ayahSelectedFontColor
+                            : textColor ?? Colors.black,
                         fontSize: 23.55,
                         fontFamily: "hafs",
                         height: 1.7,

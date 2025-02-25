@@ -272,7 +272,7 @@ class _QuranFontsPage extends StatelessWidget {
           ],
         ),
         children: List.generate(ayahs.length, (ayahIndex) {
-          quranCtrl.state.isSelected = quranCtrl.selectedAyahsByUnequeNumber
+          quranCtrl.selectedAyahsByUnequeNumber
               .contains(ayahs[ayahIndex].ayahUQNumber);
           final allBookmarks = bookmarks.values.expand((list) => list).toList();
           bool isFirstAyah = ayahIndex == 0 &&
@@ -287,7 +287,8 @@ class _QuranFontsPage extends StatelessWidget {
             isFirstAyah: isFirstAyah,
             text: text,
             pageIndex: pageIndex,
-            isSelected: quranCtrl.state.isSelected,
+            isSelected: quranCtrl.selectedAyahsByUnequeNumber
+                .contains(ayahs[ayahIndex].ayahUQNumber),
             fontSize: 100,
             surahNum: quranCtrl.getCurrentSurahByPage(pageIndex).surahNumber,
             ayahUQNum: ayahs[ayahIndex].ayahUQNumber,

@@ -194,17 +194,16 @@ class _QuranTextScale extends StatelessWidget {
                                   ),
                                   children:
                                       List.generate(ayahs.length, (ayahIndex) {
-                                    quranCtrl.state.isSelected = quranCtrl
-                                        .selectedAyahsByUnequeNumber
-                                        .contains(
-                                            ayahs[ayahIndex].ayahUQNumber);
                                     final allBookmarks = bookmarks.values
                                         .expand((list) => list)
                                         .toList();
                                     return _customSpan(
                                       text: ayahs[ayahIndex].text,
                                       pageIndex: pageIndex,
-                                      isSelected: quranCtrl.state.isSelected,
+                                      isSelected: quranCtrl
+                                          .selectedAyahsByUnequeNumber
+                                          .contains(
+                                              ayahs[ayahIndex].ayahUQNumber),
                                       fontSize: 20 *
                                           quranCtrl.state.scaleFactor.value,
                                       surahNum: quranCtrl

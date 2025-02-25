@@ -98,6 +98,7 @@ QuranLibraryScreen(
 final jozzs = QuranLibrary().allJoz;
 final hizbs = QuranLibrary().allHizb;
 final surahs = QuranLibrary().getAllSurahs();
+final ayahsOnPage = QuranLibrary().getAyahsByPage();
 
 /// [getSurahInfo] تتيح لك الحصول على سورة مع جميع بياناتها عند تمرير رقم السورة لها.
 ///

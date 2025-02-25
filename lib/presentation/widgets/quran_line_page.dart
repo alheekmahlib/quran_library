@@ -15,6 +15,7 @@ class _QuranLinePage extends StatelessWidget {
   final Color? textColor;
   final List? bookmarkList;
   final Color? ayahSelectedBackgroundColor;
+  final Color? ayahSelectedFontColor;
   final VoidCallback? onPagePress;
   final List<String> newSurahs;
   final String? languageCode;
@@ -37,6 +38,7 @@ class _QuranLinePage extends StatelessWidget {
     this.textColor,
     this.bookmarkList,
     this.ayahSelectedBackgroundColor,
+    this.ayahSelectedFontColor,
     this.onPagePress,
     required this.newSurahs,
     this.languageCode,
@@ -153,6 +155,7 @@ class _QuranLinePage extends StatelessWidget {
                             pageIndex: pageIndex,
                             ayahSelectedBackgroundColor:
                                 ayahSelectedBackgroundColor,
+                            ayahSelectedFontColor: ayahSelectedFontColor,
                             onPagePress: onPagePress,
                           ),
                         ),
@@ -284,6 +287,7 @@ class _QuranLinePage extends StatelessWidget {
                                 pageIndex: pageIndex,
                                 ayahSelectedBackgroundColor:
                                     ayahSelectedBackgroundColor,
+                                ayahSelectedFontColor: ayahSelectedFontColor,
                                 onPagePress: onPagePress,
                               ),
                             ),

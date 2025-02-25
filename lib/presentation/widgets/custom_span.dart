@@ -18,6 +18,7 @@ TextSpan _span({
   required List<int> bookmarksAyahs,
   Color? bookmarksColor,
   Color? ayahSelectedBackgroundColor,
+  Color? ayahSelectedFontColor,
 }) {
   // if (bookmarkList!.isEmpty) {
   //   bookmarkList = bookmarks as List<BookmarkModel>;
@@ -49,9 +50,11 @@ TextSpan _span({
           height: 2,
           letterSpacing:
               pageIndex == 54 || pageIndex == 75 || pageIndex == 539 ? 0 : 30,
-          color: quranCtrl.state.fontsSelected2.value == 1
-              ? textColor ?? Colors.transparent
-              : null,
+          color: isSelected && null != ayahSelectedFontColor
+              ? ayahSelectedFontColor
+              : quranCtrl.state.fontsSelected2.value == 1
+                  ? textColor ?? Colors.transparent
+                  : null,
           backgroundColor:
               bookmarkCtrl.hasBookmark(surahNum, ayahUQNum, bookmarkList)
                   ? bookmarksColor
@@ -80,9 +83,11 @@ TextSpan _span({
           height: 2,
           letterSpacing: 0,
           // wordSpacing: wordSpacing + 10,
-          color: quranCtrl.state.fontsSelected2.value == 1
-              ? textColor ?? Colors.transparent
-              : null,
+          color: isSelected && null != ayahSelectedFontColor
+              ? ayahSelectedFontColor
+              : quranCtrl.state.fontsSelected2.value == 1
+                  ? textColor ?? Colors.transparent
+                  : null,
           backgroundColor:
               bookmarkCtrl.hasBookmark(surahNum, ayahUQNum, bookmarkList)
                   ? bookmarksColor
@@ -112,9 +117,11 @@ TextSpan _span({
         fontSize: fontSize,
         height: 2,
         letterSpacing: 0,
-        color: quranCtrl.state.fontsSelected2.value == 1
-            ? textColor ?? Colors.transparent
-            : null,
+        color: isSelected && null != ayahSelectedFontColor
+            ? ayahSelectedFontColor
+            : quranCtrl.state.fontsSelected2.value == 1
+                ? textColor ?? Colors.transparent
+                : null,
         backgroundColor:
             bookmarkCtrl.hasBookmark(surahNum, ayahUQNum, bookmarkList)
                 ? bookmarksColor
@@ -217,6 +224,7 @@ TextSpan _customSpan({
   required List<int> bookmarksAyahs,
   Color? bookmarksColor,
   Color? ayahSelectedBackgroundColor,
+  Color? ayahSelectedFontColor,
   String? languageCode,
 }) {
   final allBookmarks = bookmarks.values.expand((list) => list).toList();
@@ -230,7 +238,9 @@ TextSpan _customSpan({
             fontFamily: 'hafs',
             fontSize: fontSize,
             height: 2,
-            color: textColor ?? Colors.black,
+            color: isSelected && null != ayahSelectedFontColor
+                ? ayahSelectedFontColor
+                : textColor ?? Colors.black,
             backgroundColor:
                 bookmarkCtrl.hasBookmark(surahNum, ayahUQNum, bookmarkList)
                     ? bookmarksColor
@@ -272,7 +282,9 @@ TextSpan _customSpan({
                   fontFamily: 'hafs',
                   fontSize: fontSize,
                   height: 2,
-                  color: ayahIconColor,
+                  color: isSelected && null != ayahSelectedFontColor
+                      ? ayahSelectedFontColor
+                      : ayahIconColor,
                   backgroundColor: bookmarkCtrl.hasBookmark(
                           surahNum, ayahUQNum, bookmarkList)
                       ? bookmarksColor

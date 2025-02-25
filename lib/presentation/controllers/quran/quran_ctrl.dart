@@ -17,7 +17,9 @@ class QuranCtrl extends GetxController {
   int lastPage = 1;
   int? initialPage;
   RxList<AyahModel> ayahsList = <AyahModel>[].obs;
-  final selectedAyahIndexes = <int>[].obs;
+
+  /// List of selected ayahs by their unique number
+  final selectedAyahsByUnequeNumber = <int>[].obs;
   bool isAyahSelected = false;
   RxDouble scaleFactor = 1.0.obs;
   RxDouble baseScaleFactor = 1.0.obs;
@@ -33,7 +35,7 @@ class QuranCtrl extends GetxController {
     staticPages.close();
     quranStops.close();
     surahsStart.close();
-    selectedAyahIndexes.close();
+    selectedAyahsByUnequeNumber.close();
     surahs.close();
     ayahs.close();
     ayahsList.close();
@@ -283,19 +285,20 @@ class QuranCtrl extends GetxController {
 
   PageController get pageController => _pageController;
 
-  void toggleAyahSelection(int index) {
-    if (selectedAyahIndexes.contains(index)) {
-      selectedAyahIndexes.remove(index);
+  /// Toggle the selection of an ayah by its unique number
+  void toggleAyahSelection(int ayahUnequeNumber) {
+    if (selectedAyahsByUnequeNumber.contains(ayahUnequeNumber)) {
+      selectedAyahsByUnequeNumber.remove(ayahUnequeNumber);
     } else {
-      selectedAyahIndexes.clear();
-      selectedAyahIndexes.add(index);
-      selectedAyahIndexes.refresh();
+      selectedAyahsByUnequeNumber.clear();
+      selectedAyahsByUnequeNumber.add(ayahUnequeNumber);
+      selectedAyahsByUnequeNumber.refresh();
     }
-    selectedAyahIndexes.refresh();
+    selectedAyahsByUnequeNumber.refresh();
   }
 
   void clearSelection() {
-    selectedAyahIndexes.clear();
+    selectedAyahsByUnequeNumber.clear();
   }
 
   Widget textScale(dynamic widget1, dynamic widget2) {

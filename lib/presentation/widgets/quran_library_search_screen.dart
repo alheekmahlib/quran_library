@@ -11,13 +11,15 @@ class QuranLibrarySearchScreen extends StatelessWidget {
   /// The [isDark] parameter allows you to set the screen's color scheme.
   /// If [isDark] is `true`, the screen will be dark. If it is `false` or null,
   /// the screen will be light.
-  const QuranLibrarySearchScreen({super.key, this.isDark = false});
+  const QuranLibrarySearchScreen(
+      {super.key, this.isDark = false, this.textController});
 
   /// Whether the screen should be dark or not.
   ///
   /// If [isDark] is `true`, the screen will be dark. If it is `false` or null,
   /// the screen will be light.
   final bool isDark;
+  final TextEditingController? textController;
 
   @override
   Widget build(BuildContext context) {
@@ -51,6 +53,7 @@ class QuranLibrarySearchScreen extends StatelessWidget {
               children: [
                 GetBuilder<QuranCtrl>(
                   builder: (quranCtrl) => TextField(
+                    controller: textController,
                     onChanged: (txt) {
                       final searchResult = QuranLibrary().search(txt);
                       quranCtrl.ayahsList.value = [...searchResult];

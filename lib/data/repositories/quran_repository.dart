@@ -90,7 +90,7 @@ class QuranRepository {
   /// [bookmarks] - A list of [BookmarkModel] instances to be saved.
   saveBookmarks(List<BookmarkModel> bookmarks) => GetStorage().write(
         _StorageConstants().bookmarks,
-        bookmarks.map((bookmark) => json.encode(bookmark._toJson())).toList(),
+        bookmarks.map((bookmark) => jsonEncode(bookmark._toJson())).toList(),
       );
 
   /// Retrieves a list of bookmarks.
@@ -114,7 +114,7 @@ class QuranRepository {
         } else if (bookmark is String) {
           // Decode JSON string and cast to Map<String, dynamic>
           return BookmarkModel._fromJson(
-            Map<String, dynamic>.from(json.decode(bookmark)),
+            Map<String, dynamic>.from(jsonDecode(bookmark)),
           );
         } else {
           throw Exception("Unexpected bookmark type: ${bookmark.runtimeType}");

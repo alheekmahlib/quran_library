@@ -12,7 +12,7 @@ class QuranState {
   RxInt currentPageNumber = 1.obs;
   RxInt lastReadSurahNumber = 1.obs;
   var selectedAyahIndexes = <int>[].obs;
-  bool isSelected = false;
+  // bool isSelected = false;
   final ScrollController scrollIndicatorController = ScrollController();
   final ScrollController ayahsScrollController = ScrollController();
   RxInt selectedIndicatorIndex = 0.obs;

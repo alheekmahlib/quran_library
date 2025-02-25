@@ -19,6 +19,7 @@ class _QuranFontsPage extends StatelessWidget {
   final Map<int, List<BookmarkModel>> bookmarks;
   final List<int> bookmarksAyahs;
   final Color? ayahSelectedBackgroundColor;
+  final Color? ayahSelectedFontColor;
   final bool isDark;
   final bool showAyahBookmarkedIcon;
   final Widget? circularProgressWidget;
@@ -40,6 +41,7 @@ class _QuranFontsPage extends StatelessWidget {
     required this.bookmarks,
     required this.bookmarksAyahs,
     this.ayahSelectedBackgroundColor,
+    this.ayahSelectedFontColor,
     this.onPagePress,
     this.isDark = false,
     this.circularProgressWidget,
@@ -270,7 +272,7 @@ class _QuranFontsPage extends StatelessWidget {
           ],
         ),
         children: List.generate(ayahs.length, (ayahIndex) {
-          quranCtrl.state.isSelected = quranCtrl.selectedAyahIndexes
+          quranCtrl.selectedAyahsByUnequeNumber
               .contains(ayahs[ayahIndex].ayahUQNumber);
           final allBookmarks = bookmarks.values.expand((list) => list).toList();
           bool isFirstAyah = ayahIndex == 0 &&
@@ -285,7 +287,8 @@ class _QuranFontsPage extends StatelessWidget {
             isFirstAyah: isFirstAyah,
             text: text,
             pageIndex: pageIndex,
-            isSelected: quranCtrl.state.isSelected,
+            isSelected: quranCtrl.selectedAyahsByUnequeNumber
+                .contains(ayahs[ayahIndex].ayahUQNumber),
             fontSize: 100,
             surahNum: quranCtrl.getCurrentSurahByPage(pageIndex).surahNumber,
             ayahUQNum: ayahs[ayahIndex].ayahUQNumber,
@@ -336,6 +339,7 @@ class _QuranFontsPage extends StatelessWidget {
             bookmarksAyahs: bookmarksAyahs,
             bookmarksColor: bookmarksColor,
             ayahSelectedBackgroundColor: ayahSelectedBackgroundColor,
+            ayahSelectedFontColor: ayahSelectedFontColor,
           );
         }),
       ),

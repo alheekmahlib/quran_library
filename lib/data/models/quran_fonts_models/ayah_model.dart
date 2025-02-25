@@ -18,6 +18,9 @@ class AyahFontsModel {
   /// The text of the Ayah (verse) in the Quran.
   final String text;
 
+  /// Custom text color for the Ayah.
+  Color? singleAyahTextColor;
+
   /// The text of the Ayah in Emlaey script.
   final String ayaTextEmlaey;
 
@@ -57,6 +60,7 @@ class AyahFontsModel {
     required this.ayahUQNumber,
     required this.ayahNumber,
     required this.text,
+    required this.singleAyahTextColor,
     required this.ayaTextEmlaey,
     required this.codeV2,
     required this.juz,
@@ -70,6 +74,7 @@ class AyahFontsModel {
       ayahUQNumber: json['number'],
       ayahNumber: json['numberInSurah'],
       text: json['text'],
+      singleAyahTextColor: json['singleAyahTextColor'],
       ayaTextEmlaey: json['aya_text_emlaey'],
       codeV2: json['code_v2'],
       juz: json['juz'],
@@ -84,6 +89,7 @@ class AyahFontsModel {
       ayahUQNumber: 0,
       ayahNumber: 0,
       text: '',
+      singleAyahTextColor: null,
       ayaTextEmlaey: '',
       codeV2: '',
       juz: 0,

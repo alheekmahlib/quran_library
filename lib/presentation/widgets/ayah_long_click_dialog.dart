@@ -14,6 +14,7 @@ class AyahLongClickDialog extends StatelessWidget {
     this.ayah,
     this.ayahFonts,
     required this.position,
+    required this.context,
   });
 
   /// The AyahModel that is the target of the long click event.
@@ -30,6 +31,7 @@ class AyahLongClickDialog extends StatelessWidget {
   ///
   /// This is typically the position of the long click event.
   final Offset position;
+  final BuildContext context;
 
   @override
   Widget build(BuildContext context) {
@@ -112,6 +114,44 @@ class AyahLongClickDialog extends StatelessWidget {
                                 element.ayahUQNumber == ayah!.ayahUQNumber)
                             .text));
                     _ToastUtils().showToast(context, "تم النسخ الى الحافظة");
+                  }
+                  QuranCtrl.instance.state.overlayEntry?.remove();
+                  QuranCtrl.instance.state.overlayEntry = null;
+                },
+                child: const Icon(
+                  Icons.copy_rounded,
+                  color: Colors.grey,
+                ),
+              ),
+              context.verticalDivider(
+                  height: 30, color: const Color(0xffe8decb)),
+              GestureDetector(
+                onTap: () {
+                  if (QuranCtrl.instance.state.fontsSelected2.value == 1 ||
+                      QuranCtrl.instance.state.fontsSelected2.value == 2 ||
+                      QuranCtrl.instance.state.scaleFactor.value > 1.3) {
+                    TafsirCtrl.instance.showTafsirOnTap2(
+                      context,
+                      QuranCtrl.instance
+                          .getSurahDataByAyah(ayahFonts!)
+                          .surahNumber,
+                      ayahFonts!.ayahNumber,
+                      ayahFonts!.text,
+                      ayahFonts!.page,
+                      ayahFonts!.ayaTextEmlaey,
+                      ayahFonts!.ayahUQNumber,
+                      ayahFonts!.ayahNumber,
+                    );
+                  } else {
+                    TafsirCtrl.instance.showTafsirOnTap2(
+                        context,
+                        ayah!.surahNumber,
+                        ayah!.ayahNumber,
+                        ayah!.text,
+                        ayah!.page,
+                        ayah!.ayaTextEmlaey,
+                        ayah!.ayahUQNumber,
+                        ayah!.ayahNumber);
                   }
                   QuranCtrl.instance.state.overlayEntry?.remove();
                   QuranCtrl.instance.state.overlayEntry = null;

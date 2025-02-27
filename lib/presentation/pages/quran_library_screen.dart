@@ -221,6 +221,7 @@ class QuranLibraryScreen extends StatelessWidget {
     //   QuranCtrl.instance.state.isTajweed.value = 1;
     //   GetStorage().write(StorageConstants().isTajweed, 1);
     // }
+    // TafsirCtrl.instance.loadTafsirDownloadIndices();
     return GetBuilder<QuranCtrl>(
       builder: (quranCtrl) => Directionality(
         textDirection: TextDirection.rtl,

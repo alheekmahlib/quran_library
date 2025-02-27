@@ -159,7 +159,7 @@ class QuranLibrary {
   ///
   /// [getAllSurahsArtPath] returns list of all Quran surahs' name artistic manuscript path
   List<String> getAllSurahsArtPath() => List.generate(quranCtrl.surahs.length,
-      (i) => 'packages/quran_library/lib/assets/svg/surah_name/00$i.svg');
+      (i) => 'packages/quran_library/assets/svg/surah_name/00$i.svg');
 
   /// يعيد قائمة بجميع شارات المرجعية المحفوظة [allBookmarks].
   ///

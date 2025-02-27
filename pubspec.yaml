@@ -25,6 +25,11 @@ dependencies:
   archive: ^4.0.2
   http: ^1.2.2
   path_provider: ^2.1.5
+  drift: ^2.25.1
+  dio: ^5.8.0+1
+  path: ^1.9.0
+  another_xlider: ^3.0.2
+  drift_flutter: ^0.2.4
 
 
 # This package supports all platforms listed below.
@@ -59,23 +64,24 @@ package_rename_config:
 
 flutter:
   assets:
-    - lib/assets/
-    - lib/assets/fonts/
-    - lib/assets/fonts/Kufam-Regular.ttf
-    - lib/assets/fonts/NotoNaskhArabic-VariableFont_wght.ttf
-    - lib/assets/fonts/UthmanicHafs_V20.ttf
-    - lib/assets/jsons/
-    - lib/assets/svg/
-    - lib/assets/svg/surah_name/
+    - assets/
+    - assets/fonts/
+    - assets/fonts/Kufam-Regular.ttf
+    - assets/fonts/NotoNaskhArabic-VariableFont_wght.ttf
+    - assets/fonts/UthmanicHafs_V20.ttf
+    - assets/jsons/
+    - assets/svg/
+    - assets/svg/surah_name/
+    - assets/saadiV3.db
 
   fonts:
     - family: kufi
       fonts:
-        - asset: packages/quran_library/assets/fonts/Kufam-Regular.ttf
+        - asset: assets/fonts/Kufam-Regular.ttf
     - family: naskh
       fonts:
-        - asset: packages/quran_library/assets/fonts/NotoNaskhArabic-VariableFont_wght.ttf
+        - asset: assets/fonts/NotoNaskhArabic-VariableFont_wght.ttf
     - family: hafs
       fonts:
-        - asset: packages/quran_library/assets/fonts/UthmanicHafs_V20.ttf
+        - asset: assets/fonts/UthmanicHafs_V20.ttf
 

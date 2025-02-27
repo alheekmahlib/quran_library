@@ -79,7 +79,7 @@ extension SurahInfoExtension on void {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           SvgPicture.asset(
-                            'packages/quran_library/lib/assets/svg/surah_name/00${surah.number}.svg',
+                            'packages/quran_library/assets/svg/surah_name/00${surah.number}.svg',
                             height: 45,
                             colorFilter: ColorFilter.mode(
                                 surahStyle?.surahNameColor ??

@@ -50,7 +50,7 @@ class ShareCopyWidget extends StatelessWidget {
                   tafsirName, tafsir, ayahTextNormal),
             ),
             const SizedBox(width: 16),
-            extraChild!,
+            extraChild ?? const SizedBox(),
           ],
         ),
       ),

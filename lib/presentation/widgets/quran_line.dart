@@ -91,6 +91,8 @@ class QuranLine extends StatelessWidget {
                             context: context,
                             ayah: ayah,
                             position: details.globalPosition,
+                            index: ayah.ayahNumber,
+                            pageIndex: pageIndex,
                           ),
                         );
 

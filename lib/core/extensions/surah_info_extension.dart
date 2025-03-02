@@ -90,7 +90,7 @@ extension SurahInfoExtension on void {
                             alignment: Alignment.center,
                             children: [
                               SvgPicture.asset(
-                                'packages/quran_library/lib/assets/svg/sora_num.svg',
+                                'packages/quran_library/assets/svg/sora_num.svg',
                                 height: 40,
                                 width: 40,
                                 colorFilter: ColorFilter.mode(

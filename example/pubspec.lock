@@ -148,7 +148,7 @@ packages:
     source: sdk
     version: "0.0.0"
   get:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: get
       sha256: e4e7335ede17452b391ed3b2ede016545706c01a02292a6c97619705e7d2a85e
@@ -359,6 +359,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.5.31"
+  square_percent_indicater:
+    dependency: transitive
+    description:
+      name: square_percent_indicater
+      sha256: "203bf46f100d21ea04b36ccf3f6438424e95b6ee5f65461c81b6061fbcb41968"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.0"
   stack_trace:
     dependency: transitive
     description:

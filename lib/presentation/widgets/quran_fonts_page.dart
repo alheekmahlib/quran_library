@@ -322,6 +322,8 @@ class _QuranFontsPage extends StatelessWidget {
                       context: context,
                       ayahFonts: ayahs[ayahIndex],
                       position: details.globalPosition,
+                      index: ayahIndex,
+                      pageIndex: pageIndex,
                     ),
                   );
 

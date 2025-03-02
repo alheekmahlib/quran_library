@@ -128,6 +128,9 @@ extension QuranGetters on QuranCtrl {
   List<AyahFontsModel> getPageAyahsByIndex(int pageIndex) =>
       state.pages[pageIndex];
 
+  AyahFontsModel? getAyahDataByAyahUQNumber(int ayah) =>
+      state.allAyahs.firstWhereOrNull((a) => a.ayahUQNumber == ayah);
+
   /// will return the surah number of the first ayahs..
   /// even if the page contains another surah.
   int getSurahNumberFromPage(int pageNumber) => state.surahs

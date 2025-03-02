@@ -20,34 +20,34 @@ List tafsirName = [
   },
   {
     'name': 'English',
-    'bookName': '',
+    'bookName': 'en',
   },
   {
     'name': 'Español',
-    'bookName': '',
+    'bookName': 'es',
   },
   {
     'name': 'বাংলা',
-    'bookName': '',
+    'bookName': 'bn',
   },
   {
     'name': 'اردو',
-    'bookName': '',
+    'bookName': 'urdu',
   },
   {
     'name': 'Soomaali',
-    'bookName': '',
+    'bookName': 'so',
   },
   {
     'name': 'bahasa Indonesia',
-    'bookName': '',
+    'bookName': 'in',
   },
   {
     'name': 'کوردی',
-    'bookName': '',
+    'bookName': 'ku',
   },
   {
     'name': 'Türkçe',
-    'bookName': '',
+    'bookName': 'tr',
   },
 ];

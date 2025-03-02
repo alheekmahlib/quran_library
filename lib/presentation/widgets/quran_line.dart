@@ -1,16 +1,20 @@
 part of '../../quran.dart';
 
 class QuranLine extends StatelessWidget {
-  QuranLine(this.line, this.bookmarksAyahs, this.bookmarks,
-      {super.key,
-      this.boxFit = BoxFit.fill,
-      this.onDefaultAyahLongPress,
-      this.bookmarksColor,
-      this.textColor,
-      this.ayahSelectedBackgroundColor,
-      this.bookmarkList,
-      this.onPagePress,
-      required this.pageIndex});
+  QuranLine(
+    this.line,
+    this.bookmarksAyahs,
+    this.bookmarks, {
+    super.key,
+    this.boxFit = BoxFit.fill,
+    this.onDefaultAyahLongPress,
+    this.bookmarksColor,
+    this.textColor,
+    this.ayahSelectedBackgroundColor,
+    this.bookmarkList,
+    this.onPagePress,
+    required this.pageIndex,
+  });
 
   final quranCtrl = QuranCtrl.instance;
 

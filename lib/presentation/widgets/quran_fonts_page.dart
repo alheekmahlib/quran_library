@@ -22,6 +22,8 @@ class _QuranFontsPage extends StatelessWidget {
   final bool isDark;
   final bool showAyahBookmarkedIcon;
   final Widget? circularProgressWidget;
+  final bool? isFontsLocal;
+  final String? fontsName;
 
   const _QuranFontsPage({
     required this.pageIndex,
@@ -43,6 +45,8 @@ class _QuranFontsPage extends StatelessWidget {
     this.onPagePress,
     this.isDark = false,
     this.circularProgressWidget,
+    this.isFontsLocal,
+    this.fontsName,
   });
 
   @override
@@ -174,8 +178,8 @@ class _QuranFontsPage extends StatelessWidget {
                                   ),
                             FittedBox(
                               fit: BoxFit.fitWidth,
-                              child: Obx(() =>
-                                  _richTextWidget(context, quranCtrl, ayahs)),
+                              child: Obx(() => _richTextWidget(context,
+                                  quranCtrl, ayahs, isFontsLocal!, fontsName!)),
                             ),
                             quranCtrl._downThePageIndex.contains(pageIndex)
                                 ? SurahHeaderWidget(
@@ -248,14 +252,16 @@ class _QuranFontsPage extends StatelessWidget {
     );
   }
 
-  Widget _richTextWidget(
-      BuildContext context, QuranCtrl quranCtrl, List<AyahFontsModel> ayahs) {
+  Widget _richTextWidget(BuildContext context, QuranCtrl quranCtrl,
+      List<AyahFontsModel> ayahs, bool isFontsLocal, String fontsName) {
     return RichText(
       textDirection: TextDirection.rtl,
       textAlign: TextAlign.center,
       text: TextSpan(
         style: TextStyle(
-          fontFamily: 'p${(pageIndex + 2001)}',
+          fontFamily: isFontsLocal
+              ? '$fontsName${pageIndex + 2001}'
+              : 'p${(pageIndex + 2001)}',
           fontSize: 100,
           height: 1.7,
           letterSpacing: 2,
@@ -336,6 +342,8 @@ class _QuranFontsPage extends StatelessWidget {
             bookmarksAyahs: bookmarksAyahs,
             bookmarksColor: bookmarksColor,
             ayahSelectedBackgroundColor: ayahSelectedBackgroundColor,
+            isFontsLocal: isFontsLocal,
+            fontsName: fontsName,
           );
         }),
       ),

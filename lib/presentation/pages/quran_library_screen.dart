@@ -47,6 +47,8 @@ class QuranLibraryScreen extends StatelessWidget {
     this.topTitleChild,
     this.useDefaultAppBar = true,
     this.withPageView = true,
+    this.isFontsLocal = false,
+    this.fontsName,
   });
 
   /// إذا قمت بإضافة شريط التطبيقات هنا فإنه سيحل محل شريط التطبيقات الافتراضية [appBar]
@@ -209,6 +211,10 @@ class QuranLibraryScreen extends StatelessWidget {
   /// [withPageView] Enable this variable if you want to display the Quran with PageView
   final bool withPageView;
 
+  final bool? isFontsLocal;
+
+  final String? fontsName;
+
   @override
   Widget build(BuildContext context) {
     // if (isDark!) {
@@ -358,6 +364,8 @@ class QuranLibraryScreen extends StatelessWidget {
                           onPagePress: onPagePress,
                           isDark: isDark,
                           circularProgressWidget: circularProgressWidget,
+                          isFontsLocal: isFontsLocal,
+                          fontsName: fontsName,
                         ),
                       ))
               : quranCtrl.staticPages.isEmpty || quranCtrl.isLoading.value

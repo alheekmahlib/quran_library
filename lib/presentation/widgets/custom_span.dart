@@ -18,6 +18,8 @@ TextSpan _span({
   required List<int> bookmarksAyahs,
   Color? bookmarksColor,
   Color? ayahSelectedBackgroundColor,
+  required bool isFontsLocal,
+  required String fontsName,
 }) {
   // if (bookmarkList!.isEmpty) {
   //   bookmarkList = bookmarks as List<BookmarkModel>;
@@ -44,7 +46,9 @@ TextSpan _span({
       first = TextSpan(
         text: partOne,
         style: TextStyle(
-          fontFamily: 'p${(pageIndex + 2001)}',
+          fontFamily: isFontsLocal!
+              ? '$fontsName${pageIndex + 2001}'
+              : 'p${(pageIndex + 2001)}',
           fontSize: fontSize,
           height: 2,
           letterSpacing:
@@ -75,7 +79,9 @@ TextSpan _span({
       second = TextSpan(
         text: partTwo,
         style: TextStyle(
-          fontFamily: 'p${(pageIndex + 2001)}',
+          fontFamily: isFontsLocal!
+              ? '$fontsName${pageIndex + 2001}'
+              : 'p${(pageIndex + 2001)}',
           fontSize: fontSize,
           height: 2,
           letterSpacing: 0,
@@ -108,7 +114,9 @@ TextSpan _span({
     final TextSpan initialTextSpan = TextSpan(
       text: initialPart,
       style: TextStyle(
-        fontFamily: 'p${(pageIndex + 2001)}',
+        fontFamily: isFontsLocal!
+            ? '$fontsName${pageIndex + 2001}'
+            : 'p${(pageIndex + 2001)}',
         fontSize: fontSize,
         height: 2,
         letterSpacing: 0,
@@ -153,7 +161,9 @@ TextSpan _span({
         : TextSpan(
             text: lastCharacter,
             style: TextStyle(
-              fontFamily: 'p${(pageIndex + 2001)}',
+              fontFamily: isFontsLocal!
+                  ? '$fontsName${pageIndex + 2001}'
+                  : 'p${(pageIndex + 2001)}',
               fontSize: fontSize,
               height: 2,
               letterSpacing: isFirstAyah &&

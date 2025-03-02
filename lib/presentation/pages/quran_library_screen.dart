@@ -267,6 +267,7 @@ class QuranLibraryScreen extends StatelessWidget {
                                     : const Color(0xFFF7EFE0),
                               ),
                           languageCode: languageCode,
+                          isFontsLocal: isFontsLocal,
                           isDark: isDark,
                         )
                       ],

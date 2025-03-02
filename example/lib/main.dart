@@ -34,6 +34,7 @@ class _MyAppState extends State<MyApp> {
       ayahIconColor: Color(0xffcdad80),
       backgroundColor: Colors.white,
       textColor: Colors.black,
+      isFontsLocal: true,
     );
   }
 }

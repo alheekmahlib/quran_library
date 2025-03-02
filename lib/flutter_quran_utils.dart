@@ -234,12 +234,14 @@ class QuranLibrary {
   Widget getFontsDownloadWidget(BuildContext context,
           {DownloadFontsDialogStyle? downloadFontsDialogStyle,
           String? languageCode,
-          bool isDark = false}) =>
+          bool isDark = false,
+          bool isFontsLocal = false}) =>
       quranCtrl.fontsDownloadWidget(
         context,
         downloadFontsDialogStyle: downloadFontsDialogStyle,
         languageCode: languageCode,
         isDark: isDark,
+        isFontsLocal: isFontsLocal,
       );
 
   /// للحصول على طريقة تنزيل الخطوط فقط قم بإستدعاء [fontsDownloadMethod]

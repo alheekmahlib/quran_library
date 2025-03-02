@@ -15,6 +15,8 @@ class AyahLongClickDialog extends StatelessWidget {
     this.ayahFonts,
     required this.position,
     required this.context,
+    required this.index,
+    required this.pageIndex,
   });
 
   /// The AyahModel that is the target of the long click event.
@@ -32,6 +34,8 @@ class AyahLongClickDialog extends StatelessWidget {
   /// This is typically the position of the long click event.
   final Offset position;
   final BuildContext context;
+  final int index;
+  final int pageIndex;
 
   @override
   Widget build(BuildContext context) {
@@ -131,27 +135,27 @@ class AyahLongClickDialog extends StatelessWidget {
                       QuranCtrl.instance.state.fontsSelected2.value == 2 ||
                       QuranCtrl.instance.state.scaleFactor.value > 1.3) {
                     TafsirCtrl.instance.showTafsirOnTap2(
-                      context,
-                      QuranCtrl.instance
+                      context: context,
+                      surahNum: QuranCtrl.instance
                           .getSurahDataByAyah(ayahFonts!)
                           .surahNumber,
-                      ayahFonts!.ayahNumber,
-                      ayahFonts!.text,
-                      ayahFonts!.page,
-                      ayahFonts!.ayaTextEmlaey,
-                      ayahFonts!.ayahUQNumber,
-                      ayahFonts!.ayahNumber,
+                      ayahNum: ayahFonts!.ayahNumber,
+                      ayahText: ayahFonts!.text,
+                      pageIndex: pageIndex,
+                      ayahTextN: ayahFonts!.ayaTextEmlaey,
+                      ayahUQNum: ayahFonts!.ayahUQNumber,
+                      index: ayahFonts!.ayahNumber,
                     );
                   } else {
                     TafsirCtrl.instance.showTafsirOnTap2(
-                        context,
-                        ayah!.surahNumber,
-                        ayah!.ayahNumber,
-                        ayah!.text,
-                        ayah!.page,
-                        ayah!.ayaTextEmlaey,
-                        ayah!.ayahUQNumber,
-                        ayah!.ayahNumber);
+                        context: context,
+                        surahNum: ayah!.surahNumber,
+                        ayahNum: ayah!.ayahNumber,
+                        ayahText: ayah!.text,
+                        pageIndex: pageIndex,
+                        ayahTextN: ayah!.ayaTextEmlaey,
+                        ayahUQNum: ayah!.ayahUQNumber,
+                        index: ayah!.ayahNumber);
                   }
                   QuranCtrl.instance.state.overlayEntry?.remove();
                   QuranCtrl.instance.state.overlayEntry = null;

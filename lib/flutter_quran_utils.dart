@@ -25,6 +25,7 @@ class QuranLibrary {
       bool overwriteBookmarks = false}) async {
     // Get.put(QuranController());
     await GetStorage.init();
+    drift.driftRuntimeOptions.dontWarnAboutMultipleDatabases = true;
     QuranCtrl.instance.state.isDownloadedV2Fonts.value =
         GetStorage().read(_StorageConstants().isDownloadedCodeV2Fonts) ?? false;
     QuranRepository().getLastPage();

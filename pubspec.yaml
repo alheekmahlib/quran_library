@@ -30,6 +30,7 @@ dependencies:
   path: ^1.9.0
   another_xlider: ^3.0.2
   drift_flutter: ^0.2.4
+  square_percent_indicater: ^0.1.0
 
 
 # This package supports all platforms listed below.
@@ -47,6 +48,8 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^5.0.0
+  # drift_dev: ^2.25.2
+  build_runner: ^2.4.15
 
 package_rename_config:
   android:

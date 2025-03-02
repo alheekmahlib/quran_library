@@ -250,6 +250,8 @@ class _QuranTextScale extends StatelessWidget {
                                                 ayahFonts: ayahs[ayahIndex],
                                                 position:
                                                     details.globalPosition,
+                                                index: ayahIndex,
+                                                pageIndex: pageIndex,
                                               ),
                                             );
 

@@ -83,7 +83,8 @@ extension FontsExtension on QuranCtrl {
       final client = http.Client();
       final response = await client.send(http.Request(
         'GET',
-        Uri.parse('https://archive.org/download/quran_fonts/quran_fonts.zip'),
+        Uri.parse(
+            'https://github.com/alheekmahlib/Islamic_database/raw/refs/heads/main/quran_database/Quran%20Font/quran_fonts.zip'),
       ));
 
       if (response.statusCode != 200) {

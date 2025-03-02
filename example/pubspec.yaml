@@ -15,6 +15,7 @@ dependencies:
 
   quran_library:
     path: ../
+  get: ^4.6.5
 
 dev_dependencies:
   flutter_test:

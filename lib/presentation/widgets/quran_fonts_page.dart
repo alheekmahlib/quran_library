@@ -259,9 +259,7 @@ class _QuranFontsPage extends StatelessWidget {
       textAlign: TextAlign.center,
       text: TextSpan(
         style: TextStyle(
-          fontFamily: isFontsLocal
-              ? '$fontsName${pageIndex + 2001}'
-              : 'p${(pageIndex + 2001)}',
+          fontFamily: isFontsLocal ? fontsName : 'p${(pageIndex + 2001)}',
           fontSize: 100,
           height: 1.7,
           letterSpacing: 2,

@@ -46,9 +46,7 @@ TextSpan _span({
       first = TextSpan(
         text: partOne,
         style: TextStyle(
-          fontFamily: isFontsLocal
-              ? '$fontsName${pageIndex + 2001}'
-              : 'p${(pageIndex + 2001)}',
+          fontFamily: isFontsLocal ? fontsName : 'p${(pageIndex + 2001)}',
           fontSize: fontSize,
           height: 2,
           letterSpacing:
@@ -79,9 +77,7 @@ TextSpan _span({
       second = TextSpan(
         text: partTwo,
         style: TextStyle(
-          fontFamily: isFontsLocal
-              ? '$fontsName${pageIndex + 2001}'
-              : 'p${(pageIndex + 2001)}',
+          fontFamily: isFontsLocal ? fontsName : 'p${(pageIndex + 2001)}',
           fontSize: fontSize,
           height: 2,
           letterSpacing: 0,
@@ -114,9 +110,7 @@ TextSpan _span({
     final TextSpan initialTextSpan = TextSpan(
       text: initialPart,
       style: TextStyle(
-        fontFamily: isFontsLocal
-            ? '$fontsName${pageIndex + 2001}'
-            : 'p${(pageIndex + 2001)}',
+        fontFamily: isFontsLocal ? fontsName : 'p${(pageIndex + 2001)}',
         fontSize: fontSize,
         height: 2,
         letterSpacing: 0,
@@ -161,9 +155,7 @@ TextSpan _span({
         : TextSpan(
             text: lastCharacter,
             style: TextStyle(
-              fontFamily: isFontsLocal
-                  ? '$fontsName${pageIndex + 2001}'
-                  : 'p${(pageIndex + 2001)}',
+              fontFamily: isFontsLocal ? fontsName : 'p${(pageIndex + 2001)}',
               fontSize: fontSize,
               height: 2,
               letterSpacing: isFirstAyah &&

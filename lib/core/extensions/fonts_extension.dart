@@ -15,16 +15,16 @@ extension FontsExtension on QuranCtrl {
   ///
   /// Returns a [Future] that completes when all specified fonts have been
   /// successfully loaded.
-  Future<void> prepareFonts(int pageIndex) async {
-    await loadFont(pageIndex);
+  Future<void> prepareFonts(int pageIndex, {bool isFontsLocal = false}) async {
+    await loadFont(pageIndex, isFontsLocal: isFontsLocal);
     if (pageIndex < 600) {
       for (int i = pageIndex + 1; i < pageIndex + 5; i++) {
-        await loadFont(i);
+        await loadFont(i, isFontsLocal: isFontsLocal);
       }
     }
     if (pageIndex >= 4) {
       for (int i = pageIndex - 1; i > pageIndex - 5; i--) {
-        await loadFont(i);
+        await loadFont(i, isFontsLocal: isFontsLocal);
       }
     }
   }
@@ -209,20 +209,24 @@ extension FontsExtension on QuranCtrl {
   /// [pageIndex] - The index of the page for which the font should be loaded.
   ///
   /// Returns a [Future] that completes when the font has been successfully loaded.
-  Future<void> loadFont(int pageIndex) async {
-    try {
-      final appDir = await getApplicationDocumentsDirectory();
-      // تعديل المسار ليشمل المجلد الإضافي
-      final fontFile = File(
-          '${appDir.path}/quran_fonts/quran_fonts/p${(pageIndex + 2001)}.ttf');
-      if (!await fontFile.exists()) {
-        throw Exception("Font file not found for page: ${pageIndex + 2001}");
+  Future<void> loadFont(int pageIndex, {bool isFontsLocal = false}) async {
+    if (isFontsLocal) {
+      return;
+    } else {
+      try {
+        final appDir = await getApplicationDocumentsDirectory();
+        // تعديل المسار ليشمل المجلد الإضافي
+        final fontFile = File(
+            '${appDir.path}/quran_fonts/quran_fonts/p${(pageIndex + 2001)}.ttf');
+        if (!await fontFile.exists()) {
+          throw Exception("Font file not found for page: ${pageIndex + 2001}");
+        }
+        final fontLoader = FontLoader('p${(pageIndex + 2001)}');
+        fontLoader.addFont(_getFontLoaderBytes(fontFile));
+        await fontLoader.load();
+      } catch (e) {
+        throw Exception("Failed to load font: $e");
       }
-      final fontLoader = FontLoader('p${(pageIndex + 2001)}');
-      fontLoader.addFont(_getFontLoaderBytes(fontFile));
-      await fontLoader.load();
-    } catch (e) {
-      throw Exception("Failed to load font: $e");
     }
   }
 

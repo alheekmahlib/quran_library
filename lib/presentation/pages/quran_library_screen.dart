@@ -297,6 +297,7 @@ class QuranLibraryScreen extends StatelessWidget {
                         context,
                         index,
                         quranCtrl,
+                        isFontsLocal!,
                       );
                     },
                   )
@@ -304,6 +305,7 @@ class QuranLibraryScreen extends StatelessWidget {
                     context,
                     pageIndex,
                     quranCtrl,
+                    isFontsLocal!,
                   ),
           ),
         ),
@@ -315,10 +317,13 @@ class QuranLibraryScreen extends StatelessWidget {
     BuildContext context,
     int pageIndex,
     QuranCtrl quranCtrl,
+    bool isFontsLocal,
   ) {
     final deviceSize = MediaQuery.of(context).size;
     List<String> newSurahs = [];
-    quranCtrl.isDownloadFonts ? quranCtrl.prepareFonts(pageIndex) : null;
+    quranCtrl.isDownloadFonts
+        ? quranCtrl.prepareFonts(pageIndex, isFontsLocal: isFontsLocal)
+        : null;
     final bookmarkCtrl = BookmarksCtrl.instance;
     return GetBuilder<QuranCtrl>(
       init: QuranCtrl.instance,

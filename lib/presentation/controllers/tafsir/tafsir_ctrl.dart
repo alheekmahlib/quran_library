@@ -162,6 +162,8 @@ class TafsirCtrl extends GetxController {
         selectedTableName.value = MufaserName.tabari.name;
         dbFileName = 'tabariV2.db';
         box.write(_StorageConstants().isTafsir, true);
+        selectedTableName.value = MufaserName.ibnkatheer.name;
+        dbFileName = 'ibnkatheerV2.sqlite';
         break;
       case 5:
         isTafsir.value = false;

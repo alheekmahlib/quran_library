@@ -192,34 +192,4 @@ class ShowTafseer extends StatelessWidget {
                 ),
     );
   }
-  // GetX<TranslateDataController> _translations(
-  //     AyahFontsModel ayahsData, BuildContext context) {
-  //   return GetX<TranslateDataController>(
-  //     builder: (transCtrl) {
-  //       return Padding(
-  //           padding: const EdgeInsets.symmetric(horizontal: 24.0),
-  //           child: Text.rich(
-  //             TextSpan(
-  //               text: transCtrl.data[ayahsData.ayahUQNumber - 1]['text'] ?? '',
-  //               style: TextStyle(
-  //                   color: Get.theme.canvasColor,
-  //                   height: 1.5,
-  //                   fontSize: TafsirCtrl.instance.fontSizeArabic.value - 3),
-  //               // textAlign: TextAlign.justify,
-  //               // animationDuration: const Duration(milliseconds: 300),
-  //               // maxLines: 1,
-  //               // collapsedHeight: 20,
-  //               // readMoreText: 'readMore'.tr,
-  //               // readLessText: 'readLess'.tr,
-  //               // buttonTextStyle: TextStyle(
-  //               //   fontSize: 12,
-  //               //   fontFamily: 'kufi',
-  //               //   color: Theme.of(context).canvasColor,
-  //               // ),
-  //               // iconColor: Theme.of(context).canvasColor,
-  //             ),
-  //           ));
-  //     },
-  //   );
-  // }
 }

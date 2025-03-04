@@ -255,8 +255,9 @@ class QuranLibrary {
   ///
   /// to prepare the fonts was downloaded before just call [getFontsPrepareMethod]
   /// required to pass [pageIndex]
-  void getFontsPrepareMethod({required int pageIndex}) =>
-      quranCtrl.prepareFonts(pageIndex);
+  void getFontsPrepareMethod(
+          {required int pageIndex, bool isFontsLocal = false}) =>
+      quranCtrl.prepareFonts(pageIndex, isFontsLocal: isFontsLocal);
 
   /// لحذف الخطوط فقط قم بإستدعاء [deleteFontsMethod]
   ///

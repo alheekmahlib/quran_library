@@ -45,7 +45,7 @@ class _QuranFontsPage extends StatelessWidget {
     this.onPagePress,
     this.isDark = false,
     this.circularProgressWidget,
-    this.isFontsLocal,
+    this.isFontsLocal = false,
     this.fontsName,
   });
 
@@ -178,8 +178,12 @@ class _QuranFontsPage extends StatelessWidget {
                                   ),
                             FittedBox(
                               fit: BoxFit.fitWidth,
-                              child: Obx(() => _richTextWidget(context,
-                                  quranCtrl, ayahs, isFontsLocal!, fontsName!)),
+                              child: _richTextWidget(
+                                  context,
+                                  quranCtrl,
+                                  ayahs,
+                                  isFontsLocal: isFontsLocal!,
+                                  fontsName!),
                             ),
                             quranCtrl._downThePageIndex.contains(pageIndex)
                                 ? SurahHeaderWidget(
@@ -253,13 +257,15 @@ class _QuranFontsPage extends StatelessWidget {
   }
 
   Widget _richTextWidget(BuildContext context, QuranCtrl quranCtrl,
-      List<AyahFontsModel> ayahs, bool isFontsLocal, String fontsName) {
+      List<AyahFontsModel> ayahs, String fontsName,
+      {bool isFontsLocal = false}) {
     return RichText(
       textDirection: TextDirection.rtl,
       textAlign: TextAlign.center,
       text: TextSpan(
         style: TextStyle(
-          fontFamily: isFontsLocal ? fontsName : 'p${(pageIndex + 2001)}',
+          fontFamily:
+              isFontsLocal ? fontsName : '$fontsName${(pageIndex + 2001)}',
           fontSize: 100,
           height: 1.7,
           letterSpacing: 2,

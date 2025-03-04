@@ -32,7 +32,7 @@ class ChangeTafsir extends StatelessWidget {
                             Expanded(
                               flex: 3,
                               child: Text(
-                                'الترجمات',
+                                tafsirStyle.translateName ?? 'الترجمات',
                                 style: QuranLibrary()
                                     .naskhStyle
                                     .copyWith(fontSize: 20),
@@ -101,7 +101,7 @@ class ChangeTafsir extends StatelessWidget {
             ),
       ),
       subtitle: Text(
-        tafsirName[index]['bookName'],
+        index >= 5 ? '' : tafsirName[index]['bookName'],
         style: QuranLibrary().naskhStyle.copyWith(
               color: tafsirCtrl.radioValue.value == index
                   ? Colors.black
@@ -178,20 +178,19 @@ class ChangeTafsir extends StatelessWidget {
             child: Stack(
               alignment: Alignment.center,
               children: [
-                Container(height: 90, width: 40.0, color: Colors.amber),
+                Container(height: 90, width: 40.0, color: Colors.blue),
                 Container(
                   height: 60,
                   width: 30.0,
                   alignment: Alignment.center,
                   child: Text(
                     tafsirName[index]['name'],
-                    style: TextStyle(
-                      fontSize: 7.0,
-                      fontFamily: 'kufi',
-                      fontWeight: FontWeight.bold,
-                      color: Theme.of(context).canvasColor,
-                      height: 1.5,
-                    ),
+                    style: QuranLibrary().naskhStyle.copyWith(
+                          color: tafsirCtrl.radioValue.value == index
+                              ? Colors.black
+                              : const Color(0xffCDAD80),
+                          fontSize: 7,
+                        ),
                     maxLines: 3,
                     textAlign: TextAlign.center,
                   ),

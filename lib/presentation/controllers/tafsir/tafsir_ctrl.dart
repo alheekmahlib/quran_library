@@ -36,12 +36,12 @@ class TafsirCtrl extends GetxController {
   Future<void> onInit() async {
     super.onInit();
     initializeTafsirDownloadStatus();
-    // await loadTafseer().then((_) async {
-    //   database.value?.close();
-    //   database =
-    //       Rx<TafsirDatabase?>(TafsirDatabase(tafsirDBName[radioValue.value]));
-    //   await initializeDatabase();
-    // });
+    await loadTafseer().then((_) async {
+      database.value?.close();
+      database =
+          Rx<TafsirDatabase?>(TafsirDatabase(tafsirDBName[radioValue.value]));
+      await initializeDatabase();
+    });
   }
 
   Future<void> loadTafseer() async {
@@ -124,6 +124,7 @@ class TafsirCtrl extends GetxController {
     } finally {
       isLoading.value = false;
     }
+    update(['change_tafsir']);
   }
 
   Future<void> handleRadioValueChanged(int val) async {
@@ -133,68 +134,82 @@ class TafsirCtrl extends GetxController {
 
     switch (val) {
       case 0:
+        isTafsir.value = true;
         selectedTableName.value = MufaserName.ibnkatheer.name;
         dbFileName = 'ibnkatheerV2.sqlite';
+        box.write(_StorageConstants().isTafsir, true);
         break;
       case 1:
+        isTafsir.value = true;
         selectedTableName.value = MufaserName.baghawy.name;
         dbFileName = 'baghawyV2.db';
+        box.write(_StorageConstants().isTafsir, true);
         break;
       case 2:
+        isTafsir.value = true;
         selectedTableName.value = MufaserName.qurtubi.name;
         dbFileName = 'qurtubiV2.db';
+        box.write(_StorageConstants().isTafsir, true);
         break;
       case 3:
+        isTafsir.value = true;
         selectedTableName.value = MufaserName.saadi.name;
         dbFileName = 'saadiV3.db';
+        box.write(_StorageConstants().isTafsir, true);
         break;
       case 4:
+        isTafsir.value = true;
         selectedTableName.value = MufaserName.tabari.name;
         dbFileName = 'tabariV2.db';
+        box.write(_StorageConstants().isTafsir, true);
         break;
       case 5:
         isTafsir.value = false;
         trans.value = 'en';
         box.write(_StorageConstants().translationLangCode, 'en');
+        box.write(_StorageConstants().isTafsir, false);
         break;
       case 6:
         isTafsir.value = false;
         trans.value = 'es';
         box.write(_StorageConstants().translationLangCode, 'es');
+        box.write(_StorageConstants().isTafsir, false);
         break;
       case 7:
         isTafsir.value = false;
         trans.value = 'be';
         box.write(_StorageConstants().translationLangCode, 'be');
+        box.write(_StorageConstants().isTafsir, false);
         break;
       case 8:
         isTafsir.value = false;
         trans.value = 'urdu';
         box.write(_StorageConstants().translationLangCode, 'urdu');
+        box.write(_StorageConstants().isTafsir, false);
         break;
       case 9:
         isTafsir.value = false;
         trans.value = 'so';
         box.write(_StorageConstants().translationLangCode, 'so');
+        box.write(_StorageConstants().isTafsir, false);
         break;
       case 10:
         isTafsir.value = false;
         trans.value = 'in';
         box.write(_StorageConstants().translationLangCode, 'in');
+        box.write(_StorageConstants().isTafsir, false);
         break;
       case 11:
         isTafsir.value = false;
         trans.value = 'ku';
         box.write(_StorageConstants().translationLangCode, 'ku');
+        box.write(_StorageConstants().isTafsir, false);
         break;
       case 12:
         isTafsir.value = false;
         trans.value = 'tr';
         box.write(_StorageConstants().translationLangCode, 'tr');
-        break;
-      case 13:
-        isTafsir.value = true;
-        box.write(_StorageConstants().isTafsir, true);
+        box.write(_StorageConstants().isTafsir, false);
         break;
       default:
         selectedTableName.value = MufaserName.saadi.name;
@@ -209,6 +224,8 @@ class TafsirCtrl extends GetxController {
       await fetchData(QuranCtrl.instance.state.currentPageNumber.value);
       log('Database initialized for: $dbFileName');
     } else {
+      transValue.value == val;
+      box.write(_StorageConstants().translationValue, val);
       fetchTranslate();
     }
     update(['change_tafsir']);

@@ -48,7 +48,7 @@ class QuranLibraryScreen extends StatelessWidget {
     this.useDefaultAppBar = true,
     this.withPageView = true,
     this.isFontsLocal = false,
-    this.fontsName,
+    this.fontsName = 'p',
   });
 
   /// إذا قمت بإضافة شريط التطبيقات هنا فإنه سيحل محل شريط التطبيقات الافتراضية [appBar]

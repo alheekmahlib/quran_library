@@ -22,7 +22,7 @@ class _QuranTextScale extends StatelessWidget {
     this.languageCode,
     this.circularProgressWidget,
     required this.isDark,
-    required this.hasBookmark,
+    required this.ayahBookmarked,
   });
 
   final quranCtrl = QuranCtrl.instance;
@@ -33,7 +33,7 @@ class _QuranTextScale extends StatelessWidget {
   final SurahInfoStyle? surahInfoStyle;
   final SurahNameStyle? surahNameStyle;
   final BannerStyle? bannerStyle;
-  final bool hasBookmark;
+  final List<int> ayahBookmarked;
   final Function(SurahNamesModel surah)? onSurahBannerPress;
   final Function(LongPressStartDetails details, AyahFontsModel ayah)?
       onFontsAyahLongPress;
@@ -210,7 +210,8 @@ class _QuranTextScale extends StatelessWidget {
                                           .getCurrentSurahByPage(pageIndex)
                                           .surahNumber,
                                       ayahUQNum: ayahs[ayahIndex].ayahUQNumber,
-                                      hasBookmark: hasBookmark,
+                                      hasBookmark: ayahBookmarked.contains(
+                                          ayahs[ayahIndex].ayahUQNumber),
                                       onLongPressStart: (details) {
                                         if (onFontsAyahLongPress != null) {
                                           onFontsAyahLongPress!(

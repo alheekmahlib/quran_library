@@ -22,7 +22,7 @@ class _QuranLinePage extends StatelessWidget {
   final String? sajdaName;
   final Widget? topTitleChild;
   final bool isDark;
-  final bool hasBookmark;
+  final List<int> ayahBookmarked;
 
   _QuranLinePage({
     required this.pageIndex,
@@ -45,7 +45,7 @@ class _QuranLinePage extends StatelessWidget {
     this.sajdaName,
     this.topTitleChild,
     required this.isDark,
-    required this.hasBookmark,
+    required this.ayahBookmarked,
   });
 
   final quranCtrl = QuranCtrl.instance;
@@ -156,7 +156,7 @@ class _QuranLinePage extends StatelessWidget {
                             ayahSelectedBackgroundColor:
                                 ayahSelectedBackgroundColor,
                             onPagePress: onPagePress,
-                            hasBookmark: hasBookmark,
+                            ayahBookmarked: ayahBookmarked,
                           ),
                         ),
                       ],
@@ -288,7 +288,7 @@ class _QuranLinePage extends StatelessWidget {
                                 ayahSelectedBackgroundColor:
                                     ayahSelectedBackgroundColor,
                                 onPagePress: onPagePress,
-                                hasBookmark: hasBookmark,
+                                ayahBookmarked: ayahBookmarked,
                               ),
                             ),
                           ],

@@ -14,7 +14,7 @@ class QuranLine extends StatelessWidget {
     this.bookmarkList,
     this.onPagePress,
     required this.pageIndex,
-    required this.hasBookmark,
+    required this.ayahBookmarked,
   });
 
   final quranCtrl = QuranCtrl.instance;
@@ -31,7 +31,7 @@ class QuranLine extends StatelessWidget {
   final Color? ayahSelectedBackgroundColor;
   final List? bookmarkList;
   final int pageIndex;
-  final bool hasBookmark;
+  final List<int> ayahBookmarked;
 
   @override
   Widget build(BuildContext context) {
@@ -55,9 +55,9 @@ class QuranLine extends StatelessWidget {
                   quranCtrl.selectedAyahIndexes.contains(ayah.ayahUQNumber);
               final allBookmarks =
                   bookmarks.values.expand((list) => list).toList();
-              hasBookmark == false
+              ayahBookmarked == false
                   ? (bookmarksAyahs.contains(ayah.ayahUQNumber) ? true : false)
-                  : hasBookmark;
+                  : ayahBookmarked;
               // final String lastCharacter =
               //     ayah.ayah.substring(ayah.ayah.length - 1);
               return WidgetSpan(
@@ -108,7 +108,7 @@ class QuranLine extends StatelessWidget {
                   child: Container(
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(4.0),
-                      color: hasBookmark
+                      color: ayahBookmarked.contains(ayah.ayahUQNumber)
                           ? bookmarksColor
                           : (bookmarksAyahs.contains(ayah.ayahUQNumber)
                               ? Color(allBookmarks

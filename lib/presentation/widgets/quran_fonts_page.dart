@@ -24,7 +24,7 @@ class _QuranFontsPage extends StatelessWidget {
   final Widget? circularProgressWidget;
   final bool? isFontsLocal;
   final String? fontsName;
-  final bool hasBookmark;
+  final List<int> ayahBookmarked;
 
   const _QuranFontsPage({
     required this.pageIndex,
@@ -48,7 +48,7 @@ class _QuranFontsPage extends StatelessWidget {
     this.circularProgressWidget,
     this.isFontsLocal,
     this.fontsName,
-    required this.hasBookmark,
+    required this.ayahBookmarked,
   });
 
   @override
@@ -186,7 +186,7 @@ class _QuranFontsPage extends StatelessWidget {
                                   ayahs,
                                   isFontsLocal!,
                                   fontsName!,
-                                  hasBookmark)),
+                                  ayahBookmarked)),
                             ),
                             quranCtrl._downThePageIndex.contains(pageIndex)
                                 ? SurahHeaderWidget(
@@ -265,7 +265,7 @@ class _QuranFontsPage extends StatelessWidget {
       List<AyahFontsModel> ayahs,
       bool isFontsLocal,
       String fontsName,
-      bool hasBookmark) {
+      List<int> ayahBookmarked) {
     return RichText(
       textDirection: TextDirection.rtl,
       textAlign: TextAlign.center,
@@ -306,7 +306,7 @@ class _QuranFontsPage extends StatelessWidget {
             surahNum: quranCtrl.getCurrentSurahByPage(pageIndex).surahNumber,
             ayahUQNum: ayahs[ayahIndex].ayahUQNumber,
             ayahNum: ayahs[ayahIndex].ayahNumber,
-            hasBookmark: hasBookmark,
+            ayahBookmarked: ayahBookmarked,
             onLongPressStart: (details) {
               if (onFontsAyahLongPress != null) {
                 onFontsAyahLongPress!(details, ayahs[ayahIndex]);

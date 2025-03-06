@@ -20,7 +20,7 @@ TextSpan _span({
   Color? ayahSelectedBackgroundColor,
   required bool isFontsLocal,
   required String fontsName,
-  required bool hasBookmark,
+  required List<int> ayahBookmarked,
 }) {
   // if (bookmarkList!.isEmpty) {
   //   bookmarkList = bookmarks as List<BookmarkModel>;
@@ -40,9 +40,9 @@ TextSpan _span({
     final String lastCharacter = text.substring(text.length - 1);
     final allBookmarks = bookmarks.values.expand((list) => list).toList();
     final quranCtrl = QuranCtrl.instance;
-    hasBookmark == false
+    ayahBookmarked == false
         ? (bookmarksAyahs.contains(ayahUQNum) ? true : false)
-        : hasBookmark;
+        : ayahBookmarked;
     TextSpan? first;
     TextSpan? second;
     if (isFirstAyah) {
@@ -57,7 +57,7 @@ TextSpan _span({
           color: quranCtrl.state.fontsSelected2.value == 1
               ? textColor ?? Colors.transparent
               : null,
-          backgroundColor: hasBookmark
+          backgroundColor: ayahBookmarked.contains(ayahUQNum)
               ? bookmarksColor
               : (bookmarksAyahs.contains(ayahUQNum)
                   ? bookmarksColor ??
@@ -87,7 +87,7 @@ TextSpan _span({
           color: quranCtrl.state.fontsSelected2.value == 1
               ? textColor ?? Colors.transparent
               : null,
-          backgroundColor: hasBookmark
+          backgroundColor: ayahBookmarked.contains(ayahUQNum)
               ? bookmarksColor
               : (bookmarksAyahs.contains(ayahUQNum)
                   ? bookmarksColor ??
@@ -118,7 +118,7 @@ TextSpan _span({
         color: quranCtrl.state.fontsSelected2.value == 1
             ? textColor ?? Colors.transparent
             : null,
-        backgroundColor: hasBookmark
+        backgroundColor: ayahBookmarked.contains(ayahUQNum)
             ? bookmarksColor
             : (bookmarksAyahs.contains(ayahUQNum)
                 ? bookmarksColor ??
@@ -138,7 +138,7 @@ TextSpan _span({
         ..onLongPressStart = onLongPressStart,
     );
 
-    var lastCharacterSpan = (hasBookmark ||
+    var lastCharacterSpan = (ayahBookmarked.contains(ayahUQNum) ||
                 bookmarksAyahs.contains(ayahUQNum)) &&
             showAyahBookmarkedIcon
         ? WidgetSpan(
@@ -167,7 +167,7 @@ TextSpan _span({
                   ? 20
                   : null,
               color: ayahIconColor,
-              backgroundColor: hasBookmark
+              backgroundColor: ayahBookmarked.contains(ayahUQNum)
                   ? bookmarksColor
                   : (bookmarksAyahs.contains(ayahUQNum)
                       ? bookmarksColor ??

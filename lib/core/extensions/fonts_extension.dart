@@ -69,6 +69,7 @@ extension FontsExtension on QuranCtrl {
   /// [fontIndex] - The index of the font set to be downloaded.
   ///
   /// Returns a [Future] that completes when the download is finished.
+
   Future<void> downloadAllFontsZipFile(int fontIndex) async {
     // if (GetStorage().read(StorageConstants().isDownloadedCodeV2Fonts) ??
     //     false || state.isDownloadingFonts.value) {

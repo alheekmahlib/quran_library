@@ -48,7 +48,8 @@ class QuranLibraryScreen extends StatelessWidget {
     this.useDefaultAppBar = true,
     this.withPageView = true,
     this.isFontsLocal = false,
-    this.fontsName,
+    this.fontsName = '',
+    this.hasBookmark = false,
   });
 
   /// إذا قمت بإضافة شريط التطبيقات هنا فإنه سيحل محل شريط التطبيقات الافتراضية [appBar]
@@ -214,6 +215,7 @@ class QuranLibraryScreen extends StatelessWidget {
   final bool? isFontsLocal;
 
   final String? fontsName;
+  final bool? hasBookmark;
 
   @override
   Widget build(BuildContext context) {
@@ -372,6 +374,7 @@ class QuranLibraryScreen extends StatelessWidget {
                           circularProgressWidget: circularProgressWidget,
                           isFontsLocal: isFontsLocal,
                           fontsName: fontsName,
+                          hasBookmark: hasBookmark!,
                         ),
                       ))
               : quranCtrl.staticPages.isEmpty || quranCtrl.isLoading.value
@@ -399,6 +402,7 @@ class QuranLibraryScreen extends StatelessWidget {
                       sajdaName: sajdaName,
                       topTitleChild: topTitleChild,
                       isDark: isDark,
+                      hasBookmark: hasBookmark!,
                     )),
           quranCtrl.staticPages.isEmpty || quranCtrl.isLoading.value
               ? Center(
@@ -432,6 +436,7 @@ class QuranLibraryScreen extends StatelessWidget {
                     languageCode: languageCode,
                     isDark: isDark,
                     circularProgressWidget: circularProgressWidget,
+                    hasBookmark: hasBookmark!,
                   ),
                 ),
         ),

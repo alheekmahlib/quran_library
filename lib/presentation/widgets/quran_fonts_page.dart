@@ -78,7 +78,8 @@ class _QuranFontsPage extends StatelessWidget {
           child: quranCtrl.state.pages.isEmpty
               ? circularProgressWidget ??
                   const CircularProgressIndicator.adaptive()
-              : SingleChildScrollView(
+              : FittedBox(
+                  fit: BoxFit.fitWidth,
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: List.generate(

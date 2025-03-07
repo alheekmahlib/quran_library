@@ -24,7 +24,10 @@ class QuranCtrl extends GetxController {
   final isLoading = true.obs;
   RxList<SurahNamesModel> surahsList = <SurahNamesModel>[].obs;
 
-  PageController _pageController = PageController();
+  PageController _pageController = PageController(
+      // viewportFraction: Get.context!.currentOrientation(1 / 2, 1.0),
+      // keepPage: false,
+      );
 
   QuranState state = QuranState();
 

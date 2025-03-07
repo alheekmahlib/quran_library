@@ -96,7 +96,7 @@ class AllQuranWidget extends StatelessWidget {
         Align(
             alignment: Alignment.center,
             child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 32.0),
+              padding: const EdgeInsets.symmetric(vertical: 40.0),
               child: child,
             )),
         Align(

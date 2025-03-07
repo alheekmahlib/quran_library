@@ -242,28 +242,27 @@ class QuranCtrl extends GetxController {
     if (searchText.isEmpty) {
       return [];
     } else {
-      // تطبيع النص المدخل
+      // تحويل الأرقام العربية إلى إنجليزية في النص المدخل
+      final convertedSearchText =
+          searchText.convertArabicNumbersToEnglish(searchText);
       final normalizedSearchText =
-          normalizeText(searchText.toLowerCase().trim());
+          normalizeText(convertedSearchText.toLowerCase().trim());
 
       final filteredAyahs = ayahs.where((aya) {
-        // تطبيع اسم السورة بالعربية والإنجليزية
         final normalizedSurahNameAr =
             normalizeText(aya.arabicName.toLowerCase());
         final normalizedSurahNameEn =
             normalizeText(aya.englishName.toLowerCase());
 
-        // التحقق من تطابق اسم السورة بالعربية أو الإنجليزية
+        // استخدام contains بدلاً من == للسماح بمطابقة جزئية
         final matchesSurahName =
-            normalizedSurahNameAr == normalizedSearchText ||
-                normalizedSurahNameEn == normalizedSearchText;
+            normalizedSurahNameAr.contains(normalizedSearchText) ||
+                normalizedSurahNameEn.contains(normalizedSearchText);
 
-        // التحقق من تطابق رقم السورة
-        final matchesSurahNumber = aya.surahNumber.toString() ==
-            normalizedSearchText
-                .convertArabicNumbersToEnglish(normalizedSearchText);
+        // تحويل رقم السورة إلى نص مع تحويل الأرقام العربية
+        final surahNumberText = aya.surahNumber.toString();
+        final matchesSurahNumber = surahNumberText == normalizedSearchText;
 
-        // إذا تحقق أي شرط من الشرطين أعلاه
         return matchesSurahName || matchesSurahNumber;
       }).toList();
 

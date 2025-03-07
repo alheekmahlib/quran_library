@@ -281,6 +281,15 @@ class QuranLibrary {
   /// To find out which font has been selected, just call [currentFontsSelected]
   int get currentFontsSelected => quranCtrl.state.fontsSelected2.value;
 
+  /// لتحديد نوع الخط الذي تريد إستخدامه، ما عليك سوى إعطاء قيمة [setFontsSelected]
+  ///
+  /// To set the font type you want to use, just give a value to [setFontsSelected]
+  ///
+  set setFontsSelected(int index) {
+    quranCtrl.state.fontsSelected2.value = index;
+    GetStorage().write(_StorageConstants().fontsSelected, index);
+  }
+
   /// يقوم بتعيين علامة مرجعية باستخدام [ayahId] و[page] و[bookmarkId] المحددة.
   ///
   /// [ayahId] هو معرّف الآية التي سيتم حفظها.

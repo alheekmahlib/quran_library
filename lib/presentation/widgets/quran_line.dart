@@ -35,15 +35,6 @@ class QuranLine extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // RxBool hasBookmark(int surahNum, int ayahUQNum) {
-    //   return (bookmarkList!.firstWhereOrNull(((element) =>
-    //               element.surahNumber == surahNum &&
-    //               element.ayahUQNumber == ayahUQNum)) !=
-    //           null)
-    //       ? true.obs
-    //       : false.obs;
-    // }
-
     return GetX<QuranCtrl>(
       builder: (quranCtrl) {
         return FittedBox(
@@ -129,7 +120,7 @@ class QuranLine extends StatelessWidget {
                         color: textColor ?? Colors.black,
                         fontSize: 23.55,
                         fontFamily: "hafs",
-                        height: 1.7,
+                        height: 1.3,
                         package: "quran_library",
                       ),
                     ),

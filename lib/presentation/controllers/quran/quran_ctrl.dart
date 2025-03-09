@@ -23,6 +23,7 @@ class QuranCtrl extends GetxController {
   RxDouble baseScaleFactor = 1.0.obs;
   final isLoading = true.obs;
   RxList<SurahNamesModel> surahsList = <SurahNamesModel>[].obs;
+  // late QuranSearch quranSearch;
 
   PageController _pageController = PageController(
       // viewportFraction: Get.context!.currentOrientation(1 / 2, 1.0),
@@ -30,6 +31,12 @@ class QuranCtrl extends GetxController {
       );
 
   QuranState state = QuranState();
+
+  // @override
+  // void onInit() {
+  //   _initSearch();
+  //   super.onInit();
+  // }
 
   @override
   void onClose() {
@@ -50,6 +57,11 @@ class QuranCtrl extends GetxController {
   }
 
   /// -------- [Methods] ----------
+
+  // Future<void> _initSearch() async {
+  //   quranSearch = QuranSearch(ayahs); // تأكد من أن `ayahs` محملة مسبقًا
+  //   await quranSearch.loadModel(); // تحميل نموذج BERT
+  // }
 
   Future<void> loadFontsQuran() async {
     lastPage = _quranRepository.getLastPage() ?? 1;

@@ -51,7 +51,7 @@ TextSpan _span({
         style: TextStyle(
           fontFamily: isFontsLocal ? fontsName : 'p${(pageIndex + 2001)}',
           fontSize: fontSize,
-          height: 2,
+          height: 2.1,
           letterSpacing:
               pageIndex == 54 || pageIndex == 75 || pageIndex == 539 ? 0 : 30,
           color: quranCtrl.state.fontsSelected2.value == 1
@@ -81,7 +81,7 @@ TextSpan _span({
         style: TextStyle(
           fontFamily: isFontsLocal ? fontsName : 'p${(pageIndex + 2001)}',
           fontSize: fontSize,
-          height: 2,
+          height: 2.1,
           letterSpacing: 0,
           // wordSpacing: wordSpacing + 10,
           color: quranCtrl.state.fontsSelected2.value == 1
@@ -113,7 +113,7 @@ TextSpan _span({
       style: TextStyle(
         fontFamily: isFontsLocal ? fontsName : 'p${(pageIndex + 2001)}',
         fontSize: fontSize,
-        height: 2,
+        height: 2.1,
         letterSpacing: 0,
         color: quranCtrl.state.fontsSelected2.value == 1
             ? textColor ?? Colors.transparent
@@ -156,7 +156,7 @@ TextSpan _span({
             style: TextStyle(
               fontFamily: isFontsLocal ? fontsName : 'p${(pageIndex + 2001)}',
               fontSize: fontSize,
-              height: 2,
+              height: 2.1,
               letterSpacing: isFirstAyah &&
                       (pageIndex == 1 ||
                           pageIndex == 49 ||
@@ -232,7 +232,7 @@ TextSpan _customSpan({
           style: TextStyle(
             fontFamily: 'hafs',
             fontSize: fontSize,
-            height: 2,
+            height: 2.1,
             color: textColor ?? Colors.black,
             backgroundColor: hasBookmark
                 ? bookmarksColor
@@ -272,7 +272,7 @@ TextSpan _customSpan({
                 style: TextStyle(
                   fontFamily: 'hafs',
                   fontSize: fontSize,
-                  height: 2,
+                  height: 2.1,
                   color: ayahIconColor,
                   backgroundColor: hasBookmark
                       ? bookmarksColor

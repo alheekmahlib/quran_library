@@ -55,7 +55,7 @@ class _QuranLinePage extends StatelessWidget {
     return Container(
       height: MediaQuery.sizeOf(context).height,
       padding: EdgeInsets.symmetric(
-          horizontal: context.currentOrientation(32.0, 64.0), vertical: 16.0),
+          horizontal: context.currentOrientation(16.0, 64.0), vertical: 16.0),
       child: pageIndex == 0 || pageIndex == 1
 
           /// This is for first 2 pages of Quran: Al-Fatihah and Al-Baqarah
@@ -256,7 +256,7 @@ class _QuranLinePage extends StatelessWidget {
                                     ),
                               ),
                             SizedBox(
-                              width: deviceSize.width - 70,
+                              width: deviceSize.width - 20,
                               height: (context.currentOrientation(
                                           constraints.maxHeight,
                                           MediaQuery.sizeOf(context).width) -

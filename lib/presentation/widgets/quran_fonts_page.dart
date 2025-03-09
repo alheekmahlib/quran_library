@@ -74,7 +74,7 @@ class _QuranFontsPage extends StatelessWidget {
                   vertical: context.currentOrientation(
                       MediaQuery.sizeOf(context).width * .16,
                       MediaQuery.sizeOf(context).height * .01))
-              : const EdgeInsets.symmetric(horizontal: 8.0),
+              : EdgeInsets.zero,
           child: quranCtrl.state.pages.isEmpty
               ? circularProgressWidget ??
                   const CircularProgressIndicator.adaptive()
@@ -333,8 +333,11 @@ class _QuranFontsPage extends StatelessWidget {
                   final overlay = Overlay.of(context);
                   final newOverlayEntry = OverlayEntry(
                     builder: (context) => AyahLongClickDialog(
+                      context: context,
                       ayahFonts: ayahs[ayahIndex],
                       position: details.globalPosition,
+                      index: ayahIndex,
+                      pageIndex: pageIndex,
                     ),
                   );
 

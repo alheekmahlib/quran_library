@@ -25,6 +25,7 @@ class QuranLibrary {
       bool overwriteBookmarks = false}) async {
     // Get.put(QuranController());
     await GetStorage.init();
+    drift.driftRuntimeOptions.dontWarnAboutMultipleDatabases = true;
     QuranCtrl.instance.state.isDownloadedV2Fonts.value =
         GetStorage().read(_StorageConstants().isDownloadedCodeV2Fonts) ?? false;
     QuranRepository().getLastPage();
@@ -43,6 +44,8 @@ class QuranLibrary {
             .read<List<dynamic>>(_StorageConstants().fontsDownloadedList)
             ?.cast<int>() ??
         []);
+    TafsirCtrl.instance.isTafsir.value =
+        GetStorage().read(_StorageConstants().isTafsir) ?? true;
   }
 
   /// A singleton instance of the `QuranCtrl` class.
@@ -159,7 +162,7 @@ class QuranLibrary {
   ///
   /// [getAllSurahsArtPath] returns list of all Quran surahs' name artistic manuscript path
   List<String> getAllSurahsArtPath() => List.generate(quranCtrl.surahs.length,
-      (i) => 'packages/quran_library/lib/assets/svg/surah_name/00$i.svg');
+      (i) => 'packages/quran_library/assets/svg/surah_name/00$i.svg');
 
   /// يعيد قائمة بجميع شارات المرجعية المحفوظة [allBookmarks].
   ///

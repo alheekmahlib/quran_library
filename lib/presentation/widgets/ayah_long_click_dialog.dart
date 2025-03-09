@@ -14,6 +14,9 @@ class AyahLongClickDialog extends StatelessWidget {
     this.ayah,
     this.ayahFonts,
     required this.position,
+    required this.context,
+    required this.index,
+    required this.pageIndex,
   });
 
   /// The AyahModel that is the target of the long click event.
@@ -30,6 +33,9 @@ class AyahLongClickDialog extends StatelessWidget {
   ///
   /// This is typically the position of the long click event.
   final Offset position;
+  final BuildContext context;
+  final int index;
+  final int pageIndex;
 
   @override
   Widget build(BuildContext context) {
@@ -118,6 +124,44 @@ class AyahLongClickDialog extends StatelessWidget {
                 },
                 child: const Icon(
                   Icons.copy_rounded,
+                  color: Colors.grey,
+                ),
+              ),
+              context.verticalDivider(
+                  height: 30, color: const Color(0xffe8decb)),
+              GestureDetector(
+                onTap: () {
+                  if (QuranCtrl.instance.state.fontsSelected2.value == 1 ||
+                      QuranCtrl.instance.state.fontsSelected2.value == 2 ||
+                      QuranCtrl.instance.state.scaleFactor.value > 1.3) {
+                    TafsirCtrl.instance.showTafsirOnTap2(
+                      context: context,
+                      surahNum: QuranCtrl.instance
+                          .getSurahDataByAyah(ayahFonts!)
+                          .surahNumber,
+                      ayahNum: ayahFonts!.ayahNumber,
+                      ayahText: ayahFonts!.text,
+                      pageIndex: pageIndex,
+                      ayahTextN: ayahFonts!.ayaTextEmlaey,
+                      ayahUQNum: ayahFonts!.ayahUQNumber,
+                      index: ayahFonts!.ayahNumber,
+                    );
+                  } else {
+                    TafsirCtrl.instance.showTafsirOnTap2(
+                        context: context,
+                        surahNum: ayah!.surahNumber,
+                        ayahNum: ayah!.ayahNumber,
+                        ayahText: ayah!.text,
+                        pageIndex: pageIndex,
+                        ayahTextN: ayah!.ayaTextEmlaey,
+                        ayahUQNum: ayah!.ayahUQNumber,
+                        index: ayah!.ayahNumber);
+                  }
+                  QuranCtrl.instance.state.overlayEntry?.remove();
+                  QuranCtrl.instance.state.overlayEntry = null;
+                },
+                child: const Icon(
+                  Icons.insert_page_break_outlined,
                   color: Colors.grey,
                 ),
               ),

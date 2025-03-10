@@ -77,7 +77,7 @@ flutter:
     - assets/svg/surah_name/
     - assets/saadiV3.db
     - assets/en.json
-    - assets/arabic_bert.tflite
+
 
   fonts:
     - family: kufi

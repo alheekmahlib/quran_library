@@ -4,7 +4,10 @@ class _DefaultDrawer extends StatelessWidget {
   final String languageCode;
   final bool isDark;
 
-  const _DefaultDrawer(this.languageCode, this.isDark);
+  final VoidCallback onThemeToggle; // New callback parameter
+
+  const _DefaultDrawer(this.languageCode, this.isDark,
+      {required this.onThemeToggle});
 
   @override
   Widget build(BuildContext context) {
@@ -38,6 +41,20 @@ class _DefaultDrawer extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 32),
+          // Theme Toggle Button as a ListTile
+          ListTile(
+            leading: Icon(
+              isDark ? Icons.light_mode : Icons.dark_mode,
+              color: isDark ? Colors.white : Colors.black,
+            ),
+            title: Text(
+              isDark ? 'الوضع الفاتح' : 'الوضع الداكن',
+              style: QuranLibrary().naskhStyle.copyWith(
+                    color: isDark ? Colors.white : Colors.black,
+                  ),
+            ),
+            onTap: onThemeToggle, // Call the callback to toggle theme
+          ),
           ExpansionTile(
             title: Text('الفهرس', style: QuranLibrary().naskhStyle),
             expandedCrossAxisAlignment: CrossAxisAlignment.start,

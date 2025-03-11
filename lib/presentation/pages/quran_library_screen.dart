@@ -17,6 +17,9 @@ class QuranLibraryScreen extends StatelessWidget {
   ///
   /// This constructor is used to create a new instance of the
   /// [QuranLibraryScreen] widget.
+
+  final VoidCallback? onThemeToggle; // Add this new parameter
+
   const QuranLibraryScreen({
     super.key,
     this.appBar,
@@ -49,6 +52,7 @@ class QuranLibraryScreen extends StatelessWidget {
     this.topTitleChild,
     this.useDefaultAppBar = true,
     this.withPageView = true,
+    this.onThemeToggle, // Include in constructor
   });
 
   /// إذا قمت بإضافة شريط التطبيقات هنا فإنه سيحل محل شريط التطبيقات الافتراضية [appBar]
@@ -271,14 +275,19 @@ class QuranLibraryScreen extends StatelessWidget {
                     )
                   : null),
           drawer: appBar == null && useDefaultAppBar
-              ? _DefaultDrawer(languageCode ?? 'ar', isDark)
+              ? _DefaultDrawer(
+                  languageCode ?? 'ar',
+                  isDark,
+                  onThemeToggle: onThemeToggle ?? () {}, // Pass the callback
+                )
               : null,
           body: SafeArea(
             child: withPageView
                 ? PageView.builder(
                     itemCount: 604,
                     controller: quranCtrl.pageController,
-                    physics: const ClampingScrollPhysics(),
+                    physics:
+                        const BouncingScrollPhysics(), // Changed from ClampingScrollPhysics to BouncingScrollPhysics to enhance responsiveness to fast swipes
                     onPageChanged: (page) async {
                       if (onPageChanged != null) {
                         onPageChanged!(page);

@@ -20,20 +20,29 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  bool _isDark = false;
+
   @override
   void initState() {
     QuranLibrary().init();
     super.initState();
   }
 
+  void _toggleDarkMode() {
+    setState(() {
+      _isDark = !_isDark;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return QuranLibraryScreen(
-      isDark: false,
+      isDark: _isDark,
       showAyahBookmarkedIcon: true,
-      ayahIconColor: Color(0xffcdad80),
-      backgroundColor: Colors.white,
-      textColor: Colors.black,
+      onThemeToggle: _toggleDarkMode, // Pass the toggle method
+      // ayahIconColor: Color(0xffcdad80),
+      // backgroundColor: Colors.white,
+      // textColor: Colors.black,
     );
   }
 }

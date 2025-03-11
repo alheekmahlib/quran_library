@@ -51,10 +51,29 @@ class FontsDownloadDialog extends StatelessWidget {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
       elevation: 3,
       backgroundColor: downloadFontsDialogStyle?.backgroundColor,
-      child: quranCtrl.fontsDownloadWidget(context,
-          downloadFontsDialogStyle: downloadFontsDialogStyle!,
-          languageCode: languageCode,
-          isDark: isDark),
+      child: Stack(
+        children: [
+          quranCtrl.fontsDownloadWidget(context,
+              downloadFontsDialogStyle: downloadFontsDialogStyle!,
+              languageCode: languageCode,
+              isDark: isDark),
+          Positioned(
+            right: 8,
+            top: 8,
+            child: IconButton(
+              icon: Icon(Icons.close),
+              color: isDark
+                  ? Colors.grey[400]
+                  : Colors.grey[
+                      800], // Light grey for dark theme, dark grey for light theme
+              padding: EdgeInsets.all(4),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

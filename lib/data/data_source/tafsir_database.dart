@@ -1,18 +1,8 @@
-import 'dart:developer';
-import 'dart:io';
+part of '../../quran.dart';
 
-import 'package:drift/drift.dart';
-import 'package:drift/native.dart';
-import 'package:flutter/services.dart';
-import 'package:path/path.dart' as p;
-import 'package:path_provider/path_provider.dart';
-import 'package:quran_library/quran.dart';
+// part 'tafsir_database.g.dart';
 
-import '../models/tafsir/tafsir.dart';
-
-part 'tafsir_database.g.dart';
-
-@DriftDatabase(tables: [TafsirTable])
+@drift.DriftDatabase(tables: [TafsirTable])
 class TafsirDatabase extends _$TafsirDatabase {
   TafsirDatabase(String dbFileName) : super(_openConnection(dbFileName));
 
@@ -22,7 +12,7 @@ class TafsirDatabase extends _$TafsirDatabase {
   Future<List<TafsirTableData>> getTafsirByPage(int pageNum) async {
     final results = await customSelect(
       'SELECT * FROM ${TafsirCtrl.instance.selectedTableName.value} WHERE PageNum = ?',
-      variables: [Variable.withInt(pageNum)],
+      variables: [drift.Variable.withInt(pageNum)],
     ).get();
 
     return results.map((row) {
@@ -39,7 +29,7 @@ class TafsirDatabase extends _$TafsirDatabase {
   Future<List<TafsirTableData>> getTafsirByAyah(int ayahUQNumber) async {
     final results = await customSelect(
       'SELECT * FROM ${TafsirCtrl.instance.selectedTableName.value} WHERE "index" = ?',
-      variables: [Variable.withInt(ayahUQNumber)],
+      variables: [drift.Variable.withInt(ayahUQNumber)],
     ).get();
 
     return results.map((row) {
@@ -54,21 +44,21 @@ class TafsirDatabase extends _$TafsirDatabase {
   }
 }
 
-LazyDatabase _openConnection(String dbFileName) {
+drift.LazyDatabase _openConnection(String dbFileName) {
   log('Starting _openConnection for database: $dbFileName');
-  return LazyDatabase(() async {
+  return drift.LazyDatabase(() async {
     log('Inside LazyDatabase for: $dbFileName');
     final dbFolder = await getApplicationDocumentsDirectory();
     log('Application documents directory: ${dbFolder.path}');
 
-    final file = File(p.join(dbFolder.path, dbFileName));
+    final file = File(join(dbFolder.path, dbFileName));
 
     if (!await file.exists()) {
       log('Database file does not exist, copying from assets');
       try {
         ByteData data = TafsirCtrl.instance.radioValue.value == 3
             ? await rootBundle.load('packages/quran_library/assets/$dbFileName')
-            : await rootBundle.load(p.join(dbFolder.path, dbFileName));
+            : await rootBundle.load(join(dbFolder.path, dbFileName));
         List<int> bytes =
             data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
         await file.writeAsBytes(bytes, flush: true);

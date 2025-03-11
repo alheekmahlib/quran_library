@@ -10,6 +10,7 @@ import 'package:another_xlider/models/trackbar.dart';
 import 'package:archive/archive.dart';
 import 'package:dio/dio.dart';
 import 'package:drift/drift.dart' as drift;
+import 'package:drift/native.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -21,7 +22,6 @@ import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 
 import '/quran_library.dart';
-import 'data/data_source/tafsir_database.dart';
 import 'data/models/tafsir/tafsir.dart';
 import 'data/repositories/quran_search.dart';
 
@@ -55,6 +55,8 @@ part 'data/models/styles_models/surah_names_model.dart';
 part 'data/models/surah.dart';
 part 'data/models/tafsir/tafsir_list.dart';
 part 'data/models/tafsir/tafsir_style.dart';
+part 'data/data_source/tafsir_database.dart';
+part 'data/data_source/tafsir_database.g.dart';
 part 'data/repositories/quran_repository.dart';
 part 'flutter_quran_utils.dart';
 part 'presentation/controllers/bookmark/bookmarks_ctrl.dart';

@@ -1,49 +1,50 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'tafsir_database.dart';
+part of '../../quran.dart';
 
 // ignore_for_file: type=lint
 class $TafsirTableTable extends TafsirTable
-    with TableInfo<$TafsirTableTable, TafsirTableData> {
+    with drift.TableInfo<$TafsirTableTable, TafsirTableData> {
   @override
-  final GeneratedDatabase attachedDatabase;
+  final drift.GeneratedDatabase attachedDatabase;
   final String? _alias;
   $TafsirTableTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  static const drift.VerificationMeta _idMeta =
+      const drift.VerificationMeta('id');
   @override
-  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+  late final drift.GeneratedColumn<int> id = drift.GeneratedColumn<int>(
       'index', aliasedName, false,
       hasAutoIncrement: true,
-      type: DriftSqlType.int,
+      type: drift.DriftSqlType.int,
       requiredDuringInsert: false,
-      defaultConstraints:
-          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
-  static const VerificationMeta _surahNumMeta =
-      const VerificationMeta('surahNum');
+      defaultConstraints: drift.GeneratedColumn.constraintIsAlways(
+          'PRIMARY KEY AUTOINCREMENT'));
+  static const drift.VerificationMeta _surahNumMeta =
+      const drift.VerificationMeta('surahNum');
   @override
-  late final GeneratedColumn<int> surahNum = GeneratedColumn<int>(
+  late final drift.GeneratedColumn<int> surahNum = drift.GeneratedColumn<int>(
       'sura', aliasedName, false,
-      type: DriftSqlType.int, requiredDuringInsert: true);
-  static const VerificationMeta _ayahNumMeta =
-      const VerificationMeta('ayahNum');
+      type: drift.DriftSqlType.int, requiredDuringInsert: true);
+  static const drift.VerificationMeta _ayahNumMeta =
+      const drift.VerificationMeta('ayahNum');
   @override
-  late final GeneratedColumn<int> ayahNum = GeneratedColumn<int>(
+  late final drift.GeneratedColumn<int> ayahNum = drift.GeneratedColumn<int>(
       'aya', aliasedName, false,
-      type: DriftSqlType.int, requiredDuringInsert: true);
-  static const VerificationMeta _tafsirTextMeta =
-      const VerificationMeta('tafsirText');
+      type: drift.DriftSqlType.int, requiredDuringInsert: true);
+  static const drift.VerificationMeta _tafsirTextMeta =
+      const drift.VerificationMeta('tafsirText');
   @override
-  late final GeneratedColumn<String> tafsirText = GeneratedColumn<String>(
-      'Text', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
-  static const VerificationMeta _pageNumMeta =
-      const VerificationMeta('pageNum');
+  late final drift.GeneratedColumn<String> tafsirText =
+      drift.GeneratedColumn<String>('Text', aliasedName, false,
+          type: drift.DriftSqlType.string, requiredDuringInsert: true);
+  static const drift.VerificationMeta _pageNumMeta =
+      const drift.VerificationMeta('pageNum');
   @override
-  late final GeneratedColumn<int> pageNum = GeneratedColumn<int>(
+  late final drift.GeneratedColumn<int> pageNum = drift.GeneratedColumn<int>(
       'PageNum', aliasedName, false,
-      type: DriftSqlType.int, requiredDuringInsert: true);
+      type: drift.DriftSqlType.int, requiredDuringInsert: true);
   @override
-  List<GeneratedColumn> get $columns =>
+  List<drift.GeneratedColumn> get $columns =>
       [id, surahNum, ayahNum, tafsirText, pageNum];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -51,9 +52,10 @@ class $TafsirTableTable extends TafsirTable
   String get actualTableName => $name;
   static const String $name = 'tafsir_table';
   @override
-  VerificationContext validateIntegrity(Insertable<TafsirTableData> instance,
+  drift.VerificationContext validateIntegrity(
+      drift.Insertable<TafsirTableData> instance,
       {bool isInserting = false}) {
-    final context = VerificationContext();
+    final context = drift.VerificationContext();
     final data = instance.toColumns(true);
     if (data.containsKey('index')) {
       context.handle(
@@ -87,21 +89,21 @@ class $TafsirTableTable extends TafsirTable
   }
 
   @override
-  Set<GeneratedColumn> get $primaryKey => {id};
+  Set<drift.GeneratedColumn> get $primaryKey => {id};
   @override
   TafsirTableData map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return TafsirTableData(
       id: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}index'])!,
+          .read(drift.DriftSqlType.int, data['${effectivePrefix}index'])!,
       surahNum: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}sura'])!,
+          .read(drift.DriftSqlType.int, data['${effectivePrefix}sura'])!,
       ayahNum: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}aya'])!,
+          .read(drift.DriftSqlType.int, data['${effectivePrefix}aya'])!,
       tafsirText: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}Text'])!,
+          .read(drift.DriftSqlType.string, data['${effectivePrefix}Text'])!,
       pageNum: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}PageNum'])!,
+          .read(drift.DriftSqlType.int, data['${effectivePrefix}PageNum'])!,
     );
   }
 
@@ -111,7 +113,8 @@ class $TafsirTableTable extends TafsirTable
   }
 }
 
-class TafsirTableData extends DataClass implements Insertable<TafsirTableData> {
+class TafsirTableData extends drift.DataClass
+    implements drift.Insertable<TafsirTableData> {
   final int id;
   final int surahNum;
   final int ayahNum;
@@ -124,29 +127,29 @@ class TafsirTableData extends DataClass implements Insertable<TafsirTableData> {
       required this.tafsirText,
       required this.pageNum});
   @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    map['index'] = Variable<int>(id);
-    map['sura'] = Variable<int>(surahNum);
-    map['aya'] = Variable<int>(ayahNum);
-    map['Text'] = Variable<String>(tafsirText);
-    map['PageNum'] = Variable<int>(pageNum);
+  Map<String, drift.Expression> toColumns(bool nullToAbsent) {
+    final map = <String, drift.Expression>{};
+    map['index'] = drift.Variable<int>(id);
+    map['sura'] = drift.Variable<int>(surahNum);
+    map['aya'] = drift.Variable<int>(ayahNum);
+    map['Text'] = drift.Variable<String>(tafsirText);
+    map['PageNum'] = drift.Variable<int>(pageNum);
     return map;
   }
 
   TafsirTableCompanion toCompanion(bool nullToAbsent) {
     return TafsirTableCompanion(
-      id: Value(id),
-      surahNum: Value(surahNum),
-      ayahNum: Value(ayahNum),
-      tafsirText: Value(tafsirText),
-      pageNum: Value(pageNum),
+      id: drift.Value(id),
+      surahNum: drift.Value(surahNum),
+      ayahNum: drift.Value(ayahNum),
+      tafsirText: drift.Value(tafsirText),
+      pageNum: drift.Value(pageNum),
     );
   }
 
   factory TafsirTableData.fromJson(Map<String, dynamic> json,
-      {ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
+      {drift.ValueSerializer? serializer}) {
+    serializer ??= drift.driftRuntimeOptions.defaultSerializer;
     return TafsirTableData(
       id: serializer.fromJson<int>(json['id']),
       surahNum: serializer.fromJson<int>(json['surahNum']),
@@ -156,8 +159,8 @@ class TafsirTableData extends DataClass implements Insertable<TafsirTableData> {
     );
   }
   @override
-  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
+  Map<String, dynamic> toJson({drift.ValueSerializer? serializer}) {
+    serializer ??= drift.driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
       'surahNum': serializer.toJson<int>(surahNum),
@@ -216,37 +219,37 @@ class TafsirTableData extends DataClass implements Insertable<TafsirTableData> {
           other.pageNum == this.pageNum);
 }
 
-class TafsirTableCompanion extends UpdateCompanion<TafsirTableData> {
-  final Value<int> id;
-  final Value<int> surahNum;
-  final Value<int> ayahNum;
-  final Value<String> tafsirText;
-  final Value<int> pageNum;
+class TafsirTableCompanion extends drift.UpdateCompanion<TafsirTableData> {
+  final drift.Value<int> id;
+  final drift.Value<int> surahNum;
+  final drift.Value<int> ayahNum;
+  final drift.Value<String> tafsirText;
+  final drift.Value<int> pageNum;
   const TafsirTableCompanion({
-    this.id = const Value.absent(),
-    this.surahNum = const Value.absent(),
-    this.ayahNum = const Value.absent(),
-    this.tafsirText = const Value.absent(),
-    this.pageNum = const Value.absent(),
+    this.id = const drift.Value.absent(),
+    this.surahNum = const drift.Value.absent(),
+    this.ayahNum = const drift.Value.absent(),
+    this.tafsirText = const drift.Value.absent(),
+    this.pageNum = const drift.Value.absent(),
   });
   TafsirTableCompanion.insert({
-    this.id = const Value.absent(),
+    this.id = const drift.Value.absent(),
     required int surahNum,
     required int ayahNum,
     required String tafsirText,
     required int pageNum,
-  })  : surahNum = Value(surahNum),
-        ayahNum = Value(ayahNum),
-        tafsirText = Value(tafsirText),
-        pageNum = Value(pageNum);
-  static Insertable<TafsirTableData> custom({
-    Expression<int>? id,
-    Expression<int>? surahNum,
-    Expression<int>? ayahNum,
-    Expression<String>? tafsirText,
-    Expression<int>? pageNum,
+  })  : surahNum = drift.Value(surahNum),
+        ayahNum = drift.Value(ayahNum),
+        tafsirText = drift.Value(tafsirText),
+        pageNum = drift.Value(pageNum);
+  static drift.Insertable<TafsirTableData> custom({
+    drift.Expression<int>? id,
+    drift.Expression<int>? surahNum,
+    drift.Expression<int>? ayahNum,
+    drift.Expression<String>? tafsirText,
+    drift.Expression<int>? pageNum,
   }) {
-    return RawValuesInsertable({
+    return drift.RawValuesInsertable({
       if (id != null) 'index': id,
       if (surahNum != null) 'sura': surahNum,
       if (ayahNum != null) 'aya': ayahNum,
@@ -256,11 +259,11 @@ class TafsirTableCompanion extends UpdateCompanion<TafsirTableData> {
   }
 
   TafsirTableCompanion copyWith(
-      {Value<int>? id,
-      Value<int>? surahNum,
-      Value<int>? ayahNum,
-      Value<String>? tafsirText,
-      Value<int>? pageNum}) {
+      {drift.Value<int>? id,
+      drift.Value<int>? surahNum,
+      drift.Value<int>? ayahNum,
+      drift.Value<String>? tafsirText,
+      drift.Value<int>? pageNum}) {
     return TafsirTableCompanion(
       id: id ?? this.id,
       surahNum: surahNum ?? this.surahNum,
@@ -271,22 +274,22 @@ class TafsirTableCompanion extends UpdateCompanion<TafsirTableData> {
   }
 
   @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
+  Map<String, drift.Expression> toColumns(bool nullToAbsent) {
+    final map = <String, drift.Expression>{};
     if (id.present) {
-      map['index'] = Variable<int>(id.value);
+      map['index'] = drift.Variable<int>(id.value);
     }
     if (surahNum.present) {
-      map['sura'] = Variable<int>(surahNum.value);
+      map['sura'] = drift.Variable<int>(surahNum.value);
     }
     if (ayahNum.present) {
-      map['aya'] = Variable<int>(ayahNum.value);
+      map['aya'] = drift.Variable<int>(ayahNum.value);
     }
     if (tafsirText.present) {
-      map['Text'] = Variable<String>(tafsirText.value);
+      map['Text'] = drift.Variable<String>(tafsirText.value);
     }
     if (pageNum.present) {
-      map['PageNum'] = Variable<int>(pageNum.value);
+      map['PageNum'] = drift.Variable<int>(pageNum.value);
     }
     return map;
   }
@@ -304,20 +307,20 @@ class TafsirTableCompanion extends UpdateCompanion<TafsirTableData> {
   }
 }
 
-abstract class _$TafsirDatabase extends GeneratedDatabase {
-  _$TafsirDatabase(QueryExecutor e) : super(e);
+abstract class _$TafsirDatabase extends drift.GeneratedDatabase {
+  _$TafsirDatabase(drift.QueryExecutor e) : super(e);
   $TafsirDatabaseManager get managers => $TafsirDatabaseManager(this);
   late final $TafsirTableTable tafsirTable = $TafsirTableTable(this);
   @override
-  Iterable<TableInfo<Table, Object?>> get allTables =>
-      allSchemaEntities.whereType<TableInfo<Table, Object?>>();
+  Iterable<drift.TableInfo<drift.Table, Object?>> get allTables =>
+      allSchemaEntities.whereType<drift.TableInfo<drift.Table, Object?>>();
   @override
-  List<DatabaseSchemaEntity> get allSchemaEntities => [tafsirTable];
+  List<drift.DatabaseSchemaEntity> get allSchemaEntities => [tafsirTable];
 }
 
 typedef $$TafsirTableTableCreateCompanionBuilder = TafsirTableCompanion
     Function({
-  Value<int> id,
+  drift.Value<int> id,
   required int surahNum,
   required int ayahNum,
   required String tafsirText,
@@ -325,15 +328,15 @@ typedef $$TafsirTableTableCreateCompanionBuilder = TafsirTableCompanion
 });
 typedef $$TafsirTableTableUpdateCompanionBuilder = TafsirTableCompanion
     Function({
-  Value<int> id,
-  Value<int> surahNum,
-  Value<int> ayahNum,
-  Value<String> tafsirText,
-  Value<int> pageNum,
+  drift.Value<int> id,
+  drift.Value<int> surahNum,
+  drift.Value<int> ayahNum,
+  drift.Value<String> tafsirText,
+  drift.Value<int> pageNum,
 });
 
 class $$TafsirTableTableFilterComposer
-    extends Composer<_$TafsirDatabase, $TafsirTableTable> {
+    extends drift.Composer<_$TafsirDatabase, $TafsirTableTable> {
   $$TafsirTableTableFilterComposer({
     required super.$db,
     required super.$table,
@@ -341,24 +344,26 @@ class $$TafsirTableTableFilterComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  ColumnFilters<int> get id => $composableBuilder(
-      column: $table.id, builder: (column) => ColumnFilters(column));
+  drift.ColumnFilters<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => drift.ColumnFilters(column));
 
-  ColumnFilters<int> get surahNum => $composableBuilder(
-      column: $table.surahNum, builder: (column) => ColumnFilters(column));
+  drift.ColumnFilters<int> get surahNum => $composableBuilder(
+      column: $table.surahNum,
+      builder: (column) => drift.ColumnFilters(column));
 
-  ColumnFilters<int> get ayahNum => $composableBuilder(
-      column: $table.ayahNum, builder: (column) => ColumnFilters(column));
+  drift.ColumnFilters<int> get ayahNum => $composableBuilder(
+      column: $table.ayahNum, builder: (column) => drift.ColumnFilters(column));
 
-  ColumnFilters<String> get tafsirText => $composableBuilder(
-      column: $table.tafsirText, builder: (column) => ColumnFilters(column));
+  drift.ColumnFilters<String> get tafsirText => $composableBuilder(
+      column: $table.tafsirText,
+      builder: (column) => drift.ColumnFilters(column));
 
-  ColumnFilters<int> get pageNum => $composableBuilder(
-      column: $table.pageNum, builder: (column) => ColumnFilters(column));
+  drift.ColumnFilters<int> get pageNum => $composableBuilder(
+      column: $table.pageNum, builder: (column) => drift.ColumnFilters(column));
 }
 
 class $$TafsirTableTableOrderingComposer
-    extends Composer<_$TafsirDatabase, $TafsirTableTable> {
+    extends drift.Composer<_$TafsirDatabase, $TafsirTableTable> {
   $$TafsirTableTableOrderingComposer({
     required super.$db,
     required super.$table,
@@ -366,24 +371,28 @@ class $$TafsirTableTableOrderingComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  ColumnOrderings<int> get id => $composableBuilder(
-      column: $table.id, builder: (column) => ColumnOrderings(column));
+  drift.ColumnOrderings<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => drift.ColumnOrderings(column));
 
-  ColumnOrderings<int> get surahNum => $composableBuilder(
-      column: $table.surahNum, builder: (column) => ColumnOrderings(column));
+  drift.ColumnOrderings<int> get surahNum => $composableBuilder(
+      column: $table.surahNum,
+      builder: (column) => drift.ColumnOrderings(column));
 
-  ColumnOrderings<int> get ayahNum => $composableBuilder(
-      column: $table.ayahNum, builder: (column) => ColumnOrderings(column));
+  drift.ColumnOrderings<int> get ayahNum => $composableBuilder(
+      column: $table.ayahNum,
+      builder: (column) => drift.ColumnOrderings(column));
 
-  ColumnOrderings<String> get tafsirText => $composableBuilder(
-      column: $table.tafsirText, builder: (column) => ColumnOrderings(column));
+  drift.ColumnOrderings<String> get tafsirText => $composableBuilder(
+      column: $table.tafsirText,
+      builder: (column) => drift.ColumnOrderings(column));
 
-  ColumnOrderings<int> get pageNum => $composableBuilder(
-      column: $table.pageNum, builder: (column) => ColumnOrderings(column));
+  drift.ColumnOrderings<int> get pageNum => $composableBuilder(
+      column: $table.pageNum,
+      builder: (column) => drift.ColumnOrderings(column));
 }
 
 class $$TafsirTableTableAnnotationComposer
-    extends Composer<_$TafsirDatabase, $TafsirTableTable> {
+    extends drift.Composer<_$TafsirDatabase, $TafsirTableTable> {
   $$TafsirTableTableAnnotationComposer({
     required super.$db,
     required super.$table,
@@ -391,23 +400,23 @@ class $$TafsirTableTableAnnotationComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  GeneratedColumn<int> get id =>
+  drift.GeneratedColumn<int> get id =>
       $composableBuilder(column: $table.id, builder: (column) => column);
 
-  GeneratedColumn<int> get surahNum =>
+  drift.GeneratedColumn<int> get surahNum =>
       $composableBuilder(column: $table.surahNum, builder: (column) => column);
 
-  GeneratedColumn<int> get ayahNum =>
+  drift.GeneratedColumn<int> get ayahNum =>
       $composableBuilder(column: $table.ayahNum, builder: (column) => column);
 
-  GeneratedColumn<String> get tafsirText => $composableBuilder(
+  drift.GeneratedColumn<String> get tafsirText => $composableBuilder(
       column: $table.tafsirText, builder: (column) => column);
 
-  GeneratedColumn<int> get pageNum =>
+  drift.GeneratedColumn<int> get pageNum =>
       $composableBuilder(column: $table.pageNum, builder: (column) => column);
 }
 
-class $$TafsirTableTableTableManager extends RootTableManager<
+class $$TafsirTableTableTableManager extends drift.RootTableManager<
     _$TafsirDatabase,
     $TafsirTableTable,
     TafsirTableData,
@@ -418,12 +427,12 @@ class $$TafsirTableTableTableManager extends RootTableManager<
     $$TafsirTableTableUpdateCompanionBuilder,
     (
       TafsirTableData,
-      BaseReferences<_$TafsirDatabase, $TafsirTableTable, TafsirTableData>
+      drift.BaseReferences<_$TafsirDatabase, $TafsirTableTable, TafsirTableData>
     ),
     TafsirTableData,
-    PrefetchHooks Function()> {
+    drift.PrefetchHooks Function()> {
   $$TafsirTableTableTableManager(_$TafsirDatabase db, $TafsirTableTable table)
-      : super(TableManagerState(
+      : super(drift.TableManagerState(
           db: db,
           table: table,
           createFilteringComposer: () =>
@@ -433,11 +442,11 @@ class $$TafsirTableTableTableManager extends RootTableManager<
           createComputedFieldComposer: () =>
               $$TafsirTableTableAnnotationComposer($db: db, $table: table),
           updateCompanionCallback: ({
-            Value<int> id = const Value.absent(),
-            Value<int> surahNum = const Value.absent(),
-            Value<int> ayahNum = const Value.absent(),
-            Value<String> tafsirText = const Value.absent(),
-            Value<int> pageNum = const Value.absent(),
+            drift.Value<int> id = const drift.Value.absent(),
+            drift.Value<int> surahNum = const drift.Value.absent(),
+            drift.Value<int> ayahNum = const drift.Value.absent(),
+            drift.Value<String> tafsirText = const drift.Value.absent(),
+            drift.Value<int> pageNum = const drift.Value.absent(),
           }) =>
               TafsirTableCompanion(
             id: id,
@@ -447,7 +456,7 @@ class $$TafsirTableTableTableManager extends RootTableManager<
             pageNum: pageNum,
           ),
           createCompanionCallback: ({
-            Value<int> id = const Value.absent(),
+            drift.Value<int> id = const drift.Value.absent(),
             required int surahNum,
             required int ayahNum,
             required String tafsirText,
@@ -461,13 +470,14 @@ class $$TafsirTableTableTableManager extends RootTableManager<
             pageNum: pageNum,
           ),
           withReferenceMapper: (p0) => p0
-              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .map((e) =>
+                  (e.readTable(table), drift.BaseReferences(db, table, e)))
               .toList(),
           prefetchHooksCallback: null,
         ));
 }
 
-typedef $$TafsirTableTableProcessedTableManager = ProcessedTableManager<
+typedef $$TafsirTableTableProcessedTableManager = drift.ProcessedTableManager<
     _$TafsirDatabase,
     $TafsirTableTable,
     TafsirTableData,
@@ -478,10 +488,10 @@ typedef $$TafsirTableTableProcessedTableManager = ProcessedTableManager<
     $$TafsirTableTableUpdateCompanionBuilder,
     (
       TafsirTableData,
-      BaseReferences<_$TafsirDatabase, $TafsirTableTable, TafsirTableData>
+      drift.BaseReferences<_$TafsirDatabase, $TafsirTableTable, TafsirTableData>
     ),
     TafsirTableData,
-    PrefetchHooks Function()>;
+    drift.PrefetchHooks Function()>;
 
 class $TafsirDatabaseManager {
   final _$TafsirDatabase _db;

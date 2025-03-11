@@ -35,10 +35,12 @@ class TafsirCtrl extends GetxController {
     super.onInit();
     initializeTafsirDownloadStatus();
     await loadTafseer().then((_) async {
-      database.value?.close();
-      database =
-          Rx<TafsirDatabase?>(TafsirDatabase(tafsirDBName[radioValue.value]));
-      await initializeDatabase();
+      if (isTafsir.value) {
+        database.value?.close();
+        database =
+            Rx<TafsirDatabase?>(TafsirDatabase(tafsirDBName[radioValue.value]));
+        await initializeDatabase();
+      }
     });
   }
 
@@ -94,8 +96,7 @@ class TafsirCtrl extends GetxController {
     return tafsir;
   }
 
-  Future<List<TafsirTableData>> fetchTafsirAyah(
-      int ayahUQNumber, int surahNumber) async {
+  Future<List<TafsirTableData>> fetchTafsirAyah(int ayahUQNumber) async {
     if (database.value == null) {
       throw Exception('Database not initialized');
     }

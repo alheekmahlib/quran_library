@@ -386,6 +386,27 @@ class QuranLibrary {
   // List<TajweedRuleModel> getTajweedRules({required String languageCode}) =>
   //     quranCtrl.getTajweedRules(languageCode: languageCode);
 
+  /// للحصول على التفسير الخاص بالآية،
+  ///  فقط قم بتمرير رقم الآية لـ [fetchTafsirOfAyah].
+  ///
+  /// To obtain the interpretation of the verse,
+  /// simply pass the verse number to [fetchTafsirOfAyah].
+  ///
+  Future<List<TafsirTableData>> fetchTafsirOfAyah(int ayahUniqNumber) async {
+    // TafsirCtrl.instance.initializeDatabase();
+    // await TafsirCtrl.instance.fetchData(pageIndex + 1);
+    return await TafsirCtrl.instance.fetchTafsirAyah(ayahUniqNumber);
+  }
+
+  /// للحصول على التفسير الخاص بايآت الصفحة،
+  ///  فقط قم بتمرير رقم الصفحة لـ [fetchTafsirOfPage].
+  ///
+  /// To obtain the interpretation of the verses on the page,
+  /// simply pass the page number to [fetchTafsirOfPage].
+  ///
+  Future<List<TafsirTableData>> fetchTafsirOfPage(int pageNumber) async =>
+      await TafsirCtrl.instance.fetchTafsirPage(pageNumber);
+
   /// [hafsStyle] هو النمط الافتراضي للقرآن، مما يضمن عرض جميع الأحرف الخاصة بشكل صحيح.
   ///
   /// [hafsStyle] is the default style for Quran so all special characters will be rendered correctly

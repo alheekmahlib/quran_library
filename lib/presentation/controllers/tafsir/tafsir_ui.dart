@@ -3,50 +3,50 @@ part of '../../../quran.dart';
 extension TafsirUi on TafsirCtrl {
   /// -------- [onTap] --------
 
-  Future<void> showTafsirOnTap2({
-    required BuildContext context,
-    required int surahNum,
-    required int ayahNum,
-    required String ayahText,
-    required int pageIndex,
-    required String ayahTextN,
-    required int ayahUQNum,
-    required int index,
-  }) async {
-    tafseerAyah = ayahText;
-    surahNumber.value = surahNum;
-    ayahTextNormal.value = ayahTextN;
-    ayahUQNumber.value = ayahUQNum;
-    QuranCtrl.instance.state.currentPageNumber.value = pageIndex + 1;
-    if (isTafsir.value) {
-      initializeDatabase();
-      await fetchData(pageIndex + 1);
-    } else {
-      await fetchTranslate();
-    }
+  // Future<void> showTafsirOnTap2({
+  //   required BuildContext context,
+  //   required int surahNum,
+  //   required int ayahNum,
+  //   required String ayahText,
+  //   required int pageIndex,
+  //   required String ayahTextN,
+  //   required int ayahUQNum,
+  //   required int index,
+  // }) async {
+  //   tafseerAyah = ayahText;
+  //   surahNumber.value = surahNum;
+  //   ayahTextNormal.value = ayahTextN;
+  //   ayahUQNumber.value = ayahUQNum;
+  //   QuranCtrl.instance.state.currentPageNumber.value = pageIndex + 1;
+  //   if (isTafsir.value) {
+  //     initializeDatabase();
+  //     await fetchData(pageIndex + 1);
+  //   } else {
+  //     await fetchTranslate();
+  //   }
 
-    // if (context.mounted) {
-    showModalBottomSheet<void>(
-      context: Get.context!,
-      builder: (BuildContext context) => ShowTafseer(
-        ayahUQNumber: ayahUQNum,
-        index: index,
-        pageIndex: pageIndex,
-        tafsirStyle: TafsirStyle(
-          iconCloseWidget: IconButton(
-              icon: Icon(Icons.close, size: 30, color: Colors.black),
-              onPressed: () => Navigator.pop(context)),
-          tafsirNameWidget: Text(
-            'التفسير',
-            style: QuranLibrary().naskhStyle,
-          ),
-          fontSizeWidget: Icon(Icons.close, size: 30, color: Colors.black),
-        ),
-      ),
-      // ),
-    );
-    // }
-  }
+  //   // if (context.mounted) {
+  //   showModalBottomSheet<void>(
+  //     context: Get.context!,
+  //     builder: (BuildContext context) => ShowTafseer(
+  //       ayahUQNumber: ayahUQNum,
+  //       index: index,
+  //       pageIndex: pageIndex,
+  //       tafsirStyle: TafsirStyle(
+  //         iconCloseWidget: IconButton(
+  //             icon: Icon(Icons.close, size: 30, color: Colors.black),
+  //             onPressed: () => Navigator.pop(context)),
+  //         tafsirNameWidget: Text(
+  //           'التفسير',
+  //           style: QuranLibrary().naskhStyle,
+  //         ),
+  //         fontSizeWidget: Icon(Icons.close, size: 30, color: Colors.black),
+  //       ),
+  //     ),
+  //     // ),
+  //   );
+  //   // }
+  // }
 
   Future<void> copyOnTap(int ayahUQNumber) async {
     await Clipboard.setData(ClipboardData(

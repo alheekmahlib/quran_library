@@ -275,11 +275,18 @@ class QuranCtrl extends GetxController {
     _quranRepository.saveLastPage(lastPage);
   }
 
+// Optimized jumpToPage
   void jumpToPage(int page) {
     if (_pageController.hasClients) {
-      _pageController.jumpToPage(page);
+      _pageController
+          .jumpToPage(page); // Instant jump for better responsiveness
     } else {
-      _pageController = PageController(initialPage: page);
+      // Reinitialize only if necessary, with the same configuration
+      _pageController = PageController(
+        initialPage: page,
+        viewportFraction:
+            0.95, // Default is 1.0, can reduce slightly (e.g., 0.98) for smoother transitions
+      );
     }
   }
 

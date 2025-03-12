@@ -21,7 +21,7 @@ class TafsirCtrl extends GetxController {
   RxDouble fontSizeArabic = 20.0.obs;
   late var cancelToken = CancelToken();
   final Rx<Map<int, bool>> tafsirDownloadStatus = Rx<Map<int, bool>>({});
-  RxList<int> tafsirDownloadIndex = <int>[3, 5].obs;
+  RxList<int> tafsirDownloadIndexList = <int>[3, 5].obs;
   RxInt downloadIndex = 0.obs;
   // var isSelected = (-1.0).obs;
   RxBool isTafsir = true.obs;
@@ -152,9 +152,9 @@ class TafsirCtrl extends GetxController {
       fileUrl =
           'https://github.com/alheekmahlib/Islamic_database/raw/refs/heads/main/tafseer_database/${tafsirDBName[i]}';
     } else {
-      path = join(databasePath.path, '${tafsirName[i]['bookName']}.json');
+      path = join(databasePath.path, '${tafsirName[i].bookName}.json');
       fileUrl =
-          'https://github.com/alheekmahlib/Islamic_database/raw/refs/heads/main/quran_database/translate/${tafsirName[i]['bookName']}.json';
+          'https://github.com/alheekmahlib/Islamic_database/raw/refs/heads/main/quran_database/translate/${tafsirName[i].bookName}.json';
     }
 
     if (!onDownloading.value) {
@@ -196,7 +196,7 @@ class TafsirCtrl extends GetxController {
     Directory? directory = await getApplicationDocumentsDirectory();
 
     for (int i = 0; i <= 4; i++) {
-      String filePath = '${directory.path}/${tafsirName[i]['name']}';
+      String filePath = '${directory.path}/${tafsirName[i].name}';
       File file = File(filePath);
       tafsirDownloadStatus.value[i] = await file.exists();
     }
@@ -217,6 +217,6 @@ class TafsirCtrl extends GetxController {
     List<int> savedIndices =
         rawList is List ? rawList.map((e) => e as int).toList() : [3, 5];
 
-    tafsirDownloadIndex.value = savedIndices;
+    tafsirDownloadIndexList.value = savedIndices;
   }
 }

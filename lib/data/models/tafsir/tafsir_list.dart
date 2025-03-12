@@ -1,53 +1,56 @@
 part of '../../../quran.dart';
 
-List tafsirName = [
-  {'name': 'تفسير ابن كثير', 'bookName': 'تفسير القرآن العظيم'},
-  {
-    'name': 'تفسير البغوي',
-    'bookName': 'معالم التنزيل في تفسير القرآن',
-  },
-  {
-    'name': 'تفسير القرطبي',
-    'bookName': 'الجامع لأحكام القرآن',
-  },
-  {
-    'name': 'تفسير السعدي',
-    'bookName': 'تيسير الكريم الرحمن',
-  },
-  {
-    'name': 'تفسير الطبري',
-    'bookName': 'جامع البيان عن تأويل آي القرآن',
-  },
-  {
-    'name': 'English',
-    'bookName': 'en',
-  },
-  {
-    'name': 'Español',
-    'bookName': 'es',
-  },
-  {
-    'name': 'বাংলা',
-    'bookName': 'be',
-  },
-  {
-    'name': 'اردو',
-    'bookName': 'urdu',
-  },
-  {
-    'name': 'Soomaali',
-    'bookName': 'so',
-  },
-  {
-    'name': 'bahasa Indonesia',
-    'bookName': 'in',
-  },
-  {
-    'name': 'کوردی',
-    'bookName': 'ku',
-  },
-  {
-    'name': 'Türkçe',
-    'bookName': 'tr',
-  },
+List<TafsirListModel> tafsirName = [
+  TafsirListModel(
+    name: 'تفسير ابن كثير',
+    bookName: 'تفسير القرآن العظيم',
+  ),
+  TafsirListModel(
+    name: 'تفسير البغوي',
+    bookName: 'معالم التنزيل في تفسير القرآن',
+  ),
+  TafsirListModel(
+    name: 'تفسير القرطبي',
+    bookName: 'الجامع لأحكام القرآن',
+  ),
+  TafsirListModel(
+    name: 'تفسير السعدي',
+    bookName: 'تيسير الكريم الرحمن',
+  ),
+  TafsirListModel(
+    name: 'تفسير الطبري',
+    bookName: 'جامع البيان عن تأويل آي القرآن',
+  ),
+  TafsirListModel(
+    name: 'English',
+    bookName: 'en',
+  ),
+  TafsirListModel(
+    name: 'Español',
+    bookName: 'es',
+  ),
+  TafsirListModel(
+    name: 'বাংলা',
+    bookName: 'be',
+  ),
+  TafsirListModel(
+    name: 'اردو',
+    bookName: 'urdu',
+  ),
+  TafsirListModel(
+    name: 'Soomaali',
+    bookName: 'so',
+  ),
+  TafsirListModel(
+    name: 'bahasa Indonesia',
+    bookName: 'in',
+  ),
+  TafsirListModel(
+    name: 'کوردی',
+    bookName: 'ku',
+  ),
+  TafsirListModel(
+    name: 'Türkçe',
+    bookName: 'tr',
+  ),
 ];

@@ -291,7 +291,10 @@ class QuranCtrl extends GetxController {
     if (_pageController.hasClients) {
       _pageController.jumpToPage(page);
     } else {
-      _pageController = PageController(initialPage: page);
+      _pageController = PageController(
+        initialPage: page,
+        viewportFraction: 0.95,
+      );
     }
   }
 

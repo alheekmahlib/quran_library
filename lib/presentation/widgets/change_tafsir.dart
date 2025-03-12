@@ -2,7 +2,8 @@ part of '../../quran.dart';
 
 class ChangeTafsir extends StatelessWidget {
   final TafsirStyle tafsirStyle;
-  ChangeTafsir({super.key, required this.tafsirStyle});
+  final List<TafsirListModel>? tafsirNameList;
+  ChangeTafsir({super.key, required this.tafsirStyle, this.tafsirNameList});
 
   final ayatCtrl = TafsirCtrl.instance;
 
@@ -28,7 +29,10 @@ class ChangeTafsir extends StatelessWidget {
                             Expanded(
                                 flex: 1,
                                 child: Container(
-                                    width: 70, height: 2, color: Colors.blue)),
+                                    width: 70,
+                                    height: 2,
+                                    color:
+                                        tafsirStyle.linesColor ?? Colors.blue)),
                             Expanded(
                               flex: 3,
                               child: Text(
@@ -42,7 +46,10 @@ class ChangeTafsir extends StatelessWidget {
                             Expanded(
                                 flex: 5,
                                 child: Container(
-                                    width: 200, height: 2, color: Colors.blue))
+                                    width: 200,
+                                    height: 2,
+                                    color:
+                                        tafsirStyle.linesColor ?? Colors.blue))
                           ],
                         ),
                       )
@@ -64,12 +71,13 @@ class ChangeTafsir extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   Text(
-                    tafsirName[tafsirCtrl.radioValue.value]['name'],
-                    style: TextStyle(
-                        color: Theme.of(context).colorScheme.primary,
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: 'kufi'),
+                    tafsirNameList?[tafsirCtrl.radioValue.value].name ??
+                        tafsirName[tafsirCtrl.radioValue.value].name,
+                    style: QuranLibrary().naskhStyle.copyWith(
+                          color: tafsirStyle.unSelectedTafsirColor ??
+                              const Color(0xffCDAD80),
+                          fontSize: 16,
+                        ),
                   ),
                   Semantics(
                     button: true,
@@ -91,23 +99,29 @@ class ChangeTafsir extends StatelessWidget {
     return GetBuilder<TafsirCtrl>(
         id: 'change_tafsir',
         builder: (tafsirCtrl) {
-          bool isDownloaded = tafsirCtrl.tafsirDownloadIndex.contains(index);
+          bool isDownloaded =
+              tafsirCtrl.tafsirDownloadIndexList.contains(index);
           return ListTile(
             title: Text(
-              tafsirName[index]['name'],
+              tafsirNameList?[index].name ?? tafsirName[index].name,
               style: QuranLibrary().naskhStyle.copyWith(
                     color: tafsirCtrl.radioValue.value == index
-                        ? Colors.black
-                        : const Color(0xffCDAD80),
+                        ? tafsirStyle.selectedTafsirColor ?? Colors.black
+                        : tafsirStyle.unSelectedTafsirColor ??
+                            const Color(0xffCDAD80),
                     fontSize: 14,
                   ),
             ),
             subtitle: Text(
-              index >= 5 ? '' : tafsirName[index]['bookName'],
+              index >= 5
+                  ? ''
+                  : tafsirNameList?[index].bookName ??
+                      tafsirName[index].bookName,
               style: QuranLibrary().naskhStyle.copyWith(
                     color: tafsirCtrl.radioValue.value == index
-                        ? Colors.black
-                        : const Color(0xffCDAD80),
+                        ? tafsirStyle.selectedTafsirColor ?? Colors.black
+                        : tafsirStyle.unSelectedTafsirColor ??
+                            const Color(0xffCDAD80),
                     fontSize: 12,
                   ),
             ),
@@ -117,15 +131,18 @@ class ChangeTafsir extends StatelessWidget {
                     width: 20,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      border:
-                          Border.all(color: const Color(0xffCDAD80), width: 2),
+                      border: Border.all(
+                          color: tafsirStyle.unSelectedTafsirColor ??
+                              const Color(0xffCDAD80),
+                          width: 2),
                       color: Colors.white,
                     ),
                     child: tafsirCtrl.radioValue.value == index
                         ? Icon(
                             Icons.done,
                             size: 14,
-                            color: const Color(0xffCDAD80),
+                            color: tafsirStyle.selectedTafsirColor ??
+                                const Color(0xffCDAD80),
                           )
                         : null,
                   )
@@ -138,7 +155,8 @@ class ChangeTafsir extends StatelessWidget {
                           backgroundColor: Colors.transparent,
                           color: index == tafsirCtrl.downloadIndex.value
                               ? tafsirCtrl.onDownloading.value
-                                  ? Get.theme.indicatorColor
+                                  ? tafsirStyle.selectedTafsirColor ??
+                                      const Color(0xffCDAD80)
                                   : Colors.transparent
                               : Colors.transparent,
                           value: tafsirCtrl.progress.value,
@@ -146,7 +164,9 @@ class ChangeTafsir extends StatelessWidget {
                       ),
                       IconButton(
                         icon: Icon(Icons.cloud_download_outlined,
-                            size: 22, color: Get.theme.indicatorColor),
+                            size: 22,
+                            color: tafsirStyle.unSelectedTafsirColor ??
+                                const Color(0xffCDAD80)),
                         onPressed: () async {
                           index >= 5
                               ? tafsirCtrl.isTafsir.value = false
@@ -172,23 +192,30 @@ class ChangeTafsir extends StatelessWidget {
                     shape: BoxShape.rectangle,
                     borderRadius: const BorderRadius.all(Radius.circular(4.0)),
                     border: Border.all(
-                        color: Theme.of(context).cardColor, width: 2)),
+                        color: tafsirStyle.unSelectedTafsirColor ??
+                            const Color(0xffCDAD80),
+                        width: 2)),
                 child: Opacity(
                   opacity: tafsirCtrl.radioValue.value == index ? 1 : .4,
                   child: Stack(
                     alignment: Alignment.center,
                     children: [
-                      Container(height: 90, width: 40.0, color: Colors.blue),
+                      Container(
+                          height: 90,
+                          width: 40.0,
+                          color: tafsirStyle.linesColor ?? Colors.blue),
                       Container(
                         height: 60,
                         width: 30.0,
                         alignment: Alignment.center,
                         child: Text(
-                          tafsirName[index]['name'],
+                          tafsirNameList?[index].name ?? tafsirName[index].name,
                           style: QuranLibrary().naskhStyle.copyWith(
                                 color: tafsirCtrl.radioValue.value == index
-                                    ? Colors.black
-                                    : const Color(0xffCDAD80),
+                                    ? tafsirStyle.selectedTafsirColor ??
+                                        Colors.black
+                                    : tafsirStyle.unSelectedTafsirColor ??
+                                        const Color(0xffCDAD80),
                                 fontSize: 7,
                               ),
                           maxLines: 3,

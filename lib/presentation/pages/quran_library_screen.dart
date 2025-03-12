@@ -284,7 +284,7 @@ class QuranLibraryScreen extends StatelessWidget {
                     itemCount: 604,
                     controller: quranCtrl.pageController,
                     padEnds: false,
-                    physics: const ClampingScrollPhysics(),
+                    physics: const BouncingScrollPhysics(),
                     onPageChanged: (page) async {
                       if (onPageChanged != null) {
                         onPageChanged!(page);

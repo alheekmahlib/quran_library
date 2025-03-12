@@ -386,6 +386,21 @@ class QuranLibrary {
   // List<TajweedRuleModel> getTajweedRules({required String languageCode}) =>
   //     quranCtrl.getTajweedRules(languageCode: languageCode);
 
+  //////////// [Tafsir] ////////////
+
+  Future<void> initTafsir() async => TafsirCtrl.instance.initTafsir();
+
+  Widget changeTafsirPopupMenu(TafsirStyle tafsirStyle) =>
+      ChangeTafsir(tafsirStyle: tafsirStyle);
+
+  bool getTafsirDownloaded(int index) =>
+      TafsirCtrl.instance.tafsirDownloadIndexList.contains(index);
+
+  List<TafsirListModel> get tafsirNameList => tafsirName;
+
+  void changeTafsirSwitch(int index) =>
+      TafsirCtrl.instance.handleRadioValueChanged(index);
+
   /// للحصول على التفسير الخاص بالآية،
   ///  فقط قم بتمرير رقم الآية لـ [getTafsirOfAyah].
   ///
@@ -409,19 +424,6 @@ class QuranLibrary {
   Future<List<TafsirTableData>> getTafsirOfPage(
           {required int pageNumber, String? databaseName}) async =>
       await TafsirCtrl.instance.fetchTafsirPage(pageNumber, databaseName!);
-
-  ////////////
-
-  Widget changeTafsirPopupMenu(TafsirStyle tafsirStyle) =>
-      ChangeTafsir(tafsirStyle: tafsirStyle);
-
-  bool getTafsirDownloaded(int index) =>
-      TafsirCtrl.instance.tafsirDownloadIndexList.contains(index);
-
-  List<TafsirListModel> get tafsirNameList => tafsirName;
-
-  void changeTafsirSwitch(int index) =>
-      TafsirCtrl.instance.handleRadioValueChanged(index);
 
   /// [hafsStyle] هو النمط الافتراضي للقرآن، مما يضمن عرض جميع الأحرف الخاصة بشكل صحيح.
   ///

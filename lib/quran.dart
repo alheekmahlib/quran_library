@@ -23,7 +23,6 @@ import 'package:path_provider/path_provider.dart';
 
 import '/quran_library.dart';
 import 'data/models/tafsir/tafsir.dart';
-import 'data/repositories/quran_search.dart';
 
 part 'core/extensions/convert_arabic_to_english_numbers_extension.dart';
 part 'core/extensions/convert_number_extension.dart';

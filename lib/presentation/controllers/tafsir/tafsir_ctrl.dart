@@ -30,9 +30,7 @@ class TafsirCtrl extends GetxController {
   var trans = 'en'.obs;
   RxInt transValue = 0.obs;
 
-  @override
-  Future<void> onInit() async {
-    super.onInit();
+  Future<void> initTafsir() async {
     initializeTafsirDownloadStatus();
     await loadTafseer().then((_) async {
       if (isTafsir.value) {

@@ -23,6 +23,7 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     QuranLibrary().init();
+    QuranLibrary().initTafsir();
     super.initState();
   }
 

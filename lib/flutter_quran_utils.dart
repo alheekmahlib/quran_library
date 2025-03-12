@@ -387,25 +387,28 @@ class QuranLibrary {
   //     quranCtrl.getTajweedRules(languageCode: languageCode);
 
   /// للحصول على التفسير الخاص بالآية،
-  ///  فقط قم بتمرير رقم الآية لـ [fetchTafsirOfAyah].
+  ///  فقط قم بتمرير رقم الآية لـ [getTafsirOfAyah].
   ///
   /// To obtain the interpretation of the verse,
-  /// simply pass the verse number to [fetchTafsirOfAyah].
+  /// simply pass the verse number to [getTafsirOfAyah].
   ///
-  Future<List<TafsirTableData>> fetchTafsirOfAyah(int ayahUniqNumber) async {
+  Future<List<TafsirTableData>> getTafsirOfAyah(
+      {required int ayahUniqNumber, String? databaseName}) async {
     // TafsirCtrl.instance.initializeDatabase();
     // await TafsirCtrl.instance.fetchData(pageIndex + 1);
-    return await TafsirCtrl.instance.fetchTafsirAyah(ayahUniqNumber);
+    return await TafsirCtrl.instance
+        .fetchTafsirAyah(ayahUniqNumber, databaseName!);
   }
 
   /// للحصول على التفسير الخاص بايآت الصفحة،
-  ///  فقط قم بتمرير رقم الصفحة لـ [fetchTafsirOfPage].
+  ///  فقط قم بتمرير رقم الصفحة لـ [getTafsirOfPage].
   ///
   /// To obtain the interpretation of the verses on the page,
-  /// simply pass the page number to [fetchTafsirOfPage].
+  /// simply pass the page number to [getTafsirOfPage].
   ///
-  Future<List<TafsirTableData>> fetchTafsirOfPage(int pageNumber) async =>
-      await TafsirCtrl.instance.fetchTafsirPage(pageNumber);
+  Future<List<TafsirTableData>> getTafsirOfPage(
+          {required int pageNumber, String? databaseName}) async =>
+      await TafsirCtrl.instance.fetchTafsirPage(pageNumber, databaseName!);
 
   /// [hafsStyle] هو النمط الافتراضي للقرآن، مما يضمن عرض جميع الأحرف الخاصة بشكل صحيح.
   ///

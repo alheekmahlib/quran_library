@@ -9,9 +9,10 @@ class TafsirDatabase extends _$TafsirDatabase {
   @override
   int get schemaVersion => 1;
 
-  Future<List<TafsirTableData>> getTafsirByPage(int pageNum) async {
+  Future<List<TafsirTableData>> getTafsirByPage(int pageNum,
+      {String? databaseName}) async {
     final results = await customSelect(
-      'SELECT * FROM ${TafsirCtrl.instance.selectedTableName.value} WHERE PageNum = ?',
+      'SELECT * FROM ${databaseName ?? TafsirCtrl.instance.selectedTableName.value} WHERE PageNum = ?',
       variables: [drift.Variable.withInt(pageNum)],
     ).get();
 
@@ -26,9 +27,10 @@ class TafsirDatabase extends _$TafsirDatabase {
     }).toList();
   }
 
-  Future<List<TafsirTableData>> getTafsirByAyah(int ayahUQNumber) async {
+  Future<List<TafsirTableData>> getTafsirByAyah(int ayahUQNumber,
+      {String? databaseName}) async {
     final results = await customSelect(
-      'SELECT * FROM ${TafsirCtrl.instance.selectedTableName.value} WHERE "index" = ?',
+      'SELECT * FROM ${databaseName ?? TafsirCtrl.instance.selectedTableName.value} WHERE "index" = ?',
       variables: [drift.Variable.withInt(ayahUQNumber)],
     ).get();
 

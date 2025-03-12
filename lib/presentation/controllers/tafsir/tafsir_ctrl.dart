@@ -87,21 +87,25 @@ class TafsirCtrl extends GetxController {
   }
 
   // استخدام getTafsirByPage لجلب التفسير حسب رقم الصفحة
-  Future<List<TafsirTableData>> fetchTafsirPage(int pageNum) async {
+  Future<List<TafsirTableData>> fetchTafsirPage(
+      int pageNum, String databaseName) async {
     if (database.value == null) {
       throw Exception('Database not initialized');
     }
-    List<TafsirTableData> tafsir =
-        await database.value!.getTafsirByPage(pageNum);
+    List<TafsirTableData> tafsir = await database.value!
+        .getTafsirByPage(pageNum, databaseName: databaseName);
     return tafsir;
   }
 
-  Future<List<TafsirTableData>> fetchTafsirAyah(int ayahUQNumber) async {
+  Future<List<TafsirTableData>> fetchTafsirAyah(
+      int ayahUQNumber, String databaseName) async {
     if (database.value == null) {
       throw Exception('Database not initialized');
     }
-    List<TafsirTableData> tafsir =
-        await database.value!.getTafsirByAyah(ayahUQNumber);
+    initializeDatabase();
+    // fetchData(pageIndex + 1);
+    List<TafsirTableData> tafsir = await database.value!
+        .getTafsirByAyah(ayahUQNumber, databaseName: databaseName);
     return tafsir;
   }
 

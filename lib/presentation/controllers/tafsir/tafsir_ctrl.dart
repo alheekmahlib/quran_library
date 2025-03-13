@@ -3,7 +3,7 @@ part of '../../../quran.dart';
 class TafsirCtrl extends GetxController {
   static TafsirCtrl get instance => GetInstance().putOrFind(() => TafsirCtrl());
 
-  var tafseerList = <TafsirTableData>[].obs;
+  RxList<TafsirTableData> tafseerList = <TafsirTableData>[].obs;
   String? selectedDBName = 'saadiV3.db';
   Rx<TafsirDatabase?> database = Rx<TafsirDatabase?>(null);
   RxString selectedTableName = MufaserName.saadi.name.obs;

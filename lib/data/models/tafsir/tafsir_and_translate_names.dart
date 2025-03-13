@@ -1,56 +1,69 @@
 part of '../../../quran.dart';
 
-List<TafsirListModel> tafsirName = [
-  TafsirListModel(
+List<TafsirNameModel> tafsirAndTranslateNames = [
+  TafsirNameModel(
     name: 'تفسير ابن كثير',
     bookName: 'تفسير القرآن العظيم',
+    databaseName: 'ibnkatheerV2.sqlite',
   ),
-  TafsirListModel(
+  TafsirNameModel(
     name: 'تفسير البغوي',
     bookName: 'معالم التنزيل في تفسير القرآن',
+    databaseName: 'baghawyV2.db',
   ),
-  TafsirListModel(
+  TafsirNameModel(
     name: 'تفسير القرطبي',
     bookName: 'الجامع لأحكام القرآن',
+    databaseName: 'qurtubiV2.db',
   ),
-  TafsirListModel(
+  TafsirNameModel(
     name: 'تفسير السعدي',
     bookName: 'تيسير الكريم الرحمن',
+    databaseName: 'saadiV3.db',
   ),
-  TafsirListModel(
+  TafsirNameModel(
     name: 'تفسير الطبري',
     bookName: 'جامع البيان عن تأويل آي القرآن',
+    databaseName: 'tabariV2.db',
   ),
-  TafsirListModel(
+  TafsirNameModel(
     name: 'English',
     bookName: 'en',
+    databaseName: 'en.json',
   ),
-  TafsirListModel(
+  TafsirNameModel(
     name: 'Español',
     bookName: 'es',
+    databaseName: 'es.json',
   ),
-  TafsirListModel(
+  TafsirNameModel(
     name: 'বাংলা',
     bookName: 'be',
+    databaseName: 'be.json',
   ),
-  TafsirListModel(
+  TafsirNameModel(
     name: 'اردو',
     bookName: 'urdu',
+    databaseName: 'urdu.json',
   ),
-  TafsirListModel(
+  TafsirNameModel(
     name: 'Soomaali',
     bookName: 'so',
+    databaseName: 'so.json',
   ),
-  TafsirListModel(
+  TafsirNameModel(
     name: 'bahasa Indonesia',
     bookName: 'in',
+    databaseName: 'in.json',
   ),
-  TafsirListModel(
+  TafsirNameModel(
     name: 'کوردی',
     bookName: 'ku',
+    databaseName: 'ku.json',
   ),
-  TafsirListModel(
+  TafsirNameModel(
     name: 'Türkçe',
     bookName: 'tr',
+    databaseName: 'tr.json',
   ),
 ];

@@ -152,9 +152,10 @@ class TafsirCtrl extends GetxController {
       fileUrl =
           'https://github.com/alheekmahlib/Islamic_database/raw/refs/heads/main/tafseer_database/${tafsirDBName[i]}';
     } else {
-      path = join(databasePath.path, '${tafsirName[i].bookName}.json');
+      path = join(
+          databasePath.path, '${tafsirAndTranslateNames[i].bookName}.json');
       fileUrl =
-          'https://github.com/alheekmahlib/Islamic_database/raw/refs/heads/main/quran_database/translate/${tafsirName[i].bookName}.json';
+          'https://github.com/alheekmahlib/Islamic_database/raw/refs/heads/main/quran_database/translate/${tafsirAndTranslateNames[i].bookName}.json';
     }
 
     if (!onDownloading.value) {
@@ -196,7 +197,7 @@ class TafsirCtrl extends GetxController {
     Directory? directory = await getApplicationDocumentsDirectory();
 
     for (int i = 0; i <= 4; i++) {
-      String filePath = '${directory.path}/${tafsirName[i].name}';
+      String filePath = '${directory.path}/${tafsirAndTranslateNames[i].name}';
       File file = File(filePath);
       tafsirDownloadStatus.value[i] = await file.exists();
     }

@@ -2,7 +2,7 @@ part of '../../quran.dart';
 
 class ChangeTafsir extends StatelessWidget {
   final TafsirStyle tafsirStyle;
-  final List<TafsirListModel>? tafsirNameList;
+  final List<TafsirNameModel>? tafsirNameList;
   ChangeTafsir({super.key, required this.tafsirStyle, this.tafsirNameList});
 
   final ayatCtrl = TafsirCtrl.instance;
@@ -15,7 +15,8 @@ class ChangeTafsir extends StatelessWidget {
       builder: (tafsirCtrl) => PopupMenuButton(
         position: PopupMenuPosition.under,
         color: Colors.white,
-        itemBuilder: (context) => List.generate(tafsirName.length, (index) {
+        itemBuilder: (context) =>
+            List.generate(tafsirAndTranslateNames.length, (index) {
           return PopupMenuItem(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Column(
@@ -72,7 +73,8 @@ class ChangeTafsir extends StatelessWidget {
                 children: [
                   Text(
                     tafsirNameList?[tafsirCtrl.radioValue.value].name ??
-                        tafsirName[tafsirCtrl.radioValue.value].name,
+                        tafsirAndTranslateNames[tafsirCtrl.radioValue.value]
+                            .name,
                     style: QuranLibrary().naskhStyle.copyWith(
                           color: tafsirStyle.unSelectedTafsirColor ??
                               const Color(0xffCDAD80),
@@ -103,7 +105,8 @@ class ChangeTafsir extends StatelessWidget {
               tafsirCtrl.tafsirDownloadIndexList.contains(index);
           return ListTile(
             title: Text(
-              tafsirNameList?[index].name ?? tafsirName[index].name,
+              tafsirNameList?[index].name ??
+                  tafsirAndTranslateNames[index].name,
               style: QuranLibrary().naskhStyle.copyWith(
                     color: tafsirCtrl.radioValue.value == index
                         ? tafsirStyle.selectedTafsirColor ?? Colors.black
@@ -116,7 +119,7 @@ class ChangeTafsir extends StatelessWidget {
               index >= 5
                   ? ''
                   : tafsirNameList?[index].bookName ??
-                      tafsirName[index].bookName,
+                      tafsirAndTranslateNames[index].bookName,
               style: QuranLibrary().naskhStyle.copyWith(
                     color: tafsirCtrl.radioValue.value == index
                         ? tafsirStyle.selectedTafsirColor ?? Colors.black
@@ -209,7 +212,8 @@ class ChangeTafsir extends StatelessWidget {
                         width: 30.0,
                         alignment: Alignment.center,
                         child: Text(
-                          tafsirNameList?[index].name ?? tafsirName[index].name,
+                          tafsirNameList?[index].name ??
+                              tafsirAndTranslateNames[index].name,
                           style: QuranLibrary().naskhStyle.copyWith(
                                 color: tafsirCtrl.radioValue.value == index
                                     ? tafsirStyle.selectedTafsirColor ??

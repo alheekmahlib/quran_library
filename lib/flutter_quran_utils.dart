@@ -411,6 +411,9 @@ class QuranLibrary {
 
   int get tafsirSelected => TafsirCtrl.instance.radioValue.value;
 
+  Future<void> fetchTranslation() async =>
+      await TafsirCtrl.instance.fetchTranslate();
+
   /// للحصول على التفسير الخاص بالآية،
   ///  فقط قم بتمرير رقم الآية لـ [getTafsirOfAyah].
   ///

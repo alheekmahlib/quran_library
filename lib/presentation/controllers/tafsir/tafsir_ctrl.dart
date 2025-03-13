@@ -25,7 +25,7 @@ class TafsirCtrl extends GetxController {
   RxInt downloadIndex = 0.obs;
   // var isSelected = (-1.0).obs;
   RxBool isTafsir = true.obs;
-  var data = [].obs;
+  RxList<TranslationModel> translationList = <TranslationModel>[].obs;
   var isLoading = false.obs;
   var trans = 'en'.obs;
   RxInt transValue = 0.obs;
@@ -130,7 +130,7 @@ class TafsirCtrl extends GetxController {
       }
 
       Map<String, dynamic> showData = json.decode(jsonString);
-      data.value = showData['translations'];
+      translationList.value = showData['translations'];
     } catch (e) {
       log('Error loading translation file: $e');
     } finally {

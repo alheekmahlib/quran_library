@@ -57,6 +57,7 @@ part 'data/models/surah.dart';
 part 'data/models/tafsir/tafsir_list.dart';
 part 'data/models/tafsir/tafsir_list_model.dart';
 part 'data/models/tafsir/tafsir_style.dart';
+part 'data/models/tafsir/translation_model.dart';
 part 'data/repositories/quran_repository.dart';
 part 'flutter_quran_utils.dart';
 part 'presentation/controllers/bookmark/bookmarks_ctrl.dart';

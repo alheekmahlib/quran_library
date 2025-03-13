@@ -113,7 +113,7 @@ class ShowTafseer extends StatelessWidget {
                       fontSize: tafsirCtrl.fontSizeArabic.value),
                 )
               : TextSpan(
-                  text: tafsirCtrl.data[ayahIndex - 1]['text'] ?? '',
+                  text: tafsirCtrl.translationList[ayahIndex - 1].text ?? '',
                   style: TextStyle(
                       color: Colors.black,
                       height: 1.5,
@@ -144,7 +144,7 @@ class ShowTafseer extends StatelessWidget {
     return GetBuilder<TafsirCtrl>(
       id: 'change_tafsir',
       builder: (tafsirCtrl) =>
-          tafsirCtrl.tafseerList.isEmpty && tafsirCtrl.data.isEmpty
+          tafsirCtrl.tafseerList.isEmpty && tafsirCtrl.translationList.isEmpty
               ? const SizedBox.shrink()
               : Flexible(
                   child: PageView.builder(

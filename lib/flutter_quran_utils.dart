@@ -401,6 +401,13 @@ class QuranLibrary {
   void changeTafsirSwitch(int index) =>
       TafsirCtrl.instance.handleRadioValueChanged(index);
 
+  List<TafsirTableData> get tafsirList => TafsirCtrl.instance.tafseerList;
+
+  List<TranslationModel> get translationList =>
+      TafsirCtrl.instance.translationList;
+
+  bool get isTafsir => TafsirCtrl.instance.isTafsir.value;
+
   /// للحصول على التفسير الخاص بالآية،
   ///  فقط قم بتمرير رقم الآية لـ [getTafsirOfAyah].
   ///

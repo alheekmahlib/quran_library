@@ -130,7 +130,9 @@ class TafsirCtrl extends GetxController {
       }
 
       Map<String, dynamic> showData = json.decode(jsonString);
-      translationList.value = showData['translations'];
+      translationList.value = (showData['translations'] as List)
+          .map((item) => TranslationModel.fromJson(item))
+          .toList();
     } catch (e) {
       log('Error loading translation file: $e');
     } finally {

@@ -155,7 +155,7 @@ extension TafsirUi on TafsirCtrl {
       await fetchData(QuranCtrl.instance.state.currentPageNumber.value);
       log('Database initialized for: $dbFileName');
     } else {
-      transValue.value == val;
+      // transValue.value == val;
       box.write(_StorageConstants().translationValue, val);
       await fetchTranslate();
     }

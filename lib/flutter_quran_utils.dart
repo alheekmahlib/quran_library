@@ -408,6 +408,8 @@ class QuranLibrary {
 
   bool get isTafsir => TafsirCtrl.instance.isTafsir.value;
 
+  int get tafsirSelected => TafsirCtrl.instance.radioValue.value;
+
   /// للحصول على التفسير الخاص بالآية،
   ///  فقط قم بتمرير رقم الآية لـ [getTafsirOfAyah].
   ///

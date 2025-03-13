@@ -7,7 +7,7 @@ class TafsirCtrl extends GetxController {
   String? selectedDBName = 'saadiV3.db';
   Rx<TafsirDatabase?> database = Rx<TafsirDatabase?>(null);
   RxString selectedTableName = MufaserName.saadi.name.obs;
-  var radioValue = 3.obs;
+  RxInt radioValue = 3.obs;
   final box = GetStorage();
   RxString ayahTextNormal = ''.obs;
   RxInt ayahUQNumber = (-1).obs;
@@ -28,7 +28,7 @@ class TafsirCtrl extends GetxController {
   RxList<TranslationModel> translationList = <TranslationModel>[].obs;
   var isLoading = false.obs;
   var trans = 'en'.obs;
-  RxInt transValue = 0.obs;
+  // RxInt transValue = 0.obs;
 
   Future<void> initTafsir() async {
     initializeTafsirDownloadStatus();
@@ -47,7 +47,7 @@ class TafsirCtrl extends GetxController {
     selectedTableName.value = box.read(_StorageConstants().tafsirTableValue) ??
         MufaserName.saadi.name;
 
-    transValue.value = box.read(_StorageConstants().translationValue) ?? 0;
+    // transValue.value = box.read(_StorageConstants().translationValue) ?? 0;
     trans.value = box.read(_StorageConstants().translationLangCode) ?? 'en';
   }
 

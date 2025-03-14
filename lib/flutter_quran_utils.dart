@@ -417,6 +417,9 @@ class QuranLibrary {
   Future<void> tafsirDownload(int i) async =>
       await TafsirCtrl.instance.tafsirDownload(i);
 
+  Future<void> initializeDatabase() async =>
+      await TafsirCtrl.instance.initializeDatabase();
+
   /// للحصول على التفسير الخاص بالآية،
   ///  فقط قم بتمرير رقم الآية لـ [getTafsirOfAyah].
   ///

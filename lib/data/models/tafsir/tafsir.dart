@@ -8,20 +8,20 @@ import 'package:drift/drift.dart';
 //   tabari,
 // }
 
-enum MufaserNameV2 {
-  ibnkatheerV2,
-  baghawyV2,
-  qurtubiV2,
-  saadi,
-  tabariV2,
-}
+// enum MufaserNameV2 {
+//   ibnkatheerV2,
+//   baghawyV2,
+//   qurtubiV2,
+//   saadi,
+//   tabariV2,
+// }
 
 List<String> tafsirDBName = [
-  'ibnkatheerV2.sqlite',
-  'baghawyV2.db',
-  'qurtubiV2.db',
-  'saadiV3.db',
-  'tabariV2.db',
+  'ibnkatheerV3.sqlite',
+  'baghawyV3.db',
+  'qurtubiV3.db',
+  'saadiV4.db',
+  'tabariV3.db',
 ];
 
 class TafsirTable extends Table {

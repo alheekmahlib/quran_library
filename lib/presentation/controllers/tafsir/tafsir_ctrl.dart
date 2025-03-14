@@ -164,6 +164,7 @@ class TafsirCtrl extends GetxController {
         saveTafsirDownloadIndex(i);
         loadTafsirDownloadIndices();
         if (isTafsir.value) {
+          await handleRadioValueChanged(i);
           await fetchData(QuranCtrl.instance.state.currentPageNumber.value + 1);
           update(['change_tafsir']);
         } else {

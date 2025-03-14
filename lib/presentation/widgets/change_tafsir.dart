@@ -9,7 +9,7 @@ class ChangeTafsir extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    ayatCtrl.initializeTafsirDownloadStatus();
+    // ayatCtrl.initializeTafsirDownloadStatus();
     return GetBuilder<TafsirCtrl>(
       id: 'change_tafsir',
       builder: (tafsirCtrl) => PopupMenuButton(

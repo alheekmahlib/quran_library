@@ -16,13 +16,13 @@ import 'package:drift/drift.dart';
 //   tabariV2,
 // }
 
-List<String> tafsirDBName = [
-  'ibnkatheerV3.sqlite',
-  'baghawyV3.db',
-  'qurtubiV3.db',
-  'saadiV4.db',
-  'tabariV3.db',
-];
+// List<String> tafsirDBName = [
+//   'ibnkatheerV3.sqlite',
+//   'baghawyV3.db',
+//   'qurtubiV3.db',
+//   'saadiV4.db',
+//   'tabariV3.db',
+// ];
 
 class TafsirTable extends Table {
   IntColumn get id => integer().named('index').autoIncrement()();

@@ -30,13 +30,19 @@ class TafsirCtrl extends GetxController {
   var trans = 'en'.obs;
   // RxInt transValue = 0.obs;
 
+  @override
+  Future<void> onInit() async {
+    super.onInit();
+    await initTafsir();
+  }
+
   Future<void> initTafsir() async {
     initializeTafsirDownloadStatus();
     await loadTafseer().then((_) async {
       if (isTafsir.value) {
         database.value?.close();
-        database =
-            Rx<TafsirDatabase?>(TafsirDatabase(tafsirDBName[radioValue.value]));
+        database = Rx<TafsirDatabase?>(TafsirDatabase(
+            tafsirAndTranslateNames[radioValue.value].databaseName));
         await initializeDatabase();
       }
     });
@@ -53,7 +59,7 @@ class TafsirCtrl extends GetxController {
 
   Future<void> initializeDatabase() async {
     log('Initializing database...');
-    TafsirDatabase(tafsirDBName[radioValue.value]);
+    TafsirDatabase(tafsirAndTranslateNames[radioValue.value].databaseName);
     log('Database object created.');
     log('Database initialized.');
   }
@@ -67,7 +73,8 @@ class TafsirCtrl extends GetxController {
 
   /// ------------[FetchingMethod]------------
   Future<void> fetchData(int pageNum) async {
-    final db = TafsirDatabase(tafsirDBName[radioValue.value]);
+    final db =
+        TafsirDatabase(tafsirAndTranslateNames[radioValue.value].databaseName);
 
     try {
       final List<TafsirTableData> tafsir = await db.getTafsirByPage(pageNum);
@@ -149,9 +156,9 @@ class TafsirCtrl extends GetxController {
     String fileUrl;
 
     if (isTafsir.value) {
-      path = join(databasePath.path, tafsirDBName[i]);
+      path = join(databasePath.path, tafsirAndTranslateNames[i].databaseName);
       fileUrl =
-          'https://github.com/alheekmahlib/Islamic_database/raw/refs/heads/main/tafseer_database/${tafsirDBName[i]}';
+          'https://github.com/alheekmahlib/Islamic_database/raw/refs/heads/main/tafseer_database/${tafsirAndTranslateNames[i].databaseName}';
     } else {
       path = join(
           databasePath.path, '${tafsirAndTranslateNames[i].bookName}.json');

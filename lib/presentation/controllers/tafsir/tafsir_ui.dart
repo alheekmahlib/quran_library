@@ -58,41 +58,28 @@ extension TafsirUi on TafsirCtrl {
 
   Future<void> handleRadioValueChanged(int val) async {
     log('start changing Tafsir');
-    String? dbFileName;
     radioValue.value = val;
 
     switch (val) {
       case 0:
         isTafsir.value = true;
-        // selectedTableName.value = MufaserName.ibnkatheer.name;
-        dbFileName = 'ibnkatheerV2.sqlite';
         box.write(_StorageConstants().isTafsir, true);
         break;
       case 1:
         isTafsir.value = true;
-        // selectedTableName.value = MufaserName.baghawy.name;
-        dbFileName = 'baghawyV2.db';
         box.write(_StorageConstants().isTafsir, true);
         break;
       case 2:
         isTafsir.value = true;
-        // selectedTableName.value = MufaserName.qurtubi.name;
-        dbFileName = 'qurtubiV2.db';
         box.write(_StorageConstants().isTafsir, true);
         break;
       case 3:
         isTafsir.value = true;
-        // selectedTableName.value = MufaserName.saadi.name;
-        dbFileName = 'saadiV3.db';
         box.write(_StorageConstants().isTafsir, true);
         break;
       case 4:
         isTafsir.value = true;
-        // selectedTableName.value = MufaserName.tabari.name;
-        dbFileName = 'tabariV2.db';
         box.write(_StorageConstants().isTafsir, true);
-        // selectedTableName.value = MufaserName.ibnkatheer.name;
-        dbFileName = 'ibnkatheerV2.sqlite';
         break;
       case 5:
         isTafsir.value = false;
@@ -143,17 +130,16 @@ extension TafsirUi on TafsirCtrl {
         box.write(_StorageConstants().isTafsir, false);
         break;
       default:
-        // selectedTableName.value = MufaserName.saadi.name;
-        dbFileName = 'saadiV3.db';
+        database.value =
+            TafsirDatabase(tafsirAndTranslateNames[3].databaseName);
     }
     if (isTafsir.value) {
       tafseerList.clear();
       await closeCurrentDatabase();
-      // box.write(_StorageConstants().tafsirTableValue, selectedTableName.value);
-      database.value = TafsirDatabase(dbFileName!);
-      // initializeDatabase();
+      database.value =
+          TafsirDatabase(tafsirAndTranslateNames[val].databaseName);
       await fetchData(QuranCtrl.instance.state.currentPageNumber.value);
-      log('Database initialized for: $dbFileName');
+      log('Database initialized for: ${tafsirAndTranslateNames[val].databaseName}');
     } else {
       // transValue.value == val;
       box.write(_StorageConstants().translationValue, val);

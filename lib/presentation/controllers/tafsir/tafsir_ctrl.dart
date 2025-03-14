@@ -59,7 +59,8 @@ class TafsirCtrl extends GetxController {
 
   Future<void> initializeDatabase() async {
     log('Initializing database...');
-    TafsirDatabase(tafsirAndTranslateNames[radioValue.value].databaseName);
+    database.value =
+        TafsirDatabase(tafsirAndTranslateNames[radioValue.value].databaseName);
     log('Database object created.');
     log('Database initialized.');
   }

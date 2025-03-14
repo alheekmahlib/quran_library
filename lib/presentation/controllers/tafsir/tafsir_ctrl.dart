@@ -6,7 +6,7 @@ class TafsirCtrl extends GetxController {
   RxList<TafsirTableData> tafseerList = <TafsirTableData>[].obs;
   String? selectedDBName = 'saadiV3.db';
   Rx<TafsirDatabase?> database = Rx<TafsirDatabase?>(null);
-  RxString selectedTableName = MufaserName.saadi.name.obs;
+  // RxString selectedTableName = MufaserName.saadi.name.obs;
   RxInt radioValue = 3.obs;
   final box = GetStorage();
   RxString ayahTextNormal = ''.obs;
@@ -44,8 +44,8 @@ class TafsirCtrl extends GetxController {
 
   Future<void> loadTafseer() async {
     radioValue.value = box.read(_StorageConstants().tafsirValue) ?? 3;
-    selectedTableName.value = box.read(_StorageConstants().tafsirTableValue) ??
-        MufaserName.saadi.name;
+    // selectedTableName.value = box.read(_StorageConstants().tafsirTableValue) ??
+    //     MufaserName.saadi.name;
 
     // transValue.value = box.read(_StorageConstants().translationValue) ?? 0;
     trans.value = box.read(_StorageConstants().translationLangCode) ?? 'en';
@@ -85,25 +85,25 @@ class TafsirCtrl extends GetxController {
   }
 
   // استخدام getTafsirByPage لجلب التفسير حسب رقم الصفحة
-  Future<List<TafsirTableData>> fetchTafsirPage(
-      int pageNum, String databaseName) async {
+  Future<List<TafsirTableData>> fetchTafsirPage(int pageNum,
+      {String? databaseName}) async {
     if (database.value == null) {
       throw Exception('Database not initialized');
     }
     List<TafsirTableData> tafsir = await database.value!
-        .getTafsirByPage(pageNum, databaseName: databaseName);
+        .getTafsirByPage(pageNum, databaseName: databaseName!);
     return tafsir;
   }
 
-  Future<List<TafsirTableData>> fetchTafsirAyah(
-      int ayahUQNumber, String databaseName) async {
+  Future<List<TafsirTableData>> fetchTafsirAyah(int ayahUQNumber,
+      {String? databaseName}) async {
     if (database.value == null) {
       throw Exception('Database not initialized');
     }
     initializeDatabase();
     // fetchData(pageIndex + 1);
     List<TafsirTableData> tafsir = await database.value!
-        .getTafsirByAyah(ayahUQNumber, databaseName: databaseName);
+        .getTafsirByAyah(ayahUQNumber, databaseName: databaseName!);
     return tafsir;
   }
 

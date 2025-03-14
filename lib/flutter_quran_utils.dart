@@ -424,11 +424,11 @@ class QuranLibrary {
   /// simply pass the verse number to [getTafsirOfAyah].
   ///
   Future<List<TafsirTableData>> getTafsirOfAyah(
-      {required int ayahUniqNumber, required String databaseName}) async {
+      {required int ayahUniqNumber, String? databaseName}) async {
     // TafsirCtrl.instance.initializeDatabase();
     // await TafsirCtrl.instance.fetchData(pageIndex + 1);
     return await TafsirCtrl.instance
-        .fetchTafsirAyah(ayahUniqNumber, databaseName);
+        .fetchTafsirAyah(ayahUniqNumber, databaseName: databaseName!);
   }
 
   /// للحصول على التفسير الخاص بايآت الصفحة،
@@ -438,8 +438,9 @@ class QuranLibrary {
   /// simply pass the page number to [getTafsirOfPage].
   ///
   Future<List<TafsirTableData>> getTafsirOfPage(
-          {required int pageNumber, required String databaseName}) async =>
-      await TafsirCtrl.instance.fetchTafsirPage(pageNumber, databaseName);
+          {required int pageNumber, String? databaseName}) async =>
+      await TafsirCtrl.instance
+          .fetchTafsirPage(pageNumber, databaseName: databaseName!);
 
   /// [hafsStyle] هو النمط الافتراضي للقرآن، مما يضمن عرض جميع الأحرف الخاصة بشكل صحيح.
   ///

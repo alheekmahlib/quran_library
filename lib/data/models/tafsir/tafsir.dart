@@ -1,12 +1,12 @@
 import 'package:drift/drift.dart';
 
-enum MufaserName {
-  ibnkatheer,
-  baghawy,
-  qurtubi,
-  saadi,
-  tabari,
-}
+// enum MufaserName {
+//   ibnkatheer,
+//   baghawy,
+//   qurtubi,
+//   saadi,
+//   tabari,
+// }
 
 enum MufaserNameV2 {
   ibnkatheerV2,

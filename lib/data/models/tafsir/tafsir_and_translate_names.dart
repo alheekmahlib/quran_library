@@ -4,27 +4,27 @@ List<TafsirNameModel> tafsirAndTranslateNames = [
   TafsirNameModel(
     name: 'تفسير ابن كثير',
     bookName: 'تفسير القرآن العظيم',
-    databaseName: 'ibnkatheerV2.sqlite',
+    databaseName: 'ibnkatheerV3.sqlite',
   ),
   TafsirNameModel(
     name: 'تفسير البغوي',
     bookName: 'معالم التنزيل في تفسير القرآن',
-    databaseName: 'baghawyV2.db',
+    databaseName: 'baghawyV3.db',
   ),
   TafsirNameModel(
     name: 'تفسير القرطبي',
     bookName: 'الجامع لأحكام القرآن',
-    databaseName: 'qurtubiV2.db',
+    databaseName: 'qurtubiV3.db',
   ),
   TafsirNameModel(
     name: 'تفسير السعدي',
     bookName: 'تيسير الكريم الرحمن',
-    databaseName: 'saadiV3.db',
+    databaseName: 'saadiV4.db',
   ),
   TafsirNameModel(
     name: 'تفسير الطبري',
     bookName: 'جامع البيان عن تأويل آي القرآن',
-    databaseName: 'tabariV2.db',
+    databaseName: 'tabariV3.db',
   ),
   TafsirNameModel(
     name: 'English',

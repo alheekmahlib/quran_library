@@ -12,7 +12,7 @@ class TafsirDatabase extends _$TafsirDatabase {
   Future<List<TafsirTableData>> getTafsirByPage(int pageNum,
       {String? databaseName}) async {
     final results = await customSelect(
-      'SELECT * FROM ${databaseName ?? TafsirCtrl.instance.selectedTableName.value} WHERE PageNum = ?',
+      'SELECT * FROM ${databaseName ?? 'tafsir'} WHERE PageNum = ?',
       variables: [drift.Variable.withInt(pageNum)],
     ).get();
 
@@ -30,7 +30,7 @@ class TafsirDatabase extends _$TafsirDatabase {
   Future<List<TafsirTableData>> getTafsirByAyah(int ayahUQNumber,
       {String? databaseName}) async {
     final results = await customSelect(
-      'SELECT * FROM ${databaseName ?? TafsirCtrl.instance.selectedTableName.value} WHERE "index" = ?',
+      'SELECT * FROM ${databaseName ?? 'tafsir'} WHERE "index" = ?',
       variables: [drift.Variable.withInt(ayahUQNumber)],
     ).get();
 

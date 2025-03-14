@@ -74,7 +74,7 @@ flutter:
     - assets/jsons/
     - assets/svg/
     - assets/svg/surah_name/
-    - assets/saadiV3.db
+    - assets/saadiV4.db
     - assets/en.json
 
 

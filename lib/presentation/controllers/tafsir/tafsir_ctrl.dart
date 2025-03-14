@@ -90,6 +90,7 @@ class TafsirCtrl extends GetxController {
     if (database.value == null) {
       throw Exception('Database not initialized');
     }
+    initializeDatabase();
     List<TafsirTableData> tafsir = await database.value!
         .getTafsirByPage(pageNum, databaseName: databaseName!);
     return tafsir;

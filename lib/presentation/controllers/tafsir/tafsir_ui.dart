@@ -151,7 +151,7 @@ extension TafsirUi on TafsirCtrl {
       await closeCurrentDatabase();
       // box.write(_StorageConstants().tafsirTableValue, selectedTableName.value);
       database.value = TafsirDatabase(dbFileName!);
-      initializeDatabase();
+      // initializeDatabase();
       await fetchData(QuranCtrl.instance.state.currentPageNumber.value);
       log('Database initialized for: $dbFileName');
     } else {

@@ -390,8 +390,8 @@ class QuranLibrary {
 
   Future<void> initTafsir() async => TafsirCtrl.instance.initTafsir();
 
-  Widget changeTafsirPopupMenu(TafsirStyle tafsirStyle) =>
-      ChangeTafsir(tafsirStyle: tafsirStyle);
+  Widget changeTafsirPopupMenu(TafsirStyle tafsirStyle, {int? pageNumber}) =>
+      ChangeTafsir(tafsirStyle: tafsirStyle, pageNumber: pageNumber);
 
   bool getTafsirDownloaded(int index) =>
       TafsirCtrl.instance.tafsirDownloadIndexList.contains(index);

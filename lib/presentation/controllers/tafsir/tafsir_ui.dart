@@ -59,6 +59,7 @@ extension TafsirUi on TafsirCtrl {
   Future<void> handleRadioValueChanged(int val, {int? pageNumber}) async {
     log('start changing Tafsir');
     radioValue.value = val;
+    box.write(_StorageConstants().radioValue, val);
 
     switch (val) {
       case 0:
@@ -134,12 +135,10 @@ extension TafsirUi on TafsirCtrl {
             TafsirDatabase(tafsirAndTranslateNames[3].databaseName);
     }
     if (isTafsir.value) {
-      closeAndInitializeDatabase(
+      await closeAndInitializeDatabase(
           pageNumber:
               pageNumber ?? QuranCtrl.instance.state.currentPageNumber.value);
     } else {
-      // transValue.value == val;
-      box.write(_StorageConstants().radioValue, val);
       await fetchTranslate();
     }
     update(['change_tafsir']);

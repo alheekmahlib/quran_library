@@ -28,7 +28,6 @@ class TafsirCtrl extends GetxController {
   RxList<TranslationModel> translationList = <TranslationModel>[].obs;
   var isLoading = false.obs;
   var translationLangCode = 'en'.obs;
-  // RxInt transValue = 0.obs;
 
   @override
   Future<void> onInit() async {
@@ -54,7 +53,6 @@ class TafsirCtrl extends GetxController {
     // selectedTableName.value = box.read(_StorageConstants().tafsirTableValue) ??
     //     MufaserName.saadi.name;
 
-    // transValue.value = box.read(_StorageConstants().translationValue) ?? 0;
     translationLangCode.value =
         box.read(_StorageConstants().translationLangCode) ?? 'en';
   }

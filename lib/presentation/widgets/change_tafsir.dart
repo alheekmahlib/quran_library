@@ -3,7 +3,12 @@ part of '../../quran.dart';
 class ChangeTafsir extends StatelessWidget {
   final TafsirStyle tafsirStyle;
   final List<TafsirNameModel>? tafsirNameList;
-  ChangeTafsir({super.key, required this.tafsirStyle, this.tafsirNameList});
+  final int? pageNumber;
+  ChangeTafsir(
+      {super.key,
+      required this.tafsirStyle,
+      this.tafsirNameList,
+      this.pageNumber});
 
   final ayatCtrl = TafsirCtrl.instance;
 
@@ -21,7 +26,9 @@ class ChangeTafsir extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Column(
               children: [
-                _tafsirBuild(context, index),
+                _tafsirBuild(context, index,
+                    pageNumber: pageNumber ??
+                        QuranCtrl().state.currentPageNumber.value),
                 index == 4
                     ? Padding(
                         padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -97,7 +104,7 @@ class ChangeTafsir extends StatelessWidget {
     );
   }
 
-  Widget _tafsirBuild(BuildContext context, int index) {
+  Widget _tafsirBuild(BuildContext context, int index, {int? pageNumber}) {
     return GetBuilder<TafsirCtrl>(
         id: 'change_tafsir',
         builder: (tafsirCtrl) {
@@ -182,7 +189,8 @@ class ChangeTafsir extends StatelessWidget {
                   ),
             onTap: () async {
               if (!isDownloaded) return;
-              await tafsirCtrl.handleRadioValueChanged(index);
+              await tafsirCtrl.handleRadioValueChanged(index,
+                  pageNumber: pageNumber);
               GetStorage().write(_StorageConstants().radioValue, index);
               // tafsirCtrl.fetchTranslate();
               tafsirCtrl.update(['change_tafsir']);

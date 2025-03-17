@@ -147,10 +147,8 @@ extension TafsirUi on TafsirCtrl {
   Future<void> closeAndInitializeDatabase({int? pageNumber}) async {
     tafseerList.clear();
     await closeCurrentDatabase();
-    // database.value =
-    //     TafsirDatabase(tafsirAndTranslateNames[radioValue.value].databaseName);
-    database = Rx<TafsirDatabase?>(
-        TafsirDatabase(tafsirAndTranslateNames[radioValue.value].databaseName));
+    database.value =
+        TafsirDatabase(tafsirAndTranslateNames[radioValue.value].databaseName);
     await initializeDatabase();
     await fetchData(
         pageNumber ?? QuranCtrl.instance.state.currentPageNumber.value);

@@ -423,6 +423,9 @@ class QuranLibrary {
   Future<void> fetchTafsir({required int pageNumber}) async =>
       await TafsirCtrl.instance.fetchData(pageNumber);
 
+  Future<void> closeAndInitializeDatabase() async =>
+      await TafsirCtrl.instance.closeAndInitializeDatabase();
+
   /// للحصول على التفسير الخاص بالآية،
   ///  فقط قم بتمرير رقم الآية لـ [getTafsirOfAyah].
   ///

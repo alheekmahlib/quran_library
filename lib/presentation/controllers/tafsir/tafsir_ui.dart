@@ -147,4 +147,13 @@ extension TafsirUi on TafsirCtrl {
     }
     update(['change_tafsir']);
   }
+
+  Future<void> closeAndInitializeDatabase() async {
+    tafseerList.clear();
+    await closeCurrentDatabase();
+    database.value =
+        TafsirDatabase(tafsirAndTranslateNames[radioValue.value].databaseName);
+    await fetchData(QuranCtrl.instance.state.currentPageNumber.value);
+    log('Database initialized for: ${tafsirAndTranslateNames[radioValue.value].databaseName}');
+  }
 }

@@ -56,7 +56,7 @@ extension TafsirUi on TafsirCtrl {
             (value) => _ToastUtils().showToast(Get.context!, 'copyTafseer'.tr));
   }
 
-  Future<void> handleRadioValueChanged(int val) async {
+  Future<void> handleRadioValueChanged(int val, {int? pageNumber}) async {
     log('start changing Tafsir');
     radioValue.value = val;
 
@@ -134,12 +134,9 @@ extension TafsirUi on TafsirCtrl {
             TafsirDatabase(tafsirAndTranslateNames[3].databaseName);
     }
     if (isTafsir.value) {
-      tafseerList.clear();
-      await closeCurrentDatabase();
-      database.value =
-          TafsirDatabase(tafsirAndTranslateNames[val].databaseName);
-      await fetchData(QuranCtrl.instance.state.currentPageNumber.value);
-      log('Database initialized for: ${tafsirAndTranslateNames[val].databaseName}');
+      closeAndInitializeDatabase(
+          pageNumber:
+              pageNumber ?? QuranCtrl.instance.state.currentPageNumber.value);
     } else {
       // transValue.value == val;
       box.write(_StorageConstants().radioValue, val);

@@ -399,8 +399,8 @@ class QuranLibrary {
   List<TafsirNameModel> get tafsirAndTraslationCollection =>
       tafsirAndTranslateNames;
 
-  void changeTafsirSwitch(int index) =>
-      TafsirCtrl.instance.handleRadioValueChanged(index);
+  void changeTafsirSwitch(int index, {int? pageNumber}) => TafsirCtrl.instance
+      .handleRadioValueChanged(index, pageNumber: pageNumber);
 
   List<TafsirTableData> get tafsirList => TafsirCtrl.instance.tafseerList;
 

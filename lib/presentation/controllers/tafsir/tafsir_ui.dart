@@ -83,49 +83,49 @@ extension TafsirUi on TafsirCtrl {
         break;
       case 5:
         isTafsir.value = false;
-        trans.value = 'en';
+        translationLangCode.value = 'en';
         box.write(_StorageConstants().translationLangCode, 'en');
         box.write(_StorageConstants().isTafsir, false);
         break;
       case 6:
         isTafsir.value = false;
-        trans.value = 'es';
+        translationLangCode.value = 'es';
         box.write(_StorageConstants().translationLangCode, 'es');
         box.write(_StorageConstants().isTafsir, false);
         break;
       case 7:
         isTafsir.value = false;
-        trans.value = 'be';
+        translationLangCode.value = 'be';
         box.write(_StorageConstants().translationLangCode, 'be');
         box.write(_StorageConstants().isTafsir, false);
         break;
       case 8:
         isTafsir.value = false;
-        trans.value = 'urdu';
+        translationLangCode.value = 'urdu';
         box.write(_StorageConstants().translationLangCode, 'urdu');
         box.write(_StorageConstants().isTafsir, false);
         break;
       case 9:
         isTafsir.value = false;
-        trans.value = 'so';
+        translationLangCode.value = 'so';
         box.write(_StorageConstants().translationLangCode, 'so');
         box.write(_StorageConstants().isTafsir, false);
         break;
       case 10:
         isTafsir.value = false;
-        trans.value = 'in';
+        translationLangCode.value = 'in';
         box.write(_StorageConstants().translationLangCode, 'in');
         box.write(_StorageConstants().isTafsir, false);
         break;
       case 11:
         isTafsir.value = false;
-        trans.value = 'ku';
+        translationLangCode.value = 'ku';
         box.write(_StorageConstants().translationLangCode, 'ku');
         box.write(_StorageConstants().isTafsir, false);
         break;
       case 12:
         isTafsir.value = false;
-        trans.value = 'tr';
+        translationLangCode.value = 'tr';
         box.write(_StorageConstants().translationLangCode, 'tr');
         box.write(_StorageConstants().isTafsir, false);
         break;
@@ -142,18 +142,19 @@ extension TafsirUi on TafsirCtrl {
       log('Database initialized for: ${tafsirAndTranslateNames[val].databaseName}');
     } else {
       // transValue.value == val;
-      box.write(_StorageConstants().translationValue, val);
+      box.write(_StorageConstants().radioValue, val);
       await fetchTranslate();
     }
     update(['change_tafsir']);
   }
 
-  Future<void> closeAndInitializeDatabase() async {
+  Future<void> closeAndInitializeDatabase({int? pageNumber}) async {
     tafseerList.clear();
     await closeCurrentDatabase();
     database.value =
         TafsirDatabase(tafsirAndTranslateNames[radioValue.value].databaseName);
-    await fetchData(QuranCtrl.instance.state.currentPageNumber.value);
+    await fetchData(
+        pageNumber ?? QuranCtrl.instance.state.currentPageNumber.value);
     log('Database initialized for: ${tafsirAndTranslateNames[radioValue.value].databaseName}');
   }
 }

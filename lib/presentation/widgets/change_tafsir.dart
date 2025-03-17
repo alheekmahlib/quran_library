@@ -183,7 +183,7 @@ class ChangeTafsir extends StatelessWidget {
             onTap: () async {
               if (!isDownloaded) return;
               await tafsirCtrl.handleRadioValueChanged(index);
-              GetStorage().write(_StorageConstants().tafsirValue, index);
+              GetStorage().write(_StorageConstants().radioValue, index);
               // tafsirCtrl.fetchTranslate();
               tafsirCtrl.update(['change_tafsir']);
               Get.back();

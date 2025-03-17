@@ -10,7 +10,7 @@ class _StorageConstants {
   final String isBold = 'IS_BOLD';
 
   /// Tafsir & Translation Constants
-  final String tafsirValue = 'TAFSEER_VAL';
+  final String radioValue = 'TAFSEER_VAL';
   final String tafsirTableValue = 'TAFSEER_TABLE_VAL';
   final String translationLangCode = 'TRANS';
   final String translationValue = 'TRANSLATE_VALUE';

@@ -27,7 +27,7 @@ class TafsirCtrl extends GetxController {
   RxBool isTafsir = true.obs;
   RxList<TranslationModel> translationList = <TranslationModel>[].obs;
   var isLoading = false.obs;
-  var trans = 'en'.obs;
+  var translationLangCode = 'en'.obs;
   // RxInt transValue = 0.obs;
 
   @override
@@ -49,12 +49,14 @@ class TafsirCtrl extends GetxController {
   }
 
   Future<void> loadTafseer() async {
-    radioValue.value = box.read(_StorageConstants().tafsirValue) ?? 3;
+    isTafsir.value = box.read(_StorageConstants().isTafsir) ?? true;
+    radioValue.value = box.read(_StorageConstants().radioValue) ?? 3;
     // selectedTableName.value = box.read(_StorageConstants().tafsirTableValue) ??
     //     MufaserName.saadi.name;
 
     // transValue.value = box.read(_StorageConstants().translationValue) ?? 0;
-    trans.value = box.read(_StorageConstants().translationLangCode) ?? 'en';
+    translationLangCode.value =
+        box.read(_StorageConstants().translationLangCode) ?? 'en';
   }
 
   Future<void> initializeDatabase() async {
@@ -121,7 +123,7 @@ class TafsirCtrl extends GetxController {
       Directory databasePath = await getApplicationDocumentsDirectory();
       String path = radioValue.value == 5
           ? 'packages/quran_library/assets/en.json'
-          : join(databasePath.path, '${trans.value}.json');
+          : join(databasePath.path, '${translationLangCode.value}.json');
       isLoading.value = true;
 
       String jsonString;

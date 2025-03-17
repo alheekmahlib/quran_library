@@ -38,12 +38,10 @@ class TafsirCtrl extends GetxController {
   Future<void> initTafsir() async {
     initializeTafsirDownloadStatus();
     await loadTafseer().then((_) async {
-      if (isTafsir.value) {
-        database.value?.close();
-        database = Rx<TafsirDatabase?>(TafsirDatabase(
-            tafsirAndTranslateNames[radioValue.value].databaseName));
-        await initializeDatabase();
-      }
+      database.value?.close();
+      database = Rx<TafsirDatabase?>(TafsirDatabase(
+          tafsirAndTranslateNames[radioValue.value].databaseName));
+      await initializeDatabase();
     });
   }
 

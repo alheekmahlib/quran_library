@@ -25,8 +25,23 @@ TextSpan _span({
   // if (bookmarkList!.isEmpty) {
   //   bookmarkList = bookmarks as List<BookmarkModel>;
   // }
+  bool pageSpacing = pageIndex == 45 ||
+          pageIndex == 54 ||
+          pageIndex == 56 ||
+          pageIndex == 75 ||
+          pageIndex == 76 ||
+          pageIndex == 150 ||
+          pageIndex == 539
+      ? true
+      : false;
   if (text.isNotEmpty) {
-    final String partOne = text.length < 3 ? text[0] : text[0] + text[1];
+    final String partOne = pageSpacing
+        ? text.length < 3
+            ? ' ${text[0]}'
+            : ' ${text[0]} ${text[1]}'
+        : text.length < 3
+            ? text[0]
+            : '${text[0]}${text[1]}';
     // final String partOne = pageIndex == 250
     //     ? text.length < 3
     //         ? text[0]
@@ -52,8 +67,7 @@ TextSpan _span({
           fontFamily: isFontsLocal ? fontsName : 'p${(pageIndex + 2001)}',
           fontSize: fontSize,
           height: 2.1,
-          letterSpacing:
-              pageIndex == 54 || pageIndex == 75 || pageIndex == 539 ? 0 : 30,
+          letterSpacing: pageSpacing ? -5 : 30,
           color: quranCtrl.state.fontsSelected2.value == 1
               ? textColor ?? Colors.transparent
               : null,

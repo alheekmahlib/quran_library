@@ -16,6 +16,10 @@ part of '../../quran.dart';
 /// Note: Ensure that you have the necessary dependencies and configurations
 /// set up in your Flutter project to use this class effectively.
 class QuranLibrary {
+  // Cache for frequently accessed data
+  final Map<String, dynamic> _cache = {};
+  bool _isInitialized = false;
+
   /// [init] تقوم بتهيئة القرآن ويجب استدعاؤها قبل البدء في استخدام الحزمة
   ///
   /// [init] initializes the FlutterQuran,
@@ -23,29 +27,43 @@ class QuranLibrary {
   Future<void> init(
       {Map<int, List<BookmarkModel>>? userBookmarks,
       bool overwriteBookmarks = false}) async {
-    // Get.put(QuranController());
+    if (_isInitialized) return;
+
     await GetStorage.init();
-    drift.driftRuntimeOptions.dontWarnAboutMultipleDatabases = true;
-    QuranCtrl.instance.state.isDownloadedV2Fonts.value =
-        GetStorage().read(_StorageConstants().isDownloadedCodeV2Fonts) ?? false;
-    QuranRepository().getLastPage();
-    await QuranCtrl.instance.loadFontsQuran();
-    await QuranCtrl.instance.loadQuran();
-    await QuranCtrl.instance.fetchSurahs();
-    BookmarksCtrl.instance.initBookmarks(
-        userBookmarks: userBookmarks, overwrite: overwriteBookmarks);
-    QuranCtrl.instance.state.isBold.value =
-        GetStorage().read(_StorageConstants().isBold) ?? 0;
+
+    // Initialize state values
+    final storage = GetStorage();
+    final storageConstants = _StorageConstants();
+
+    quranCtrl.state.isDownloadedV2Fonts.value =
+        storage.read(storageConstants.isDownloadedCodeV2Fonts) ?? false;
+    quranCtrl.state.isBold.value = storage.read(storageConstants.isBold) ?? 0;
     quranCtrl.state.fontsSelected2.value =
-        GetStorage().read(_StorageConstants().fontsSelected) ?? 0;
-    // quranCtrl.state.isTajweed.value =
-    //     GetStorage().read(StorageConstants().isTajweed) ?? 0;
-    quranCtrl.state.fontsDownloadedList.value = (GetStorage()
-            .read<List<dynamic>>(_StorageConstants().fontsDownloadedList)
+        storage.read(storageConstants.fontsSelected) ?? 0;
+    quranCtrl.state.fontsDownloadedList.value = (storage
+            .read<List<dynamic>>(storageConstants.fontsDownloadedList)
             ?.cast<int>() ??
         []);
-    TafsirCtrl.instance.isTafsir.value =
-        GetStorage().read(_StorageConstants().isTafsir) ?? true;
+
+    // Load data in parallel
+    final futures = <Future<void>>[
+      Future(() async {
+        final lastPage = QuranRepository().getLastPage();
+        if (lastPage != null) {
+          // Handle last page if needed
+        }
+      }),
+      QuranCtrl.instance.loadFontsQuran(),
+      QuranCtrl.instance.loadQuran(),
+      QuranCtrl.instance.fetchSurahs(),
+    ];
+    await Future.wait<void>(futures);
+
+    // Initialize bookmarks
+    BookmarksCtrl.instance.initBookmarks(
+        userBookmarks: userBookmarks, overwrite: overwriteBookmarks);
+
+    _isInitialized = true;
   }
 
   /// A singleton instance of the `QuranCtrl` class.
@@ -66,14 +84,30 @@ class QuranLibrary {
   ///
   /// [search] searches the Qur’an for verses by word or page number.
   /// Returns a list of all verses whose texts contain the given text.
-  List<AyahModel> search(String text) => quranCtrl.search(text);
+  List<AyahModel> search(String text) {
+    final cacheKey = 'search_$text';
+    if (_cache.containsKey(cacheKey)) {
+      return _cache[cacheKey] as List<AyahModel>;
+    }
+    final results = quranCtrl.search(text);
+    _cache[cacheKey] = results;
+    return results;
+  }
 
   /// [search] يبحث في القرآن عن أسماء السور.
   /// يعيد قائمة بجميع السور التي يكون أسمها أو رقمها أو رفم الصفحة الخاصة بها مطابق للنص المُعطى.
   ///
   /// [search] Searches the Qur’an for the names of the surahs.
   /// Returns a list of all surahs whose name, number, or page number matches the given text.
-  List<AyahModel> surahSearch(String text) => quranCtrl.searchSurah(text);
+  List<AyahModel> surahSearch(String text) {
+    final cacheKey = 'surah_search_$text';
+    if (_cache.containsKey(cacheKey)) {
+      return _cache[cacheKey] as List<AyahModel>;
+    }
+    final results = quranCtrl.searchSurah(text);
+    _cache[cacheKey] = results;
+    return results;
+  }
 
   /// [navigateToAyah] يتيح لك التنقل إلى أي آية.
   /// من الأفضل استدعاء هذه الطريقة أثناء عرض شاشة القرآن،
@@ -139,48 +173,88 @@ class QuranLibrary {
       jumpToPage(quranCtrl.surahsStart[surah - 1] + 1);
 
   /// [allJoz] returns list of all Quran joz' names
-  List<String> get allJoz => _QuranConstants.quranHizbs
-      .sublist(0, 30)
-      .map((jozz) => "الجزء $jozz")
-      .toList();
+  List<String> get allJoz {
+    if (_cache.containsKey('allJoz')) {
+      return _cache['allJoz'] as List<String>;
+    }
+    final jozList = _QuranConstants.quranHizbs
+        .sublist(0, 30)
+        .map((jozz) => "الجزء $jozz")
+        .toList();
+    _cache['allJoz'] = jozList;
+    return jozList;
+  }
 
   /// [allHizb] يعيد قائمة بأسماء جميع أجزاء القرآن.
   ///
   /// [allHizb] returns list of all Quran hizbs' names
-  List<String> get allHizb =>
-      _QuranConstants.quranHizbs.map((jozz) => "الحزب $jozz").toList();
+  List<String> get allHizb {
+    if (_cache.containsKey('allHizb')) {
+      return _cache['allHizb'] as List<String>;
+    }
+    final hizbList =
+        _QuranConstants.quranHizbs.map((jozz) => "الحزب $jozz").toList();
+    _cache['allHizb'] = hizbList;
+    return hizbList;
+  }
 
   /// [getAllSurahs] يعيد قائمة بأسماء السور.
   ///
   /// [getAllSurahs] returns list of all Quran surahs' names
-  List<String> getAllSurahs({bool isArabic = true}) => quranCtrl.surahs
-      .map((surah) =>
-          isArabic ? 'سورة ${surah.nameAr}' : 'Surah ${surah.nameEn}')
-      .toList();
+  List<String> getAllSurahs({bool isArabic = true}) {
+    final cacheKey = 'allSurahs_${isArabic ? 'ar' : 'en'}';
+    if (_cache.containsKey(cacheKey)) {
+      return _cache[cacheKey] as List<String>;
+    }
+    final surahList = quranCtrl.surahs
+        .map((surah) =>
+            isArabic ? 'سورة ${surah.nameAr}' : 'Surah ${surah.nameEn}')
+        .toList();
+    _cache[cacheKey] = surahList;
+    return surahList;
+  }
 
   /// [getAllSurahsArtPath] يعيد قائمة بمسارات المخطوطات الخاصة بإسماء السور.
   ///
   /// [getAllSurahsArtPath] returns list of all Quran surahs' name artistic manuscript path
-  List<String> getAllSurahsArtPath() => List.generate(quranCtrl.surahs.length,
-      (i) => 'packages/quran_library/assets/svg/surah_name/00$i.svg');
+  List<String> getAllSurahsArtPath() {
+    if (_cache.containsKey('allSurahsArtPath')) {
+      return _cache['allSurahsArtPath'] as List<String>;
+    }
+    final paths = List.generate(quranCtrl.surahs.length,
+        (i) => 'packages/quran_library/lib/assets/svg/surah_name/00$i.svg');
+    _cache['allSurahsArtPath'] = paths;
+    return paths;
+  }
 
   /// يعيد قائمة بجميع شارات المرجعية المحفوظة [allBookmarks].
   ///
   /// [allBookmarks] returns list of all bookmarks
   List<BookmarkModel> get allBookmarks {
-    final allBookmarks =
+    if (_cache.containsKey('allBookmarks')) {
+      return _cache['allBookmarks'] as List<BookmarkModel>;
+    }
+    final bookmarks =
         BookmarksCtrl.instance.bookmarks.values.expand((list) => list).toList();
-    return allBookmarks.sublist(0, allBookmarks.length - 1);
+    final result = bookmarks.sublist(0, bookmarks.length - 1);
+    _cache['allBookmarks'] = result;
+    return result;
   }
 
   /// يعيد قائمة بجميع العلامات المرجعية التي استخدمها وقام بتعيينها المستخدم في صفحات القرآن [usedBookmarks].
   ///
   /// [usedBookmarks] returns list of all bookmarks used and set by the user in quran pages
-  List<BookmarkModel> get usedBookmarks =>
-      BookmarksCtrl.instance.bookmarks.values
-          .expand((list) => list)
-          .where((bookmark) => bookmark.page != -1)
-          .toList();
+  List<BookmarkModel> get usedBookmarks {
+    if (_cache.containsKey('usedBookmarks')) {
+      return _cache['usedBookmarks'] as List<BookmarkModel>;
+    }
+    final bookmarks = BookmarksCtrl.instance.bookmarks.values
+        .expand((list) => list)
+        .where((bookmark) => bookmark.page != -1)
+        .toList();
+    _cache['usedBookmarks'] = bookmarks;
+    return bookmarks;
+  }
 
   /// للحصول على معلومات السورة في نافذة حوار، قم فقط باستدعاء: [getSurahInfoDialog].
   ///
@@ -471,6 +545,16 @@ class QuranLibrary {
     fontFamily: "naskh",
     package: "quran_library",
   );
+
+  /// مسح ذاكرة التخزين المؤقت لمفتاح معين أو ذاكرة التخزين المؤقت بالكامل
+  /// Clear cache for specific key or entire cache
+  void clearCache([String? key]) {
+    if (key != null) {
+      _cache.remove(key);
+    } else {
+      _cache.clear();
+    }
+  }
 
   ///Singleton factory
   static final QuranLibrary _instance = QuranLibrary._internal();

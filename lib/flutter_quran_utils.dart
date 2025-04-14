@@ -518,8 +518,8 @@ class QuranLibrary {
   // Future<void> initializeDatabase() async =>
   //     await TafsirCtrl.instance.initializeDatabase();
 
-  // Future<void> fetchTafsir({required int pageNumber}) async =>
-  //     await TafsirCtrl.instance.fetchData(pageNumber);
+  Future<void> fetchTafsir({required int pageNumber}) async =>
+      await TafsirCtrl.instance.fetchData(pageNumber);
 
   Future<void> closeAndInitializeDatabase({int? pageNumber}) async =>
       await TafsirCtrl.instance

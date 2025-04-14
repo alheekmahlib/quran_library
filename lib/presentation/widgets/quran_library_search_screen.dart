@@ -53,7 +53,16 @@ class QuranLibrarySearchScreen extends StatelessWidget {
               children: [
                 GetBuilder<QuranCtrl>(
                   builder: (quranCtrl) => TextField(
-                    controller: textController,
+                    // onSubmitted: (txt) async {
+                    //   if (txt.isNotEmpty) {
+                    //     final searchResult =
+                    //         await quranCtrl.quranSearch.search(txt);
+                    //     quranCtrl.ayahsList.value = [...searchResult];
+                    //   } else {
+                    //     quranCtrl.ayahsList.value = [];
+                    //   }
+                    // },
+
                     onChanged: (txt) {
                       final searchResult = QuranLibrary().search(txt);
                       quranCtrl.ayahsList.value = [...searchResult];

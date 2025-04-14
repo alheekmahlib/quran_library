@@ -139,7 +139,7 @@ class _DefaultDrawer extends StatelessWidget {
                               Expanded(
                                 flex: 8,
                                 child: SvgPicture.asset(
-                                  'packages/quran_library/lib/assets/svg/surah_name/00${index + 1}.svg',
+                                  'packages/quran_library/assets/svg/surah_name/00${index + 1}.svg',
                                   width: 200,
                                   height: 40,
                                   colorFilter: ColorFilter.mode(

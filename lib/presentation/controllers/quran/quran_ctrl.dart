@@ -25,10 +25,20 @@ class QuranCtrl extends GetxController {
   RxDouble baseScaleFactor = 1.0.obs;
   final isLoading = true.obs;
   RxList<SurahNamesModel> surahsList = <SurahNamesModel>[].obs;
+  // late QuranSearch quranSearch;
 
-  PageController _pageController = PageController();
+  PageController _pageController = PageController(
+      // viewportFraction: Get.context!.currentOrientation(1 / 2, 1.0),
+      // keepPage: false,
+      );
 
   QuranState state = QuranState();
+
+  // @override
+  // void onInit() {
+  //   _initSearch();
+  //   super.onInit();
+  // }
 
   @override
   void onClose() {
@@ -49,6 +59,11 @@ class QuranCtrl extends GetxController {
   }
 
   /// -------- [Methods] ----------
+
+  // Future<void> _initSearch() async {
+  //   quranSearch = QuranSearch(ayahs); // تأكد من أن `ayahs` محملة مسبقًا
+  //   await quranSearch.loadModel(); // تحميل نموذج BERT
+  // }
 
   Future<void> loadFontsQuran() async {
     lastPage = _quranRepository.getLastPage() ?? 1;
@@ -241,28 +256,27 @@ class QuranCtrl extends GetxController {
     if (searchText.isEmpty) {
       return [];
     } else {
-      // تطبيع النص المدخل
+      // تحويل الأرقام العربية إلى إنجليزية في النص المدخل
+      final convertedSearchText =
+          searchText.convertArabicNumbersToEnglish(searchText);
       final normalizedSearchText =
-          normalizeText(searchText.toLowerCase().trim());
+          normalizeText(convertedSearchText.toLowerCase().trim());
 
       final filteredAyahs = ayahs.where((aya) {
-        // تطبيع اسم السورة بالعربية والإنجليزية
         final normalizedSurahNameAr =
             normalizeText(aya.arabicName.toLowerCase());
         final normalizedSurahNameEn =
             normalizeText(aya.englishName.toLowerCase());
 
-        // التحقق من تطابق اسم السورة بالعربية أو الإنجليزية
+        // استخدام contains بدلاً من == للسماح بمطابقة جزئية
         final matchesSurahName =
-            normalizedSurahNameAr == normalizedSearchText ||
-                normalizedSurahNameEn == normalizedSearchText;
+            normalizedSurahNameAr.contains(normalizedSearchText) ||
+                normalizedSurahNameEn.contains(normalizedSearchText);
 
-        // التحقق من تطابق رقم السورة
-        final matchesSurahNumber = aya.surahNumber.toString() ==
-            normalizedSearchText
-                .convertArabicNumbersToEnglish(normalizedSearchText);
+        // تحويل رقم السورة إلى نص مع تحويل الأرقام العربية
+        final surahNumberText = aya.surahNumber.toString();
+        final matchesSurahNumber = surahNumberText == normalizedSearchText;
 
-        // إذا تحقق أي شرط من الشرطين أعلاه
         return matchesSurahName || matchesSurahNumber;
       }).toList();
 
@@ -279,7 +293,10 @@ class QuranCtrl extends GetxController {
     if (_pageController.hasClients) {
       _pageController.jumpToPage(page);
     } else {
-      _pageController = PageController(initialPage: page);
+      _pageController = PageController(
+        initialPage: page,
+        viewportFraction: 0.95,
+      );
     }
   }
 

@@ -1,17 +1,22 @@
 part of '../../quran.dart';
 
 class QuranLine extends StatelessWidget {
-  QuranLine(this.line, this.bookmarksAyahs, this.bookmarks,
-      {super.key,
-      this.boxFit = BoxFit.fill,
-      this.onDefaultAyahLongPress,
-      this.bookmarksColor,
-      this.textColor,
-      this.ayahSelectedBackgroundColor,
-      this.ayahSelectedFontColor,
-      this.bookmarkList,
-      this.onPagePress,
-      required this.pageIndex});
+  QuranLine(
+    this.line,
+    this.bookmarksAyahs,
+    this.bookmarks, {
+    super.key,
+    this.boxFit = BoxFit.fill,
+    this.onDefaultAyahLongPress,
+    this.bookmarksColor,
+    this.textColor,
+    this.ayahSelectedBackgroundColor,
+    this.bookmarkList,
+    this.onPagePress,
+    required this.pageIndex,
+    required this.ayahBookmarked,
+  });
+
 
   final quranCtrl = QuranCtrl.instance;
 
@@ -28,18 +33,10 @@ class QuranLine extends StatelessWidget {
   final Color? ayahSelectedFontColor;
   final List? bookmarkList;
   final int pageIndex;
+  final List<int> ayahBookmarked;
 
   @override
   Widget build(BuildContext context) {
-    RxBool hasBookmark(int surahNum, int ayahUQNum) {
-      return (bookmarkList!.firstWhereOrNull(((element) =>
-                  element.surahNumber == surahNum &&
-                  element.ayahUQNumber == ayahUQNum)) !=
-              null)
-          ? true.obs
-          : false.obs;
-    }
-
     return GetX<QuranCtrl>(
       builder: (quranCtrl) {
         return FittedBox(
@@ -51,6 +48,9 @@ class QuranLine extends StatelessWidget {
                   .contains(ayah.ayahUQNumber);
               final allBookmarks =
                   bookmarks.values.expand((list) => list).toList();
+              ayahBookmarked == false
+                  ? (bookmarksAyahs.contains(ayah.ayahUQNumber) ? true : false)
+                  : ayahBookmarked;
               // final String lastCharacter =
               //     ayah.ayah.substring(ayah.ayah.length - 1);
               return WidgetSpan(
@@ -86,8 +86,11 @@ class QuranLine extends StatelessWidget {
                         final overlay = Overlay.of(context);
                         final newOverlayEntry = OverlayEntry(
                           builder: (context) => AyahLongClickDialog(
+                            context: context,
                             ayah: ayah,
                             position: details.globalPosition,
+                            index: ayah.ayahNumber,
+                            pageIndex: pageIndex,
                           ),
                         );
 
@@ -101,8 +104,7 @@ class QuranLine extends StatelessWidget {
                   child: Container(
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(4.0),
-                      color: hasBookmark(ayah.surahNumber, ayah.ayahUQNumber)
-                              .value
+                      color: ayahBookmarked.contains(ayah.ayahUQNumber)
                           ? bookmarksColor
                           : (bookmarksAyahs.contains(ayah.ayahUQNumber)
                               ? Color(allBookmarks
@@ -126,7 +128,7 @@ class QuranLine extends StatelessWidget {
                             : textColor ?? Colors.black,
                         fontSize: 23.55,
                         fontFamily: "hafs",
-                        height: 1.7,
+                        height: 1.3,
                         package: "quran_library",
                       ),
                     ),

@@ -48,7 +48,7 @@ class SurahHeaderWidget extends StatelessWidget {
           ),
           alignment: Alignment.center,
           child: SvgPicture.asset(
-            'packages/quran_library/lib/assets/svg/surah_name/00$surahNumber.svg',
+            'packages/quran_library/assets/svg/surah_name/00$surahNumber.svg',
             width: surahNameStyle?.surahNameWidth ?? 70,
             height: surahNameStyle?.surahNameHeight ?? 37,
             colorFilter: ColorFilter.mode(
@@ -86,7 +86,7 @@ class SurahHeaderWidget extends StatelessWidget {
                   height: bannerStyle?.bannerSvgHeight ?? 40.0,
                 ),
                 SvgPicture.asset(
-                  'packages/quran_library/lib/assets/svg/surah_name/00$surahNumber.svg',
+                  'packages/quran_library/assets/svg/surah_name/00$surahNumber.svg',
                   width: surahNameStyle?.surahNameWidth ?? 70,
                   height: surahNameStyle?.surahNameHeight ?? 37,
                   colorFilter: ColorFilter.mode(

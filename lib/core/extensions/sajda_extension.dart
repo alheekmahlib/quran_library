@@ -24,7 +24,7 @@ extension SajdaExtension on Widget {
         ? Padding(
             padding: const EdgeInsets.symmetric(vertical: 8.0),
             child: SizedBox(
-              height: 15,
+              height: 20,
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [

@@ -23,16 +23,18 @@ class _QuranTextScale extends StatelessWidget {
     this.languageCode,
     this.circularProgressWidget,
     required this.isDark,
+    required this.ayahBookmarked,
   });
 
   final quranCtrl = QuranCtrl.instance;
   final int pageIndex;
-  final List<BookmarksAyahs>? bookmarkList;
+  final List? bookmarkList;
   final BasmalaStyle? basmalaStyle;
   final int? surahNumber;
   final SurahInfoStyle? surahInfoStyle;
   final SurahNameStyle? surahNameStyle;
   final BannerStyle? bannerStyle;
+  final List<int> ayahBookmarked;
   final Function(SurahNamesModel surah)? onSurahBannerPress;
   final Function(LongPressStartDetails details, AyahFontsModel ayah)?
       onFontsAyahLongPress;
@@ -210,6 +212,8 @@ class _QuranTextScale extends StatelessWidget {
                                           .getCurrentSurahByPage(pageIndex)
                                           .surahNumber,
                                       ayahUQNum: ayahs[ayahIndex].ayahUQNumber,
+                                      hasBookmark: ayahBookmarked.contains(
+                                          ayahs[ayahIndex].ayahUQNumber),
                                       onLongPressStart: (details) {
                                         if (onFontsAyahLongPress != null) {
                                           onFontsAyahLongPress!(
@@ -248,9 +252,12 @@ class _QuranTextScale extends StatelessWidget {
                                                 OverlayEntry(
                                               builder: (context) =>
                                                   AyahLongClickDialog(
+                                                context: context,
                                                 ayahFonts: ayahs[ayahIndex],
                                                 position:
                                                     details.globalPosition,
+                                                index: ayahIndex,
+                                                pageIndex: pageIndex,
                                               ),
                                             );
 

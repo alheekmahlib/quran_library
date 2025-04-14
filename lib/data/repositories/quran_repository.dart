@@ -21,7 +21,7 @@ class QuranRepository {
   /// Throws an [Exception] if the data retrieval fails.
   Future<List<dynamic>> getQuran() async {
     String content = await rootBundle
-        .loadString('packages/quran_library/lib/assets/jsons/quran_hafs.json');
+        .loadString('packages/quran_library/assets/jsons/quran_hafs.json');
     return jsonDecode(content);
   }
 
@@ -39,7 +39,7 @@ class QuranRepository {
   ///   An exception if there is an error while fetching the Surah data.
   Future<Map<String, dynamic>> getSurahs() async {
     String content = await rootBundle
-        .loadString('packages/quran_library/lib/assets/jsons/surahs_name.json');
+        .loadString('packages/quran_library/assets/jsons/surahs_name.json');
     return jsonDecode(content);
   }
 
@@ -56,7 +56,7 @@ class QuranRepository {
   /// ```
   Future<List<dynamic>> getFontsQuran() async {
     String jsonString = await rootBundle
-        .loadString('packages/quran_library/lib/assets/jsons/quranV2.json');
+        .loadString('packages/quran_library/assets/jsons/quranV2.json');
     Map<String, dynamic> jsonResponse = jsonDecode(jsonString);
     List<dynamic> surahsJson = jsonResponse['data']['surahs'];
     return surahsJson;

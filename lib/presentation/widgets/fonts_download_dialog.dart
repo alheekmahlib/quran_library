@@ -4,11 +4,13 @@ class FontsDownloadDialog extends StatelessWidget {
   final DownloadFontsDialogStyle? downloadFontsDialogStyle;
   final String? languageCode;
   final bool isDark;
+  final bool? isFontsLocal;
 
   FontsDownloadDialog(
       {super.key,
       this.downloadFontsDialogStyle,
       this.languageCode,
+      this.isFontsLocal,
       this.isDark = false});
 
   final quranCtrl = QuranCtrl.instance;
@@ -56,7 +58,9 @@ class FontsDownloadDialog extends StatelessWidget {
           quranCtrl.fontsDownloadWidget(context,
               downloadFontsDialogStyle: downloadFontsDialogStyle!,
               languageCode: languageCode,
-              isDark: isDark),
+              isDark: isDark,
+              isFontsLocal: isFontsLocal),
+
           Positioned(
             right: 8,
             top: 8,
@@ -67,9 +71,8 @@ class FontsDownloadDialog extends StatelessWidget {
                   : Colors.grey[
                       800], // Light grey for dark theme, dark grey for light theme
               padding: EdgeInsets.all(4),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
+              onPressed: () => Navigator.of(context).pop(),
+
             ),
           ),
         ],

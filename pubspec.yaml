@@ -1,6 +1,6 @@
 name: quran_library
 description: "An integrated package for displaying the Holy Qur’an identical to the Medina Quran with the narration of Hafs on the authority of Asim."
-version: 0.1.3
+version: 0.1.4
 homepage: https://github.com/alheekmahlib/quran_library
 
 environment:
@@ -13,7 +13,7 @@ dependencies:
 
 
   # state management
-  get: ^4.6.6
+  get: ^4.7.2
 
   # local storage
   get_storage: ^2.1.1
@@ -22,9 +22,13 @@ dependencies:
   flutter_svg: ^2.0.17
 
   #Tools
-  archive: ^4.0.2
-  http: ^1.2.2
+  archive: ^4.0.4
+  http: ^1.3.0
   path_provider: ^2.1.5
+  drift: ^2.26.0
+  path: ^1.9.0
+  dio: ^5.8.0+1
+  another_xlider: ^3.0.2
 
 
 # This package supports all platforms listed below.
@@ -42,6 +46,8 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^5.0.0
+  drift_dev: ^2.26.0
+  build_runner: ^2.4.15
 
 package_rename_config:
   android:
@@ -59,23 +65,26 @@ package_rename_config:
 
 flutter:
   assets:
-    - lib/assets/
-    - lib/assets/fonts/
-    - lib/assets/fonts/Kufam-Regular.ttf
-    - lib/assets/fonts/NotoNaskhArabic-VariableFont_wght.ttf
-    - lib/assets/fonts/UthmanicHafs_V20.ttf
-    - lib/assets/jsons/
-    - lib/assets/svg/
-    - lib/assets/svg/surah_name/
+    - assets/
+    - assets/fonts/
+    - assets/fonts/Kufam-Regular.ttf
+    - assets/fonts/NotoNaskhArabic-VariableFont_wght.ttf
+    - assets/fonts/UthmanicHafs_V20.ttf
+    - assets/jsons/
+    - assets/svg/
+    - assets/svg/surah_name/
+    - assets/saadiV4.db
+    - assets/en.json
+
 
   fonts:
     - family: kufi
       fonts:
-        - asset: packages/quran_library/assets/fonts/Kufam-Regular.ttf
+        - asset: assets/fonts/Kufam-Regular.ttf
     - family: naskh
       fonts:
-        - asset: packages/quran_library/assets/fonts/NotoNaskhArabic-VariableFont_wght.ttf
+        - asset: assets/fonts/NotoNaskhArabic-VariableFont_wght.ttf
     - family: hafs
       fonts:
-        - asset: packages/quran_library/assets/fonts/UthmanicHafs_V20.ttf
+        - asset: assets/fonts/UthmanicHafs_V20.ttf
 

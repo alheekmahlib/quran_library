@@ -31,6 +31,8 @@ class QuranLibrary {
 
     await GetStorage.init();
 
+    drift.driftRuntimeOptions.dontWarnAboutMultipleDatabases = true;
+
     // Initialize state values
     final storage = GetStorage();
     final storageConstants = _StorageConstants();
@@ -311,12 +313,14 @@ class QuranLibrary {
   Widget getFontsDownloadWidget(BuildContext context,
           {DownloadFontsDialogStyle? downloadFontsDialogStyle,
           String? languageCode,
-          bool isDark = false}) =>
+          bool isDark = false,
+          bool isFontsLocal = false}) =>
       quranCtrl.fontsDownloadWidget(
         context,
         downloadFontsDialogStyle: downloadFontsDialogStyle,
         languageCode: languageCode,
         isDark: isDark,
+        isFontsLocal: isFontsLocal,
       );
 
   /// للحصول على طريقة تنزيل الخطوط فقط قم بإستدعاء [fontsDownloadMethod]
@@ -330,8 +334,9 @@ class QuranLibrary {
   ///
   /// to prepare the fonts was downloaded before just call [getFontsPrepareMethod]
   /// required to pass [pageIndex]
-  void getFontsPrepareMethod({required int pageIndex}) =>
-      quranCtrl.prepareFonts(pageIndex);
+  void getFontsPrepareMethod(
+          {required int pageIndex, bool isFontsLocal = false}) =>
+      quranCtrl.prepareFonts(pageIndex, isFontsLocal: isFontsLocal);
 
   /// لحذف الخطوط فقط قم بإستدعاء [deleteFontsMethod]
   ///
@@ -354,6 +359,15 @@ class QuranLibrary {
   ///
   /// To find out which font has been selected, just call [currentFontsSelected]
   int get currentFontsSelected => quranCtrl.state.fontsSelected2.value;
+
+  /// لتحديد نوع الخط الذي تريد إستخدامه، ما عليك سوى إعطاء قيمة [setFontsSelected]
+  ///
+  /// To set the font type you want to use, just give a value to [setFontsSelected]
+  ///
+  set setFontsSelected(int index) {
+    quranCtrl.state.fontsSelected2.value = index;
+    GetStorage().write(_StorageConstants().fontsSelected, index);
+  }
 
   /// يقوم بتعيين علامة مرجعية باستخدام [ayahId] و[page] و[bookmarkId] المحددة.
   ///
@@ -448,6 +462,98 @@ class QuranLibrary {
   // List<TajweedRuleModel> getTajweedRules({required String languageCode}) =>
   //     quranCtrl.getTajweedRules(languageCode: languageCode);
 
+  //////////// [Tafsir] ////////////
+
+  /// تهيئة بيانات التفسير عند بدء التطبيق.
+  /// Initialize tafsir data when the app starts.
+  Future<void> initTafsir() async => TafsirCtrl.instance.initTafsir();
+
+  /// إظهار قائمة منبثقة لتغيير نوع التفسير.
+  /// Show a popup menu to change the tafsir style.
+  Widget changeTafsirPopupMenu(TafsirStyle tafsirStyle, {int? pageNumber}) =>
+      ChangeTafsir(tafsirStyle: tafsirStyle, pageNumber: pageNumber);
+
+  /// التحقق إذا كان التفسير تم تحميله مسبقاً.
+  /// Check if the tafsir is already downloaded.
+  bool getTafsirDownloaded(int index) =>
+      TafsirCtrl.instance.tafsirDownloadIndexList.contains(index);
+
+  /// الحصول على قائمة أسماء التفاسير والترجمات.
+  /// Get the list of tafsir and translation names.
+  List<TafsirNameModel> get tafsirAndTraslationCollection =>
+      tafsirAndTranslateNames;
+
+  /// تغيير التفسير المختار عند الضغط على زر التبديل.
+  /// Change the selected tafsir when the switch button is pressed.
+  void changeTafsirSwitch(int index, {int? pageNumber}) => TafsirCtrl.instance
+      .handleRadioValueChanged(index, pageNumber: pageNumber);
+
+  /// الحصول على قائمة بيانات التفاسير المتوفرة.
+  /// Get the list of available tafsir data.
+  List<TafsirTableData> get tafsirList => TafsirCtrl.instance.tafseerList;
+
+  /// الحصول على قائمة الترجمات المتوفرة.
+  /// Get the list of available translations.
+  List<TranslationModel> get translationList =>
+      TafsirCtrl.instance.translationList;
+
+  /// التحقق إذا كان الوضع الحالي هو التفسير.
+  /// Check if the current mode is tafsir.
+  bool get isTafsir => TafsirCtrl.instance.isTafsir.value;
+
+  /// الحصول على رقم التفسير المختار حالياً.
+  /// Get the currently selected tafsir index.
+  int get tafsirSelected => TafsirCtrl.instance.radioValue.value;
+
+  /// جلب الترجمات من المصدر.
+  /// Fetch translations from the source.
+  Future<void> fetchTranslation() async =>
+      await TafsirCtrl.instance.fetchTranslate();
+
+  /// تحميل التفسير المحدد حسب الفهرس.
+  /// Download the tafsir by the given index.
+  Future<void> tafsirDownload(int i) async =>
+      await TafsirCtrl.instance.tafsirDownload(i);
+
+  // Future<void> initializeDatabase() async =>
+  //     await TafsirCtrl.instance.initializeDatabase();
+
+  /// جلب التفسير الخاص بصفحة معينة من خلال رقم الصفحة.
+  /// Fetch tafsir for a specific page by its page number.
+  Future<void> fetchTafsir({required int pageNumber}) async =>
+      await TafsirCtrl.instance.fetchData(pageNumber);
+
+  /// إغلاق قاعدة البيانات وإعادة تهيئتها (عادة عند تغيير التفسير).
+  /// Close and re-initialize the database (usually when changing the tafsir).
+  Future<void> closeAndInitializeDatabase({int? pageNumber}) async =>
+      await TafsirCtrl.instance
+          .closeAndInitializeDatabase(pageNumber: pageNumber!);
+
+  /// للحصول على التفسير الخاص بالآية،
+  ///  فقط قم بتمرير رقم الآية لـ [getTafsirOfAyah].
+  ///
+  /// To obtain the interpretation of the verse,
+  /// simply pass the verse number to [getTafsirOfAyah].
+  ///
+  Future<List<TafsirTableData>> getTafsirOfAyah(
+      {required int ayahUniqNumber, String? databaseName}) async {
+    // TafsirCtrl.instance.initializeDatabase();
+    // await TafsirCtrl.instance.fetchData(pageIndex + 1);
+    return await TafsirCtrl.instance
+        .fetchTafsirAyah(ayahUniqNumber, databaseName: databaseName!);
+  }
+
+  /// للحصول على التفسير الخاص بايآت الصفحة،
+  ///  فقط قم بتمرير رقم الصفحة لـ [getTafsirOfPage].
+  ///
+  /// To obtain the interpretation of the verses on the page,
+  /// simply pass the page number to [getTafsirOfPage].
+  ///
+  Future<List<TafsirTableData>> getTafsirOfPage(
+          {required int pageNumber, String? databaseName}) async =>
+      await TafsirCtrl.instance
+          .fetchTafsirPage(pageNumber, databaseName: databaseName!);
+
   /// [hafsStyle] هو النمط الافتراضي للقرآن، مما يضمن عرض جميع الأحرف الخاصة بشكل صحيح.
   ///
   /// [hafsStyle] is the default style for Quran so all special characters will be rendered correctly
@@ -468,6 +574,7 @@ class QuranLibrary {
     package: "quran_library",
   );
 
+  /// مسح ذاكرة التخزين المؤقت لمفتاح معين أو ذاكرة التخزين المؤقت بالكامل
   /// Clear cache for specific key or entire cache
   void clearCache([String? key]) {
     if (key != null) {

@@ -49,6 +49,9 @@ class QuranLibraryScreen extends StatelessWidget {
     this.topTitleChild,
     this.useDefaultAppBar = true,
     this.withPageView = true,
+    this.isFontsLocal = false,
+    this.fontsName = '',
+    this.ayahBookmarked = const [],
   });
 
   /// إذا قمت بإضافة شريط التطبيقات هنا فإنه سيحل محل شريط التطبيقات الافتراضية [appBar]
@@ -80,7 +83,7 @@ class QuranLibraryScreen extends StatelessWidget {
   /// إذا كنت تريد إضافة قائمة إشارات مرجعية خاصة، فقط قم بتمريرها لـ [bookmarkList]
   ///
   /// If you want to add a private bookmark list, just pass it to [bookmarkList]
-  final List<BookmarksAyahs> bookmarkList;
+  final List bookmarkList;
 
   /// تغيير لون الإشارة المرجعية (اختياري) [bookmarksColor]
   ///
@@ -213,6 +216,11 @@ class QuranLibraryScreen extends StatelessWidget {
   /// [withPageView] Enable this variable if you want to display the Quran with PageView
   final bool withPageView;
 
+  final bool? isFontsLocal;
+
+  final String? fontsName;
+  final List<int>? ayahBookmarked;
+
   @override
   Widget build(BuildContext context) {
     // if (isDark!) {
@@ -265,6 +273,7 @@ class QuranLibraryScreen extends StatelessWidget {
                                     : const Color(0xFFF7EFE0),
                               ),
                           languageCode: languageCode,
+                          isFontsLocal: isFontsLocal,
                           isDark: isDark,
                         )
                       ],
@@ -278,7 +287,8 @@ class QuranLibraryScreen extends StatelessWidget {
                 ? PageView.builder(
                     itemCount: 604,
                     controller: quranCtrl.pageController,
-                    physics: const ClampingScrollPhysics(),
+                    padEnds: false,
+                    physics: const BouncingScrollPhysics(),
                     onPageChanged: (page) async {
                       if (onPageChanged != null) {
                         onPageChanged!(page);
@@ -294,6 +304,7 @@ class QuranLibraryScreen extends StatelessWidget {
                         context,
                         index,
                         quranCtrl,
+                        isFontsLocal!,
                       );
                     },
                   )
@@ -301,6 +312,7 @@ class QuranLibraryScreen extends StatelessWidget {
                     context,
                     pageIndex,
                     quranCtrl,
+                    isFontsLocal!,
                   ),
           ),
         ),
@@ -312,10 +324,13 @@ class QuranLibraryScreen extends StatelessWidget {
     BuildContext context,
     int pageIndex,
     QuranCtrl quranCtrl,
+    bool isFontsLocal,
   ) {
     final deviceSize = MediaQuery.of(context).size;
     List<String> newSurahs = [];
-    quranCtrl.isDownloadFonts ? quranCtrl.prepareFonts(pageIndex) : null;
+    quranCtrl.isDownloadFonts
+        ? quranCtrl.prepareFonts(pageIndex, isFontsLocal: isFontsLocal)
+        : null;
     final bookmarkCtrl = BookmarksCtrl.instance;
     return GetBuilder<QuranCtrl>(
       init: QuranCtrl.instance,
@@ -362,6 +377,9 @@ class QuranLibraryScreen extends StatelessWidget {
                           onPagePress: onPagePress,
                           isDark: isDark,
                           circularProgressWidget: circularProgressWidget,
+                          isFontsLocal: isFontsLocal,
+                          fontsName: fontsName,
+                          ayahBookmarked: ayahBookmarked!,
                         ),
                       ))
               : quranCtrl.staticPages.isEmpty || quranCtrl.isLoading.value
@@ -389,6 +407,7 @@ class QuranLibraryScreen extends StatelessWidget {
                       sajdaName: sajdaName,
                       topTitleChild: topTitleChild,
                       isDark: isDark,
+                      ayahBookmarked: ayahBookmarked!,
                     )),
           quranCtrl.staticPages.isEmpty || quranCtrl.isLoading.value
               ? Center(
@@ -422,6 +441,7 @@ class QuranLibraryScreen extends StatelessWidget {
                     languageCode: languageCode,
                     isDark: isDark,
                     circularProgressWidget: circularProgressWidget,
+                    ayahBookmarked: ayahBookmarked!,
                   ),
                 ),
         ),

@@ -31,6 +31,8 @@ class QuranLibrary {
 
     await GetStorage.init();
 
+    drift.driftRuntimeOptions.dontWarnAboutMultipleDatabases = true;
+
     // Initialize state values
     final storage = GetStorage();
     final storageConstants = _StorageConstants();

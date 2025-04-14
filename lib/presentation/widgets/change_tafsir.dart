@@ -28,7 +28,7 @@ class ChangeTafsir extends StatelessWidget {
               children: [
                 _tafsirBuild(context, index,
                     pageNumber: pageNumber ??
-                        QuranCtrl().state.currentPageNumber.value),
+                        QuranCtrl.instance.state.currentPageNumber.value),
                 index == 4
                     ? Padding(
                         padding: const EdgeInsets.symmetric(vertical: 8.0),

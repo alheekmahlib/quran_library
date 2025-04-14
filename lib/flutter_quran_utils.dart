@@ -464,37 +464,59 @@ class QuranLibrary {
 
   //////////// [Tafsir] ////////////
 
+  /// تهيئة بيانات التفسير عند بدء التطبيق.
+  /// Initialize tafsir data when the app starts.
   Future<void> initTafsir() async => TafsirCtrl.instance.initTafsir();
 
+  /// إظهار قائمة منبثقة لتغيير نوع التفسير.
+  /// Show a popup menu to change the tafsir style.
   Widget changeTafsirPopupMenu(TafsirStyle tafsirStyle, {int? pageNumber}) =>
       ChangeTafsir(tafsirStyle: tafsirStyle, pageNumber: pageNumber);
 
+  /// التحقق إذا كان التفسير تم تحميله مسبقاً.
+  /// Check if the tafsir is already downloaded.
   bool getTafsirDownloaded(int index) =>
       TafsirCtrl.instance.tafsirDownloadIndexList.contains(index);
 
+  /// الحصول على قائمة أسماء التفاسير والترجمات.
+  /// Get the list of tafsir and translation names.
   List<TafsirNameModel> get tafsirAndTraslationCollection =>
       tafsirAndTranslateNames;
 
+  /// تغيير التفسير المختار عند الضغط على زر التبديل.
+  /// Change the selected tafsir when the switch button is pressed.
   void changeTafsirSwitch(int index, {int? pageNumber}) => TafsirCtrl.instance
       .handleRadioValueChanged(index, pageNumber: pageNumber);
 
+  /// الحصول على قائمة بيانات التفاسير المتوفرة.
+  /// Get the list of available tafsir data.
   List<TafsirTableData> get tafsirList => TafsirCtrl.instance.tafseerList;
 
+  /// الحصول على قائمة الترجمات المتوفرة.
+  /// Get the list of available translations.
   List<TranslationModel> get translationList =>
       TafsirCtrl.instance.translationList;
 
+  /// التحقق إذا كان الوضع الحالي هو التفسير.
+  /// Check if the current mode is tafsir.
   bool get isTafsir => TafsirCtrl.instance.isTafsir.value;
 
+  /// الحصول على رقم التفسير المختار حالياً.
+  /// Get the currently selected tafsir index.
   int get tafsirSelected => TafsirCtrl.instance.radioValue.value;
 
+  /// جلب الترجمات من المصدر.
+  /// Fetch translations from the source.
   Future<void> fetchTranslation() async =>
       await TafsirCtrl.instance.fetchTranslate();
 
+  /// تحميل التفسير المحدد حسب الفهرس.
+  /// Download the tafsir by the given index.
   Future<void> tafsirDownload(int i) async =>
       await TafsirCtrl.instance.tafsirDownload(i);
 
-  Future<void> initializeDatabase() async =>
-      await TafsirCtrl.instance.initializeDatabase();
+  // Future<void> initializeDatabase() async =>
+  //     await TafsirCtrl.instance.initializeDatabase();
 
   Future<void> fetchTafsir({required int pageNumber}) async =>
       await TafsirCtrl.instance.fetchData(pageNumber);

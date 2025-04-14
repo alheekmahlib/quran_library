@@ -84,7 +84,7 @@ class QuranLibrary {
   /// [search] يبحث في القرآن عن الآيات من خلال الكلمة أو رقم الصفحة.
   /// يعيد قائمة بجميع الآيات التي تحتوي نصوصها على النص المُعطى.
   ///
-  /// [search] searches the Qur’an for verses by word or page number.
+  /// [search] searches the Qur'an for verses by word or page number.
   /// Returns a list of all verses whose texts contain the given text.
   List<AyahModel> search(String text) {
     final cacheKey = 'search_$text';
@@ -99,7 +99,7 @@ class QuranLibrary {
   /// [search] يبحث في القرآن عن أسماء السور.
   /// يعيد قائمة بجميع السور التي يكون أسمها أو رقمها أو رفم الصفحة الخاصة بها مطابق للنص المُعطى.
   ///
-  /// [search] Searches the Qur’an for the names of the surahs.
+  /// [search] Searches the Qur'an for the names of the surahs.
   /// Returns a list of all surahs whose name, number, or page number matches the given text.
   List<AyahModel> surahSearch(String text) {
     final cacheKey = 'surah_search_$text';

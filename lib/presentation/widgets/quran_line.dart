@@ -17,6 +17,7 @@ class QuranLine extends StatelessWidget {
     required this.ayahBookmarked,
   });
 
+
   final quranCtrl = QuranCtrl.instance;
 
   final Line line;
@@ -29,6 +30,7 @@ class QuranLine extends StatelessWidget {
   final Color? bookmarksColor;
   final Color? textColor;
   final Color? ayahSelectedBackgroundColor;
+  final Color? ayahSelectedFontColor;
   final List? bookmarkList;
   final int pageIndex;
   final List<int> ayahBookmarked;
@@ -42,8 +44,8 @@ class QuranLine extends StatelessWidget {
           child: RichText(
               text: TextSpan(
             children: line.ayahs.reversed.map((ayah) {
-              quranCtrl.isAyahSelected =
-                  quranCtrl.selectedAyahIndexes.contains(ayah.ayahUQNumber);
+              quranCtrl.isAyahSelected = quranCtrl.selectedAyahsByUnequeNumber
+                  .contains(ayah.ayahUQNumber);
               final allBookmarks =
                   bookmarks.values.expand((list) => list).toList();
               ayahBookmarked == false
@@ -120,7 +122,10 @@ class QuranLine extends StatelessWidget {
                     child: Text(
                       ayah.text,
                       style: TextStyle(
-                        color: textColor ?? Colors.black,
+                        color: quranCtrl.selectedAyahsByUnequeNumber
+                                .contains(ayah.ayahUQNumber)
+                            ? ayahSelectedFontColor
+                            : textColor ?? Colors.black,
                         fontSize: 23.55,
                         fontFamily: "hafs",
                         height: 1.3,

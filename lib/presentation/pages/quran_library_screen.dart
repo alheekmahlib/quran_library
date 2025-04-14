@@ -22,6 +22,7 @@ class QuranLibraryScreen extends StatelessWidget {
     this.appBar,
     this.ayahIconColor,
     this.ayahSelectedBackgroundColor,
+    this.ayahSelectedFontColor,
     this.bannerStyle,
     this.basmalaStyle,
     this.backgroundColor,
@@ -44,6 +45,7 @@ class QuranLibraryScreen extends StatelessWidget {
     this.surahNameStyle,
     this.surahNumber,
     this.textColor,
+    this.singleAyahTextColors,
     this.topTitleChild,
     this.useDefaultAppBar = true,
     this.withPageView = true,
@@ -66,6 +68,7 @@ class QuranLibraryScreen extends StatelessWidget {
   ///
   /// [ayahSelectedBackgroundColor] You can pass the color of the Ayah selected background
   final Color? ayahSelectedBackgroundColor;
+  final Color? ayahSelectedFontColor;
 
   /// تغيير نمط البسملة بواسطة هذه الفئة [BasmalaStyle]
   ///
@@ -200,6 +203,7 @@ class QuranLibraryScreen extends StatelessWidget {
   ///
   /// [textColor] You can pass the color of the Quran text
   final Color? textColor;
+  final List<Color?>? singleAyahTextColors;
 
   /// متغير لتعطيل أو تمكين شريط التطبيقات الافتراضية [useDefaultAppBar]
   ///
@@ -355,7 +359,7 @@ class QuranLibraryScreen extends StatelessWidget {
                         child: _QuranFontsPage(
                           pageIndex: pageIndex,
                           bookmarkList: bookmarkList,
-                          textColor: textColor,
+                          textColor: ayahSelectedFontColor ?? textColor,
                           ayahIconColor: ayahIconColor,
                           showAyahBookmarkedIcon: showAyahBookmarkedIcon,
                           bookmarks: bookmarkCtrl.bookmarks,
@@ -419,7 +423,7 @@ class QuranLibraryScreen extends StatelessWidget {
                   child: _QuranTextScale(
                     pageIndex: pageIndex,
                     bookmarkList: bookmarkList,
-                    textColor: textColor,
+                    textColor: ayahSelectedFontColor ?? textColor,
                     ayahIconColor: ayahIconColor,
                     showAyahBookmarkedIcon: showAyahBookmarkedIcon,
                     bookmarks: bookmarkCtrl.bookmarks,

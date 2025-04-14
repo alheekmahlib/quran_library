@@ -15,6 +15,7 @@ class _QuranLinePage extends StatelessWidget {
   final Color? textColor;
   final List? bookmarkList;
   final Color? ayahSelectedBackgroundColor;
+  final Color? ayahSelectedFontColor;
   final VoidCallback? onPagePress;
   final List<String> newSurahs;
   final String? languageCode;
@@ -38,6 +39,7 @@ class _QuranLinePage extends StatelessWidget {
     this.textColor,
     this.bookmarkList,
     this.ayahSelectedBackgroundColor,
+    this.ayahSelectedFontColor,
     this.onPagePress,
     required this.newSurahs,
     this.languageCode,
@@ -79,6 +81,7 @@ class _QuranLinePage extends StatelessWidget {
                 ? SingleChildScrollView(child: _firstTwoSurahs(context))
                 : _firstTwoSurahs(context)
             : _firstTwoSurahs(context));
+
   }
 
   Widget otherSurahs(BuildContext context) {
@@ -263,6 +266,7 @@ class _QuranLinePage extends StatelessWidget {
                                 textColor: isDark ? Colors.white : Colors.black,
                                 titleColor:
                                     isDark ? Colors.white : Colors.black,
+
                               ),
                           onSurahBannerPress: onSurahBannerPress,
                           isDark: isDark,

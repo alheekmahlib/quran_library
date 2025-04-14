@@ -1,3 +1,13 @@
+## 0.1.4
+
+* **Add Tafsir & Translations.**
+* **Improve scroll.**
+* **Fix bookmark color.**
+* **Edit download method.**
+* **Add jumpToAyah.**
+* **Add docs.**
+* **General improvements in performance.**
+
 ## 0.1.3
 
 * **Modify DownloadFontsDialogStyle.**

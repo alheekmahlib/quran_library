@@ -518,9 +518,13 @@ class QuranLibrary {
   // Future<void> initializeDatabase() async =>
   //     await TafsirCtrl.instance.initializeDatabase();
 
+  /// جلب التفسير الخاص بصفحة معينة من خلال رقم الصفحة.
+  /// Fetch tafsir for a specific page by its page number.
   Future<void> fetchTafsir({required int pageNumber}) async =>
       await TafsirCtrl.instance.fetchData(pageNumber);
 
+  /// إغلاق قاعدة البيانات وإعادة تهيئتها (عادة عند تغيير التفسير).
+  /// Close and re-initialize the database (usually when changing the tafsir).
   Future<void> closeAndInitializeDatabase({int? pageNumber}) async =>
       await TafsirCtrl.instance
           .closeAndInitializeDatabase(pageNumber: pageNumber!);

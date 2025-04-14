@@ -212,6 +212,58 @@ QuranLibrary().isFontsDownloaded;
 
 <img src="https://github.com/alheekmahlib/thegarlanded/blob/master/Photos/Quran_package_fontes.png?raw=true" width="320"/>
 
+## Tafsir - التفسير
+
+* ### Initialize tafsir - تهيئة التفسير:
+
+```dart
+QuranLibrary().initTafsir();
+```
+
+* ### Usage Example - مثال الإستخدام
+
+```dart
+/// Show a popup menu to change the tafsir style.
+/// إظهار قائمة منبثقة لتغيير نوع التفسير.
+QuranLibrary().changeTafsirPopupMenu(TafsirStyle tafsirStyle, {int? pageNumber});
+
+/// إغلاق قاعدة البيانات وإعادة تهيئتها (عادة عند تغيير التفسير).
+/// Close and re-initialize the database (usually when changing the tafsir).
+QuranLibrary().closeAndInitializeDatabase({int? pageNumber});
+
+/// جلب التفسير الخاص بصفحة معينة من خلال رقم الصفحة.
+/// Fetch tafsir for a specific page by its page number.
+QuranLibrary().fetchTafsir({required int pageNumber});
+
+/// التحقق إذا كان التفسير تم تحميله مسبقاً.
+/// Check if the tafsir is already downloaded.
+QuranLibrary().getTafsirDownloaded(int index);
+
+/// الحصول على قائمة أسماء التفاسير والترجمات.
+/// Get the list of tafsir and translation names.
+QuranLibrary().tafsirAndTraslationCollection;
+
+/// تغيير التفسير المختار عند الضغط على زر التبديل.
+/// Change the selected tafsir when the switch button is pressed.
+QuranLibrary().changeTafsirSwitch(int index, {int? pageNumber});
+
+/// الحصول على قائمة بيانات التفاسير المتوفرة.
+/// Get the list of available tafsir data.
+QuranLibrary().tafsirList;
+
+/// الحصول على قائمة الترجمات المتوفرة.
+/// Get the list of available translations.
+QuranLibrary().translationList;
+
+/// جلب الترجمات من المصدر.
+/// Fetch translations from the source.
+QuranLibrary().fetchTranslation();
+
+/// تحميل التفسير المحدد حسب الفهرس.
+/// Download the tafsir by the given index.
+QuranLibrary().tafsirDownload(int i);
+```
+
 * ### كما يمكنك إستخدام الخط الإفتراضي للمصحف أو خط النسخ
 ```dart
 /// [hafsStyle] هو النمط الافتراضي للقرآن، مما يضمن عرض جميع الأحرف الخاصة بشكل صحيح.

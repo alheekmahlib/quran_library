@@ -15,8 +15,8 @@ class QuranLine extends StatelessWidget {
     this.onPagePress,
     required this.pageIndex,
     required this.ayahBookmarked,
+    this.ayahSelectedFontColor,
   });
-
 
   final quranCtrl = QuranCtrl.instance;
 

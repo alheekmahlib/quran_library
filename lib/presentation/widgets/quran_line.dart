@@ -48,7 +48,7 @@ class QuranLine extends StatelessWidget {
                   .contains(ayah.ayahUQNumber);
               final allBookmarks =
                   bookmarks.values.expand((list) => list).toList();
-              ayahBookmarked == false
+              ayahBookmarked.isEmpty
                   ? (bookmarksAyahs.contains(ayah.ayahUQNumber) ? true : false)
                   : ayahBookmarked;
               // final String lastCharacter =

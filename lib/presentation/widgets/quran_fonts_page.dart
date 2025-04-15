@@ -19,7 +19,6 @@ class _QuranFontsPage extends StatelessWidget {
   final Map<int, List<BookmarkModel>> bookmarks;
   final List<int> bookmarksAyahs;
   final Color? ayahSelectedBackgroundColor;
-  final Color? ayahSelectedFontColor;
   final bool isDark;
   final bool showAyahBookmarkedIcon;
   final Widget? circularProgressWidget;
@@ -44,7 +43,6 @@ class _QuranFontsPage extends StatelessWidget {
     required this.bookmarks,
     required this.bookmarksAyahs,
     this.ayahSelectedBackgroundColor,
-    this.ayahSelectedFontColor,
     this.onPagePress,
     this.isDark = false,
     this.circularProgressWidget,
@@ -339,7 +337,6 @@ class _QuranFontsPage extends StatelessWidget {
             ayahSelectedBackgroundColor: ayahSelectedBackgroundColor,
             isFontsLocal: isFontsLocal,
             fontsName: fontsName,
-
           );
         }),
       ),

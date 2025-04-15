@@ -19,7 +19,6 @@ class _QuranTextScale extends StatelessWidget {
     required this.bookmarks,
     required this.bookmarksAyahs,
     this.ayahSelectedBackgroundColor,
-    this.ayahSelectedFontColor,
     this.languageCode,
     this.circularProgressWidget,
     required this.isDark,
@@ -45,7 +44,6 @@ class _QuranTextScale extends StatelessWidget {
   final Map<int, List<BookmarkModel>> bookmarks;
   final List<int> bookmarksAyahs;
   final Color? ayahSelectedBackgroundColor;
-  final Color? ayahSelectedFontColor;
   final String? languageCode;
   final Widget? circularProgressWidget;
   final bool isDark;
@@ -285,8 +283,6 @@ class _QuranTextScale extends StatelessWidget {
                                       bookmarksColor: bookmarksColor,
                                       ayahSelectedBackgroundColor:
                                           ayahSelectedBackgroundColor,
-                                      ayahSelectedFontColor:
-                                          ayahSelectedFontColor,
                                       ayahNumber: ayahs[ayahIndex].ayahNumber,
                                       languageCode: languageCode,
                                     );

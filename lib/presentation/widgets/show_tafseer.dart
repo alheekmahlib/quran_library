@@ -113,7 +113,7 @@ class ShowTafseer extends StatelessWidget {
                       fontSize: tafsirCtrl.fontSizeArabic.value),
                 )
               : TextSpan(
-                  text: tafsirCtrl.translationList[ayahIndex - 1].text ?? '',
+                  text: tafsirCtrl.translationList[ayahIndex - 1].text,
                   style: TextStyle(
                       color: Colors.black,
                       height: 1.5,

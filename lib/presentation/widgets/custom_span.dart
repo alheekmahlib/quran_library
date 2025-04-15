@@ -55,7 +55,7 @@ TextSpan _span({
     final String lastCharacter = text.substring(text.length - 1);
     final allBookmarks = bookmarks.values.expand((list) => list).toList();
     final quranCtrl = QuranCtrl.instance;
-    ayahBookmarked == false
+    ayahBookmarked.isEmpty
         ? (bookmarksAyahs.contains(ayahUQNum) ? true : false)
         : ayahBookmarked;
     TextSpan? first;
@@ -85,7 +85,6 @@ TextSpan _span({
                       ? ayahSelectedBackgroundColor ??
                           const Color(0xffCDAD80).withValues(alpha: 0.25)
                       : null),
-
         ),
         recognizer: LongPressGestureRecognizer(
             duration: const Duration(milliseconds: 500))
@@ -116,7 +115,6 @@ TextSpan _span({
                       ? ayahSelectedBackgroundColor ??
                           const Color(0xffCDAD80).withValues(alpha: 0.25)
                       : null),
-
         ),
         recognizer: LongPressGestureRecognizer(
             duration: const Duration(milliseconds: 500))
@@ -148,7 +146,6 @@ TextSpan _span({
                     ? ayahSelectedBackgroundColor ??
                         const Color(0xffCDAD80).withValues(alpha: 0.25)
                     : null),
-
       ),
       recognizer: LongPressGestureRecognizer(
           duration: const Duration(milliseconds: 500))
@@ -234,7 +231,6 @@ TextSpan _customSpan({
   required List<int> bookmarksAyahs,
   Color? bookmarksColor,
   Color? ayahSelectedBackgroundColor,
-  Color? ayahSelectedFontColor,
   String? languageCode,
   required bool hasBookmark,
 }) {
@@ -266,7 +262,6 @@ TextSpan _customSpan({
                         ? ayahSelectedBackgroundColor ??
                             const Color(0xffCDAD80).withValues(alpha: 0.25)
                         : null),
-
             package: "quran_library",
           ),
           recognizer: LongPressGestureRecognizer(
@@ -294,7 +289,6 @@ TextSpan _customSpan({
                   height: 2.1,
                   color: ayahIconColor,
                   backgroundColor: hasBookmark
-
                       ? bookmarksColor
                       : (bookmarksAyahs.contains(ayahUQNum)
                           ? bookmarksColor ??

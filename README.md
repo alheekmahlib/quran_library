@@ -1,4 +1,4 @@
-<h1><p align="center"> Quran Library - مكتبة القرآن </p></h1>
+## Quran Library - مكتبة القرآن
 <p align="center">
 <img src="https://raw.githubusercontent.com/alheekmahlib/thegarlanded/refs/heads/master/Photos/quran_library.svg" width="150"/>
 </p>
@@ -28,7 +28,7 @@ In the `pubspec.yaml` of your flutter project, add the following dependency:
 ```yaml
 dependencies:
   ...
-  quran_library: ^0.1.3
+  quran_library: ^0.1.4
 ```
 
 
@@ -49,14 +49,16 @@ QuranLibrary().init();
 ### Basic Quran Screen
 
 ```dart
-/// يمكنك فقط إضافته إلى الكود الخاص بك هكذا:
 /// You can just add it to your code like this:
+/// يمكنك فقط إضافته إلى الكود الخاص بك هكذا:
 Scaffold(body: QuranLibraryScreen());
 ```
 
+
+#### or give it some options:
+#### أو يمكنك تمرير بعض الخيارات:
+
 ```dart
-/// أو يمكنك تمرير بعض الخيارات:
-/// or give it some options:
 QuranLibraryScreen(
     /// إذا قمت بإضافة شريط التطبيقات هنا فإنه سيحل محل شريط التطبيقات الافتراضية [appBar]
     /// [appBar] if if provided it will replace the default app bar
@@ -165,17 +167,17 @@ TextField(
 * ### As for using the default dialog, you can modify the style in it.
 * ### Or you can create your own design using all the functions for downloading fonts.
 ```dart
-/// للحصول على نافذة حوار خاصة بتحميل الخطوط، قم فقط باستدعاء: [getFontsDownloadDialog].
-///
-/// قم بتمرير رمز اللغة ليتم عرض الأرقام على حسب اللغة،
-/// رمز اللغة الإفتراضي هو: 'ar' [languageCode].
-/// كما أن التمرير الاختياري لنمط [DownloadFontsDialogStyle] ممكن.
 ///
 /// to get the fonts download dialog just call [getFontsDownloadDialog]
 ///
 /// and pass the language code to translate the number if you want,
 /// the default language code is 'ar' [languageCode]
 /// and style [DownloadFontsDialogStyle] is optional.
+/// للحصول على نافذة حوار خاصة بتحميل الخطوط، قم فقط باستدعاء: [getFontsDownloadDialog].
+///
+/// قم بتمرير رمز اللغة ليتم عرض الأرقام على حسب اللغة،
+/// رمز اللغة الإفتراضي هو: 'ar' [languageCode].
+/// كما أن التمرير الاختياري لنمط [DownloadFontsDialogStyle] ممكن.
 QuranLibrary().getFontsDownloadDialog(downloadFontsDialogStyle, languageCode);
 
 /// للحصول على الويدجت الخاصة بتنزيل الخطوط فقط قم بإستدعاء [getFontsDownloadWidget]
@@ -278,5 +280,5 @@ QuranLibrary().hafsStyle;
 QuranLibrary().naskhStyle;
 ```
 
-<h4><p align="center"></p></h4>
-<h2><p align="center"> لا تنسونا من صالح الدعاء </p></h2>
+
+## لا تنسونا من صالح الدعاء 

@@ -86,7 +86,7 @@ class QuranLine extends StatelessWidget {
                         final overlay = Overlay.of(context);
                         final newOverlayEntry = OverlayEntry(
                           builder: (context) => AyahLongClickDialog(
-                            context: context,
+                            ctxt: context,
                             ayah: ayah,
                             position: details.globalPosition,
                             index: ayah.ayahNumber,

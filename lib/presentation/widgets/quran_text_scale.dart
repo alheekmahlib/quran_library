@@ -250,7 +250,7 @@ class _QuranTextScale extends StatelessWidget {
                                                 OverlayEntry(
                                               builder: (context) =>
                                                   AyahLongClickDialog(
-                                                context: context,
+                                                ctxt: context,
                                                 ayahFonts: ayahs[ayahIndex],
                                                 position:
                                                     details.globalPosition,

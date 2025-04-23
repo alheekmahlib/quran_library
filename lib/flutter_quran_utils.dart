@@ -229,6 +229,19 @@ class QuranLibrary {
     return paths;
   }
 
+  /// [getSurahArtPath] يعيد مسار المخطوطة الخاصة بإسم السور.
+  ///
+  /// [getSurahArtPath] returns Quran surah' name artistic manuscript path
+  String getSurahArtPath({required int index}) {
+    if (_cache.containsKey('allSurahsArtPath')) {
+      return _cache['allSurahsArtPath'] as String;
+    }
+    final paths =
+        'packages/quran_library/lib/assets/svg/surah_name/00$index.svg';
+    _cache['allSurahsArtPath'] = paths;
+    return paths;
+  }
+
   /// يعيد قائمة بجميع شارات المرجعية المحفوظة [allBookmarks].
   ///
   /// [allBookmarks] returns list of all bookmarks

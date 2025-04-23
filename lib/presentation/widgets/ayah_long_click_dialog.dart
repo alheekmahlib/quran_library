@@ -14,7 +14,7 @@ class AyahLongClickDialog extends StatelessWidget {
     this.ayah,
     this.ayahFonts,
     required this.position,
-    required this.context,
+    required this.ctxt,
     required this.index,
     required this.pageIndex,
   });
@@ -33,7 +33,7 @@ class AyahLongClickDialog extends StatelessWidget {
   ///
   /// This is typically the position of the long click event.
   final Offset position;
-  final BuildContext context;
+  final BuildContext ctxt;
   final int index;
   final int pageIndex;
 
@@ -127,44 +127,69 @@ class AyahLongClickDialog extends StatelessWidget {
                   color: Colors.grey,
                 ),
               ),
-              // context.verticalDivider(
-              //     height: 30, color: const Color(0xffe8decb)),
-              // GestureDetector(
-              //   onTap: () {
-              //     if (QuranCtrl.instance.state.fontsSelected2.value == 1 ||
-              //         QuranCtrl.instance.state.fontsSelected2.value == 2 ||
-              //         QuranCtrl.instance.state.scaleFactor.value > 1.3) {
-              //       // TafsirCtrl.instance.showTafsirOnTap2(
-              //       //   context: context,
-              //       //   surahNum: QuranCtrl.instance
-              //       //       .getSurahDataByAyah(ayahFonts!)
-              //       //       .surahNumber,
-              //       //   ayahNum: ayahFonts!.ayahNumber,
-              //       //   ayahText: ayahFonts!.text,
-              //       //   pageIndex: pageIndex,
-              //       //   ayahTextN: ayahFonts!.ayaTextEmlaey,
-              //       //   ayahUQNum: ayahFonts!.ayahUQNumber,
-              //       //   index: ayahFonts!.ayahNumber,
-              //       // );
-              //     } else {
-              //       // TafsirCtrl.instance.showTafsirOnTap2(
-              //       //     context: context,
-              //       //     surahNum: ayah!.surahNumber,
-              //       //     ayahNum: ayah!.ayahNumber,
-              //       //     ayahText: ayah!.text,
-              //       //     pageIndex: pageIndex,
-              //       //     ayahTextN: ayah!.ayaTextEmlaey,
-              //       //     ayahUQNum: ayah!.ayahUQNumber,
-              //       //     index: ayah!.ayahNumber);
-              //     }
-              //     QuranCtrl.instance.state.overlayEntry?.remove();
-              //     QuranCtrl.instance.state.overlayEntry = null;
-              //   },
-              //   child: const Icon(
-              //     Icons.insert_page_break_outlined,
-              //     color: Colors.grey,
-              //   ),
-              // ),
+              context.verticalDivider(
+                  height: 30, color: const Color(0xffe8decb)),
+              GestureDetector(
+                onTap: () {
+                  // شرح: يجب استخدام context الخاص بالـ widget الحالي وليس أي متغير خارجي أو context من Overlay.
+                  // Explanation: Always use the widget's own context, not any external or overlay context.
+                  TafsirCtrl.instance.showTafsirOnTap(
+                    context: context, // هذا هو context الصحيح
+                    surahNum: (QuranCtrl.instance.state.fontsSelected2.value ==
+                                1 ||
+                            QuranCtrl.instance.state.fontsSelected2.value ==
+                                2 ||
+                            QuranCtrl.instance.state.scaleFactor.value > 1.3)
+                        ? QuranCtrl.instance
+                            .getSurahDataByAyah(ayahFonts!)
+                            .surahNumber
+                        : ayah!.surahNumber,
+                    ayahNum: (QuranCtrl.instance.state.fontsSelected2.value ==
+                                1 ||
+                            QuranCtrl.instance.state.fontsSelected2.value ==
+                                2 ||
+                            QuranCtrl.instance.state.scaleFactor.value > 1.3)
+                        ? ayahFonts!.ayahNumber
+                        : ayah!.ayahNumber,
+                    ayahText: (QuranCtrl.instance.state.fontsSelected2.value ==
+                                1 ||
+                            QuranCtrl.instance.state.fontsSelected2.value ==
+                                2 ||
+                            QuranCtrl.instance.state.scaleFactor.value > 1.3)
+                        ? ayahFonts!.text
+                        : ayah!.text,
+                    pageIndex: pageIndex,
+                    ayahTextN: (QuranCtrl.instance.state.fontsSelected2.value ==
+                                1 ||
+                            QuranCtrl.instance.state.fontsSelected2.value ==
+                                2 ||
+                            QuranCtrl.instance.state.scaleFactor.value > 1.3)
+                        ? ayahFonts!.ayaTextEmlaey
+                        : ayah!.ayaTextEmlaey,
+                    ayahUQNum: (QuranCtrl.instance.state.fontsSelected2.value ==
+                                1 ||
+                            QuranCtrl.instance.state.fontsSelected2.value ==
+                                2 ||
+                            QuranCtrl.instance.state.scaleFactor.value > 1.3)
+                        ? ayahFonts!.ayahUQNumber
+                        : ayah!.ayahUQNumber,
+                    index:
+                        (QuranCtrl.instance.state.fontsSelected2.value == 1 ||
+                                QuranCtrl.instance.state.fontsSelected2.value ==
+                                    2 ||
+                                QuranCtrl.instance.state.scaleFactor.value >
+                                    1.3)
+                            ? ayahFonts!.ayahNumber
+                            : ayah!.ayahNumber,
+                  );
+                  QuranCtrl.instance.state.overlayEntry?.remove();
+                  QuranCtrl.instance.state.overlayEntry = null;
+                },
+                child: const Icon(
+                  Icons.insert_page_break_outlined,
+                  color: Colors.grey,
+                ),
+              ),
             ],
           ),
         ),

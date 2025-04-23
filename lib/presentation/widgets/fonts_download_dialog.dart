@@ -60,7 +60,6 @@ class FontsDownloadDialog extends StatelessWidget {
               languageCode: languageCode,
               isDark: isDark,
               isFontsLocal: isFontsLocal),
-
           Positioned(
             right: 8,
             top: 8,
@@ -72,7 +71,6 @@ class FontsDownloadDialog extends StatelessWidget {
                       800], // Light grey for dark theme, dark grey for light theme
               padding: EdgeInsets.all(4),
               onPressed: () => Navigator.of(context).pop(),
-
             ),
           ),
         ],

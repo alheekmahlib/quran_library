@@ -1,3 +1,7 @@
+## 0.1.6
+
+* **fix get surah art path.**
+
 ## 0.1.5
 
 * **Add get surah art path.**

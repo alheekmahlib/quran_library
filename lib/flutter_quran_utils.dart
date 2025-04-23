@@ -224,7 +224,7 @@ class QuranLibrary {
       return _cache['allSurahsArtPath'] as List<String>;
     }
     final paths = List.generate(quranCtrl.surahs.length,
-        (i) => 'packages/quran_library/lib/assets/svg/surah_name/00$i.svg');
+        (i) => 'packages/quran_library/assets/svg/surah_name/00$i.svg');
     _cache['allSurahsArtPath'] = paths;
     return paths;
   }
@@ -236,8 +236,7 @@ class QuranLibrary {
     if (_cache.containsKey('allSurahsArtPath')) {
       return _cache['allSurahsArtPath'] as String;
     }
-    final paths =
-        'packages/quran_library/lib/assets/svg/surah_name/00$index.svg';
+    final paths = 'packages/quran_library/assets/svg/surah_name/00$index.svg';
     _cache['allSurahsArtPath'] = paths;
     return paths;
   }

@@ -1,3 +1,8 @@
+## 0.1.7
+
+* **fix Ayah 7 in Surah Ibrahim.**
+* **fix Ayah 12 in Surah Fatir.**
+
 ## 0.1.6
 
 * **fix get surah art path.**

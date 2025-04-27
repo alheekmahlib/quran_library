@@ -535,8 +535,9 @@ class QuranLibrary {
   Future<void> fetchTafsir({required int pageNumber}) async =>
       await TafsirCtrl.instance.fetchData(pageNumber);
 
-  /// جلب التفسير الخاص بصفحة معينة من خلال رقم الصفحة.
-  /// Fetch tafsir for a specific page by its page number.
+  /// لعرض التفسير، يمكنك استخدام [showTafsir].
+  ///
+  /// To show the tafsir, you can use [showTafsir].
   Future<void> showTafsir({
     required int surahNum,
     required int ayahNum,

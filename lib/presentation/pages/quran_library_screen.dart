@@ -228,100 +228,92 @@ class QuranLibraryScreen extends StatelessWidget {
     //   GetStorage().write(StorageConstants().isTajweed, 1);
     // }
     return GetBuilder<QuranCtrl>(
-      builder: (quranCtrl) => GetMaterialApp(
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          useMaterial3: false,
-        ),
-        home: Directionality(
-          textDirection: TextDirection.rtl,
-          child: Scaffold(
-            backgroundColor: backgroundColor ??
-                (isDark ? const Color(0xff202020) : const Color(0xfffaf7f3)),
-            appBar: appBar ??
-                (useDefaultAppBar
-                    ? AppBar(
-                        backgroundColor: backgroundColor ??
-                            (isDark
-                                ? const Color(0xff202020)
-                                : const Color(0xfffaf7f3)),
-                        leading: Builder(
-                          builder: (context) => IconButton(
-                            icon: Icon(
-                              Icons.menu,
-                              color: isDark ? Colors.white : Colors.black,
-                            ),
-                            onPressed: () {
-                              Scaffold.of(context).openDrawer();
-                            },
+      builder: (quranCtrl) => Directionality(
+        textDirection: TextDirection.rtl,
+        child: Scaffold(
+          backgroundColor: backgroundColor ??
+              (isDark ? const Color(0xff202020) : const Color(0xfffaf7f3)),
+          appBar: appBar ??
+              (useDefaultAppBar
+                  ? AppBar(
+                      backgroundColor: backgroundColor ??
+                          (isDark
+                              ? const Color(0xff202020)
+                              : const Color(0xfffaf7f3)),
+                      leading: Builder(
+                        builder: (context) => IconButton(
+                          icon: Icon(
+                            Icons.menu,
+                            color: isDark ? Colors.white : Colors.black,
                           ),
+                          onPressed: () {
+                            Scaffold.of(context).openDrawer();
+                          },
                         ),
-                        elevation: 0,
-                        actions: [
-                          FontsDownloadDialog(
-                            downloadFontsDialogStyle:
-                                downloadFontsDialogStyle ??
-                                    DownloadFontsDialogStyle(
-                                      title: 'الخطوط',
-                                      titleColor:
-                                          isDark ? Colors.white : Colors.black,
-                                      notes:
-                                          'لجعل مظهر المصحف مشابه لمصحف المدينة يمكنك تحميل خطوط المصحف',
-                                      notesColor:
-                                          isDark ? Colors.white : Colors.black,
-                                      linearProgressBackgroundColor:
-                                          Colors.blue.shade100,
-                                      linearProgressColor: Colors.blue,
-                                      downloadButtonBackgroundColor:
-                                          Colors.blue,
-                                      downloadingText: 'جارِ التحميل',
-                                      backgroundColor: isDark
-                                          ? Color(0xff202020)
-                                          : const Color(0xFFF7EFE0),
-                                    ),
-                            languageCode: languageCode,
-                            isFontsLocal: isFontsLocal,
-                            isDark: isDark,
-                          )
-                        ],
-                      )
-                    : null),
-            drawer: appBar == null && useDefaultAppBar
-                ? _DefaultDrawer(languageCode ?? 'ar', isDark)
-                : null,
-            body: SafeArea(
-              child: withPageView
-                  ? PageView.builder(
-                      itemCount: 604,
-                      controller: quranCtrl.pageController,
-                      padEnds: false,
-                      physics: const BouncingScrollPhysics(),
-                      onPageChanged: (page) async {
-                        if (onPageChanged != null) {
-                          onPageChanged!(page);
-                        } else {
-                          quranCtrl.state.overlayEntry?.remove();
-                          quranCtrl.state.overlayEntry = null;
-                        }
-                        quranCtrl.saveLastPage(page + 1);
-                      },
-                      pageSnapping: true,
-                      itemBuilder: (ctx, index) {
-                        return _pageViewBuild(
-                          context,
-                          index,
-                          quranCtrl,
-                          isFontsLocal!,
-                        );
-                      },
+                      ),
+                      elevation: 0,
+                      actions: [
+                        FontsDownloadDialog(
+                          downloadFontsDialogStyle: downloadFontsDialogStyle ??
+                              DownloadFontsDialogStyle(
+                                title: 'الخطوط',
+                                titleColor:
+                                    isDark ? Colors.white : Colors.black,
+                                notes:
+                                    'لجعل مظهر المصحف مشابه لمصحف المدينة يمكنك تحميل خطوط المصحف',
+                                notesColor:
+                                    isDark ? Colors.white : Colors.black,
+                                linearProgressBackgroundColor:
+                                    Colors.blue.shade100,
+                                linearProgressColor: Colors.blue,
+                                downloadButtonBackgroundColor: Colors.blue,
+                                downloadingText: 'جارِ التحميل',
+                                backgroundColor: isDark
+                                    ? Color(0xff202020)
+                                    : const Color(0xFFF7EFE0),
+                              ),
+                          languageCode: languageCode,
+                          isFontsLocal: isFontsLocal,
+                          isDark: isDark,
+                        )
+                      ],
                     )
-                  : _pageViewBuild(
-                      context,
-                      pageIndex,
-                      quranCtrl,
-                      isFontsLocal!,
-                    ),
-            ),
+                  : null),
+          drawer: appBar == null && useDefaultAppBar
+              ? _DefaultDrawer(languageCode ?? 'ar', isDark)
+              : null,
+          body: SafeArea(
+            child: withPageView
+                ? PageView.builder(
+                    itemCount: 604,
+                    controller: quranCtrl.pageController,
+                    padEnds: false,
+                    physics: const BouncingScrollPhysics(),
+                    onPageChanged: (page) async {
+                      if (onPageChanged != null) {
+                        onPageChanged!(page);
+                      } else {
+                        quranCtrl.state.overlayEntry?.remove();
+                        quranCtrl.state.overlayEntry = null;
+                      }
+                      quranCtrl.saveLastPage(page + 1);
+                    },
+                    pageSnapping: true,
+                    itemBuilder: (ctx, index) {
+                      return _pageViewBuild(
+                        context,
+                        index,
+                        quranCtrl,
+                        isFontsLocal!,
+                      );
+                    },
+                  )
+                : _pageViewBuild(
+                    context,
+                    pageIndex,
+                    quranCtrl,
+                    isFontsLocal!,
+                  ),
           ),
         ),
       ),

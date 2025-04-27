@@ -14,7 +14,6 @@ class AyahLongClickDialog extends StatelessWidget {
     this.ayah,
     this.ayahFonts,
     required this.position,
-    required this.ctxt,
     required this.index,
     required this.pageIndex,
   });
@@ -33,7 +32,6 @@ class AyahLongClickDialog extends StatelessWidget {
   ///
   /// This is typically the position of the long click event.
   final Offset position;
-  final BuildContext ctxt;
   final int index;
   final int pageIndex;
 
@@ -129,66 +127,74 @@ class AyahLongClickDialog extends StatelessWidget {
               ),
               context.verticalDivider(
                   height: 30, color: const Color(0xffe8decb)),
-              GestureDetector(
-                onTap: () {
-                  // شرح: يجب استخدام context الخاص بالـ widget الحالي وليس أي متغير خارجي أو context من Overlay.
-                  // Explanation: Always use the widget's own context, not any external or overlay context.
-                  TafsirCtrl.instance.showTafsirOnTap(
-                    surahNum: (QuranCtrl.instance.state.fontsSelected2.value ==
-                                1 ||
-                            QuranCtrl.instance.state.fontsSelected2.value ==
-                                2 ||
-                            QuranCtrl.instance.state.scaleFactor.value > 1.3)
-                        ? QuranCtrl.instance
-                            .getSurahDataByAyah(ayahFonts!)
-                            .surahNumber
-                        : ayah!.surahNumber,
-                    ayahNum: (QuranCtrl.instance.state.fontsSelected2.value ==
-                                1 ||
-                            QuranCtrl.instance.state.fontsSelected2.value ==
-                                2 ||
-                            QuranCtrl.instance.state.scaleFactor.value > 1.3)
-                        ? ayahFonts!.ayahNumber
-                        : ayah!.ayahNumber,
-                    ayahText: (QuranCtrl.instance.state.fontsSelected2.value ==
-                                1 ||
-                            QuranCtrl.instance.state.fontsSelected2.value ==
-                                2 ||
-                            QuranCtrl.instance.state.scaleFactor.value > 1.3)
-                        ? ayahFonts!.text
-                        : ayah!.text,
-                    pageIndex: pageIndex,
-                    ayahTextN: (QuranCtrl.instance.state.fontsSelected2.value ==
-                                1 ||
-                            QuranCtrl.instance.state.fontsSelected2.value ==
-                                2 ||
-                            QuranCtrl.instance.state.scaleFactor.value > 1.3)
-                        ? ayahFonts!.ayaTextEmlaey
-                        : ayah!.ayaTextEmlaey,
-                    ayahUQNum: (QuranCtrl.instance.state.fontsSelected2.value ==
-                                1 ||
-                            QuranCtrl.instance.state.fontsSelected2.value ==
-                                2 ||
-                            QuranCtrl.instance.state.scaleFactor.value > 1.3)
-                        ? ayahFonts!.ayahUQNumber
-                        : ayah!.ayahUQNumber,
-                    ayahNumber:
-                        (QuranCtrl.instance.state.fontsSelected2.value == 1 ||
-                                QuranCtrl.instance.state.fontsSelected2.value ==
-                                    2 ||
-                                QuranCtrl.instance.state.scaleFactor.value >
-                                    1.3)
-                            ? ayahFonts!.ayahNumber
-                            : ayah!.ayahNumber,
-                  );
-                  QuranCtrl.instance.state.overlayEntry?.remove();
-                  QuranCtrl.instance.state.overlayEntry = null;
-                },
-                child: const Icon(
-                  Icons.text_snippet_rounded,
-                  color: Colors.grey,
-                ),
-              ),
+              Builder(builder: (context) {
+                return GestureDetector(
+                  onTap: () {
+                    // شرح: يجب استخدام context الخاص بالـ widget الحالي وليس أي متغير خارجي أو context من Overlay.
+                    // Explanation: Always use the widget's own context, not any external or overlay context.
+                    TafsirCtrl.instance.showTafsirOnTap(
+                      context: context,
+                      surahNum: (QuranCtrl
+                                      .instance.state.fontsSelected2.value ==
+                                  1 ||
+                              QuranCtrl.instance.state.fontsSelected2.value ==
+                                  2 ||
+                              QuranCtrl.instance.state.scaleFactor.value > 1.3)
+                          ? QuranCtrl.instance
+                              .getSurahDataByAyah(ayahFonts!)
+                              .surahNumber
+                          : ayah!.surahNumber,
+                      ayahNum: (QuranCtrl.instance.state.fontsSelected2.value ==
+                                  1 ||
+                              QuranCtrl.instance.state.fontsSelected2.value ==
+                                  2 ||
+                              QuranCtrl.instance.state.scaleFactor.value > 1.3)
+                          ? ayahFonts!.ayahNumber
+                          : ayah!.ayahNumber,
+                      ayahText: (QuranCtrl
+                                      .instance.state.fontsSelected2.value ==
+                                  1 ||
+                              QuranCtrl.instance.state.fontsSelected2.value ==
+                                  2 ||
+                              QuranCtrl.instance.state.scaleFactor.value > 1.3)
+                          ? ayahFonts!.text
+                          : ayah!.text,
+                      pageIndex: pageIndex,
+                      ayahTextN: (QuranCtrl
+                                      .instance.state.fontsSelected2.value ==
+                                  1 ||
+                              QuranCtrl.instance.state.fontsSelected2.value ==
+                                  2 ||
+                              QuranCtrl.instance.state.scaleFactor.value > 1.3)
+                          ? ayahFonts!.ayaTextEmlaey
+                          : ayah!.ayaTextEmlaey,
+                      ayahUQNum: (QuranCtrl
+                                      .instance.state.fontsSelected2.value ==
+                                  1 ||
+                              QuranCtrl.instance.state.fontsSelected2.value ==
+                                  2 ||
+                              QuranCtrl.instance.state.scaleFactor.value > 1.3)
+                          ? ayahFonts!.ayahUQNumber
+                          : ayah!.ayahUQNumber,
+                      ayahNumber:
+                          (QuranCtrl.instance.state.fontsSelected2.value == 1 ||
+                                  QuranCtrl.instance.state.fontsSelected2
+                                          .value ==
+                                      2 ||
+                                  QuranCtrl.instance.state.scaleFactor.value >
+                                      1.3)
+                              ? ayahFonts!.ayahNumber
+                              : ayah!.ayahNumber,
+                    );
+                    QuranCtrl.instance.state.overlayEntry?.remove();
+                    QuranCtrl.instance.state.overlayEntry = null;
+                  },
+                  child: const Icon(
+                    Icons.text_snippet_rounded,
+                    color: Colors.grey,
+                  ),
+                );
+              }),
             ],
           ),
         ),

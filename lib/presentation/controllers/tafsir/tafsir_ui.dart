@@ -4,6 +4,7 @@ extension TafsirUi on TafsirCtrl {
   /// -------- [onTap] --------
 
   Future<void> showTafsirOnTap({
+    required BuildContext context,
     required int surahNum,
     required int ayahNum,
     required String ayahText,
@@ -32,8 +33,9 @@ extension TafsirUi on TafsirCtrl {
     // شرح: إذا دخلنا هنا فهذا يعني أن context متصل بالشجرة
     // Explanation: If we reach here, context is mounted and valid
     log('context is mounted, showing bottom sheet', name: 'TafsirUi');
-    Get.bottomSheet(
-      ShowTafseer(
+    showBottomSheet(
+      context: context,
+      builder: (BuildContext context) => ShowTafseer(
         ayahUQNumber: ayahUQNum,
         ayahNumber: ayahNumber,
         pageIndex: pageIndex,
@@ -49,7 +51,6 @@ extension TafsirUi on TafsirCtrl {
               Icon(Icons.text_format_outlined, size: 30, color: Colors.black),
         ),
       ),
-      isScrollControlled: true,
       // ),
     );
     // } else {

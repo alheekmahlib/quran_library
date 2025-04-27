@@ -311,7 +311,6 @@ class _QuranFontsPage extends StatelessWidget {
                   final overlay = Overlay.of(context);
                   final newOverlayEntry = OverlayEntry(
                     builder: (context) => AyahLongClickDialog(
-                      ctxt: context,
                       ayahFonts: ayahs[ayahIndex],
                       position: details.globalPosition,
                       index: ayahIndex,

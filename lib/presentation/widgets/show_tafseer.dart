@@ -5,13 +5,13 @@ class ShowTafseer extends StatelessWidget {
   final int pageIndex;
   final TafsirStyle tafsirStyle;
 
-  final int index;
+  final int ayahNumber;
 
   ShowTafseer(
       {super.key,
       required this.ayahUQNumber,
       required this.tafsirStyle,
-      required this.index,
+      required this.ayahNumber,
       required this.pageIndex});
 
   final ScrollController _scrollController = ScrollController();
@@ -21,52 +21,54 @@ class ShowTafseer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Directionality(
-        textDirection: TextDirection.rtl,
-        child: Container(
-          height: Get.height * .9,
-          width: Get.width,
-          decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(8),
-                topRight: Radius.circular(8),
-              )),
-          child: SafeArea(
-            child: Column(
-              children: <Widget>[
-                const SizedBox(height: 8),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        tafsirStyle.iconCloseWidget!,
-                        const SizedBox(width: 32),
-                        tafsirStyle.tafsirNameWidget!,
-                      ],
-                    ),
+    return GetBuilder<TafsirCtrl>(
+        id: 'change_font_size',
+        builder: (tafsirCtrl) {
+          return Directionality(
+            textDirection: TextDirection.rtl,
+            child: Container(
+              height: Get.height * .9,
+              width: Get.width,
+              decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(8),
+                    topRight: Radius.circular(8),
+                  )),
+              child: SafeArea(
+                child: Column(
+                  children: <Widget>[
+                    const SizedBox(height: 8),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        ChangeTafsir(tafsirStyle: tafsirStyle),
-                        Container(width: 1, height: 20, color: Colors.blue),
-                        Transform.translate(
-                            offset: const Offset(0, 5),
-                            child: fontSizeDropDown(
-                                height: 25.0, tafsirStyle: tafsirStyle)),
+                        Row(
+                          children: [
+                            tafsirStyle.iconCloseWidget!,
+                            const SizedBox(width: 32),
+                            tafsirStyle.tafsirNameWidget!,
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            ChangeTafsir(tafsirStyle: tafsirStyle),
+                            Container(width: 1, height: 20, color: Colors.blue),
+                            Transform.translate(
+                                offset: const Offset(0, 5),
+                                child: fontSizeDropDown(
+                                    height: 25.0, tafsirStyle: tafsirStyle)),
+                          ],
+                        ),
                       ],
                     ),
+                    _pagesBuild(context),
                   ],
                 ),
-                _pagesBuild(context),
-              ],
+              ),
             ),
-          ),
-        ),
-      ),
-    );
+          );
+        });
   }
 
   Widget _actualTafseerWt(BuildContext context, int ayahIndex,

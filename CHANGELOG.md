@@ -1,3 +1,8 @@
+## 0.1.8
+
+* **add showing tafsir.**
+* **fix README.**
+
 ## 0.1.7
 
 * **fix Ayah 7 in Surah Ibrahim.**

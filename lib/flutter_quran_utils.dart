@@ -535,6 +535,26 @@ class QuranLibrary {
   Future<void> fetchTafsir({required int pageNumber}) async =>
       await TafsirCtrl.instance.fetchData(pageNumber);
 
+  /// جلب التفسير الخاص بصفحة معينة من خلال رقم الصفحة.
+  /// Fetch tafsir for a specific page by its page number.
+  Future<void> showTafsir({
+    required int surahNum,
+    required int ayahNum,
+    required String ayahText,
+    required int pageIndex,
+    required String ayahTextN,
+    required int ayahUQNum,
+    required int ayahNumber,
+  }) async =>
+      await TafsirCtrl.instance.showTafsirOnTap(
+          ayahNum: ayahNum,
+          ayahText: ayahText,
+          pageIndex: pageIndex,
+          ayahTextN: ayahTextN,
+          ayahUQNum: ayahUQNum,
+          ayahNumber: ayahNumber,
+          surahNum: surahNum);
+
   /// إغلاق قاعدة البيانات وإعادة تهيئتها (عادة عند تغيير التفسير).
   /// Close and re-initialize the database (usually when changing the tafsir).
   Future<void> closeAndInitializeDatabase({int? pageNumber}) async =>

@@ -134,7 +134,6 @@ class AyahLongClickDialog extends StatelessWidget {
                   // شرح: يجب استخدام context الخاص بالـ widget الحالي وليس أي متغير خارجي أو context من Overlay.
                   // Explanation: Always use the widget's own context, not any external or overlay context.
                   TafsirCtrl.instance.showTafsirOnTap(
-                    context: context, // هذا هو context الصحيح
                     surahNum: (QuranCtrl.instance.state.fontsSelected2.value ==
                                 1 ||
                             QuranCtrl.instance.state.fontsSelected2.value ==
@@ -173,7 +172,7 @@ class AyahLongClickDialog extends StatelessWidget {
                             QuranCtrl.instance.state.scaleFactor.value > 1.3)
                         ? ayahFonts!.ayahUQNumber
                         : ayah!.ayahUQNumber,
-                    index:
+                    ayahNumber:
                         (QuranCtrl.instance.state.fontsSelected2.value == 1 ||
                                 QuranCtrl.instance.state.fontsSelected2.value ==
                                     2 ||
@@ -186,7 +185,7 @@ class AyahLongClickDialog extends StatelessWidget {
                   QuranCtrl.instance.state.overlayEntry = null;
                 },
                 child: const Icon(
-                  Icons.insert_page_break_outlined,
+                  Icons.text_snippet_rounded,
                   color: Colors.grey,
                 ),
               ),

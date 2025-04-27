@@ -217,6 +217,18 @@ QuranLibrary().isFontsDownloaded;
 
 ## Tafsir - التفسير
 
+### :ملاحظة مهمة قبل البدء بالإستخدام التفسير: يرجى إضافة هذه المكتبة إلى ملف pubspec.yaml الخاص بك للاندرويد فقط:
+# Important note before starting to use: Please add this library to your pubspec.yaml file only for Android:
+```yaml
+ dependencies:
+ ...
+  drift_flutter: ^0.2.4
+ ...
+```
+# لكي لا تسبب أي مشاكل عند عرض التفسير 
+# to avoid any problems when showing the tafsir
+
+
 * ### Initialize tafsir - تهيئة التفسير:
 
 ```dart

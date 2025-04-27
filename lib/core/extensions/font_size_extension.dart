@@ -51,6 +51,7 @@ extension FontSizeExtension on Widget {
                   TafsirCtrl.instance.fontSizeArabic.value = lowerValue;
 
                   box.write(_StorageConstants().fontSize, lowerValue);
+                  TafsirCtrl.instance.update(['change_font_size']);
                 },
                 handler: FlutterSliderHandler(
                   decoration: const BoxDecoration(),

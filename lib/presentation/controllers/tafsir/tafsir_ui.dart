@@ -4,14 +4,13 @@ extension TafsirUi on TafsirCtrl {
   /// -------- [onTap] --------
 
   Future<void> showTafsirOnTap({
-    required BuildContext context,
     required int surahNum,
     required int ayahNum,
     required String ayahText,
     required int pageIndex,
     required String ayahTextN,
     required int ayahUQNum,
-    required int index,
+    required int ayahNumber,
   }) async {
     // شرح: هذا السطر لطباعة رسالة عند استدعاء الدالة للتأكد من تنفيذها
     // Explanation: This line logs when the function is called for debugging
@@ -29,38 +28,35 @@ extension TafsirUi on TafsirCtrl {
       await fetchTranslate();
     }
 
-    // شرح: هنا نطبع قيمة context.mounted قبل الشرط
-    // Explanation: Log context.mounted value before the condition
-    log('context.mounted = ${context.mounted}', name: 'TafsirUi');
-
-    if (context.mounted) {
-      // شرح: إذا دخلنا هنا فهذا يعني أن context متصل بالشجرة
-      // Explanation: If we reach here, context is mounted and valid
-      log('context is mounted, showing bottom sheet', name: 'TafsirUi');
-      showModalBottomSheet<void>(
-        context: context,
-        builder: (BuildContext context) => ShowTafseer(
-          ayahUQNumber: ayahUQNum,
-          index: index,
-          pageIndex: pageIndex,
-          tafsirStyle: TafsirStyle(
-            iconCloseWidget: IconButton(
-                icon: Icon(Icons.close, size: 30, color: Colors.black),
-                onPressed: () => Navigator.pop(context)),
-            tafsirNameWidget: Text(
-              'التفسير',
-              style: QuranLibrary().naskhStyle,
-            ),
-            fontSizeWidget: Icon(Icons.close, size: 30, color: Colors.black),
+    // if (context.mounted) {
+    // شرح: إذا دخلنا هنا فهذا يعني أن context متصل بالشجرة
+    // Explanation: If we reach here, context is mounted and valid
+    log('context is mounted, showing bottom sheet', name: 'TafsirUi');
+    Get.bottomSheet(
+      ShowTafseer(
+        ayahUQNumber: ayahUQNum,
+        ayahNumber: ayahNumber,
+        pageIndex: pageIndex,
+        tafsirStyle: TafsirStyle(
+          iconCloseWidget: IconButton(
+              icon: Icon(Icons.close, size: 30, color: Colors.black),
+              onPressed: () => Get.back()),
+          tafsirNameWidget: Text(
+            'التفسير',
+            style: QuranLibrary().naskhStyle,
           ),
+          fontSizeWidget:
+              Icon(Icons.text_format_outlined, size: 30, color: Colors.black),
         ),
-        // ),
-      );
-    } else {
-      // شرح: إذا لم يكن context متصل بالشجرة نطبع رسالة خطأ
-      // Explanation: If context is not mounted, log an error
-      log('context is NOT mounted!', name: 'TafsirUi');
-    }
+      ),
+      isScrollControlled: true,
+      // ),
+    );
+    // } else {
+    //   // شرح: إذا لم يكن context متصل بالشجرة نطبع رسالة خطأ
+    //   // Explanation: If context is not mounted, log an error
+    //   log('context is NOT mounted!', name: 'TafsirUi');
+    // }
   }
 
   Future<void> copyOnTap(int ayahUQNumber) async {

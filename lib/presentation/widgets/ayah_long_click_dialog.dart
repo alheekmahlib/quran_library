@@ -10,6 +10,7 @@ class AyahLongClickDialog extends StatelessWidget {
   /// This widget shows a dialog at a specified position with options to bookmark the Ayah in different colors
   /// or copy the Ayah text to the clipboard. The appearance and behavior are influenced by the state of QuranCtrl.
   const AyahLongClickDialog({
+    required this.context,
     super.key,
     this.ayah,
     this.ayahFonts,
@@ -34,6 +35,7 @@ class AyahLongClickDialog extends StatelessWidget {
   final Offset position;
   final int index;
   final int pageIndex;
+  final BuildContext context;
 
   @override
   Widget build(BuildContext context) {
@@ -127,74 +129,65 @@ class AyahLongClickDialog extends StatelessWidget {
               ),
               context.verticalDivider(
                   height: 30, color: const Color(0xffe8decb)),
-              Builder(builder: (context) {
-                return GestureDetector(
-                  onTap: () {
-                    // شرح: يجب استخدام context الخاص بالـ widget الحالي وليس أي متغير خارجي أو context من Overlay.
-                    // Explanation: Always use the widget's own context, not any external or overlay context.
-                    TafsirCtrl.instance.showTafsirOnTap(
-                      context: context,
-                      surahNum: (QuranCtrl
-                                      .instance.state.fontsSelected2.value ==
-                                  1 ||
-                              QuranCtrl.instance.state.fontsSelected2.value ==
-                                  2 ||
-                              QuranCtrl.instance.state.scaleFactor.value > 1.3)
-                          ? QuranCtrl.instance
-                              .getSurahDataByAyah(ayahFonts!)
-                              .surahNumber
-                          : ayah!.surahNumber,
-                      ayahNum: (QuranCtrl.instance.state.fontsSelected2.value ==
-                                  1 ||
-                              QuranCtrl.instance.state.fontsSelected2.value ==
-                                  2 ||
-                              QuranCtrl.instance.state.scaleFactor.value > 1.3)
-                          ? ayahFonts!.ayahNumber
-                          : ayah!.ayahNumber,
-                      ayahText: (QuranCtrl
-                                      .instance.state.fontsSelected2.value ==
-                                  1 ||
-                              QuranCtrl.instance.state.fontsSelected2.value ==
-                                  2 ||
-                              QuranCtrl.instance.state.scaleFactor.value > 1.3)
-                          ? ayahFonts!.text
-                          : ayah!.text,
-                      pageIndex: pageIndex,
-                      ayahTextN: (QuranCtrl
-                                      .instance.state.fontsSelected2.value ==
-                                  1 ||
-                              QuranCtrl.instance.state.fontsSelected2.value ==
-                                  2 ||
-                              QuranCtrl.instance.state.scaleFactor.value > 1.3)
-                          ? ayahFonts!.ayaTextEmlaey
-                          : ayah!.ayaTextEmlaey,
-                      ayahUQNum: (QuranCtrl
-                                      .instance.state.fontsSelected2.value ==
-                                  1 ||
-                              QuranCtrl.instance.state.fontsSelected2.value ==
-                                  2 ||
-                              QuranCtrl.instance.state.scaleFactor.value > 1.3)
-                          ? ayahFonts!.ayahUQNumber
-                          : ayah!.ayahUQNumber,
-                      ayahNumber:
-                          (QuranCtrl.instance.state.fontsSelected2.value == 1 ||
-                                  QuranCtrl.instance.state.fontsSelected2
-                                          .value ==
-                                      2 ||
-                                  QuranCtrl.instance.state.scaleFactor.value >
-                                      1.3)
-                              ? ayahFonts!.ayahNumber
-                              : ayah!.ayahNumber,
-                    );
-                    QuranCtrl.instance.state.overlayEntry?.remove();
-                    QuranCtrl.instance.state.overlayEntry = null;
-                  },
-                  child: const Icon(
-                    Icons.text_snippet_rounded,
-                    color: Colors.grey,
-                  ),
-                );
-              }),
+              GestureDetector(
+                onTap: () {
+                  TafsirCtrl.instance.showTafsirOnTap(
+                    context: context,
+                    surahNum: (QuranCtrl.instance.state.fontsSelected2.value ==
+                                1 ||
+                            QuranCtrl.instance.state.fontsSelected2.value ==
+                                2 ||
+                            QuranCtrl.instance.state.scaleFactor.value > 1.3)
+                        ? QuranCtrl.instance
+                            .getSurahDataByAyah(ayahFonts!)
+                            .surahNumber
+                        : ayah!.surahNumber,
+                    ayahNum: (QuranCtrl.instance.state.fontsSelected2.value ==
+                                1 ||
+                            QuranCtrl.instance.state.fontsSelected2.value ==
+                                2 ||
+                            QuranCtrl.instance.state.scaleFactor.value > 1.3)
+                        ? ayahFonts!.ayahNumber
+                        : ayah!.ayahNumber,
+                    ayahText: (QuranCtrl.instance.state.fontsSelected2.value ==
+                                1 ||
+                            QuranCtrl.instance.state.fontsSelected2.value ==
+                                2 ||
+                            QuranCtrl.instance.state.scaleFactor.value > 1.3)
+                        ? ayahFonts!.text
+                        : ayah!.text,
+                    pageIndex: pageIndex,
+                    ayahTextN: (QuranCtrl.instance.state.fontsSelected2.value ==
+                                1 ||
+                            QuranCtrl.instance.state.fontsSelected2.value ==
+                                2 ||
+                            QuranCtrl.instance.state.scaleFactor.value > 1.3)
+                        ? ayahFonts!.ayaTextEmlaey
+                        : ayah!.ayaTextEmlaey,
+                    ayahUQNum: (QuranCtrl.instance.state.fontsSelected2.value ==
+                                1 ||
+                            QuranCtrl.instance.state.fontsSelected2.value ==
+                                2 ||
+                            QuranCtrl.instance.state.scaleFactor.value > 1.3)
+                        ? ayahFonts!.ayahUQNumber
+                        : ayah!.ayahUQNumber,
+                    ayahNumber:
+                        (QuranCtrl.instance.state.fontsSelected2.value == 1 ||
+                                QuranCtrl.instance.state.fontsSelected2.value ==
+                                    2 ||
+                                QuranCtrl.instance.state.scaleFactor.value >
+                                    1.3)
+                            ? ayahFonts!.ayahNumber
+                            : ayah!.ayahNumber,
+                  );
+                  QuranCtrl.instance.state.overlayEntry?.remove();
+                  QuranCtrl.instance.state.overlayEntry = null;
+                },
+                child: const Icon(
+                  Icons.text_snippet_rounded,
+                  color: Colors.grey,
+                ),
+              ),
             ],
           ),
         ),

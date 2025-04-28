@@ -143,6 +143,7 @@ extension QuranGetters on QuranCtrl {
   /// Returns:
   ///   `List<SurahFontsModel>`: A list of SurahFontsModel representing the Surahs on the specified page.
   List<SurahFontsModel> getSurahsByPage(int pageNumber) {
+    if (getPageAyahsByIndex(pageNumber).isEmpty) return [];
     List<AyahFontsModel> pageAyahs = getPageAyahsByIndex(pageNumber);
     List<SurahFontsModel> surahsOnPage = [];
     for (AyahFontsModel ayah in pageAyahs) {

@@ -31,8 +31,6 @@ class QuranLibrary {
 
     await GetStorage.init();
 
-    drift.driftRuntimeOptions.dontWarnAboutMultipleDatabases = true;
-
     // Initialize state values
     final storage = GetStorage();
     final storageConstants = _StorageConstants();
@@ -478,7 +476,10 @@ class QuranLibrary {
 
   /// تهيئة بيانات التفسير عند بدء التطبيق.
   /// Initialize tafsir data when the app starts.
-  Future<void> initTafsir() async => TafsirCtrl.instance.initTafsir();
+  Future<void> initTafsir() async {
+    drift.driftRuntimeOptions.dontWarnAboutMultipleDatabases = true;
+    return TafsirCtrl.instance.initTafsir();
+  }
 
   /// إظهار قائمة منبثقة لتغيير نوع التفسير.
   /// Show a popup menu to change the tafsir style.

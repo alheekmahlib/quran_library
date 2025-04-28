@@ -216,9 +216,19 @@ class QuranLibraryScreen extends StatelessWidget {
   /// [withPageView] Enable this variable if you want to display the Quran with PageView
   final bool withPageView;
 
+  /// إذا كنت تريد استخدام خطوط موجودة مسبقًا في التطبيق، اجعل هذا المتغيير true [isFontsLocal]
+  ///
+  /// [isFontsLocal] If you want to use fonts that exists in the app, make this variable true
   final bool? isFontsLocal;
 
+  /// قم بتمرير إسم الخط الموجود في التطبيق لكي تستطيع إستخدامه [fontsName]
+  ///
+  /// [fontsName] Pass the name of the font that exists in the app so you can use it
   final String? fontsName;
+
+  /// قم بتمرير قائمة الآيات المحفوظة [ayahBookmarked]
+  ///
+  /// [ayahBookmarked] Pass the list of bookmarked ayahs
   final List<int>? ayahBookmarked;
 
   @override
@@ -231,6 +241,7 @@ class QuranLibraryScreen extends StatelessWidget {
       builder: (quranCtrl) => Directionality(
         textDirection: TextDirection.rtl,
         child: Scaffold(
+          key: quranCtrl.state.scaffoldKey,
           backgroundColor: backgroundColor ??
               (isDark ? const Color(0xff202020) : const Color(0xfffaf7f3)),
           appBar: appBar ??
@@ -357,6 +368,7 @@ class QuranLibraryScreen extends StatelessWidget {
                         isRight: pageIndex.isEven ? true : false,
                         topTitleChild: topTitleChild,
                         child: _QuranFontsPage(
+                          context: context,
                           pageIndex: pageIndex,
                           bookmarkList: bookmarkList,
                           textColor: ayahSelectedFontColor ?? textColor,
@@ -387,6 +399,7 @@ class QuranLibraryScreen extends StatelessWidget {
                       child: circularProgressWidget ??
                           const CircularProgressIndicator())
                   : _QuranLinePage(
+                      context: context,
                       pageIndex: pageIndex,
                       bookmarkList: bookmarkList,
                       textColor: textColor,
@@ -421,6 +434,7 @@ class QuranLibraryScreen extends StatelessWidget {
                   isRight: pageIndex.isEven ? true : false,
                   topTitleChild: topTitleChild,
                   child: _QuranTextScale(
+                    context: context,
                     pageIndex: pageIndex,
                     bookmarkList: bookmarkList,
                     textColor: ayahSelectedFontColor ?? textColor,

@@ -1,6 +1,7 @@
 part of '../../quran.dart';
 
 class _QuranLinePage extends StatelessWidget {
+  final BuildContext context;
   final int pageIndex;
   final int? surahNumber;
   final BannerStyle? bannerStyle;
@@ -25,6 +26,7 @@ class _QuranLinePage extends StatelessWidget {
   final List<int> ayahBookmarked;
 
   _QuranLinePage({
+    required this.context,
     required this.pageIndex,
     this.surahNumber,
     this.bannerStyle,
@@ -177,6 +179,7 @@ class _QuranLinePage extends StatelessWidget {
                     SizedBox(
                       width: deviceSize.width - 32,
                       child: QuranLine(
+                        context,
                         line,
                         bookmarkCtrl.bookmarksAyahs,
                         bookmarkCtrl.bookmarks,
@@ -293,6 +296,7 @@ class _QuranLinePage extends StatelessWidget {
                             0.97 /
                             quranCtrl.staticPages[pageIndex].lines.length,
                         child: QuranLine(
+                          context,
                           line,
                           bookmarkCtrl.bookmarksAyahs,
                           bookmarkCtrl.bookmarks,

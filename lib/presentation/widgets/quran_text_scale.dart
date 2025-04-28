@@ -2,6 +2,7 @@ part of '../../quran.dart';
 
 class _QuranTextScale extends StatelessWidget {
   _QuranTextScale({
+    required this.context,
     required this.pageIndex,
     this.bookmarkList,
     this.basmalaStyle,
@@ -26,6 +27,7 @@ class _QuranTextScale extends StatelessWidget {
   });
 
   final quranCtrl = QuranCtrl.instance;
+  final BuildContext context;
   final int pageIndex;
   final List? bookmarkList;
   final BasmalaStyle? basmalaStyle;
@@ -250,6 +252,7 @@ class _QuranTextScale extends StatelessWidget {
                                                 OverlayEntry(
                                               builder: (context) =>
                                                   AyahLongClickDialog(
+                                                context: context,
                                                 ayahFonts: ayahs[ayahIndex],
                                                 position:
                                                     details.globalPosition,

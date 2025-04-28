@@ -1,6 +1,7 @@
 part of '../../../quran.dart';
 
 class _QuranFontsPage extends StatelessWidget {
+  final BuildContext context;
   final int pageIndex;
   final List? bookmarkList;
   final BasmalaStyle? basmalaStyle;
@@ -27,6 +28,7 @@ class _QuranFontsPage extends StatelessWidget {
   final List<int> ayahBookmarked;
 
   const _QuranFontsPage({
+    required this.context,
     required this.pageIndex,
     this.bookmarkList,
     this.basmalaStyle,
@@ -311,6 +313,7 @@ class _QuranFontsPage extends StatelessWidget {
                   final overlay = Overlay.of(context);
                   final newOverlayEntry = OverlayEntry(
                     builder: (context) => AyahLongClickDialog(
+                      context: context,
                       ayahFonts: ayahs[ayahIndex],
                       position: details.globalPosition,
                       index: ayahIndex,

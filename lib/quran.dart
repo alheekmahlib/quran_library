@@ -32,6 +32,7 @@ part 'core/extensions/font_size_extension.dart';
 part 'core/extensions/fonts_download_widget.dart';
 part 'core/extensions/fonts_extension.dart';
 part 'core/extensions/sajda_extension.dart';
+part 'core/extensions/show_tafsir_extension.dart';
 part 'core/extensions/string_extensions.dart';
 part 'core/extensions/surah_info_extension.dart';
 part 'core/extensions/text_span_extension.dart';

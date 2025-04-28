@@ -3,63 +3,6 @@ part of '../../../quran.dart';
 extension TafsirUi on TafsirCtrl {
   /// -------- [onTap] --------
 
-  Future<void> showTafsirOnTap({
-    required BuildContext context,
-    required int surahNum,
-    required int ayahNum,
-    required String ayahText,
-    required int pageIndex,
-    required String ayahTextN,
-    required int ayahUQNum,
-    required int ayahNumber,
-  }) async {
-    // شرح: هذا السطر لطباعة رسالة عند استدعاء الدالة للتأكد من تنفيذها
-    // Explanation: This line logs when the function is called for debugging
-    log('showTafsirOnTap called', name: 'TafsirUi');
-
-    tafseerAyah = ayahText;
-    surahNumber.value = surahNum;
-    ayahTextNormal.value = ayahTextN;
-    ayahUQNumber.value = ayahUQNum;
-    QuranCtrl.instance.state.currentPageNumber.value = pageIndex + 1;
-    if (isTafsir.value) {
-      closeAndInitializeDatabase(pageNumber: pageIndex + 1);
-      await fetchData(pageIndex + 1);
-    } else {
-      await fetchTranslate();
-    }
-
-    // if (context.mounted) {
-    // شرح: إذا دخلنا هنا فهذا يعني أن context متصل بالشجرة
-    // Explanation: If we reach here, context is mounted and valid
-    log('context is mounted, showing bottom sheet', name: 'TafsirUi');
-    showBottomSheet(
-      context: context,
-      builder: (BuildContext context) => ShowTafseer(
-        ayahUQNumber: ayahUQNum,
-        ayahNumber: ayahNumber,
-        pageIndex: pageIndex,
-        tafsirStyle: TafsirStyle(
-          iconCloseWidget: IconButton(
-              icon: Icon(Icons.close, size: 30, color: Colors.black),
-              onPressed: () => Get.back()),
-          tafsirNameWidget: Text(
-            'التفسير',
-            style: QuranLibrary().naskhStyle,
-          ),
-          fontSizeWidget:
-              Icon(Icons.text_format_outlined, size: 30, color: Colors.black),
-        ),
-      ),
-      // ),
-    );
-    // } else {
-    //   // شرح: إذا لم يكن context متصل بالشجرة نطبع رسالة خطأ
-    //   // Explanation: If context is not mounted, log an error
-    //   log('context is NOT mounted!', name: 'TafsirUi');
-    // }
-  }
-
   Future<void> copyOnTap(int ayahUQNumber) async {
     await Clipboard.setData(ClipboardData(
             text:

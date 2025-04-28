@@ -50,6 +50,7 @@ class QuranState {
   RxInt selectedAyahNumber = 0.obs;
   RxInt selectedSurahNumber = 0.obs;
   OverlayEntry? overlayEntry;
+  final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
   void dispose() {
     quranPageController.dispose();

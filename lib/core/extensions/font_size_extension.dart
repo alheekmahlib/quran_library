@@ -57,9 +57,10 @@ extension FontSizeExtension on Widget {
                   decoration: const BoxDecoration(),
                   child: Material(
                     type: MaterialType.circle,
-                    color: Colors.transparent,
+                    color: Colors.white,
                     elevation: 3,
-                    child: tafsirStyle.fontSizeWidget,
+                    child: Icon(Icons.arrow_back_ios_rounded,
+                        size: 20, color: Colors.blue),
                   ),
                 ),
               ),

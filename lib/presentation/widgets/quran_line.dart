@@ -2,6 +2,7 @@ part of '../../quran.dart';
 
 class QuranLine extends StatelessWidget {
   QuranLine(
+    this.context,
     this.line,
     this.bookmarksAyahs,
     this.bookmarks, {
@@ -20,6 +21,7 @@ class QuranLine extends StatelessWidget {
 
   final quranCtrl = QuranCtrl.instance;
 
+  final BuildContext context;
   final Line line;
   final List<int> bookmarksAyahs;
   final Map<int, List<BookmarkModel>> bookmarks;
@@ -86,6 +88,7 @@ class QuranLine extends StatelessWidget {
                         final overlay = Overlay.of(context);
                         final newOverlayEntry = OverlayEntry(
                           builder: (context) => AyahLongClickDialog(
+                            context: context,
                             ayah: ayah,
                             position: details.globalPosition,
                             index: ayah.ayahNumber,

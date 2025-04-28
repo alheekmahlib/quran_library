@@ -1,3 +1,8 @@
+## 0.1.9
+
+* **BREAKING FIX: Fix the problem for MaterialApp.**
+* **fix showing tafsir.**
+
 ## 0.1.8
 
 * **add showing tafsir.**

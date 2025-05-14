@@ -25,7 +25,8 @@ class _QuranLinePage extends StatelessWidget {
   final bool isDark;
   final List<int> ayahBookmarked;
   final Widget? anotherMenuChild;
-  final Function? anotherMenuChildOnTap;
+  final void Function(AyahModel ayah, AyahFontsModel ayahFont)?
+      anotherMenuChildOnTap;
 
   _QuranLinePage({
     required this.context,

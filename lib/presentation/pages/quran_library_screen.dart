@@ -234,7 +234,8 @@ class QuranLibraryScreen extends StatelessWidget {
   final List<int>? ayahBookmarked;
 
   final Widget? anotherMenuChild;
-  final Function? anotherMenuChildOnTap;
+  final void Function(AyahModel ayah, AyahFontsModel ayahFont)?
+      anotherMenuChildOnTap;
 
   @override
   Widget build(BuildContext context) {

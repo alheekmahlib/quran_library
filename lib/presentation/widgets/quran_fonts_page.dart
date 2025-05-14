@@ -27,7 +27,8 @@ class _QuranFontsPage extends StatelessWidget {
   final String? fontsName;
   final List<int> ayahBookmarked;
   final Widget? anotherMenuChild;
-  final Function? anotherMenuChildOnTap;
+  final void Function(AyahModel ayah, AyahFontsModel ayahFont)?
+      anotherMenuChildOnTap;
 
   const _QuranFontsPage({
     required this.context,

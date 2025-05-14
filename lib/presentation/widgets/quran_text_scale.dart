@@ -53,7 +53,8 @@ class _QuranTextScale extends StatelessWidget {
   final bool isDark;
   final bool showAyahBookmarkedIcon;
   final Widget? anotherMenuChild;
-  final Function? anotherMenuChildOnTap;
+  final void Function(AyahModel ayah, AyahFontsModel ayahFont)?
+      anotherMenuChildOnTap;
 
   @override
   Widget build(BuildContext context) {

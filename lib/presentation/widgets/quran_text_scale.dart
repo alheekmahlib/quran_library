@@ -24,6 +24,8 @@ class _QuranTextScale extends StatelessWidget {
     this.circularProgressWidget,
     required this.isDark,
     required this.ayahBookmarked,
+    this.anotherMenuChild,
+    this.anotherMenuChildOnTap,
   });
 
   final quranCtrl = QuranCtrl.instance;
@@ -50,6 +52,8 @@ class _QuranTextScale extends StatelessWidget {
   final Widget? circularProgressWidget;
   final bool isDark;
   final bool showAyahBookmarkedIcon;
+  final Widget? anotherMenuChild;
+  final Function? anotherMenuChildOnTap;
 
   @override
   Widget build(BuildContext context) {
@@ -258,6 +262,10 @@ class _QuranTextScale extends StatelessWidget {
                                                     details.globalPosition,
                                                 index: ayahIndex,
                                                 pageIndex: pageIndex,
+                                                anotherMenuChild:
+                                                    anotherMenuChild,
+                                                anotherMenuChildOnTap:
+                                                    anotherMenuChildOnTap,
                                               ),
                                             );
 

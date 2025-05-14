@@ -17,6 +17,8 @@ class AyahLongClickDialog extends StatelessWidget {
     required this.position,
     required this.index,
     required this.pageIndex,
+    this.anotherMenuChild,
+    this.anotherMenuChildOnTap,
   });
 
   /// The AyahModel that is the target of the long click event.
@@ -35,6 +37,8 @@ class AyahLongClickDialog extends StatelessWidget {
   final Offset position;
   final int index;
   final int pageIndex;
+  final Widget? anotherMenuChild;
+  final Function? anotherMenuChildOnTap;
   final BuildContext context;
 
   @override
@@ -188,6 +192,22 @@ class AyahLongClickDialog extends StatelessWidget {
                   color: Colors.grey,
                 ),
               ),
+              anotherMenuChild != null
+                  ? context.verticalDivider(
+                      height: 30, color: const Color(0xffe8decb))
+                  : const SizedBox(),
+              anotherMenuChild != null
+                  ? GestureDetector(
+                      onTap: () {
+                        if (anotherMenuChildOnTap != null) {
+                          anotherMenuChildOnTap!(ayah, ayahFonts);
+                        }
+                        QuranCtrl.instance.state.overlayEntry?.remove();
+                        QuranCtrl.instance.state.overlayEntry = null;
+                      },
+                      child: anotherMenuChild ?? const SizedBox(),
+                    )
+                  : const SizedBox(),
             ],
           ),
         ),

@@ -52,6 +52,8 @@ class QuranLibraryScreen extends StatelessWidget {
     this.isFontsLocal = false,
     this.fontsName = '',
     this.ayahBookmarked = const [],
+    this.anotherMenuChild,
+    this.anotherMenuChildOnTap,
   });
 
   /// إذا قمت بإضافة شريط التطبيقات هنا فإنه سيحل محل شريط التطبيقات الافتراضية [appBar]
@@ -231,6 +233,9 @@ class QuranLibraryScreen extends StatelessWidget {
   /// [ayahBookmarked] Pass the list of bookmarked ayahs
   final List<int>? ayahBookmarked;
 
+  final Widget? anotherMenuChild;
+  final Function? anotherMenuChildOnTap;
+
   @override
   Widget build(BuildContext context) {
     // if (isDark!) {
@@ -392,6 +397,8 @@ class QuranLibraryScreen extends StatelessWidget {
                           isFontsLocal: isFontsLocal,
                           fontsName: fontsName,
                           ayahBookmarked: ayahBookmarked!,
+                          anotherMenuChild: anotherMenuChild,
+                          anotherMenuChildOnTap: anotherMenuChildOnTap,
                         ),
                       ))
               : quranCtrl.staticPages.isEmpty || quranCtrl.isLoading.value
@@ -421,6 +428,8 @@ class QuranLibraryScreen extends StatelessWidget {
                       topTitleChild: topTitleChild,
                       isDark: isDark,
                       ayahBookmarked: ayahBookmarked!,
+                      anotherMenuChild: anotherMenuChild,
+                      anotherMenuChildOnTap: anotherMenuChildOnTap,
                     )),
           quranCtrl.staticPages.isEmpty || quranCtrl.isLoading.value
               ? Center(
@@ -456,6 +465,8 @@ class QuranLibraryScreen extends StatelessWidget {
                     isDark: isDark,
                     circularProgressWidget: circularProgressWidget,
                     ayahBookmarked: ayahBookmarked!,
+                    anotherMenuChild: anotherMenuChild,
+                    anotherMenuChildOnTap: anotherMenuChildOnTap,
                   ),
                 ),
         ),

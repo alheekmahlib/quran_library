@@ -17,6 +17,8 @@ class QuranLine extends StatelessWidget {
     required this.pageIndex,
     required this.ayahBookmarked,
     this.ayahSelectedFontColor,
+    this.anotherMenuChild,
+    this.anotherMenuChildOnTap,
   });
 
   final quranCtrl = QuranCtrl.instance;
@@ -36,6 +38,8 @@ class QuranLine extends StatelessWidget {
   final List? bookmarkList;
   final int pageIndex;
   final List<int> ayahBookmarked;
+  final Widget? anotherMenuChild;
+  final Function? anotherMenuChildOnTap;
 
   @override
   Widget build(BuildContext context) {
@@ -93,6 +97,8 @@ class QuranLine extends StatelessWidget {
                             position: details.globalPosition,
                             index: ayah.ayahNumber,
                             pageIndex: pageIndex,
+                            anotherMenuChild: anotherMenuChild,
+                            anotherMenuChildOnTap: anotherMenuChildOnTap,
                           ),
                         );
 

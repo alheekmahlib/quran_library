@@ -24,6 +24,8 @@ class _QuranLinePage extends StatelessWidget {
   final Widget? topTitleChild;
   final bool isDark;
   final List<int> ayahBookmarked;
+  final Widget? anotherMenuChild;
+  final Function? anotherMenuChildOnTap;
 
   _QuranLinePage({
     required this.context,
@@ -48,6 +50,8 @@ class _QuranLinePage extends StatelessWidget {
     this.topTitleChild,
     required this.isDark,
     required this.ayahBookmarked,
+    this.anotherMenuChild,
+    this.anotherMenuChildOnTap,
   });
 
   final quranCtrl = QuranCtrl.instance;
@@ -194,6 +198,8 @@ class _QuranLinePage extends StatelessWidget {
                             ayahSelectedBackgroundColor,
                         onPagePress: onPagePress,
                         ayahBookmarked: ayahBookmarked,
+                        anotherMenuChild: anotherMenuChild,
+                        anotherMenuChildOnTap: anotherMenuChildOnTap,
                       ),
                     ),
                   ],
@@ -313,6 +319,8 @@ class _QuranLinePage extends StatelessWidget {
                               ayahSelectedBackgroundColor,
                           onPagePress: onPagePress,
                           ayahBookmarked: ayahBookmarked,
+                          anotherMenuChild: anotherMenuChild,
+                          anotherMenuChildOnTap: anotherMenuChildOnTap,
                         ),
                       ),
                     ],

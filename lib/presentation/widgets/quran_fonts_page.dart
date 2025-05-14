@@ -26,6 +26,8 @@ class _QuranFontsPage extends StatelessWidget {
   final bool? isFontsLocal;
   final String? fontsName;
   final List<int> ayahBookmarked;
+  final Widget? anotherMenuChild;
+  final Function? anotherMenuChildOnTap;
 
   const _QuranFontsPage({
     required this.context,
@@ -51,6 +53,8 @@ class _QuranFontsPage extends StatelessWidget {
     this.isFontsLocal,
     this.fontsName,
     required this.ayahBookmarked,
+    this.anotherMenuChild,
+    this.anotherMenuChildOnTap,
   });
 
   @override
@@ -177,8 +181,15 @@ class _QuranFontsPage extends StatelessWidget {
                       ),
                 FittedBox(
                   fit: BoxFit.fitWidth,
-                  child: Obx(() => _richTextWidget(context, quranCtrl, ayahs,
-                      isFontsLocal!, fontsName!, ayahBookmarked)),
+                  child: Obx(() => _richTextWidget(
+                      context,
+                      quranCtrl,
+                      ayahs,
+                      isFontsLocal!,
+                      fontsName!,
+                      ayahBookmarked,
+                      anotherMenuChild,
+                      anotherMenuChildOnTap)),
                 ),
                 quranCtrl._downThePageIndex.contains(pageIndex)
                     ? SurahHeaderWidget(
@@ -240,12 +251,15 @@ class _QuranFontsPage extends StatelessWidget {
   }
 
   Widget _richTextWidget(
-      BuildContext context,
-      QuranCtrl quranCtrl,
-      List<AyahFontsModel> ayahs,
-      bool isFontsLocal,
-      String fontsName,
-      List<int> ayahBookmarked) {
+    BuildContext context,
+    QuranCtrl quranCtrl,
+    List<AyahFontsModel> ayahs,
+    bool isFontsLocal,
+    String fontsName,
+    List<int> ayahBookmarked,
+    Widget? anotherMenuChild,
+    Function? anotherMenuChildOnTap,
+  ) {
     return RichText(
       textDirection: TextDirection.rtl,
       textAlign: TextAlign.center,
@@ -318,6 +332,8 @@ class _QuranFontsPage extends StatelessWidget {
                       position: details.globalPosition,
                       index: ayahIndex,
                       pageIndex: pageIndex,
+                      anotherMenuChild: anotherMenuChild,
+                      anotherMenuChildOnTap: anotherMenuChildOnTap,
                     ),
                   );
 

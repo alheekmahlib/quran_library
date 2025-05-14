@@ -98,7 +98,8 @@ class QuranLine extends StatelessWidget {
                             index: ayah.ayahNumber,
                             pageIndex: pageIndex,
                             anotherMenuChild: anotherMenuChild,
-                            anotherMenuChildOnTap: anotherMenuChildOnTap,
+                            anotherMenuChildOnTap: (ayah, ayahFonts) =>
+                                anotherMenuChildOnTap,
                           ),
                         );
 

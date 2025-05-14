@@ -38,7 +38,8 @@ class AyahLongClickDialog extends StatelessWidget {
   final int index;
   final int pageIndex;
   final Widget? anotherMenuChild;
-  final Function? anotherMenuChildOnTap;
+  final void Function(AyahModel ayah, AyahFontsModel ayahFont)?
+      anotherMenuChildOnTap;
   final BuildContext context;
 
   @override
@@ -200,7 +201,7 @@ class AyahLongClickDialog extends StatelessWidget {
                   ? GestureDetector(
                       onTap: () {
                         if (anotherMenuChildOnTap != null) {
-                          anotherMenuChildOnTap!(ayah, ayahFonts);
+                          anotherMenuChildOnTap!(ayah!, ayahFonts!);
                         }
                         QuranCtrl.instance.state.overlayEntry?.remove();
                         QuranCtrl.instance.state.overlayEntry = null;

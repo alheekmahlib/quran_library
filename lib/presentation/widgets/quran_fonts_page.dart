@@ -333,7 +333,8 @@ class _QuranFontsPage extends StatelessWidget {
                       index: ayahIndex,
                       pageIndex: pageIndex,
                       anotherMenuChild: anotherMenuChild,
-                      anotherMenuChildOnTap: anotherMenuChildOnTap,
+                      anotherMenuChildOnTap: (ayah, ayahFonts) =>
+                          anotherMenuChildOnTap,
                     ),
                   );
 

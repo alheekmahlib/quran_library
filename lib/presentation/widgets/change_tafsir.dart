@@ -194,7 +194,7 @@ class ChangeTafsir extends StatelessWidget {
               GetStorage().write(_StorageConstants().radioValue, index);
               // tafsirCtrl.fetchTranslate();
               tafsirCtrl.update(['change_tafsir']);
-              Get.back();
+              if (context.mounted) Navigator.of(context).pop();
             },
             leading: Container(
                 height: 85.0,

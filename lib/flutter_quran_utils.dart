@@ -207,8 +207,9 @@ class QuranLibrary {
       return _cache[cacheKey] as List<String>;
     }
     final surahList = quranCtrl.surahs
-        .map((surah) =>
-            isArabic ? 'سورة ${surah.nameAr}' : 'Surah ${surah.nameEn}')
+        .map((surah) => isArabic
+            ? 'سورة ${surah.arabicName}'
+            : 'Surah ${surah.englishName}')
         .toList();
     _cache[cacheKey] = surahList;
     return surahList;
@@ -419,8 +420,7 @@ class QuranLibrary {
   ///
   /// To know the names of the surahs on any page, just call [getAllSurahInPageByPageNumber]
   /// And just pass the page number to it.
-  List<SurahFontsModel> getAllSurahInPageByPageNumber(
-          {required int pageNumber}) =>
+  List<SurahModel> getAllSurahInPageByPageNumber({required int pageNumber}) =>
       quranCtrl.getSurahsByPage(pageNumber);
 
   /// لجلب بيانات السورة الحالية عن طريق رقم الصفحة
@@ -428,7 +428,7 @@ class QuranLibrary {
   ///
   /// To fetch the current Surah data by page number,
   /// you can use [getCurrentSurahDataByPageNumber].
-  SurahFontsModel getCurrentSurahDataByPageNumber({required int pageNumber}) =>
+  SurahModel getCurrentSurahDataByPageNumber({required int pageNumber}) =>
       quranCtrl.getCurrentSurahByPage(pageNumber);
 
   /// لجلب بيانات السورة الحالية عن طريق بيانات الآية
@@ -436,7 +436,7 @@ class QuranLibrary {
   ///
   /// To fetch the current Surah data by Ayah data,
   /// you can use [getCurrentSurahDataByAyah].
-  SurahFontsModel getCurrentSurahDataByAyah({required AyahFontsModel ayah}) =>
+  SurahModel getCurrentSurahDataByAyah({required AyahModel ayah}) =>
       quranCtrl.getSurahDataByAyah(ayah);
 
   /// لجلب بيانات السورة الحالية عن طريق رقم الآية الفريد
@@ -444,7 +444,7 @@ class QuranLibrary {
   ///
   /// To fetch the current Surah data by Ayah unique number,
   /// you can use [getCurrentSurahDataByAyahUniqueNumber].
-  SurahFontsModel getCurrentSurahDataByAyahUniqueNumber(
+  SurahModel getCurrentSurahDataByAyahUniqueNumber(
           {required int ayahUniqueNumber}) =>
       quranCtrl.getSurahDataByAyahUQ(ayahUniqueNumber);
 
@@ -453,7 +453,7 @@ class QuranLibrary {
   ///
   /// To fetch the current Juz number by page number,
   /// you can use [getJuzByPageNumber].
-  AyahFontsModel getJuzByPageNumber({required int pageNumber}) =>
+  AyahModel getJuzByPageNumber({required int pageNumber}) =>
       quranCtrl.getJuzByPage(pageNumber);
 
   /// لجلب آيات الصفحة عن طريق رقم الصفحة
@@ -461,7 +461,7 @@ class QuranLibrary {
   ///
   /// To fetch the Ayahs in the page by page number,
   /// you can use [getPageAyahsByPageNumber].
-  List<AyahFontsModel> getPageAyahsByPageNumber({required int pageNumber}) =>
+  List<AyahModel> getPageAyahsByPageNumber({required int pageNumber}) =>
       quranCtrl.getPageAyahsByIndex(pageNumber);
 
   /// لجلب آيات الصفحة عن طريق رقم الصفحة

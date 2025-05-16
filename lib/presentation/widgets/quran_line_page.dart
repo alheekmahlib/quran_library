@@ -25,8 +25,7 @@ class _QuranLinePage extends StatelessWidget {
   final bool isDark;
   final List<int> ayahBookmarked;
   final Widget? anotherMenuChild;
-  final void Function(AyahModel ayah, AyahFontsModel ayahFont)?
-      anotherMenuChildOnTap;
+  final void Function(AyahModel ayah)? anotherMenuChildOnTap;
 
   _QuranLinePage({
     required this.context,
@@ -127,7 +126,7 @@ class _QuranLinePage extends StatelessWidget {
         children: [
           SurahHeaderWidget(
             surahNumber ??
-                quranCtrl.staticPages[pageIndex].ayahs[0].surahNumber,
+                quranCtrl.staticPages[pageIndex].ayahs[0].surahNumber!,
             bannerStyle: bannerStyle ??
                 BannerStyle(
                   isImage: false,
@@ -168,7 +167,7 @@ class _QuranLinePage extends StatelessWidget {
           if (pageIndex == 1)
             BasmallahWidget(
               surahNumber:
-                  quranCtrl.staticPages[pageIndex].ayahs[0].surahNumber,
+                  quranCtrl.staticPages[pageIndex].ayahs[0].surahNumber!,
               basmalaStyle: basmalaStyle ??
                   BasmalaStyle(
                     basmalaColor: isDark ? Colors.white : Colors.black,
@@ -223,7 +222,7 @@ class _QuranLinePage extends StatelessWidget {
               bool firstAyah = false;
               if (line.ayahs[0].ayahNumber == 1 &&
                   !newSurahs.contains(line.ayahs[0].arabicName)) {
-                newSurahs.add(line.ayahs[0].arabicName);
+                newSurahs.add(line.ayahs[0].arabicName!);
                 firstAyah = true;
               }
               return GetBuilder<BookmarksCtrl>(
@@ -232,7 +231,7 @@ class _QuranLinePage extends StatelessWidget {
                     children: [
                       if (firstAyah)
                         SurahHeaderWidget(
-                          surahNumber ?? line.ayahs[0].surahNumber,
+                          surahNumber ?? line.ayahs[0].surahNumber!,
                           bannerStyle: bannerStyle ??
                               BannerStyle(
                                 isImage: false,
@@ -307,7 +306,7 @@ class _QuranLinePage extends StatelessWidget {
                           line,
                           bookmarkCtrl.bookmarksAyahs,
                           bookmarkCtrl.bookmarks,
-                          boxFit: line.ayahs.last.centered
+                          boxFit: line.ayahs.last.centered!
                               ? BoxFit.scaleDown
                               : BoxFit.fill,
                           onDefaultAyahLongPress: onAyahLongPress,

@@ -29,18 +29,27 @@ class TafsirCtrl extends GetxController {
   var isLoading = false.obs;
   var translationLangCode = 'en'.obs;
 
+  /// شرح: أضف متغير لحفظ اسم قاعدة البيانات الحالية
+  /// Explanation: Add a variable to store the current database name
+  String? currentDbFileName;
+
   @override
   Future<void> onInit() async {
     super.onInit();
     await initTafsir();
   }
 
+  /// شرح: لا تنشئ قاعدة بيانات جديدة إذا كانت موجودة بنفس الاسم
+  /// Explanation: Do not create a new database if already exists with the same name
   Future<void> initTafsir() async {
     initializeTafsirDownloadStatus();
     await loadTafseer().then((_) async {
-      database.value?.close();
-      database = Rx<TafsirDatabase?>(TafsirDatabase(
-          tafsirAndTranslateNames[radioValue.value].databaseName));
+      String dbName = tafsirAndTranslateNames[radioValue.value].databaseName;
+      if (database.value == null || currentDbFileName != dbName) {
+        database.value?.close();
+        database.value = TafsirDatabase(dbName);
+        currentDbFileName = dbName;
+      }
       await initializeDatabase();
     });
   }
@@ -56,9 +65,14 @@ class TafsirCtrl extends GetxController {
   }
 
   Future<void> initializeDatabase() async {
-    log('Initializing database...');
-    database.value =
-        TafsirDatabase(tafsirAndTranslateNames[radioValue.value].databaseName);
+    // شرح: لا تعيد إنشاء قاعدة البيانات إذا كانت موجودة بنفس الاسم
+    // Explanation: Do not recreate the database if it already exists with the same name
+    String dbName = tafsirAndTranslateNames[radioValue.value].databaseName;
+    if (database.value == null || currentDbFileName != dbName) {
+      database.value?.close();
+      database.value = TafsirDatabase(dbName);
+      currentDbFileName = dbName;
+    }
     log('Database object created.');
     log('Database initialized.');
   }

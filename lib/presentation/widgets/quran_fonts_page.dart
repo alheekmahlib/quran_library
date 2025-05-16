@@ -10,7 +10,7 @@ class _QuranFontsPage extends StatelessWidget {
   final SurahNameStyle? surahNameStyle;
   final BannerStyle? bannerStyle;
   final Function(SurahNamesModel surah)? onSurahBannerPress;
-  final Function(LongPressStartDetails details, AyahFontsModel ayah)?
+  final Function(LongPressStartDetails details, AyahModel ayah)?
       onFontsAyahLongPress;
 
   final VoidCallback? onPagePress;
@@ -27,8 +27,7 @@ class _QuranFontsPage extends StatelessWidget {
   final String? fontsName;
   final List<int> ayahBookmarked;
   final Widget? anotherMenuChild;
-  final void Function(AyahModel ayah, AyahFontsModel ayahFont)?
-      anotherMenuChildOnTap;
+  final void Function(AyahModel ayah)? anotherMenuChildOnTap;
 
   const _QuranFontsPage({
     required this.context,
@@ -254,7 +253,7 @@ class _QuranFontsPage extends StatelessWidget {
   Widget _richTextWidget(
     BuildContext context,
     QuranCtrl quranCtrl,
-    List<AyahFontsModel> ayahs,
+    List<AyahModel> ayahs,
     bool isFontsLocal,
     String fontsName,
     List<int> ayahBookmarked,
@@ -290,8 +289,8 @@ class _QuranFontsPage extends StatelessWidget {
                       .getSurahDataByAyah(ayahs[ayahIndex])
                       .surahNumber));
           String text = isFirstAyah
-              ? '${ayahs[ayahIndex].codeV2[0]}${ayahs[ayahIndex].codeV2.substring(1)}'
-              : ayahs[ayahIndex].codeV2;
+              ? '${ayahs[ayahIndex].codeV2![0]}${ayahs[ayahIndex].codeV2!.substring(1)}'
+              : ayahs[ayahIndex].codeV2!;
           return _span(
             isFirstAyah: isFirstAyah,
             text: text,
@@ -329,13 +328,12 @@ class _QuranFontsPage extends StatelessWidget {
                   final newOverlayEntry = OverlayEntry(
                     builder: (context) => AyahLongClickDialog(
                       context: context,
-                      ayahFonts: ayahs[ayahIndex],
+                      ayah: ayahs[ayahIndex],
                       position: details.globalPosition,
                       index: ayahIndex,
                       pageIndex: pageIndex,
                       anotherMenuChild: anotherMenuChild,
-                      anotherMenuChildOnTap: (ayah, ayahFonts) =>
-                          anotherMenuChildOnTap,
+                      anotherMenuChildOnTap: (ayah) => anotherMenuChildOnTap,
                     ),
                   );
 

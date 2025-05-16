@@ -175,7 +175,7 @@ class ShowTafseer extends StatelessWidget {
       BuildContext context,
       int ayahIndex,
       TafsirTableData tafsir,
-      AyahFontsModel ayahs,
+      AyahModel ayahs,
       bool isTafsir,
       List translationList,
       double fontSizeArabic) {

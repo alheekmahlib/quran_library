@@ -9,10 +9,10 @@ class QuranCtrl extends GetxController {
 
   final QuranRepository _quranRepository;
 
-  RxList<QuranPage> staticPages = <QuranPage>[].obs;
+  RxList<QuranPageModel> staticPages = <QuranPageModel>[].obs;
   RxList<int> quranStops = <int>[].obs;
   RxList<int> surahsStart = <int>[].obs;
-  RxList<Surah> surahs = <Surah>[].obs;
+  RxList<SurahModel> surahs = <SurahModel>[].obs;
   final RxList<AyahModel> ayahs = <AyahModel>[].obs;
   int lastPage = 1;
   int? initialPage;
@@ -73,7 +73,7 @@ class QuranCtrl extends GetxController {
     if (state.surahs.isEmpty) {
       List<dynamic> surahsJson = await _quranRepository.getFontsQuran();
       state.surahs =
-          surahsJson.map((s) => SurahFontsModel._fromJson(s)).toList();
+          surahsJson.map((s) => SurahModel.fromDownloadedFontsJson(s)).toList();
 
       for (final surah in state.surahs) {
         state.allAyahs.addAll(surah.ayahs);
@@ -101,23 +101,29 @@ class QuranCtrl extends GetxController {
   }
 
   Future<void> loadQuran({quranPages = QuranRepository.hafsPagesNumber}) async {
+    // حفظ آخر صفحة
     lastPage = _quranRepository.getLastPage() ?? 1;
     if (lastPage != 0) {
       jumpToPage(lastPage - 1);
     }
+    // إذا كانت الصفحات لم تُملأ أو العدد غير متطابق
     if (staticPages.isEmpty || quranPages != staticPages.length) {
-      staticPages.value = List.generate(quranPages,
-          (index) => QuranPage(pageNumber: index + 1, ayahs: [], lines: []));
+      // إنشاء صفحات فارغة
+      staticPages.value = List.generate(
+        quranPages,
+        (index) => QuranPageModel(pageNumber: index + 1, ayahs: [], lines: []),
+      );
       final quranJson = await _quranRepository.getQuran();
       int hizb = 1;
       int surahsIndex = 1;
       List<AyahModel> thisSurahAyahs = [];
       for (int i = 0; i < quranJson.length; i++) {
-        final ayah = AyahModel._fromJson(quranJson[i]);
+        // تحويل كل json إلى AyahModel
+        final ayah = AyahModel.fromOriginalJson(quranJson[i]);
         if (ayah.surahNumber != surahsIndex) {
           surahs.last.endPage = ayahs.last.page;
           surahs.last.ayahs = thisSurahAyahs;
-          surahsIndex = ayah.surahNumber;
+          surahsIndex = ayah.surahNumber!;
           thisSurahAyahs = [];
         }
         ayahs.add(ayah);
@@ -133,19 +139,20 @@ class QuranCtrl extends GetxController {
         if (ayah.ayahNumber == 1) {
           ayah.text = ayah.text.replaceAll('۞', '');
           staticPages[ayah.page - 1].numberOfNewSurahs++;
-          surahs.add(Surah(
-              index: ayah.surahNumber,
-              startPage: ayah.page,
-              endPage: 0,
-              nameEn: ayah.englishName,
-              nameAr: ayah.arabicName,
-              ayahs: []));
+          surahs.add(SurahModel(
+            surahNumber: ayah.surahNumber!,
+            englishName: ayah.englishName!,
+            arabicName: ayah.arabicName!,
+            ayahs: [],
+            isDownloadedFonts: false,
+          ));
           surahsStart.add(ayah.page - 1);
         }
       }
       surahs.last.endPage = ayahs.last.page;
       surahs.last.ayahs = thisSurahAyahs;
-      for (QuranPage staticPage in staticPages) {
+      // ملء الأسطر (lines) لكل صفحة
+      for (QuranPageModel staticPage in staticPages) {
         List<AyahModel> ayas = [];
         for (AyahModel aya in staticPage.ayahs) {
           if (aya.ayahNumber == 1 && ayas.isNotEmpty) {
@@ -155,23 +162,28 @@ class QuranCtrl extends GetxController {
             final lines = aya.text.split('\n');
             for (int i = 0; i < lines.length; i++) {
               bool centered = false;
-              if ((aya.centered && i == lines.length - 2)) {
+              if ((aya.centered ?? false) && i == lines.length - 2) {
                 centered = true;
               }
-              final a = AyahModel._fromAya(
-                  ayah: aya,
-                  aya: lines[i],
-                  ayaText: lines[i],
-                  centered: centered);
+              final a = AyahModel.fromAya(
+                ayah: aya,
+                aya: lines[i],
+                ayaText: lines[i],
+                centered: centered,
+              );
               ayas.add(a);
               if (i < lines.length - 1) {
-                staticPage.lines.add(Line([...ayas]));
+                staticPage.lines.add(LineModel([...ayas]));
                 ayas.clear();
               }
             }
           } else {
             ayas.add(aya);
           }
+        }
+        // إذا بقيت آيات في ayas بعد آخر سطر
+        if (ayas.isNotEmpty) {
+          staticPage.lines.add(LineModel([...ayas]));
         }
         ayas.clear();
       }
@@ -206,9 +218,9 @@ class QuranCtrl extends GetxController {
         final normalizedAyahText =
             normalizeText(aya.ayaTextEmlaey.toLowerCase());
         final normalizedSurahNameAr =
-            normalizeText(aya.arabicName.toLowerCase());
+            normalizeText(aya.arabicName!.toLowerCase());
         final normalizedSurahNameEn =
-            normalizeText(aya.englishName.toLowerCase());
+            normalizeText(aya.englishName!.toLowerCase());
 
         // التحقق من تطابق نص الآية
         final containsWord = normalizedAyahText.contains(normalizedSearchText);
@@ -264,9 +276,9 @@ class QuranCtrl extends GetxController {
 
       final filteredAyahs = ayahs.where((aya) {
         final normalizedSurahNameAr =
-            normalizeText(aya.arabicName.toLowerCase());
+            normalizeText(aya.arabicName!.toLowerCase());
         final normalizedSurahNameEn =
-            normalizeText(aya.englishName.toLowerCase());
+            normalizeText(aya.englishName!.toLowerCase());
 
         // استخدام contains بدلاً من == للسماح بمطابقة جزئية
         final matchesSurahName =

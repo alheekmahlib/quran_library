@@ -5,6 +5,9 @@ part of '../../../quran.dart';
 extension QuranGetters on QuranCtrl {
   /// -------- [Getter] ----------
 
+  RxBool get isDownloadedFonts =>
+      QuranCtrl.instance.state.fontsSelected2.value == 1 ? true.obs : false.obs;
+
   List<int> get _startSurahsNumbers => [
         1,
         2,
@@ -103,30 +106,29 @@ extension QuranGetters on QuranCtrl {
         584
       ];
 
-  /// Returns a list of lists of AyahFontsModel, where each sublist contains Ayahs
+  /// Returns a list of lists of AyahModel, where each sublist contains Ayahs
   /// that are separated by a Basmalah, for the given page index.
   ///
   /// Parameters:
   ///   pageIndex (int): The index of the page for which to retrieve the Ayahs.
   ///
   /// Returns:
-  ///   `List<List<AyahFontsModel>>`: A list of lists of AyahFontsModel, where each
+  ///   `List<List<AyahModel>>`: A list of lists of AyahModel, where each
   ///   sublist contains Ayahs separated by a Basmalah.
-  List<List<AyahFontsModel>> getCurrentPageAyahsSeparatedForBasmalah(
+  List<List<AyahModel>> getCurrentPageAyahsSeparatedForBasmalah(
           int pageIndex) =>
       state.pages[pageIndex]
           .splitBetween((f, s) => f.ayahNumber > s.ayahNumber)
           .toList();
 
-  /// Retrieves a list of AyahFontsModel for a specific page index.
+  /// Retrieves a list of AyahModel for a specific page index.
   ///
   /// Parameters:
   ///   pageIndex (int): The index of the page for which to retrieve the Ayahs.
   ///
   /// Returns:
-  ///   `List<AyahFontsModel>`: A list of AyahFontsModel representing the Ayahs on the specified page.
-  List<AyahFontsModel> getPageAyahsByIndex(int pageIndex) =>
-      state.pages[pageIndex];
+  ///   `List<AyahModel>`: A list of AyahModel representing the Ayahs on the specified page.
+  List<AyahModel> getPageAyahsByIndex(int pageIndex) => state.pages[pageIndex];
 
   /// will return the surah number of the first ayahs..
   /// even if the page contains another surah.
@@ -141,20 +143,21 @@ extension QuranGetters on QuranCtrl {
   ///   pageNumber (int): The index of the page for which to retrieve the Surahs.
   ///
   /// Returns:
-  ///   `List<SurahFontsModel>`: A list of SurahFontsModel representing the Surahs on the specified page.
-  List<SurahFontsModel> getSurahsByPage(int pageNumber) {
+  ///   `List<SurahModel>`: A list of SurahModel representing the Surahs on the specified page.
+  List<SurahModel> getSurahsByPage(int pageNumber) {
     if (getPageAyahsByIndex(pageNumber).isEmpty) return [];
-    List<AyahFontsModel> pageAyahs = getPageAyahsByIndex(pageNumber);
-    List<SurahFontsModel> surahsOnPage = [];
-    for (AyahFontsModel ayah in pageAyahs) {
-      SurahFontsModel surah = state.surahs.firstWhere(
-          (s) => s.ayahs.contains(ayah),
-          orElse: () => SurahFontsModel(
-              surahNumber: 1,
-              arabicName: 'Unknown',
-              englishName: 'Unknown',
-              revelationType: 'Unknown',
-              ayahs: []));
+    List<AyahModel> pageAyahs = getPageAyahsByIndex(pageNumber);
+    List<SurahModel> surahsOnPage = [];
+    for (AyahModel ayah in pageAyahs) {
+      SurahModel surah = state.surahs.firstWhere((s) => s.ayahs.contains(ayah),
+          orElse: () => SurahModel(
+                surahNumber: 1,
+                arabicName: 'Unknown',
+                englishName: 'Unknown',
+                revelationType: 'Unknown',
+                ayahs: [],
+                isDownloadedFonts: false,
+              ));
       if (!surahsOnPage.any((s) => s.surahNumber == surah.surahNumber) &&
           surah.surahNumber != -1) {
         surahsOnPage.add(surah);
@@ -165,33 +168,32 @@ extension QuranGetters on QuranCtrl {
 
   /// Retrieves the current Surah data for a given page number.
   ///
-  /// This method returns the SurahFontsModel of the first Ayah on the specified page.
+  /// This method returns the SurahModel of the first Ayah on the specified page.
   /// It uses the Ayah data on the page to determine which Surah the page belongs to.
   ///
   /// Parameters:
   ///   pageNumber (int): The number of the page for which to retrieve the Surah.
   ///
   /// Returns:
-  ///   `SurahFontsModel`: The SurahFontsModel representing the Surah of the first Ayah on the specified page.
-  SurahFontsModel getCurrentSurahByPage(int pageNumber) =>
-      state.surahs.firstWhere(
-          (s) => s.ayahs.contains(getPageAyahsByIndex(pageNumber).first));
+  ///   `SurahModel`: The SurahModel representing the Surah of the first Ayah on the specified page.
+  SurahModel getCurrentSurahByPage(int pageNumber) => state.surahs.firstWhere(
+      (s) => s.ayahs.contains(getPageAyahsByIndex(pageNumber).first));
 
   /// Retrieves the Surah data for a given Ayah.
   ///
-  /// This method returns the SurahFontsModel of the Surah that contains the given Ayah.
+  /// This method returns the SurahModel of the Surah that contains the given Ayah.
   ///
   /// Parameters:
-  ///   ayah (AyahFontsModel): The Ayah for which to retrieve the Surah data.
+  ///   ayah (AyahModel): The Ayah for which to retrieve the Surah data.
   ///
   /// Returns:
-  ///   `SurahFontsModel`: The SurahFontsModel representing the Surah of the given Ayah.
-  SurahFontsModel getSurahDataByAyah(AyahFontsModel ayah) =>
+  ///   `SurahModel`: The SurahModel representing the Surah of the given Ayah.
+  SurahModel getSurahDataByAyah(AyahModel ayah) =>
       state.surahs.firstWhere((s) => s.ayahs.contains(ayah));
 
   /// Retrieves the Surah data for a given unique Ayah number.
   ///
-  /// This method returns the SurahFontsModel of the Surah that contains
+  /// This method returns the SurahModel of the Surah that contains
   /// the Ayah with the specified unique number.
   ///
   /// Parameters:
@@ -199,27 +201,27 @@ extension QuranGetters on QuranCtrl {
   ///   the Surah data.
   ///
   /// Returns:
-  ///   `SurahFontsModel`: The SurahFontsModel representing the Surah containing
+  ///   `SurahModel`: The SurahModel representing the Surah containing
   ///   the Ayah with the given unique number.
-  SurahFontsModel getSurahDataByAyahUQ(int ayah) => state.surahs
+  SurahModel getSurahDataByAyahUQ(int ayah) => state.surahs
       .firstWhere((s) => s.ayahs.any((a) => a.ayahUQNumber == ayah));
 
   /// Retrieves the Juz data for a given page number.
   ///
-  /// This method returns the AyahFontsModel of the Juz that contains the
+  /// This method returns the AyahModel of the Juz that contains the
   /// first Ayah on the specified page.
   ///
   /// Parameters:
   ///   page (int): The page number for which to retrieve the Juz data.
   ///
   /// Returns:
-  ///   `AyahFontsModel`: The AyahFontsModel representing the Juz of the first
-  ///   Ayah on the specified page. If no Ayah is found, an empty AyahFontsModel
+  ///   `AyahModel`: The AyahModel representing the Juz of the first
+  ///   Ayah on the specified page. If no Ayah is found, an empty AyahModel
   ///   is returned.
-  AyahFontsModel getJuzByPage(int page) {
+  AyahModel getJuzByPage(int page) {
     return state.allAyahs.firstWhere(
       (a) => a.page == page + 1,
-      orElse: () => AyahFontsModel._empty(),
+      orElse: () => AyahModel.empty(),
     );
   }
 
@@ -235,13 +237,13 @@ extension QuranGetters on QuranCtrl {
   /// Returns:
   ///   `String`: A string indicating the Hizb quarter of the given page number.
   String getHizbQuarterDisplayByPage(int pageNumber) {
-    final List<AyahFontsModel> currentPageAyahs =
+    final List<AyahModel> currentPageAyahs =
         state.allAyahs.where((ayah) => ayah.page == pageNumber).toList();
     if (currentPageAyahs.isEmpty) return "";
 
     // Find the highest Hizb quarter on the current page
     int? currentMaxHizbQuarter =
-        currentPageAyahs.map((ayah) => ayah.hizb).reduce(math.max);
+        currentPageAyahs.map((ayah) => ayah.hizb!).reduce(math.max);
 
     // Store/update the highest Hizb quarter for this page
     state.pageToHizbQuarterMap[pageNumber] = currentMaxHizbQuarter;
@@ -273,16 +275,16 @@ extension QuranGetters on QuranCtrl {
 
   /// Determines if there is a Sajda (prostration) on the given page of Ayahs.
   ///
-  /// This function iterates through a list of AyahFontsModel representing Ayahs on a page,
+  /// This function iterates through a list of AyahModel representing Ayahs on a page,
   /// checking if any Ayah contains a Sajda. If a Sajda is found, and it is either recommended or obligatory,
   /// the function updates the application state to indicate the presence of a Sajda on the page.
   ///
   /// Parameters:
-  ///   pageAyahs (`List<AyahFontsModel>`): The list of Ayahs to check for Sajda.
+  ///   pageAyahs (`List<AyahModel>`): The list of Ayahs to check for Sajda.
   ///
   /// Returns:
   ///   `bool`: A boolean value indicating whether a Sajda is present on the page.
-  bool getSajdaInfoForPage(List<AyahFontsModel> pageAyahs) {
+  bool getSajdaInfoForPage(List<AyahModel> pageAyahs) {
     for (var ayah in pageAyahs) {
       if (ayah.sajda != false && ayah.sajda is Map) {
         var sajdaDetails = ayah.sajda;
@@ -301,21 +303,21 @@ extension QuranGetters on QuranCtrl {
   /// This method returns the list of Ayahs on the page currently being viewed.
   ///
   /// Returns:
-  ///   `List<AyahFontsModel>`: The list of Ayahs on the current page.
-  List<AyahFontsModel> get currentPageAyahs =>
+  ///   `List<AyahModel>`: The list of Ayahs on the current page.
+  List<AyahModel> get currentPageAyahs =>
       state.pages[state.currentPageNumber.value - 1];
 
   /// Retrieves the Ayah with a Sajda (prostration) on the given page.
   ///
-  /// This method returns the AyahFontsModel of the first Ayah on the given page
+  /// This method returns the AyahModel of the first Ayah on the given page
   /// that contains a Sajda. If no Sajda is found on the page, the method returns null.
   ///
   /// Parameters:
   ///   pageIndex (int): The index of the page for which to retrieve the Ayah with a Sajda.
   ///
   /// Returns:
-  ///   `AyahFontsModel?`: The AyahFontsModel of the first Ayah on the given page that contains a Sajda, or null if no Sajda is found.
-  AyahFontsModel? getAyahWithSajdaInPage(int pageIndex) =>
+  ///   `AyahModel?`: The AyahModel of the first Ayah on the given page that contains a Sajda, or null if no Sajda is found.
+  AyahModel? getAyahWithSajdaInPage(int pageIndex) =>
       state.pages[pageIndex].firstWhereOrNull((ayah) {
         if (ayah.sajda != false) {
           if (ayah.sajda is Map) {

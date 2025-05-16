@@ -112,7 +112,7 @@ class QuranLibrarySearchScreen extends StatelessWidget {
                                         ),
                                   ),
                                   subtitle: Text(
-                                    ayah.arabicName,
+                                    ayah.arabicName!,
                                     style: TextStyle(
                                       color:
                                           isDark ? Colors.white : Colors.black,

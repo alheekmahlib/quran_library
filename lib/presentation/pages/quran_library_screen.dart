@@ -158,7 +158,7 @@ class QuranLibraryScreen extends StatelessWidget {
   /// * Used with loaded fonts *
   /// When long-pressing on any verse with the loaded fonts, you can enable additional features
   /// such as copying the verse, sharing it, and more using [onFontsAyahLongPress].
-  final void Function(LongPressStartDetails details, AyahFontsModel ayah)?
+  final void Function(LongPressStartDetails details, AyahModel ayah)?
       onFontsAyahLongPress;
 
   /// * تُستخدم مع الخطوط المحملة *
@@ -234,8 +234,7 @@ class QuranLibraryScreen extends StatelessWidget {
   final List<int>? ayahBookmarked;
 
   final Widget? anotherMenuChild;
-  final void Function(AyahModel ayah, AyahFontsModel ayahFont)?
-      anotherMenuChildOnTap;
+  final void Function(AyahModel ayah)? anotherMenuChildOnTap;
 
   @override
   Widget build(BuildContext context) {

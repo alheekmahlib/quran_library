@@ -13,7 +13,7 @@ class AyahLongClickDialog extends StatelessWidget {
     required this.context,
     super.key,
     this.ayah,
-    this.ayahFonts,
+    // this.ayahFonts,
     required this.position,
     required this.index,
     required this.pageIndex,
@@ -29,7 +29,7 @@ class AyahLongClickDialog extends StatelessWidget {
   /// The AyahFontsModel that is the target of the long click event.
   ///
   /// This is for the downloaded fonts.
-  final AyahFontsModel? ayahFonts;
+  // final AyahFontsModel? ayahFonts;
 
   /// The position where the dialog should appear on the screen.
   ///
@@ -38,8 +38,7 @@ class AyahLongClickDialog extends StatelessWidget {
   final int index;
   final int pageIndex;
   final Widget? anotherMenuChild;
-  final void Function(AyahModel ayah, AyahFontsModel ayahFont)?
-      anotherMenuChildOnTap;
+  final void Function(AyahModel ayah)? anotherMenuChildOnTap;
   final BuildContext context;
 
   @override
@@ -83,16 +82,16 @@ class AyahLongClickDialog extends StatelessWidget {
                             QuranCtrl.instance.state.scaleFactor.value > 1.3) {
                           BookmarksCtrl.instance.saveBookmark(
                             surahName: QuranCtrl.instance
-                                .getSurahDataByAyah(ayahFonts!)
+                                .getSurahDataByAyah(ayah!)
                                 .arabicName,
-                            ayahNumber: ayahFonts!.ayahNumber,
-                            ayahId: ayahFonts!.ayahUQNumber,
-                            page: ayahFonts!.page,
+                            ayahNumber: ayah!.ayahNumber,
+                            ayahId: ayah!.ayahUQNumber,
+                            page: ayah!.page,
                             colorCode: colorCode,
                           );
                         } else {
                           BookmarksCtrl.instance.saveBookmark(
-                            surahName: ayah!.arabicName,
+                            surahName: ayah!.arabicName!,
                             ayahNumber: ayah!.ayahNumber,
                             ayahId: ayah!.ayahUQNumber,
                             page: ayah!.page,
@@ -113,7 +112,7 @@ class AyahLongClickDialog extends StatelessWidget {
               GestureDetector(
                 onTap: () {
                   if (QuranCtrl.instance.state.fontsSelected2.value == 1) {
-                    Clipboard.setData(ClipboardData(text: ayahFonts!.text));
+                    Clipboard.setData(ClipboardData(text: ayah!.text));
                     _ToastUtils().showToast(context, "تم النسخ الى الحافظة");
                   } else {
                     Clipboard.setData(ClipboardData(
@@ -144,22 +143,22 @@ class AyahLongClickDialog extends StatelessWidget {
                                 2 ||
                             QuranCtrl.instance.state.scaleFactor.value > 1.3)
                         ? QuranCtrl.instance
-                            .getSurahDataByAyah(ayahFonts!)
+                            .getSurahDataByAyah(ayah!)
                             .surahNumber
-                        : ayah!.surahNumber,
+                        : ayah!.surahNumber!,
                     ayahNum: (QuranCtrl.instance.state.fontsSelected2.value ==
                                 1 ||
                             QuranCtrl.instance.state.fontsSelected2.value ==
                                 2 ||
                             QuranCtrl.instance.state.scaleFactor.value > 1.3)
-                        ? ayahFonts!.ayahNumber
+                        ? ayah!.ayahNumber
                         : ayah!.ayahNumber,
                     ayahText: (QuranCtrl.instance.state.fontsSelected2.value ==
                                 1 ||
                             QuranCtrl.instance.state.fontsSelected2.value ==
                                 2 ||
                             QuranCtrl.instance.state.scaleFactor.value > 1.3)
-                        ? ayahFonts!.text
+                        ? ayah!.text
                         : ayah!.text,
                     pageIndex: pageIndex,
                     ayahTextN: (QuranCtrl.instance.state.fontsSelected2.value ==
@@ -167,14 +166,14 @@ class AyahLongClickDialog extends StatelessWidget {
                             QuranCtrl.instance.state.fontsSelected2.value ==
                                 2 ||
                             QuranCtrl.instance.state.scaleFactor.value > 1.3)
-                        ? ayahFonts!.ayaTextEmlaey
+                        ? ayah!.ayaTextEmlaey
                         : ayah!.ayaTextEmlaey,
                     ayahUQNum: (QuranCtrl.instance.state.fontsSelected2.value ==
                                 1 ||
                             QuranCtrl.instance.state.fontsSelected2.value ==
                                 2 ||
                             QuranCtrl.instance.state.scaleFactor.value > 1.3)
-                        ? ayahFonts!.ayahUQNumber
+                        ? ayah!.ayahUQNumber
                         : ayah!.ayahUQNumber,
                     ayahNumber:
                         (QuranCtrl.instance.state.fontsSelected2.value == 1 ||
@@ -182,7 +181,7 @@ class AyahLongClickDialog extends StatelessWidget {
                                     2 ||
                                 QuranCtrl.instance.state.scaleFactor.value >
                                     1.3)
-                            ? ayahFonts!.ayahNumber
+                            ? ayah!.ayahNumber
                             : ayah!.ayahNumber,
                   );
                   QuranCtrl.instance.state.overlayEntry?.remove();
@@ -201,7 +200,7 @@ class AyahLongClickDialog extends StatelessWidget {
                   ? GestureDetector(
                       onTap: () {
                         if (anotherMenuChildOnTap != null) {
-                          anotherMenuChildOnTap!(ayah!, ayahFonts!);
+                          anotherMenuChildOnTap!(ayah!);
                         }
                         QuranCtrl.instance.state.overlayEntry?.remove();
                         QuranCtrl.instance.state.overlayEntry = null;

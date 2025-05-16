@@ -39,7 +39,7 @@ class _QuranTextScale extends StatelessWidget {
   final BannerStyle? bannerStyle;
   final List<int> ayahBookmarked;
   final Function(SurahNamesModel surah)? onSurahBannerPress;
-  final Function(LongPressStartDetails details, AyahFontsModel ayah)?
+  final Function(LongPressStartDetails details, AyahModel ayah)?
       onFontsAyahLongPress;
   final VoidCallback? onAyahPress;
   final Color? bookmarksColor;
@@ -53,8 +53,7 @@ class _QuranTextScale extends StatelessWidget {
   final bool isDark;
   final bool showAyahBookmarkedIcon;
   final Widget? anotherMenuChild;
-  final void Function(AyahModel ayah, AyahFontsModel ayahFont)?
-      anotherMenuChildOnTap;
+  final void Function(AyahModel ayah)? anotherMenuChildOnTap;
 
   @override
   Widget build(BuildContext context) {
@@ -258,16 +257,15 @@ class _QuranTextScale extends StatelessWidget {
                                               builder: (context) =>
                                                   AyahLongClickDialog(
                                                 context: context,
-                                                ayahFonts: ayahs[ayahIndex],
+                                                ayah: ayahs[ayahIndex],
                                                 position:
                                                     details.globalPosition,
                                                 index: ayahIndex,
                                                 pageIndex: pageIndex,
                                                 anotherMenuChild:
                                                     anotherMenuChild,
-                                                anotherMenuChildOnTap:
-                                                    (ayah, ayahFonts) =>
-                                                        anotherMenuChildOnTap,
+                                                anotherMenuChildOnTap: (ayah) =>
+                                                    anotherMenuChildOnTap,
                                               ),
                                             );
 

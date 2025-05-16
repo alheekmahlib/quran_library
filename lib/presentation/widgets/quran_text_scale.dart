@@ -120,7 +120,7 @@ class _QuranTextScale extends StatelessWidget {
                                           secondTabText: 'عن السورة',
                                           firstTabText: 'أسماء السورة',
                                           backgroundColor: isDark
-                                              ? const Color(0xff202020)
+                                              ? const Color(0xff1E1E1E)
                                               : const Color(0xfffaf7f3),
                                           closeIconColor: isDark
                                               ? Colors.white
@@ -205,6 +205,7 @@ class _QuranTextScale extends StatelessWidget {
                                         .toList();
                                     return _customSpan(
                                       text: ayahs[ayahIndex].text,
+                                      isDark: isDark,
                                       pageIndex: pageIndex,
                                       isSelected: quranCtrl
                                           .selectedAyahsByUnequeNumber
@@ -257,6 +258,7 @@ class _QuranTextScale extends StatelessWidget {
                                               builder: (context) =>
                                                   AyahLongClickDialog(
                                                 context: context,
+                                                isDark: isDark,
                                                 ayah: ayahs[ayahIndex],
                                                 position:
                                                     details.globalPosition,
@@ -334,7 +336,7 @@ class _QuranTextScale extends StatelessWidget {
                                           secondTabText: 'عن السورة',
                                           firstTabText: 'أسماء السورة',
                                           backgroundColor: isDark
-                                              ? const Color(0xff202020)
+                                              ? const Color(0xff1E1E1E)
                                               : const Color(0xfffaf7f3),
                                           closeIconColor: isDark
                                               ? Colors.white

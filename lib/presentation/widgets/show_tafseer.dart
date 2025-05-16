@@ -16,6 +16,7 @@ class ShowTafseer extends StatelessWidget {
   final TafsirStyle tafsirStyle;
   final BuildContext context;
   final int ayahNumber;
+  final bool isDark;
 
   ShowTafseer(
       {super.key,
@@ -23,84 +24,108 @@ class ShowTafseer extends StatelessWidget {
       required this.tafsirStyle,
       required this.ayahNumber,
       required this.pageIndex,
-      required this.context});
+      required this.context,
+      required this.isDark});
 
-  // شرح: تأكد من تسجيل الكنترولر بطريقة آمنة حسب تعليماتك
-  // Explanation: Ensure controller is registered safely as per your instructions
-  static TafsirCtrl get tafsirCtrlInstance => Get.isRegistered<TafsirCtrl>()
-      ? Get.find<TafsirCtrl>()
-      : Get.put(TafsirCtrl());
-
-  final tafsirCtrl = tafsirCtrlInstance;
+  final tafsirCtrl = TafsirCtrl.instance;
   final quranCtrl = QuranCtrl.instance;
-  final ScrollController _scrollController = ScrollController();
 
   @override
-  Widget build(BuildContext ctx) {
+  Widget build(BuildContext context) {
     // شرح: نتأكد أن عناصر tafsirStyle غير فارغة لتجنب الخطأ
     // Explanation: Ensure tafsirStyle widgets are not null to avoid null check errors
-    final iconCloseWidget = tafsirStyle.iconCloseWidget ?? const SizedBox();
     final tafsirNameWidget = tafsirStyle.tafsirNameWidget ?? const SizedBox();
-
-    // شرح: استخدم Obx لمراقبة المتغيرات الريأكتيفية مباشرة
-    // Explanation: Use Obx to directly observe reactive variables
     return Obx(() {
-      // حماية من null للقوائم والمتغيرات
-      final isTafsir = tafsirCtrl.isTafsir.value;
-      final tafseerList = tafsirCtrl.tafseerList;
-      final translationList = tafsirCtrl.translationList;
-      final fontSizeArabic = tafsirCtrl.fontSizeArabic.value;
-
-      // شرح: إذا لم يكن context تابع لـ MaterialApp/Scaffold نستخدم قيم افتراضية
-      // Explanation: If context is not under MaterialApp/Scaffold, use default values
-      final mediaQuery = MediaQuery.maybeOf(ctx);
-      // final theme = Theme.maybeOf(ctx);
-
-      final double height = mediaQuery?.size.height ?? 600;
-      final double width = mediaQuery?.size.width ?? 400;
-      // final Color surfaceColor = theme?.colorScheme.surface ?? Colors.white;
-      // final Color primaryColor = theme?.colorScheme.primary ?? Colors.blue;
-
+      final double height = MediaQuery.maybeOf(context)?.size.height ?? 600;
+      final double width = MediaQuery.maybeOf(context)?.size.width ?? 400;
+      // تحسين الشكل: إضافة شريط علوي أنيق مع زر إغلاق واسم التفسير
+      // UI Enhancement: Add a modern top bar with close button and tafsir name
       return Directionality(
         textDirection: TextDirection.rtl,
-        child: Container(
+        child: SizedBox(
           height: height * .9,
           width: width,
-          decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(8),
-                topRight: Radius.circular(8),
-              )),
           child: SafeArea(
             child: Column(
-              children: <Widget>[
-                const SizedBox(height: 8),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        iconCloseWidget,
-                        const SizedBox(width: 32),
-                        tafsirNameWidget,
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        ChangeTafsir(tafsirStyle: tafsirStyle),
-                        Container(width: 1, height: 20, color: Colors.blue),
-                        Transform.translate(
-                            offset: const Offset(0, 5),
-                            child: fontSizeDropDown(
-                                height: 25.0, tafsirStyle: tafsirStyle)),
-                      ],
-                    ),
-                  ],
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // خط فاصل جمالي
+                Container(
+                  width: 60,
+                  height: 5,
+                  margin: const EdgeInsets.only(bottom: 8),
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade300,
+                    borderRadius: BorderRadius.circular(3),
+                  ),
                 ),
-                _pagesBuild(ctx, tafseerList, translationList, isTafsir,
-                    fontSizeArabic, width),
+                Flexible(
+                  child: Container(
+                    width: width,
+                    decoration: BoxDecoration(
+                      color: tafsirStyle.backgroundColor ??
+                          (isDark ? const Color(0xff1E1E1E) : Colors.white),
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(16),
+                        topRight: Radius.circular(16),
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.08),
+                          blurRadius: 16,
+                          offset: const Offset(0, -4),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      children: <Widget>[
+                        // شريط علوي احترافي
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16.0, vertical: 8),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              tafsirNameWidget,
+                              Row(
+                                children: [
+                                  ChangeTafsir(tafsirStyle: tafsirStyle),
+                                  const SizedBox(width: 8),
+                                  Container(
+                                      width: 1,
+                                      height: 24,
+                                      color: Colors.grey.shade300),
+                                  const SizedBox(width: 8),
+                                  Transform.translate(
+                                    offset: const Offset(0, 2),
+                                    child: fontSizeDropDown(
+                                        height: 30.0, tafsirStyle: tafsirStyle),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                        // محتوى التفسير
+                        Expanded(
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: tafsirStyle.backgroundColor ??
+                                  (isDark
+                                      ? const Color(0xff1E1E1E)
+                                      : Colors.white),
+                              borderRadius: const BorderRadius.only(
+                                topLeft: Radius.circular(18),
+                                topRight: Radius.circular(18),
+                              ),
+                            ),
+                            child: _pagesBuild(context, width),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
@@ -109,63 +134,66 @@ class ShowTafseer extends StatelessWidget {
     });
   }
 
-  // شرح: مرر القوائم والمتغيرات مباشرة لتقليل الاعتماد على الكنترولر داخل الدالة
-  // Explanation: Pass lists and variables directly to reduce controller dependency inside the function
-  Widget _pagesBuild(
-    BuildContext context,
-    List<TafsirTableData> tafseerList,
-    List translationList,
-    bool isTafsir,
-    double fontSizeArabic,
-    double width,
-  ) {
+  // شرح: بناء صفحات التفسير بشكل احترافي
+  // Explanation: Build tafsir pages in a modern style
+  Widget _pagesBuild(BuildContext context, double width) {
     final pageAyahs = quranCtrl.getPageAyahsByIndex(pageIndex);
     final selectedAyahIndexInFullPage =
         pageAyahs.indexWhere((ayah) => ayah.ayahUQNumber == ayahUQNumber);
-
-    if ((tafseerList.isEmpty && translationList.isEmpty)) {
-      // شرح: إذا القوائم فارغة لا تعرض شيء
-      // Explanation: If lists are empty, show nothing
+    if ((tafsirCtrl.tafseerList.isEmpty &&
+        tafsirCtrl.translationList.isEmpty)) {
       return const SizedBox.shrink();
     }
-
-    return Flexible(
-      child: PageView.builder(
-        controller: PageController(initialPage: selectedAyahIndexInFullPage),
-        itemCount: pageAyahs.length,
-        itemBuilder: (context, i) {
-          final ayahs = pageAyahs[i];
-          int ayahIndex = pageAyahs.first.ayahUQNumber + i;
-          final tafsir = tafseerList.firstWhere(
-            (element) => element.id == ayahIndex,
-            orElse: () => const TafsirTableData(
-                id: 0, tafsirText: '', ayahNum: 0, pageNum: 0, surahNum: 0),
-          );
-          return Container(
-            width: width, // شرح: استخدم القيمة المحمية
-            decoration: BoxDecoration(
-                color: tafsirStyle.backgroundColor ??
-                    Colors.white.withValues(alpha: .1),
-                border: Border.symmetric(
-                    horizontal: BorderSide(
-                  width: 2,
-                  color: tafsirStyle.textColor ?? Colors.blue,
-                ))),
-            child: Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-              child: Scrollbar(
-                controller: _scrollController,
-                child: SingleChildScrollView(
-                  controller: _scrollController,
-                  child: _actualTafseerWt(context, ayahIndex, tafsir, ayahs,
-                      isTafsir, translationList, fontSizeArabic),
-                ),
+    return PageView.builder(
+      controller: PageController(initialPage: selectedAyahIndexInFullPage),
+      itemCount: pageAyahs.length,
+      itemBuilder: (context, i) {
+        final ayahs = pageAyahs[i];
+        int ayahIndex = pageAyahs.first.ayahUQNumber + i;
+        final tafsir = tafsirCtrl.tafseerList.firstWhere(
+          (element) => element.id == ayahIndex,
+          orElse: () => const TafsirTableData(
+              id: 0, tafsirText: '', ayahNum: 0, pageNum: 0, surahNum: 0),
+        );
+        return Container(
+          width: width,
+          margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: tafsirStyle.backgroundColor ??
+                (isDark ? const Color(0xff1E1E1E) : Colors.white),
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withValues(alpha: 0.6),
+                blurRadius: 8,
+                offset: const Offset(0, 0),
+              ),
+            ],
+            border: Border.symmetric(
+              horizontal: BorderSide(
+                color:
+                    tafsirStyle.textColor ?? Colors.grey.withValues(alpha: 0.8),
+                width: 1.2,
               ),
             ),
-          );
-        },
-      ),
+          ),
+          child: SingleChildScrollView(
+            physics: const ClampingScrollPhysics(),
+            child: GetBuilder<TafsirCtrl>(
+              id: 'change_font_size',
+              builder: (tafsirCtrl) => _actualTafseerWt(
+                  context,
+                  ayahIndex,
+                  tafsir,
+                  ayahs,
+                  tafsirCtrl.isTafsir.value,
+                  tafsirCtrl.translationList,
+                  tafsirCtrl.fontSizeArabic.value),
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -188,14 +216,19 @@ class ShowTafseer extends StatelessWidget {
               fontFamily: 'uthmanic2',
               fontSize: 24,
               height: 1.9,
-              color: Colors.black,
+              color: (isDark ? Colors.white : Colors.black),
             ),
           ),
+          WidgetSpan(
+              child: context.horizontalDivider(
+            color: tafsirStyle.textColor ?? Colors.grey.withValues(alpha: 0.8),
+            height: 1.5,
+          )),
           isTafsir
               ? TextSpan(
                   children: tafsir.tafsirText.customTextSpans(),
                   style: TextStyle(
-                      color: Colors.black,
+                      color: isDark ? Colors.white : Colors.black,
                       height: 1.5,
                       fontSize: fontSizeArabic),
                 )
@@ -205,7 +238,7 @@ class ShowTafseer extends StatelessWidget {
                       ? translationList[ayahIndex - 1].text
                       : '',
                   style: TextStyle(
-                      color: Colors.black,
+                      color: isDark ? Colors.white : Colors.black,
                       height: 1.5,
                       fontSize: fontSizeArabic),
                 ),

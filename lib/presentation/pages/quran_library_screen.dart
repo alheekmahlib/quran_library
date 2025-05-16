@@ -248,13 +248,13 @@ class QuranLibraryScreen extends StatelessWidget {
         child: Scaffold(
           key: quranCtrl.state.scaffoldKey,
           backgroundColor: backgroundColor ??
-              (isDark ? const Color(0xff202020) : const Color(0xfffaf7f3)),
+              (isDark ? const Color(0xff1E1E1E) : const Color(0xfffaf7f3)),
           appBar: appBar ??
               (useDefaultAppBar
                   ? AppBar(
                       backgroundColor: backgroundColor ??
                           (isDark
-                              ? const Color(0xff202020)
+                              ? const Color(0xff1E1E1E)
                               : const Color(0xfffaf7f3)),
                       leading: Builder(
                         builder: (context) => IconButton(
@@ -285,7 +285,7 @@ class QuranLibraryScreen extends StatelessWidget {
                                 downloadButtonBackgroundColor: Colors.blue,
                                 downloadingText: 'جارِ التحميل',
                                 backgroundColor: isDark
-                                    ? Color(0xff202020)
+                                    ? Color(0xff1E1E1E)
                                     : const Color(0xFFF7EFE0),
                               ),
                           languageCode: languageCode,

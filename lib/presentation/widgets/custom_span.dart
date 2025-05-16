@@ -21,6 +21,7 @@ TextSpan _span({
   required bool isFontsLocal,
   required String fontsName,
   required List<int> ayahBookmarked,
+  required bool isDark,
 }) {
   // if (bookmarkList!.isEmpty) {
   //   bookmarkList = bookmarks as List<BookmarkModel>;
@@ -70,7 +71,9 @@ TextSpan _span({
           letterSpacing: pageSpacing ? -5 : 30,
           color: quranCtrl.state.fontsSelected2.value == 1
               ? textColor ?? Colors.transparent
-              : null,
+              : isDark
+                  ? Colors.white
+                  : Colors.black,
           backgroundColor: ayahBookmarked.contains(ayahUQNum)
               ? bookmarksColor
               : (bookmarksAyahs.contains(ayahUQNum)
@@ -100,7 +103,9 @@ TextSpan _span({
           // wordSpacing: wordSpacing + 10,
           color: quranCtrl.state.fontsSelected2.value == 1
               ? textColor ?? Colors.transparent
-              : null,
+              : isDark
+                  ? Colors.white
+                  : Colors.black,
           backgroundColor: ayahBookmarked.contains(ayahUQNum)
               ? bookmarksColor
               : (bookmarksAyahs.contains(ayahUQNum)
@@ -131,7 +136,9 @@ TextSpan _span({
         letterSpacing: 0,
         color: quranCtrl.state.fontsSelected2.value == 1
             ? textColor ?? Colors.transparent
-            : null,
+            : isDark
+                ? Colors.white
+                : Colors.black,
         backgroundColor: ayahBookmarked.contains(ayahUQNum)
             ? bookmarksColor
             : (bookmarksAyahs.contains(ayahUQNum)
@@ -180,7 +187,7 @@ TextSpan _span({
                           pageIndex == 498)
                   ? 20
                   : null,
-              color: ayahIconColor,
+              color: ayahIconColor ?? (isDark ? Colors.white : Colors.black),
               backgroundColor: ayahBookmarked.contains(ayahUQNum)
                   ? bookmarksColor
                   : (bookmarksAyahs.contains(ayahUQNum)
@@ -233,6 +240,7 @@ TextSpan _customSpan({
   Color? ayahSelectedBackgroundColor,
   String? languageCode,
   required bool hasBookmark,
+  required bool isDark,
 }) {
   final allBookmarks = bookmarks.values.expand((list) => list).toList();
   hasBookmark == false
@@ -247,7 +255,7 @@ TextSpan _customSpan({
             fontFamily: 'hafs',
             fontSize: fontSize,
             height: 2.1,
-            color: textColor ?? Colors.black,
+            color: textColor ?? (isDark ? Colors.white : Colors.black),
             backgroundColor: hasBookmark
                 ? bookmarksColor
                 : (bookmarksAyahs.contains(ayahUQNum)
@@ -287,7 +295,8 @@ TextSpan _customSpan({
                   fontFamily: 'hafs',
                   fontSize: fontSize,
                   height: 2.1,
-                  color: ayahIconColor,
+                  color:
+                      ayahIconColor ?? (isDark ? Colors.white : Colors.black),
                   backgroundColor: hasBookmark
                       ? bookmarksColor
                       : (bookmarksAyahs.contains(ayahUQNum)

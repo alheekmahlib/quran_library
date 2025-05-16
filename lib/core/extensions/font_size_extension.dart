@@ -10,12 +10,9 @@ extension FontSizeExtension on Widget {
         button: true,
         enabled: true,
         label: 'Change Font Size',
-        child: Transform.translate(
-          offset: const Offset(0, -5),
-          child: tafsirStyle.fontSizeWidget,
-        ),
+        child: tafsirStyle.fontSizeWidget,
       ),
-      color: Get.theme.colorScheme.primary.withValues(alpha: .8),
+      color: Colors.blue.withValues(alpha: .8),
       iconSize: height ?? 35.0,
       itemBuilder: (context) => [
         PopupMenuItem(
@@ -53,16 +50,6 @@ extension FontSizeExtension on Widget {
                   box.write(_StorageConstants().fontSize, lowerValue);
                   TafsirCtrl.instance.update(['change_font_size']);
                 },
-                handler: FlutterSliderHandler(
-                  decoration: const BoxDecoration(),
-                  child: Material(
-                    type: MaterialType.circle,
-                    color: Colors.white,
-                    elevation: 3,
-                    child: Icon(Icons.arrow_back_ios_rounded,
-                        size: 20, color: Colors.blue),
-                  ),
-                ),
               ),
             ),
           ),

@@ -151,7 +151,7 @@ class _QuranLinePage extends StatelessWidget {
                   secondTabText: 'عن السورة',
                   firstTabText: 'أسماء السورة',
                   backgroundColor: isDark
-                      ? const Color(0xff202020)
+                      ? const Color(0xff1E1E1E)
                       : const Color(0xfffaf7f3),
                   closeIconColor: isDark ? Colors.white : Colors.black,
                   indicatorColor: Colors.amber.withValues(alpha: .2),
@@ -185,6 +185,7 @@ class _QuranLinePage extends StatelessWidget {
                       child: QuranLine(
                         context,
                         line,
+                        isDark: isDark,
                         bookmarkCtrl.bookmarksAyahs,
                         bookmarkCtrl.bookmarks,
                         boxFit: BoxFit.scaleDown,
@@ -257,7 +258,7 @@ class _QuranLinePage extends StatelessWidget {
                                 secondTabText: 'عن السورة',
                                 firstTabText: 'أسماء السورة',
                                 backgroundColor: isDark
-                                    ? const Color(0xff202020)
+                                    ? const Color(0xff1E1E1E)
                                     : const Color(0xfffaf7f3),
                                 closeIconColor:
                                     isDark ? Colors.white : Colors.black,
@@ -304,6 +305,7 @@ class _QuranLinePage extends StatelessWidget {
                         child: QuranLine(
                           context,
                           line,
+                          isDark: isDark,
                           bookmarkCtrl.bookmarksAyahs,
                           bookmarkCtrl.bookmarks,
                           boxFit: line.ayahs.last.centered!

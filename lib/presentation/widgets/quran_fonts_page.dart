@@ -140,7 +140,7 @@ class _QuranFontsPage extends StatelessWidget {
                               secondTabText: 'عن السورة',
                               firstTabText: 'أسماء السورة',
                               backgroundColor: isDark
-                                  ? const Color(0xff202020)
+                                  ? const Color(0xff1E1E1E)
                                   : const Color(0xfffaf7f3),
                               closeIconColor:
                                   isDark ? Colors.white : Colors.black,
@@ -223,7 +223,7 @@ class _QuranFontsPage extends StatelessWidget {
                               secondTabText: 'عن السورة',
                               firstTabText: 'أسماء السورة',
                               backgroundColor: isDark
-                                  ? const Color(0xff202020)
+                                  ? const Color(0xff1E1E1E)
                                   : const Color(0xfffaf7f3),
                               closeIconColor:
                                   isDark ? Colors.white : Colors.black,
@@ -294,6 +294,7 @@ class _QuranFontsPage extends StatelessWidget {
           return _span(
             isFirstAyah: isFirstAyah,
             text: text,
+            isDark: isDark,
             pageIndex: pageIndex,
             isSelected: quranCtrl.selectedAyahsByUnequeNumber
                 .contains(ayahs[ayahIndex].ayahUQNumber),
@@ -328,6 +329,7 @@ class _QuranFontsPage extends StatelessWidget {
                   final newOverlayEntry = OverlayEntry(
                     builder: (context) => AyahLongClickDialog(
                       context: context,
+                      isDark: isDark,
                       ayah: ayahs[ayahIndex],
                       position: details.globalPosition,
                       index: ayahIndex,

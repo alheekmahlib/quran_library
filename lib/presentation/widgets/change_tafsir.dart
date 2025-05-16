@@ -20,49 +20,70 @@ class ChangeTafsir extends StatelessWidget {
       builder: (tafsirCtrl) => PopupMenuButton(
         position: PopupMenuPosition.under,
         color: Colors.white,
+        elevation: 8,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
         itemBuilder: (context) =>
             List.generate(tafsirAndTranslateNames.length, (index) {
           return PopupMenuItem(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Column(
-              children: [
-                _tafsirBuild(context, index,
-                    pageNumber: pageNumber ??
-                        QuranCtrl.instance.state.currentPageNumber.value),
-                index == 4
-                    ? Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 8.0),
-                        child: Row(
-                          children: [
-                            Expanded(
-                                flex: 1,
-                                child: Container(
-                                    width: 70,
-                                    height: 2,
-                                    color:
-                                        tafsirStyle.linesColor ?? Colors.blue)),
-                            Expanded(
-                              flex: 3,
-                              child: Text(
-                                tafsirStyle.translateName ?? 'الترجمات',
-                                style: QuranLibrary()
-                                    .naskhStyle
-                                    .copyWith(fontSize: 20),
-                                textAlign: TextAlign.center,
+            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 0.0),
+            child: Container(
+              margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 0),
+              padding: const EdgeInsets.symmetric(horizontal: 6),
+              decoration: BoxDecoration(
+                color: tafsirCtrl.radioValue.value == index
+                    ? (tafsirStyle.selectedTafsirColor ?? Colors.blue)
+                        .withValues(alpha: 0.08)
+                    : Colors.transparent,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: tafsirCtrl.radioValue.value == index
+                      ? tafsirStyle.selectedTafsirColor ?? Colors.blue
+                      : Colors.transparent,
+                  width: 1.2,
+                ),
+              ),
+              child: Column(
+                children: [
+                  _tafsirBuild(context, index,
+                      pageNumber: pageNumber ??
+                          QuranCtrl.instance.state.currentPageNumber.value),
+                  index == 4
+                      ? Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8.0),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                  flex: 1,
+                                  child: Container(
+                                      width: 70,
+                                      height: 2,
+                                      color: tafsirStyle.linesColor ??
+                                          Colors.blue)),
+                              Expanded(
+                                flex: 3,
+                                child: Text(
+                                  tafsirStyle.translateName ?? 'الترجمات',
+                                  style: QuranLibrary()
+                                      .naskhStyle
+                                      .copyWith(fontSize: 20),
+                                  textAlign: TextAlign.center,
+                                ),
                               ),
-                            ),
-                            Expanded(
-                                flex: 5,
-                                child: Container(
-                                    width: 200,
-                                    height: 2,
-                                    color:
-                                        tafsirStyle.linesColor ?? Colors.blue))
-                          ],
-                        ),
-                      )
-                    : const SizedBox.shrink(),
-              ],
+                              Expanded(
+                                  flex: 5,
+                                  child: Container(
+                                      width: 200,
+                                      height: 2,
+                                      color: tafsirStyle.linesColor ??
+                                          Colors.blue))
+                            ],
+                          ),
+                        )
+                      : const SizedBox.shrink(),
+                ],
+              ),
             ),
           );
         }),
@@ -70,33 +91,48 @@ class ChangeTafsir extends StatelessWidget {
           button: true,
           enabled: true,
           label: 'Change Font Size',
-          child: SizedBox(
-            width: 120,
-            child: FittedBox(
-              fit: BoxFit.scaleDown,
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Text(
-                    tafsirNameList?[tafsirCtrl.radioValue.value].name ??
-                        tafsirAndTranslateNames[tafsirCtrl.radioValue.value]
-                            .name,
-                    style: QuranLibrary().naskhStyle.copyWith(
-                          color: tafsirStyle.unSelectedTafsirColor ??
-                              const Color(0xffCDAD80),
-                          fontSize: 16,
-                        ),
-                  ),
-                  Semantics(
-                    button: true,
-                    enabled: true,
-                    label: 'Change Reader',
-                    child: Icon(Icons.keyboard_arrow_down_outlined,
-                        size: 20, color: Theme.of(context).colorScheme.primary),
-                  ),
-                ],
+          child: Container(
+            margin: const EdgeInsets.symmetric(horizontal: 16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(
+                color: tafsirStyle.unSelectedTafsirColor ?? Colors.grey,
+                width: 1.2,
               ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.04),
+                  blurRadius: 6,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Text(
+                  tafsirNameList?[tafsirCtrl.radioValue.value].name ??
+                      tafsirAndTranslateNames[tafsirCtrl.radioValue.value].name,
+                  style: QuranLibrary().naskhStyle.copyWith(
+                        color: tafsirStyle.unSelectedTafsirColor ??
+                            const Color(0xffCDAD80),
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                ),
+                const SizedBox(width: 6),
+                Semantics(
+                  button: true,
+                  enabled: true,
+                  label: 'Change Reader',
+                  child: Icon(Icons.keyboard_arrow_down_rounded,
+                      size: 24,
+                      color: tafsirStyle.unSelectedTafsirColor ?? Colors.grey),
+                ),
+              ],
             ),
           ),
         ),
@@ -139,6 +175,7 @@ class ChangeTafsir extends StatelessWidget {
                 ? Container(
                     height: 20,
                     width: 20,
+                    margin: const EdgeInsets.symmetric(horizontal: 14),
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       border: Border.all(

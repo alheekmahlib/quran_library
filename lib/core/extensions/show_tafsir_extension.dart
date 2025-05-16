@@ -11,6 +11,7 @@ extension ShowTafsirExtension on void {
     required String ayahTextN,
     required int ayahUQNum,
     required int ayahNumber,
+    bool? isDark,
   }) async {
     // شرح: هذا السطر لطباعة رسالة عند استدعاء الدالة للتأكد من تنفيذها
     // Explanation: This line logs when the function is called for debugging
@@ -51,23 +52,24 @@ extension ShowTafsirExtension on void {
 
     if (QuranCtrl.instance.state.scaffoldKey.currentContext!.mounted) {
       await showModalBottomSheet(
+        backgroundColor: Colors.transparent,
         context: QuranCtrl.instance.state.scaffoldKey.currentContext!,
         builder: (context) => ShowTafseer(
           context: QuranCtrl.instance.state.scaffoldKey.currentContext!,
           ayahUQNumber: ayahUQNum,
           ayahNumber: ayahNumber,
           pageIndex: pageIndex,
+          isDark: isDark!,
           tafsirStyle: TafsirStyle(
-            iconCloseWidget: IconButton(
-                icon: Icon(Icons.close, size: 30, color: Colors.black),
-                onPressed: () => Navigator.pop(
-                    QuranCtrl.instance.state.scaffoldKey.currentContext!)),
             tafsirNameWidget: Text(
               'التفسير',
-              style: QuranLibrary().naskhStyle,
+              style: QuranLibrary().naskhStyle.copyWith(
+                    fontSize: 24,
+                    color: isDark ? Colors.white : Colors.black,
+                  ),
             ),
-            fontSizeWidget:
-                Icon(Icons.text_format_outlined, size: 30, color: Colors.black),
+            fontSizeWidget: Icon(Icons.text_format_outlined,
+                size: 34, color: isDark ? Colors.white : Colors.black),
           ),
         ),
         isScrollControlled: true,

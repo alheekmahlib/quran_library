@@ -27,7 +27,7 @@ class QuranLibrarySearchScreen extends StatelessWidget {
       textDirection: TextDirection.rtl,
       child: Scaffold(
         backgroundColor:
-            isDark ? const Color(0xff202020) : const Color(0xfffaf7f3),
+            isDark ? const Color(0xff1E1E1E) : const Color(0xfffaf7f3),
         appBar: AppBar(
           leading: IconButton(
               onPressed: () {
@@ -43,7 +43,7 @@ class QuranLibrarySearchScreen extends StatelessWidget {
           ),
           centerTitle: true,
           backgroundColor:
-              isDark ? const Color(0xff202020) : const Color(0xfffaf7f3),
+              isDark ? const Color(0xff1E1E1E) : const Color(0xfffaf7f3),
         ),
         body: SafeArea(
           child: Padding(

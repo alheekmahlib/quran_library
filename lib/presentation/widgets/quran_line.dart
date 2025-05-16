@@ -19,6 +19,7 @@ class QuranLine extends StatelessWidget {
     this.ayahSelectedFontColor,
     this.anotherMenuChild,
     this.anotherMenuChildOnTap,
+    required this.isDark,
   });
 
   final quranCtrl = QuranCtrl.instance;
@@ -40,6 +41,7 @@ class QuranLine extends StatelessWidget {
   final List<int> ayahBookmarked;
   final Widget? anotherMenuChild;
   final void Function(AyahModel ayah)? anotherMenuChildOnTap;
+  final bool isDark;
 
   @override
   Widget build(BuildContext context) {
@@ -93,6 +95,7 @@ class QuranLine extends StatelessWidget {
                         final newOverlayEntry = OverlayEntry(
                           builder: (context) => AyahLongClickDialog(
                             context: context,
+                            isDark: isDark,
                             ayah: ayah,
                             position: details.globalPosition,
                             index: ayah.ayahNumber,
@@ -134,7 +137,8 @@ class QuranLine extends StatelessWidget {
                         color: quranCtrl.selectedAyahsByUnequeNumber
                                 .contains(ayah.ayahUQNumber)
                             ? ayahSelectedFontColor
-                            : textColor ?? Colors.black,
+                            : textColor ??
+                                (isDark ? Colors.white : Colors.black),
                         fontSize: 22.55,
                         fontFamily: "hafs",
                         height: 1.3,

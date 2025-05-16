@@ -1,7 +1,6 @@
 part of '../../../quran.dart';
 
 class TafsirStyle {
-  final Widget? iconCloseWidget;
   final Widget? tafsirNameWidget;
   final Widget? fontSizeWidget;
   final String? translateName;
@@ -15,7 +14,6 @@ class TafsirStyle {
     this.backgroundColor,
     this.textColor,
     this.fontSizeWidget,
-    this.iconCloseWidget,
     this.tafsirNameWidget,
     this.translateName,
     this.linesColor,

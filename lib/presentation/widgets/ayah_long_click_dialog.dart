@@ -19,6 +19,7 @@ class AyahLongClickDialog extends StatelessWidget {
     required this.pageIndex,
     this.anotherMenuChild,
     this.anotherMenuChildOnTap,
+    required this.isDark,
   });
 
   /// The AyahModel that is the target of the long click event.
@@ -40,6 +41,7 @@ class AyahLongClickDialog extends StatelessWidget {
   final Widget? anotherMenuChild;
   final void Function(AyahModel ayah)? anotherMenuChildOnTap;
   final BuildContext context;
+  final bool isDark;
 
   @override
   Widget build(BuildContext context) {
@@ -137,6 +139,7 @@ class AyahLongClickDialog extends StatelessWidget {
                 onTap: () {
                   TafsirCtrl.instance.showTafsirOnTap(
                     context: context,
+                    isDark: isDark,
                     surahNum: (QuranCtrl.instance.state.fontsSelected2.value ==
                                 1 ||
                             QuranCtrl.instance.state.fontsSelected2.value ==

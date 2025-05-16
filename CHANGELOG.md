@@ -1,4 +1,4 @@
-## 0.1.10
+## 0.1.11
 
 * **Merge AyahFontModel with AyahModel.**
 * **Fix the issue of opening Tafsir database multiple times.**

@@ -1,3 +1,9 @@
+## 0.1.10
+
+* **Fix the issue of opening Tafsir database multiple times.**
+* **Fix dark mode.**
+* **Fix some UI.**
+
 ## 0.1.9
 
 * **BREAKING FIX: Fix the problem for MaterialApp.**

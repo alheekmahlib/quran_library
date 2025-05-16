@@ -1,5 +1,6 @@
 ## 0.1.10
 
+* **Merge AyahFontModel with AyahModel.**
 * **Fix the issue of opening Tafsir database multiple times.**
 * **Fix dark mode.**
 * **Fix some UI.**

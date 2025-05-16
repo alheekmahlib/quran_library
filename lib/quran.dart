@@ -4,7 +4,6 @@ import 'dart:io' show File, Platform, Directory;
 import 'dart:math' as math show max;
 
 import 'package:another_xlider/another_xlider.dart';
-import 'package:another_xlider/models/handler.dart';
 import 'package:another_xlider/models/handler_animation.dart';
 import 'package:another_xlider/models/trackbar.dart';
 import 'package:archive/archive.dart';
@@ -41,8 +40,8 @@ part 'core/utils/storage_constants.dart';
 part 'core/utils/toast_utils.dart';
 part 'data/data_source/tafsir_database.dart';
 part 'data/data_source/tafsir_database.g.dart';
-part 'data/models/quran_constants.dart';
 part 'data/models/ayah_model.dart';
+part 'data/models/quran_constants.dart';
 part 'data/models/quran_fonts_models/download_fonts_dialog_style.dart';
 part 'data/models/quran_fonts_models/sajda_model.dart';
 part 'data/models/quran_page.dart';

@@ -1,3 +1,7 @@
+## 0.1.12
+
+* **Fix some UI.**
+
 ## 0.1.11
 
 * **Merge AyahFontModel with AyahModel.**

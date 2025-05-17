@@ -11,7 +11,7 @@ class _QuranFontsPage extends StatelessWidget {
   final BannerStyle? bannerStyle;
   final Function(SurahNamesModel surah)? onSurahBannerPress;
   final Function(LongPressStartDetails details, AyahModel ayah)?
-      onFontsAyahLongPress;
+      onAyahLongPress;
 
   final VoidCallback? onPagePress;
   final Color? bookmarksColor;
@@ -39,7 +39,7 @@ class _QuranFontsPage extends StatelessWidget {
     this.surahNameStyle,
     this.bannerStyle,
     this.onSurahBannerPress,
-    this.onFontsAyahLongPress,
+    this.onAyahLongPress,
     this.bookmarksColor,
     this.textColor,
     this.ayahIconColor,
@@ -304,8 +304,8 @@ class _QuranFontsPage extends StatelessWidget {
             ayahNum: ayahs[ayahIndex].ayahNumber,
             ayahBookmarked: ayahBookmarked,
             onLongPressStart: (details) {
-              if (onFontsAyahLongPress != null) {
-                onFontsAyahLongPress!(details, ayahs[ayahIndex]);
+              if (onAyahLongPress != null) {
+                onAyahLongPress!(details, ayahs[ayahIndex]);
                 quranCtrl.toggleAyahSelection(ayahs[ayahIndex].ayahUQNumber);
                 quranCtrl.state.overlayEntry?.remove();
                 quranCtrl.state.overlayEntry = null;

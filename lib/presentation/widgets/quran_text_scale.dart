@@ -11,7 +11,7 @@ class _QuranTextScale extends StatelessWidget {
     this.surahNameStyle,
     this.bannerStyle,
     this.onSurahBannerPress,
-    this.onFontsAyahLongPress,
+    this.onAyahLongPress,
     this.onAyahPress,
     this.bookmarksColor,
     this.textColor,
@@ -40,7 +40,7 @@ class _QuranTextScale extends StatelessWidget {
   final List<int> ayahBookmarked;
   final Function(SurahNamesModel surah)? onSurahBannerPress;
   final Function(LongPressStartDetails details, AyahModel ayah)?
-      onFontsAyahLongPress;
+      onAyahLongPress;
   final VoidCallback? onAyahPress;
   final Color? bookmarksColor;
   final Color? textColor;
@@ -220,8 +220,8 @@ class _QuranTextScale extends StatelessWidget {
                                       hasBookmark: ayahBookmarked.contains(
                                           ayahs[ayahIndex].ayahUQNumber),
                                       onLongPressStart: (details) {
-                                        if (onFontsAyahLongPress != null) {
-                                          onFontsAyahLongPress!(
+                                        if (onAyahLongPress != null) {
+                                          onAyahLongPress!(
                                               details, ayahs[ayahIndex]);
                                           quranCtrl.toggleAyahSelection(
                                               ayahs[ayahIndex].ayahUQNumber);

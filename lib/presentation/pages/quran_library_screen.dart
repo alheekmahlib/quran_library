@@ -33,8 +33,7 @@ class QuranLibraryScreen extends StatelessWidget {
     this.isDark = false,
     this.juzName,
     this.languageCode = 'ar',
-    this.onDefaultAyahLongPress,
-    this.onFontsAyahLongPress,
+    this.onAyahLongPress,
     this.onPageChanged,
     this.onPagePress,
     this.onSurahBannerPress,
@@ -141,25 +140,15 @@ class QuranLibraryScreen extends StatelessWidget {
   /// such as deleting the shading from the verse and others
   final VoidCallback? onPagePress;
 
-  /// * تُستخدم مع الخطوط الأساسية *
-  /// عند الضغط المطوّل على أي آية باستخدام الخطوط الأساسية، يمكنك تفعيل ميزات إضافية
-  /// مثل نسخ الآية أو مشاركتها وغير ذلك عبر [onDefaultAyahLongPress].
-  ///
-  /// * Used with default fonts *
-  /// When long-pressing on any verse with the default fonts, you can enable additional features
-  /// such as copying the verse, sharing it, and more using [onDefaultAyahLongPress].
-  final void Function(LongPressStartDetails details, AyahModel ayah)?
-      onDefaultAyahLongPress;
-
   /// * تُستخدم مع الخطوط المحملة *
   /// عند الضغط المطوّل على أي آية باستخدام الخطوط المحملة، يمكنك تفعيل ميزات إضافية
-  /// مثل نسخ الآية أو مشاركتها وغير ذلك عبر [onFontsAyahLongPress].
+  /// مثل نسخ الآية أو مشاركتها وغير ذلك عبر [onAyahLongPress].
   ///
   /// * Used with loaded fonts *
   /// When long-pressing on any verse with the loaded fonts, you can enable additional features
-  /// such as copying the verse, sharing it, and more using [onFontsAyahLongPress].
+  /// such as copying the verse, sharing it, and more using [onAyahLongPress].
   final void Function(LongPressStartDetails details, AyahModel ayah)?
-      onFontsAyahLongPress;
+      onAyahLongPress;
 
   /// * تُستخدم مع الخطوط المحملة *
   /// عند الضغط على أي لافتة سورة باستخدام الخطوط المحملة، يمكنك إضافة بعض التفاصيل حول السورة [onSurahBannerPress]
@@ -380,7 +369,7 @@ class QuranLibraryScreen extends StatelessWidget {
                           ayahIconColor: ayahIconColor,
                           showAyahBookmarkedIcon: showAyahBookmarkedIcon,
                           bookmarks: bookmarkCtrl.bookmarks,
-                          onFontsAyahLongPress: onFontsAyahLongPress,
+                          onAyahLongPress: onAyahLongPress,
                           bookmarksColor: bookmarksColor,
                           surahInfoStyle: surahInfoStyle,
                           surahNameStyle: surahNameStyle,
@@ -411,7 +400,7 @@ class QuranLibraryScreen extends StatelessWidget {
                       bookmarkList: bookmarkList,
                       textColor: textColor,
                       languageCode: languageCode,
-                      onAyahLongPress: onDefaultAyahLongPress,
+                      onAyahLongPress: onAyahLongPress,
                       bookmarksColor: bookmarksColor,
                       surahInfoStyle: surahInfoStyle,
                       surahNameStyle: surahNameStyle,
@@ -450,7 +439,7 @@ class QuranLibraryScreen extends StatelessWidget {
                     ayahIconColor: ayahIconColor,
                     showAyahBookmarkedIcon: showAyahBookmarkedIcon,
                     bookmarks: bookmarkCtrl.bookmarks,
-                    onFontsAyahLongPress: onFontsAyahLongPress,
+                    onAyahLongPress: onAyahLongPress,
                     bookmarksColor: bookmarksColor,
                     surahInfoStyle: surahInfoStyle,
                     surahNameStyle: surahNameStyle,

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:quran_library/quran_library.dart';
 
@@ -31,6 +33,11 @@ class _MyAppState extends State<MyApp> {
           // backgroundColor: Colors.white,
           // textColor: Colors.black,
           isFontsLocal: false,
+          anotherMenuChild:
+              Icon(Icons.play_arrow_outlined, size: 28, color: Colors.grey),
+          anotherMenuChildOnTap: (ayah) {
+            log('Another Menu Child Tapped: ${ayah.ayahNumber}');
+          },
         ),
       ),
     );

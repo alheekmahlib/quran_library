@@ -269,22 +269,22 @@ class QuranLibrary {
     return bookmarks;
   }
 
-  /// للحصول على معلومات السورة في نافذة حوار، قم فقط باستدعاء: [getSurahInfoDialog].
+  /// للحصول على معلومات السورة في نافذة حوار، قم فقط باستدعاء: [getSurahInfoBottomSheet].
   ///
   /// مطلوب تمرير رقم السورة [surahNumber].
   /// كما أن التمرير الاختياري لنمط [SurahInfoStyle] ممكن.
   ///
-  /// to get the Surah information dialog just call [getSurahInfoDialog]
+  /// to get the Surah information bottomSheet just call [getSurahInfoBottomSheet]
   ///
   /// and required to pass the Surah number [surahNumber]
   /// and style [SurahInfoStyle] is optional.
-  void getSurahInfoDialog(
+  void getSurahInfoBottomSheet(
           {required int surahNumber,
           required BuildContext context,
           SurahInfoStyle? surahInfoStyle,
           String? languageCode,
           bool isDark = false}) =>
-      surahInfoDialogWidget(context, surahNumber - 1,
+      surahInfoBottomSheetWidget(context, surahNumber - 1,
           surahStyle: surahInfoStyle,
           languageCode: languageCode,
           isDark: isDark);

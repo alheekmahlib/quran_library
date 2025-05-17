@@ -266,7 +266,7 @@ class _QuranTextScale extends StatelessWidget {
                                                 pageIndex: pageIndex,
                                                 anotherMenuChild:
                                                     anotherMenuChild,
-                                                anotherMenuChildOnTap: (ayah) =>
+                                                anotherMenuChildOnTap:
                                                     anotherMenuChildOnTap,
                                               ),
                                             );

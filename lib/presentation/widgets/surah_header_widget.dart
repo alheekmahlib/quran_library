@@ -29,7 +29,7 @@ class SurahHeaderWidget extends StatelessWidget {
           if (onSurahBannerPress != null) {
             onSurahBannerPress!(quranCtrl.surahsList[surahNumber - 1]);
           } else {
-            surahInfoDialogWidget(context, surahNumber - 1,
+            surahInfoBottomSheetWidget(context, surahNumber - 1,
                 surahStyle: surahInfoStyle!,
                 deviceWidth: deviceWidth,
                 isDark: isDark);
@@ -68,7 +68,7 @@ class SurahHeaderWidget extends StatelessWidget {
               if (onSurahBannerPress != null) {
                 onSurahBannerPress!(quranCtrl.surahsList[surahNumber - 1]);
               } else {
-                surahInfoDialogWidget(context, surahNumber - 1,
+                surahInfoBottomSheetWidget(context, surahNumber - 1,
                     surahStyle: surahInfoStyle!,
                     deviceWidth: deviceWidth,
                     isDark: isDark);

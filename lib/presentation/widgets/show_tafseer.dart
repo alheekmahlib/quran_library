@@ -46,87 +46,79 @@ class ShowTafseer extends StatelessWidget {
           height: height * .9,
           width: width,
           child: SafeArea(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // خط فاصل جمالي
-                Container(
-                  width: 60,
-                  height: 5,
-                  margin: const EdgeInsets.only(bottom: 8),
-                  decoration: BoxDecoration(
-                    color: Colors.grey.shade300,
-                    borderRadius: BorderRadius.circular(3),
-                  ),
+            child: Container(
+              width: width,
+              decoration: BoxDecoration(
+                color: tafsirStyle.backgroundColor ??
+                    (isDark ? const Color(0xff1E1E1E) : Colors.white),
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(16),
+                  topRight: Radius.circular(16),
                 ),
-                Flexible(
-                  child: Container(
-                    width: width,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.08),
+                    blurRadius: 16,
+                    offset: const Offset(0, -4),
+                  ),
+                ],
+              ),
+              child: Column(
+                children: <Widget>[
+                  const SizedBox(height: 8),
+                  // خط فاصل جمالي
+                  Container(
+                    width: 60,
+                    height: 5,
+                    margin: const EdgeInsets.only(bottom: 8),
                     decoration: BoxDecoration(
-                      color: tafsirStyle.backgroundColor ??
-                          (isDark ? const Color(0xff1E1E1E) : Colors.white),
-                      borderRadius: const BorderRadius.only(
-                        topLeft: Radius.circular(16),
-                        topRight: Radius.circular(16),
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.08),
-                          blurRadius: 16,
-                          offset: const Offset(0, -4),
-                        ),
-                      ],
+                      color: Colors.grey.shade500,
+                      borderRadius: BorderRadius.circular(3),
                     ),
-                    child: Column(
-                      children: <Widget>[
-                        // شريط علوي احترافي
-                        Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 16.0, vertical: 8),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              tafsirNameWidget,
-                              Row(
-                                children: [
-                                  ChangeTafsir(tafsirStyle: tafsirStyle),
-                                  const SizedBox(width: 8),
-                                  Container(
-                                      width: 1,
-                                      height: 24,
-                                      color: Colors.grey.shade300),
-                                  const SizedBox(width: 8),
-                                  Transform.translate(
-                                    offset: const Offset(0, 2),
-                                    child: fontSizeDropDown(
-                                        height: 30.0, tafsirStyle: tafsirStyle),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                        // محتوى التفسير
-                        Expanded(
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: tafsirStyle.backgroundColor ??
-                                  (isDark
-                                      ? const Color(0xff1E1E1E)
-                                      : Colors.white),
-                              borderRadius: const BorderRadius.only(
-                                topLeft: Radius.circular(18),
-                                topRight: Radius.circular(18),
-                              ),
+                  ),
+                  // شريط علوي احترافي
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16.0, vertical: 8),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        tafsirNameWidget,
+                        Row(
+                          children: [
+                            ChangeTafsir(tafsirStyle: tafsirStyle),
+                            const SizedBox(width: 8),
+                            Container(
+                                width: 1,
+                                height: 24,
+                                color: Colors.grey.shade300),
+                            const SizedBox(width: 8),
+                            Transform.translate(
+                              offset: const Offset(0, 2),
+                              child: fontSizeDropDown(
+                                  height: 30.0, tafsirStyle: tafsirStyle),
                             ),
-                            child: _pagesBuild(context, width),
-                          ),
+                          ],
                         ),
                       ],
                     ),
                   ),
-                ),
-              ],
+                  // محتوى التفسير
+                  Expanded(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: tafsirStyle.backgroundColor ??
+                            (isDark ? const Color(0xff1E1E1E) : Colors.white),
+                        borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(18),
+                          topRight: Radius.circular(18),
+                        ),
+                      ),
+                      child: _pagesBuild(context, width),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -165,7 +157,7 @@ class ShowTafseer extends StatelessWidget {
             borderRadius: BorderRadius.circular(16),
             boxShadow: [
               BoxShadow(
-                color: Colors.grey.withValues(alpha: 0.6),
+                color: Colors.grey.withValues(alpha: 0.1),
                 blurRadius: 8,
                 offset: const Offset(0, 0),
               ),

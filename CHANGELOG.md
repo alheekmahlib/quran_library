@@ -1,5 +1,6 @@
-## 0.1.12
+## 1.0.0
 
+* **First major release.**
 * **Fix some UI.**
 
 ## 0.1.11

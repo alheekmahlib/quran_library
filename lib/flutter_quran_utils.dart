@@ -38,7 +38,7 @@ class QuranLibrary {
     quranCtrl.state.isDownloadedV2Fonts.value =
         storage.read(storageConstants.isDownloadedCodeV2Fonts) ?? false;
     quranCtrl.state.isBold.value = storage.read(storageConstants.isBold) ?? 0;
-    quranCtrl.state.fontsSelected2.value =
+    quranCtrl.state.fontsSelected.value =
         storage.read(storageConstants.fontsSelected) ?? 0;
     quranCtrl.state.fontsDownloadedList.value = (storage
             .read<List<dynamic>>(storageConstants.fontsDownloadedList)
@@ -337,22 +337,26 @@ class QuranLibrary {
   /// للحصول على طريقة تنزيل الخطوط فقط قم بإستدعاء [fontsDownloadMethod]
   ///
   /// to get the fonts download method just call [fontsDownloadMethod]
-  void getFontsDownloadMethod({required int fontIndex}) =>
-      quranCtrl.downloadAllFontsZipFile(fontIndex);
+  Future<void> getFontsDownloadMethod({required int fontIndex}) async {
+    await quranCtrl.downloadAllFontsZipFile(fontIndex);
+  }
 
   /// للحصول على طريقة تنزيل الخطوط فقط قم بإستدعاء [getFontsPrepareMethod]
   /// مطلوب تمرير رقم الصفحة [pageIndex]
   ///
   /// to prepare the fonts was downloaded before just call [getFontsPrepareMethod]
   /// required to pass [pageIndex]
-  void getFontsPrepareMethod(
-          {required int pageIndex, bool isFontsLocal = false}) =>
-      quranCtrl.prepareFonts(pageIndex, isFontsLocal: isFontsLocal);
+  Future<void> getFontsPrepareMethod(
+      {required int pageIndex, bool isFontsLocal = false}) async {
+    await quranCtrl.prepareFonts(pageIndex, isFontsLocal: isFontsLocal);
+  }
 
   /// لحذف الخطوط فقط قم بإستدعاء [deleteFontsMethod]
   ///
   /// to delete the fonts just call [deleteFontsMethod]
-  void getDeleteFontsMethod() => quranCtrl.deleteFonts();
+  Future<void> getDeleteFontsMethod() async {
+    await quranCtrl.deleteFonts();
+  }
 
   /// للحصول على تقدم تنزيل الخطوط، ما عليك سوى إستدعاء [fontsDownloadProgress]
   ///
@@ -363,21 +367,21 @@ class QuranLibrary {
   /// لمعرفة ما إذا كانت الخطوط محملة او لا، ما عليك سوى إستدعاء [isFontsDownloaded]
   ///
   /// To find out whether fonts are downloaded or not, just call [isFontsDownloaded]
-  bool get isFontsDownloaded =>
-      GetStorage().read(_StorageConstants().isDownloadedCodeV2Fonts) ?? false;
+  bool get isFontsDownloaded => quranCtrl.state.isDownloadedV2Fonts.value;
 
   /// لمعرفة الخط الذي تم تحديده، ما عليك سوى إستدعاء [currentFontsSelected]
   ///
   /// To find out which font has been selected, just call [currentFontsSelected]
-  int get currentFontsSelected => quranCtrl.state.fontsSelected2.value;
+  int get currentFontsSelected => quranCtrl.state.fontsSelected.value;
 
   /// لتحديد نوع الخط الذي تريد إستخدامه، ما عليك سوى إعطاء قيمة [setFontsSelected]
   ///
   /// To set the font type you want to use, just give a value to [setFontsSelected]
   ///
   set setFontsSelected(int index) {
-    quranCtrl.state.fontsSelected2.value = index;
+    quranCtrl.state.fontsSelected.value = index;
     GetStorage().write(_StorageConstants().fontsSelected, index);
+    Get.forceAppUpdate(); // تحديث إجباري للواجهة بعد تغيير نوع الخط
   }
 
   /// يقوم بتعيين علامة مرجعية باستخدام [ayahId] و[page] و[bookmarkId] المحددة.

@@ -87,7 +87,7 @@ class _QuranTextScale extends StatelessWidget {
                             ayahs.first.ayahNumber == 1 &&
                                     (!quranCtrl._topOfThePageIndex
                                             .contains(pageIndex) ||
-                                        quranCtrl.state.fontsSelected2.value ==
+                                        quranCtrl.state.fontsSelected.value ==
                                             0)
                                 ? SurahHeaderWidget(
                                     surahNumber ??
@@ -303,7 +303,7 @@ class _QuranTextScale extends StatelessWidget {
                               ),
                             ),
                             quranCtrl._downThePageIndex.contains(pageIndex) &&
-                                    quranCtrl.state.fontsSelected2.value == 1
+                                    quranCtrl.state.fontsSelected.value == 1
                                 ? SurahHeaderWidget(
                                     surahNumber ??
                                         quranCtrl

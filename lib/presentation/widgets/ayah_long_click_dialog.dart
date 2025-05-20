@@ -78,9 +78,8 @@ class AyahLongClickDialog extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(horizontal: 8.0),
                     child: GestureDetector(
                       onTap: () {
-                        if (QuranCtrl.instance.state.fontsSelected2.value == 1 ||
-                            QuranCtrl.instance.state.fontsSelected2.value ==
-                                2 ||
+                        if (QuranCtrl.instance.state.fontsSelected.value == 1 ||
+                            QuranCtrl.instance.state.fontsSelected.value == 2 ||
                             QuranCtrl.instance.state.scaleFactor.value > 1.3) {
                           BookmarksCtrl.instance.saveBookmark(
                             surahName: QuranCtrl.instance
@@ -113,7 +112,7 @@ class AyahLongClickDialog extends StatelessWidget {
                   height: 30, color: const Color(0xffe8decb)),
               GestureDetector(
                 onTap: () {
-                  if (QuranCtrl.instance.state.fontsSelected2.value == 1) {
+                  if (QuranCtrl.instance.state.fontsSelected.value == 1) {
                     Clipboard.setData(ClipboardData(text: ayah!.text));
                     _ToastUtils().showToast(context, "تم النسخ الى الحافظة");
                   } else {
@@ -140,52 +139,45 @@ class AyahLongClickDialog extends StatelessWidget {
                   TafsirCtrl.instance.showTafsirOnTap(
                     context: context,
                     isDark: isDark,
-                    surahNum: (QuranCtrl.instance.state.fontsSelected2.value ==
+                    surahNum: (QuranCtrl.instance.state.fontsSelected.value ==
                                 1 ||
-                            QuranCtrl.instance.state.fontsSelected2.value ==
-                                2 ||
+                            QuranCtrl.instance.state.fontsSelected.value == 2 ||
                             QuranCtrl.instance.state.scaleFactor.value > 1.3)
                         ? QuranCtrl.instance
                             .getSurahDataByAyah(ayah!)
                             .surahNumber
                         : ayah!.surahNumber!,
-                    ayahNum: (QuranCtrl.instance.state.fontsSelected2.value ==
+                    ayahNum: (QuranCtrl.instance.state.fontsSelected.value ==
                                 1 ||
-                            QuranCtrl.instance.state.fontsSelected2.value ==
-                                2 ||
+                            QuranCtrl.instance.state.fontsSelected.value == 2 ||
                             QuranCtrl.instance.state.scaleFactor.value > 1.3)
                         ? ayah!.ayahNumber
                         : ayah!.ayahNumber,
-                    ayahText: (QuranCtrl.instance.state.fontsSelected2.value ==
+                    ayahText: (QuranCtrl.instance.state.fontsSelected.value ==
                                 1 ||
-                            QuranCtrl.instance.state.fontsSelected2.value ==
-                                2 ||
+                            QuranCtrl.instance.state.fontsSelected.value == 2 ||
                             QuranCtrl.instance.state.scaleFactor.value > 1.3)
                         ? ayah!.text
                         : ayah!.text,
                     pageIndex: pageIndex,
-                    ayahTextN: (QuranCtrl.instance.state.fontsSelected2.value ==
+                    ayahTextN: (QuranCtrl.instance.state.fontsSelected.value ==
                                 1 ||
-                            QuranCtrl.instance.state.fontsSelected2.value ==
-                                2 ||
+                            QuranCtrl.instance.state.fontsSelected.value == 2 ||
                             QuranCtrl.instance.state.scaleFactor.value > 1.3)
                         ? ayah!.ayaTextEmlaey
                         : ayah!.ayaTextEmlaey,
-                    ayahUQNum: (QuranCtrl.instance.state.fontsSelected2.value ==
+                    ayahUQNum: (QuranCtrl.instance.state.fontsSelected.value ==
                                 1 ||
-                            QuranCtrl.instance.state.fontsSelected2.value ==
-                                2 ||
+                            QuranCtrl.instance.state.fontsSelected.value == 2 ||
                             QuranCtrl.instance.state.scaleFactor.value > 1.3)
                         ? ayah!.ayahUQNumber
                         : ayah!.ayahUQNumber,
-                    ayahNumber:
-                        (QuranCtrl.instance.state.fontsSelected2.value == 1 ||
-                                QuranCtrl.instance.state.fontsSelected2.value ==
-                                    2 ||
-                                QuranCtrl.instance.state.scaleFactor.value >
-                                    1.3)
-                            ? ayah!.ayahNumber
-                            : ayah!.ayahNumber,
+                    ayahNumber: (QuranCtrl.instance.state.fontsSelected.value ==
+                                1 ||
+                            QuranCtrl.instance.state.fontsSelected.value == 2 ||
+                            QuranCtrl.instance.state.scaleFactor.value > 1.3)
+                        ? ayah!.ayahNumber
+                        : ayah!.ayahNumber,
                   );
                   QuranCtrl.instance.state.overlayEntry?.remove();
                   QuranCtrl.instance.state.overlayEntry = null;

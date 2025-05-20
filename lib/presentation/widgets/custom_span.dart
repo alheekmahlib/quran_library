@@ -69,7 +69,7 @@ TextSpan _span({
           fontSize: fontSize,
           height: 2.1,
           letterSpacing: pageSpacing ? -5 : 30,
-          color: quranCtrl.state.fontsSelected2.value == 1
+          color: quranCtrl.state.fontsSelected.value == 1
               ? textColor ?? Colors.transparent
               : isDark
                   ? Colors.white
@@ -101,7 +101,7 @@ TextSpan _span({
           height: 2.1,
           letterSpacing: 0,
           // wordSpacing: wordSpacing + 10,
-          color: quranCtrl.state.fontsSelected2.value == 1
+          color: quranCtrl.state.fontsSelected.value == 1
               ? textColor ?? Colors.transparent
               : isDark
                   ? Colors.white
@@ -134,7 +134,7 @@ TextSpan _span({
         fontSize: fontSize,
         height: 2.1,
         letterSpacing: 0,
-        color: quranCtrl.state.fontsSelected2.value == 1
+        color: quranCtrl.state.fontsSelected.value == 1
             ? textColor ?? Colors.transparent
             : isDark
                 ? Colors.white

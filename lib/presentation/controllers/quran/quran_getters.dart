@@ -6,7 +6,7 @@ extension QuranGetters on QuranCtrl {
   /// -------- [Getter] ----------
 
   RxBool get isDownloadedFonts =>
-      QuranCtrl.instance.state.fontsSelected2.value == 1 ? true.obs : false.obs;
+      QuranCtrl.instance.state.fontsSelected.value == 1 ? true.obs : false.obs;
 
   List<int> get _startSurahsNumbers => [
         1,
@@ -364,7 +364,7 @@ extension QuranGetters on QuranCtrl {
   ///
   /// Returns:
   ///   `bool`: true if the fonts are downloaded, false otherwise.
-  bool get isDownloadFonts => (state.fontsSelected2.value == 1);
+  bool get isDownloadFonts => (state.fontsSelected.value == 1);
 
 // PageController get pageController {
 //   return state.quranPageController = PageController(

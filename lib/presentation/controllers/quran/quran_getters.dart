@@ -12,6 +12,12 @@ extension QuranGetters on QuranCtrl {
   ///
   /// Switch font type and download it if not already downloaded
   Future<void> switchFontType({required int fontIndex}) async {
+    // إعادة التحقق من حالة التحميل من التخزين
+    // Re-check download status from storage
+    final storageValue =
+        GetStorage().read<bool>(_StorageConstants().isDownloadedCodeV2Fonts);
+    state.isDownloadedV2Fonts.value = storageValue ?? false;
+
     // التحقق مما إذا كان الخط المطلوب هو نفس الخط الحالي
     // Check if the requested font is the same as the current font
     if (state.fontsSelected.value == fontIndex &&
@@ -43,21 +49,26 @@ extension QuranGetters on QuranCtrl {
 
     // إذا كان الخط غير محمل، قم بتحميله أولاً ثم تعيينه
     // If the font is not downloaded, download it first then set it
-    // try {
-    //   log('Starting font download', name: 'QuranGetters');
-    //   state.isDownloadingFonts.value = true;
-    //   update(['fontsDownloadingProgress']);
-    //   await downloadAllFontsZipFile(fontIndex);
-    //   state.fontsSelected.value = fontIndex;
-    //   GetStorage().write(_StorageConstants().fontsSelected, fontIndex);
-    //   update(['fontsSelected', 'fontsDownloadingProgress']);
-    //   Get.forceAppUpdate();
-    //   log('Font downloaded and selected', name: 'QuranGetters');
-    // } catch (e) {
-    //   state.isDownloadingFonts.value = false;
-    //   update(['fontsDownloadingProgress']);
-    //   log('Error downloading font: $e', name: 'QuranGetters');
-    // }
+    try {
+      log('Starting font download', name: 'QuranGetters');
+      state.isDownloadingFonts.value = true;
+      // تهيئة قيمة تقدم التحميل
+      // Initialize download progress value
+      state.fontsDownloadProgress.value = 0.0;
+      update(['fontsDownloadingProgress']);
+
+      await downloadAllFontsZipFile(fontIndex);
+
+      state.fontsSelected.value = fontIndex;
+      GetStorage().write(_StorageConstants().fontsSelected, fontIndex);
+      update(['fontsSelected', 'fontsDownloadingProgress']);
+      Get.forceAppUpdate();
+      log('Font downloaded and selected', name: 'QuranGetters');
+    } catch (e) {
+      state.isDownloadingFonts.value = false;
+      update(['fontsDownloadingProgress']);
+      log('Error downloading font: $e', name: 'QuranGetters');
+    }
   }
 
   List<int> get _startSurahsNumbers => [

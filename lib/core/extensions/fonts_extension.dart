@@ -114,10 +114,13 @@ extension FontsExtension on QuranCtrl {
           fileSink.add(chunk);
           state.isDownloadingFonts.value = true;
           // حساب نسبة التحميل
-          double progress = totalBytesDownloaded / contentLength * 100;
-          state.fontsDownloadProgress.value = progress;
-          // log('Download progress: ${progress.toStringAsFixed(2)}%');
-          update(['fontsDownloadingProgress']);
+          if (contentLength > 0) {
+            double progress = totalBytesDownloaded / contentLength * 100;
+            state.fontsDownloadProgress.value = progress;
+            log('Download progress: ${progress.toStringAsFixed(2)}%',
+                name: 'FontsDownload');
+            update(['fontsDownloadingProgress']);
+          }
         },
         onDone: () async {
           await fileSink.flush();
@@ -164,16 +167,23 @@ extension FontsExtension on QuranCtrl {
             }
             await QuranCtrl.instance.loadFontsQuran();
             // حفظ حالة التحميل في التخزين المحلي
+            // Save download status in local storage
             GetStorage()
                 .write(_StorageConstants().isDownloadedCodeV2Fonts, true);
             state.fontsDownloadedList.add(fontIndex);
             GetStorage().write(_StorageConstants().fontsDownloadedList,
                 state.fontsDownloadedList);
+
+            // تحديث حالة التحميل وإكمال شريط التقدم
+            // Update download status and complete progress bar
             state.isDownloadedV2Fonts.value = true;
             state.isDownloadingFonts.value = false;
+            state.fontsDownloadProgress.value = 100.0;
+
+            update(['fontsDownloadingProgress']);
             Get.forceAppUpdate();
-            // update();
-            log('Fonts unzipped successfully');
+
+            log('Fonts unzipped successfully', name: 'FontsDownload');
             // Get.back();
           } catch (e) {
             log('Failed to extract ZIP file: $e');
@@ -186,11 +196,16 @@ extension FontsExtension on QuranCtrl {
         cancelOnError: true,
       );
     } catch (e) {
-      log('Failed to Download Code_v2 fonts: $e');
+      log('Failed to Download Code_v2 fonts: $e', name: 'FontsDownload');
+      // تحديث حالة التحميل في حالة فشل العملية
+      // Update download status if operation fails
+      state.isDownloadingFonts.value = false;
+      state.fontsDownloadProgress.value = 0.0;
+      update(['fontsDownloadingProgress']);
+      // رمي استثناء ليتم التعامل معه في الدالة الأم
+      // Throw exception to be handled in parent function
+      throw Exception('Download failed: $e');
     }
-
-    state.isDownloadingFonts.value = false;
-    update(['fontsDownloadingProgress']);
   }
 
   Future<ByteData> _getFontLoaderBytes(File file) async {

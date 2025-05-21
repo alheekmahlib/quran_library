@@ -361,13 +361,30 @@ class QuranLibrary {
   /// للحصول على تقدم تنزيل الخطوط، ما عليك سوى إستدعاء [fontsDownloadProgress]
   ///
   /// to get fonts download progress just call [fontsDownloadProgress]
-  double get fontsDownloadProgress =>
-      quranCtrl.state.fontsDownloadProgress.value;
+  double get fontsDownloadProgress {
+    // قيمة تقدم التحميل كنسبة مئوية من 0 إلى 100
+    // Download progress value as a percentage from 0 to 100
+    double progress = quranCtrl.state.fontsDownloadProgress.value;
+    // التحويل إلى قيمة بين 0 و 1 للاستخدام في LinearProgressIndicator
+    // Convert to a value between 0 and 1 for use in LinearProgressIndicator
+    return progress / 100;
+  }
 
   /// لمعرفة ما إذا كانت الخطوط محملة او لا، ما عليك سوى إستدعاء [isFontsDownloaded]
   ///
   /// To find out whether fonts are downloaded or not, just call [isFontsDownloaded]
-  bool get isFontsDownloaded => quranCtrl.state.isDownloadedV2Fonts.value;
+  bool get isFontsDownloaded {
+    // التحقق من قيمة isDownloadedV2Fonts في GetStorage
+    // Check the value of isDownloadedV2Fonts in GetStorage
+    final storageValue =
+        GetStorage().read<bool>(_StorageConstants().isDownloadedCodeV2Fonts);
+    // تحديث قيمة المتغير في state ليتوافق مع قيمة التخزين
+    // Update the state variable to match storage value
+    quranCtrl.state.isDownloadedV2Fonts.value = storageValue ?? false;
+    // إرجاع القيمة المحدثة
+    // Return the updated value
+    return quranCtrl.state.isDownloadedV2Fonts.value;
+  }
 
   /// لمعرفة الخط الذي تم تحديده، ما عليك سوى إستدعاء [currentFontsSelected]
   ///

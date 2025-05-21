@@ -29,49 +29,66 @@ extension ShowTafsirExtension on void {
       await TafsirCtrl.instance.fetchTranslate();
     }
 
-    // if (context.mounted) {
-    // شرح: إذا دخلنا هنا فهذا يعني أن context متصل بالشجرة
-    // Explanation: If we reach here, context is mounted and valid
-    log('context is mounted, showing bottom sheet', name: 'TafsirUi');
-    // شرح: يجب تمرير context صحيح من شاشة Flutter تحتوي على MaterialApp و Scaffold
-    // Explanation: You must pass a valid context from a Flutter screen with MaterialApp and Scaffold
-    // شرح: نحاول استخدام context المرسل، وإذا لم يكن صالحًا نستخدم Get.context كخيار احتياطي
-    // Explanation: Try the passed context, if not valid use Get.context as fallback
-    // BuildContext? validContext;
-    // if (context.mounted &&
-    //     MediaQuery.maybeOf(context) != null &&
-    //     Scaffold.maybeOf(context) != null) {
-    //   validContext = context;
-    // } else if (Get.context != null &&
-    //     MediaQuery.maybeOf(Get.context!) != null &&
-    //     Scaffold.maybeOf(Get.context!) != null) {
-    //   validContext = Get.context!;
-    //   log('تم استخدام Get.context كخيار احتياطي', name: 'TafsirUi');
-    //   // Used Get.context as fallback
-    // }
+    // تحديد السياق الصحيح لعرض الشاشة المنبثقة
+    // Determine the correct context for showing the bottom sheet
+    BuildContext validContext = context;
 
-    if (QuranCtrl.instance.state.scaffoldKey.currentContext!.mounted) {
+    // إذا كان السياق المُرسل غير صالح، نستخدم سياق المكتبة نفسها
+    // If the provided context is not valid, use the library's own context
+    if (!context.mounted || MediaQuery.maybeOf(context) == null) {
+      // تحقق من صلاحية سياق مفتاح السكافولد
+      // Check if scaffold key context is valid
+      final scaffoldContext =
+          QuranCtrl.instance.state.scaffoldKey.currentContext;
+      if (scaffoldContext != null && scaffoldContext.mounted) {
+        validContext = scaffoldContext;
+        log('استخدام سياق مفتاح السكافولد من المكتبة', name: 'TafsirUi');
+        // Using scaffold key context from library
+      } else if (Get.context != null) {
+        validContext = Get.context!;
+        log('استخدام Get.context كخيار احتياطي', name: 'TafsirUi');
+        // Using Get.context as fallback
+      } else {
+        log('جميع السياقات غير صالحة، لا يمكن عرض التفسير', name: 'TafsirUi');
+        // All contexts are invalid, cannot show tafsir
+        return;
+      }
+    }
+
+    // نستخدم الآن السياق الصحيح لعرض الشاشة المنبثقة
+    // Now use the valid context to show the bottom sheet
+    if (validContext.mounted) {
       await showModalBottomSheet(
         backgroundColor: Colors.transparent,
-        context: QuranCtrl.instance.state.scaffoldKey.currentContext!,
+        context: validContext,
         builder: (context) => ShowTafseer(
-          context: QuranCtrl.instance.state.scaffoldKey.currentContext!,
+          context: validContext,
           ayahUQNumber: ayahUQNum,
           ayahNumber: ayahNumber,
           pageIndex: pageIndex,
-          isDark: isDark!,
+          isDark:
+              isDark ?? Theme.of(validContext).brightness == Brightness.dark,
           tafsirStyle: TafsirStyle(
             backgroundColor:
-                isDark ? const Color(0xff1E1E1E) : const Color(0xfffaf7f3),
+                isDark ?? Theme.of(validContext).brightness == Brightness.dark
+                    ? const Color(0xff1E1E1E)
+                    : const Color(0xfffaf7f3),
             tafsirNameWidget: Text(
               'التفسير',
               style: QuranLibrary().naskhStyle.copyWith(
                     fontSize: 24,
-                    color: isDark ? Colors.white : Colors.black,
+                    color: isDark ??
+                            Theme.of(validContext).brightness == Brightness.dark
+                        ? Colors.white
+                        : Colors.black,
                   ),
             ),
             fontSizeWidget: Icon(Icons.text_format_outlined,
-                size: 34, color: isDark ? Colors.white : Colors.black),
+                size: 34,
+                color: isDark ??
+                        Theme.of(validContext).brightness == Brightness.dark
+                    ? Colors.white
+                    : Colors.black),
           ),
         ),
         isScrollControlled: true,
@@ -79,15 +96,7 @@ extension ShowTafsirExtension on void {
     } else {
       // شرح: إذا لم يوجد أي context صالح، نطبع رسالة فقط ولا نرمي Exception حتى لا يكسر التطبيق
       // Explanation: If no valid context, just log error and do not throw Exception to avoid crash
-      log('لا يمكن عرض التفسير لأن الـ context غير صحيح (يجب أن يكون ضمن MaterialApp/Scaffold)',
-          name: 'TafsirUi');
-      // يمكنك هنا إظهار Toast أو تجاهل التنفيذ حسب الحاجة
-      // You can show a Toast or just ignore as needed
+      log('لا يمكن عرض التفسير لأن جميع السياقات غير صالحة', name: 'TafsirUi');
     }
-    // } else {
-    //   // شرح: إذا لم يكن context متصل بالشجرة نطبع رسالة خطأ
-    //   // Explanation: If context is not mounted, log an error
-    //   log('context is NOT mounted!', name: 'TafsirUi');
-    // }
   }
 }

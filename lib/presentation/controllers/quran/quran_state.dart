@@ -50,7 +50,18 @@ class QuranState {
   RxInt selectedAyahNumber = 0.obs;
   RxInt selectedSurahNumber = 0.obs;
   OverlayEntry? overlayEntry;
-  final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
+
+  /// مفتاح Scaffold لعرض النوافذ المنبثقة مثل شاشة التفسير
+  /// يتم إنشاؤه عند الحاجة فقط لتجنب التضارب مع المفاتيح الأخرى
+  ///
+  /// Scaffold key for showing bottom sheets like tafsir screen
+  /// It's created only when needed to avoid conflicts with other keys
+  GlobalKey<ScaffoldState>? _scaffoldKey;
+  GlobalKey<ScaffoldState> get scaffoldKey {
+    _scaffoldKey ??=
+        GlobalKey<ScaffoldState>(debugLabel: 'QuranLibraryScaffoldKey');
+    return _scaffoldKey!;
+  }
 
   void dispose() {
     quranPageController.dispose();
@@ -84,5 +95,6 @@ class QuranState {
     selectedAyahNumber.close();
     selectedSurahNumber.close();
     overlayEntry?.remove();
+    _scaffoldKey = null;
   }
 }

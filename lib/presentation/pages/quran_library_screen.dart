@@ -235,7 +235,6 @@ class QuranLibraryScreen extends StatelessWidget {
       builder: (quranCtrl) => Directionality(
         textDirection: TextDirection.rtl,
         child: Scaffold(
-          key: quranCtrl.state.scaffoldKey,
           backgroundColor: backgroundColor ??
               (isDark ? const Color(0xff1E1E1E) : const Color(0xfffaf7f3)),
           appBar: appBar ??

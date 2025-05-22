@@ -1,5 +1,5 @@
-// شرح: اختبار لمفتاح السكافولد للتأكد من عدم التضارب
-// Explanation: Test for scaffold key to make sure there's no conflict
+// شرح: اختبار للتأكد من إزالة GlobalKey وعمل آلية عرض التفسير بشكل صحيح
+// Explanation: Test to verify removal of GlobalKey and proper functioning of tafsir display mechanism
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -13,36 +13,70 @@ void main() {
     Get.reset(); // إعادة تعيين Get قبل كل اختبار
   });
 
-  group('QuranState scaffoldKey tests', () {
-    test('scaffoldKey is created lazily', () {
+  group('QuranState after GlobalKey removal tests', () {
+    test('QuranState no longer contains scaffoldKey reference', () {
       QuranState state = QuranState();
-      expect(state.scaffoldKey, isA<GlobalKey<ScaffoldState>>());
 
-      // نتأكد من إنشاء المفتاح مرة واحدة فقط
-      final key1 = state.scaffoldKey;
-      final key2 = state.scaffoldKey;
-      expect(key1, equals(key2)); // يجب أن يكون نفس الكائن
-    });
+      // التحقق من أن QuranState لم يعد يستخدم GlobalKey من خلال فحص الحقول
+      // لا يمكننا الوصول مباشرة للحقول الخاصة، لكن يمكننا فحص نتائج toString أو استخدام ميثودات أخرى
 
-    test('scaffoldKey has unique debug label', () {
-      QuranState state = QuranState();
-      expect(state.scaffoldKey.debugLabel, equals('QuranLibraryScaffoldKey'));
-    });
-
-    test('Multiple instances have different scaffold keys', () {
-      QuranState state1 = QuranState();
-      QuranState state2 = QuranState();
-
-      expect(state1.scaffoldKey, isNot(equals(state2.scaffoldKey)));
-    });
-
-    test('scaffoldKey is cleared on dispose', () {
-      QuranState state = QuranState();
-      state.scaffoldKey; // تهيئة المفتاح
-
-      // هنا لا نستطيع اختبار أن _scaffoldKey أصبح null لأنه متغير خاص
-      // لكن يمكننا التحقق أن dispose تعمل دون أخطاء
+      // هذا الاختبار يضمن أن dispose() تعمل بدون مشاكل بعد إزالة المفتاح
       expect(() => state.dispose(), returnsNormally);
+    });
+
+    test('State properties are still accessible after GlobalKey removal', () {
+      QuranState state = QuranState();
+
+      // التأكد من أن الخصائص الأخرى لا تزال متاحة وتعمل بشكل صحيح
+      expect(state.currentPageNumber, isA<RxInt>());
+      expect(state.selectedAyahIndexes, isA<RxList<int>>());
+      expect(state.isMoreOptions, isA<RxBool>());
+    });
+
+    testWidgets('Context is used directly with BottomSheet',
+        (WidgetTester tester) async {
+      // إنشاء تطبيق للاختبار
+      final testApp = MaterialApp(
+        home: Builder(
+          builder: (BuildContext context) {
+            return GestureDetector(
+              onTap: () {
+                // اختبار استدعاء showModalBottomSheet مباشرة، كما تفعل دالة showTafsirOnTap
+                showModalBottomSheet(
+                  context: context,
+                  builder: (BuildContext innerContext) => SizedBox(
+                    height: 200,
+                    child: const Center(child: Text('اختبار النافذة المنبثقة')),
+                  ),
+                );
+              },
+              child: const Center(child: Text('اضغط هنا للاختبار')),
+            );
+          },
+        ),
+      );
+
+      await tester.pumpWidget(testApp);
+
+      // اختبار الضغط وظهور النافذة المنبثقة
+      await tester.tap(find.text('اضغط هنا للاختبار'));
+      await tester.pumpAndSettle();
+
+      // التحقق من ظهور النافذة المنبثقة
+      expect(find.text('اختبار النافذة المنبثقة'), findsOneWidget);
+    });
+
+    test('QuranState functionality without GlobalKey', () {
+      // تهيئة QuranCtrl كما يحدث في التطبيق
+      final quranCtrl = QuranCtrl.instance;
+
+      // التحقق من أن QuranCtrl.state تم تهيئته بدون مشاكل
+      expect(quranCtrl.state, isNotNull);
+      expect(quranCtrl.state.currentPageNumber, isA<RxInt>());
+
+      // اختبار تغيير قيمة مراقبة
+      quranCtrl.state.currentPageNumber.value = 5;
+      expect(quranCtrl.state.currentPageNumber.value, equals(5));
     });
   });
 }

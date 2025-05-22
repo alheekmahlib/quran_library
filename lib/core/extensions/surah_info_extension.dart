@@ -28,11 +28,8 @@ extension SurahInfoExtension on void {
     final surah = quranCtrl.surahsList[surahNumber];
     final double height = MediaQuery.maybeOf(context)?.size.height ?? 600;
     final double width = MediaQuery.maybeOf(context)?.size.width ?? 400;
-    showModalBottomSheet(
-      backgroundColor: Colors.transparent,
-      context: QuranCtrl.instance.state.scaffoldKey.currentContext!,
-      isScrollControlled: true,
-      builder: (context) => Directionality(
+    Get.bottomSheet(
+      Directionality(
         textDirection: TextDirection.rtl,
         child: Container(
           height: height * .9,

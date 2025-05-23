@@ -81,13 +81,13 @@ extension ShowTafsirExtension on void {
       // إظهار رسالة عن طريق GetX في حالة عدم توفر سياق صالح
       // Show message via GetX if no valid context is available
       try {
-        Get.snackbar(
-          'خطأ',
-          'لا يمكن عرض التفسير، يرجى المحاولة مرة أخرى',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.white,
-          colorText: Colors.white,
-        );
+        // Get.snackbar(
+        //   'خطأ',
+        //   'لا يمكن عرض التفسير، يرجى المحاولة مرة أخرى',
+        //   snackPosition: SnackPosition.BOTTOM,
+        //   backgroundColor: Colors.white,
+        //   colorText: Colors.white,
+        // );
       } catch (_) {
         // تجاهل الأخطاء هنا لأننا في وضع معالجة الخطأ بالفعل
         // Ignore errors here as we're already handling errors
@@ -153,13 +153,13 @@ extension ShowTafsirExtension on void {
       log('خطأ في عرض نافذة التفسير المنبثقة: $e', name: 'TafsirUi');
       // محاولة إظهار رسالة للمستخدم
       try {
-        Get.snackbar(
-          'خطأ',
-          'حدث خطأ أثناء عرض التفسير، يرجى المحاولة مرة أخرى',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.red.withOpacity(0.7),
-          colorText: Colors.white,
-        );
+        // Get.snackbar(
+        //   'خطأ',
+        //   'حدث خطأ أثناء عرض التفسير، يرجى المحاولة مرة أخرى',
+        //   snackPosition: SnackPosition.BOTTOM,
+        //   backgroundColor: Colors.red.withValues(alpha: 0.7),
+        //   colorText: Colors.white,
+        // );
       } catch (_) {
         // تجاهل الأخطاء في وضع معالجة الخطأ
         // Ignore errors in error handling mode

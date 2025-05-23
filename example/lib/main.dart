@@ -1,10 +1,17 @@
 import 'dart:developer';
 
+// import 'package:device_preview/device_preview.dart';
 import 'package:flutter/material.dart';
 import 'package:quran_library/quran_library.dart';
 
 Future<void> main() async {
-  runApp(const MyApp());
+  runApp(
+    // DevicePreview(
+    //   builder: (context) => const MyApp(),
+    // ),
+    const MyApp(),
+  );
+
   await QuranLibrary().init();
   await QuranLibrary().initTafsir();
 }
@@ -21,6 +28,9 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      // useInheritedMediaQuery: true,
+      // locale: DevicePreview.locale(context),
+      // builder: DevicePreview.appBuilder,
       theme: ThemeData(
         primaryColor: Colors.blue,
         useMaterial3: false,

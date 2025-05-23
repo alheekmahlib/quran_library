@@ -28,8 +28,70 @@ extension SurahInfoExtension on void {
     final surah = quranCtrl.surahsList[surahNumber];
     final double height = MediaQuery.maybeOf(context)?.size.height ?? 600;
     final double width = MediaQuery.maybeOf(context)?.size.width ?? 400;
-    Get.bottomSheet(
-      Directionality(
+
+    // محاولة الحصول على سياق صالح لعرض النافذة المنبثقة
+    // Try to get a valid context for showing bottom sheet
+    BuildContext? validContext;
+
+    // التحقق من أن السياق المرسل صالح
+    // Check if passed context is valid
+    try {
+      if (context.mounted && context.findRenderObject() != null) {
+        validContext = context;
+        log('السياق المرسل صالح', name: 'TafsirUi');
+      } else {
+        log('السياق المرسل غير صالح، محاولة استخدام بديل', name: 'TafsirUi');
+      }
+    } catch (e) {
+      log('خطأ في التحقق من السياق المرسل: $e', name: 'TafsirUi');
+    }
+
+    // إذا كان السياق المرسل غير صالح، نحاول استخدام Get.context
+    // If passed context is invalid, try using Get.context
+    if (validContext == null) {
+      try {
+        if (Get.context != null) {
+          log('استخدام Get.context كخيار احتياطي', name: 'TafsirUi');
+          validContext = Get.context;
+        }
+      } catch (e) {
+        log('خطأ في استخدام Get.context: $e', name: 'TafsirUi');
+      }
+    }
+
+    // إذا لم نتمكن من الحصول على سياق صالح
+    // If we couldn't get a valid context
+    if (validContext == null) {
+      log('لا يوجد سياق صالح لعرض التفسير، يُرجى التأكد من تمرير سياق من شاشة نشطة',
+          name: 'TafsirUi');
+      // إظهار رسالة عن طريق GetX في حالة عدم توفر سياق صالح
+      // Show message via GetX if no valid context is available
+      try {
+        // Get.snackbar(
+        //   'خطأ',
+        //   'لا يمكن عرض التفسير، يرجى المحاولة مرة أخرى',
+        //   snackPosition: SnackPosition.BOTTOM,
+        //   backgroundColor: Colors.white,
+        //   colorText: Colors.white,
+        // );
+      } catch (_) {
+        // تجاهل الأخطاء هنا لأننا في وضع معالجة الخطأ بالفعل
+        // Ignore errors here as we're already handling errors
+      }
+      return;
+    }
+    showModalBottomSheet(
+      context: validContext,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      // تحسين شكل الشاشة المنبثقة
+      // Improve bottom sheet appearance
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(16),
+        ),
+      ),
+      builder: (BuildContext modalContext) => Directionality(
         textDirection: TextDirection.rtl,
         child: Container(
           height: height * .9,
@@ -168,7 +230,7 @@ extension SurahInfoExtension on void {
                                 ),
                               ),
                             ),
-                            context.verticalDivider(
+                            modalContext.verticalDivider(
                                 height: 30,
                                 color: isDark ? Colors.white : Colors.black),
                             Expanded(

@@ -120,7 +120,9 @@ class _QuranLinePage extends StatelessWidget {
       padding: EdgeInsets.symmetric(
           vertical: context.currentOrientation(
               MediaQuery.sizeOf(context).width * .16,
-              MediaQuery.sizeOf(context).height * .01)),
+              MediaQuery.sizeOf(context).height * .01),
+          horizontal: context.currentOrientation(
+              MediaQuery.sizeOf(context).width * .12, 0.0)),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -142,7 +144,7 @@ class _QuranLinePage extends StatelessWidget {
             surahNameStyle: surahNameStyle ??
                 SurahNameStyle(
                   surahNameWidth: 70,
-                  surahNameHeight: 37,
+                  surahNameHeight: 30,
                   surahNameColor: isDark ? Colors.white : Colors.black,
                 ),
             surahInfoStyle: surahInfoStyle ??
@@ -172,40 +174,43 @@ class _QuranLinePage extends StatelessWidget {
                   BasmalaStyle(
                     basmalaColor: isDark ? Colors.white : Colors.black,
                     basmalaWidth: 160.0,
-                    basmalaHeight: 40.0,
+                    basmalaHeight: 30.0,
                   ),
             ),
           ...quranCtrl.staticPages[pageIndex].lines.map((line) {
-            return GetBuilder<BookmarksCtrl>(
-              builder: (bookmarkCtrl) {
-                return Column(
-                  children: [
-                    SizedBox(
-                      width: deviceSize.width - 32,
-                      child: QuranLine(
-                        context,
-                        line,
-                        isDark: isDark,
-                        bookmarkCtrl.bookmarksAyahs,
-                        bookmarkCtrl.bookmarks,
-                        boxFit: BoxFit.scaleDown,
-                        onDefaultAyahLongPress: onAyahLongPress,
-                        bookmarksColor: bookmarksColor,
-                        textColor:
-                            textColor ?? (isDark ? Colors.white : Colors.black),
-                        bookmarkList: bookmarkList,
-                        pageIndex: pageIndex,
-                        ayahSelectedBackgroundColor:
-                            ayahSelectedBackgroundColor,
-                        onPagePress: onPagePress,
-                        ayahBookmarked: ayahBookmarked,
-                        anotherMenuChild: anotherMenuChild,
-                        anotherMenuChildOnTap: anotherMenuChildOnTap,
+            return FittedBox(
+              fit: BoxFit.fitWidth,
+              child: GetBuilder<BookmarksCtrl>(
+                builder: (bookmarkCtrl) {
+                  return Column(
+                    children: [
+                      SizedBox(
+                        width: deviceSize.width - 32,
+                        child: QuranLine(
+                          context,
+                          line,
+                          isDark: isDark,
+                          bookmarkCtrl.bookmarksAyahs,
+                          bookmarkCtrl.bookmarks,
+                          boxFit: BoxFit.scaleDown,
+                          onDefaultAyahLongPress: onAyahLongPress,
+                          bookmarksColor: bookmarksColor,
+                          textColor: textColor ??
+                              (isDark ? Colors.white : Colors.black),
+                          bookmarkList: bookmarkList,
+                          pageIndex: pageIndex,
+                          ayahSelectedBackgroundColor:
+                              ayahSelectedBackgroundColor,
+                          onPagePress: onPagePress,
+                          ayahBookmarked: ayahBookmarked,
+                          anotherMenuChild: anotherMenuChild,
+                          anotherMenuChildOnTap: anotherMenuChildOnTap,
+                        ),
                       ),
-                    ),
-                  ],
-                );
-              },
+                    ],
+                  );
+                },
+              ),
             );
           }),
         ],

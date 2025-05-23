@@ -1,3 +1,8 @@
+## 1.0.2
+
+* **Remove GlobalKey**
+* **Fix RenderFlex overflowed issue**
+
 ## 1.0.1
 
 * **Fix pub points.**

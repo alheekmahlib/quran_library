@@ -152,6 +152,7 @@ extension ShowTafsirExtension on void {
     } catch (e) {
       log('خطأ في عرض نافذة التفسير المنبثقة: $e', name: 'TafsirUi');
       // محاولة إظهار رسالة للمستخدم
+      //
       try {
         // Get.snackbar(
         //   'خطأ',

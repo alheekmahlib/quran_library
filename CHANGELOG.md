@@ -1,7 +1,7 @@
 ## 1.0.2
 
 * **Remove GlobalKey**
-* **Fix RenderFlex overflowed issue**
+* **Fix issue #14 RenderFlex overflowed**
 
 ## 1.0.1
 

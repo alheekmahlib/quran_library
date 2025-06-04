@@ -1,3 +1,8 @@
+## 1.0.3
+
+* **Fix the problem of showing the Tafsir**
+* **Fix PageView viewport Fraction**
+
 ## 1.0.2
 
 * **Remove GlobalKey**

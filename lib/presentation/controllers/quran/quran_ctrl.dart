@@ -307,7 +307,6 @@ class QuranCtrl extends GetxController {
     } else {
       _pageController = PageController(
         initialPage: page,
-        viewportFraction: 0.95,
       );
     }
   }

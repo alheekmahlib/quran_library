@@ -19,7 +19,6 @@ import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:quran_library/core/extensions/show_tafsir_extension_fixed.dart';
 
 import '/quran_library.dart';
 import 'data/models/tafsir/tafsir.dart';

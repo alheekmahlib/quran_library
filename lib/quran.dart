@@ -1,7 +1,7 @@
-import 'dart:convert';
-import 'dart:developer';
-import 'dart:io';
-import 'dart:math' as math;
+import 'dart:convert' show json;
+import 'dart:developer' show log;
+import 'dart:io' show Platform, File, Directory;
+import 'dart:math' as math show max;
 
 import 'package:another_xlider/another_xlider.dart';
 import 'package:another_xlider/models/handler.dart';

@@ -1,5 +1,5 @@
-import 'dart:developer';
-import 'dart:io';
+import 'dart:developer' show log;
+import 'dart:io' show File;
 
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';

@@ -22,7 +22,7 @@ class QuranRepository {
   Future<List<dynamic>> getQuran() async {
     String content = await rootBundle
         .loadString('packages/quran_library/assets/jsons/quran_hafs.json');
-    return jsonDecode(content);
+    return json.decode(content);
   }
 
   /// Fetches the list of Surahs from the data source.
@@ -40,7 +40,7 @@ class QuranRepository {
   Future<Map<String, dynamic>> getSurahs() async {
     String content = await rootBundle
         .loadString('packages/quran_library/assets/jsons/surahs_name.json');
-    return jsonDecode(content);
+    return json.decode(content);
   }
 
   /// Fetches a list of Quran fonts.
@@ -57,7 +57,7 @@ class QuranRepository {
   Future<List<dynamic>> getFontsQuran() async {
     String jsonString = await rootBundle
         .loadString('packages/quran_library/assets/jsons/quranV2.json');
-    Map<String, dynamic> jsonResponse = jsonDecode(jsonString);
+    Map<String, dynamic> jsonResponse = json.decode(jsonString);
     List<dynamic> surahsJson = jsonResponse['data']['surahs'];
     return surahsJson;
   }

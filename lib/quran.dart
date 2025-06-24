@@ -24,6 +24,8 @@ import 'package:square_percent_indicater/square_percent_indicater.dart';
 import '/quran_library.dart';
 import 'data/data_source/tafsir_database.dart';
 import 'data/models/tafsir/tafsir.dart';
+// Import the split_between_extension from src to avoid conflicts with the part directive
+import 'src/core/extensions/split_between_extension.dart';
 
 part 'core/extensions/convert_arabic_to_english_numbers_extension.dart';
 part 'core/extensions/convert_number_extension.dart';
@@ -33,7 +35,8 @@ part 'core/extensions/font_size_extension.dart';
 part 'core/extensions/fonts_download_widget.dart';
 part 'core/extensions/fonts_extension.dart';
 part 'core/extensions/sajda_extension.dart';
-part 'core/extensions/split_between_extension.dart';
+// Commented out to avoid extension conflict with the imported version from src
+// part 'core/extensions/split_between_extension.dart';
 part 'core/extensions/string_extensions.dart';
 part 'core/extensions/surah_info_extension.dart';
 part 'core/extensions/text_span_extension.dart';

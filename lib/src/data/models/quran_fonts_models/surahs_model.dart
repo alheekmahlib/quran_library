@@ -1,4 +1,4 @@
-part of '../../../quran.dart';
+import 'ayah_model.dart';
 
 /// This class is used for downloaded fonts.
 ///
@@ -24,13 +24,15 @@ class SurahFontsModel {
   final List<AyahFontsModel> ayahs;
 
   /// Represents a model for downloaded fonts of a Surah in the Quran.
-  SurahFontsModel(
-      {required this.surahNumber,
-      required this.arabicName,
-      required this.englishName,
-      required this.revelationType,
-      required this.ayahs});
+  SurahFontsModel({
+    required this.surahNumber,
+    required this.arabicName,
+    required this.englishName,
+    required this.revelationType,
+    required this.ayahs
+  });
 
+  /// Creates a SurahFontsModel from a JSON map.
   factory SurahFontsModel.fromJson(Map<String, dynamic> json) {
     var ayahsFromJson = json['ayahs'] as List;
     List<AyahFontsModel> ayahsList =

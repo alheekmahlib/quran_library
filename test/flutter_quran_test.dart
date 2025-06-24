@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:quran_library/quran_library.dart';
+import 'package:quran_library/src/data/models/styles_models/bookmark.dart';
 
 void main() {
   late QuranRepository quranRepository;
@@ -10,7 +11,7 @@ void main() {
 
   test('Saving and getting Last page', () async {
     const pageToSave = 19;
-    final res = await quranRepository.saveLastPage(pageToSave);
+    final res = quranRepository..saveLastPage(pageToSave);
     expect(true, res);
 
     final page = quranRepository.getLastPage();
@@ -22,7 +23,7 @@ void main() {
       BookmarkModel(id: 0, colorCode: 0xFF000000, name: "Black bookmark"),
       BookmarkModel(id: 1, colorCode: 0xFFFFFFFF, name: "White bookmark")
     ];
-    final res = await quranRepository.saveBookmarks(bookmarks);
+    final res = quranRepository..saveBookmarks(bookmarks);
     expect(true, res);
 
     final savedBookmarks = quranRepository.getBookmarks();

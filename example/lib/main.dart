@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:quran_library/quran_library.dart';
+import 'package:quran_library/quran.dart';
 
 void main() => runApp(
       GetMaterialApp(
@@ -29,7 +29,7 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return QuranLibraryScreen(
+    return const QuranLibraryScreen(
       isDark: false,
       showAyahBookmarkedIcon: true,
       ayahIconColor: Color(0xffcdad80),

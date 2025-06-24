@@ -72,9 +72,8 @@ class AyahLongClickDialog extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(horizontal: 8.0),
                     child: GestureDetector(
                       onTap: () {
-                        if (QuranCtrl.instance.state.fontsSelected2.value == 1 ||
-                            QuranCtrl.instance.state.fontsSelected2.value ==
-                                2 ||
+                        if (QuranCtrl.instance.state.fontsSelected.value == 1 ||
+                            QuranCtrl.instance.state.fontsSelected.value == 2 ||
                             QuranCtrl.instance.state.scaleFactor.value > 1.3) {
                           BookmarksCtrl.instance.saveBookmark(
                             surahName: QuranCtrl.instance
@@ -107,7 +106,7 @@ class AyahLongClickDialog extends StatelessWidget {
                   height: 30, color: const Color(0xffe8decb)),
               GestureDetector(
                 onTap: () {
-                  if (QuranCtrl.instance.state.fontsSelected2.value == 1) {
+                  if (QuranCtrl.instance.state.fontsSelected.value == 1) {
                     Clipboard.setData(ClipboardData(text: ayahFonts!.text));
                     _ToastUtils().showToast(context, "تم النسخ الى الحافظة");
                   } else {
@@ -131,8 +130,8 @@ class AyahLongClickDialog extends StatelessWidget {
                   height: 30, color: const Color(0xffe8decb)),
               GestureDetector(
                 onTap: () {
-                  if (QuranCtrl.instance.state.fontsSelected2.value == 1 ||
-                      QuranCtrl.instance.state.fontsSelected2.value == 2 ||
+                  if (QuranCtrl.instance.state.fontsSelected.value == 1 ||
+                      QuranCtrl.instance.state.fontsSelected.value == 2 ||
                       QuranCtrl.instance.state.scaleFactor.value > 1.3) {
                     TafsirCtrl.instance.showTafsirOnTap2(
                       context: context,

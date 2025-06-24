@@ -257,7 +257,7 @@ extension FontsExtension on QuranCtrl {
         GetStorage().write(
             _StorageConstants().fontsDownloadedList, state.fontsDownloadedList);
         state.isDownloadedV2Fonts.value = false;
-        state.fontsSelected2.value = 0;
+        state.fontsSelected.value = 0;
         state.fontsDownloadProgress.value = 0;
         Get.forceAppUpdate();
       } else {

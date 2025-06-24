@@ -36,7 +36,7 @@ class QuranLibrary {
         userBookmarks: userBookmarks, overwrite: overwriteBookmarks);
     QuranCtrl.instance.state.isBold.value =
         GetStorage().read(_StorageConstants().isBold) ?? 0;
-    quranCtrl.state.fontsSelected2.value =
+    quranCtrl.state.fontsSelected.value =
         GetStorage().read(_StorageConstants().fontsSelected) ?? 0;
     // quranCtrl.state.isTajweed.value =
     //     GetStorage().read(StorageConstants().isTajweed) ?? 0;
@@ -280,7 +280,7 @@ class QuranLibrary {
   /// لمعرفة الخط الذي تم تحديده، ما عليك سوى إستدعاء [currentFontsSelected]
   ///
   /// To find out which font has been selected, just call [currentFontsSelected]
-  int get currentFontsSelected => quranCtrl.state.fontsSelected2.value;
+  int get currentFontsSelected => quranCtrl.state.fontsSelected.value;
 
   /// يقوم بتعيين علامة مرجعية باستخدام [ayahId] و[page] و[bookmarkId] المحددة.
   ///

@@ -1,5 +1,3 @@
-part of '../../../quran.dart';
-
 /// A model class representing an Ayah (verse) for downloaded fonts in the Quran library.
 /// This class is used to store and manage data related to a specific Ayah when using quran fonts.
 class AyahFontsModel {
@@ -39,8 +37,8 @@ class AyahFontsModel {
   final int hizb;
 
   /// Represents the sajda (prostration) information for an Ayah (verse).
-  /// This can be of any type, hence the use of `dynamic`.
-  dynamic sajda;
+  /// This can be null if there is no sajda in this Ayah.
+  final dynamic sajda;
 
   /// A model class representing an Ayah (verse) for downloaded fonts.
   ///
@@ -65,6 +63,7 @@ class AyahFontsModel {
     required this.sajda,
   });
 
+  /// Creates an AyahFontsModel from a JSON map.
   factory AyahFontsModel.fromJson(Map<String, dynamic> json) {
     return AyahFontsModel(
       ayahUQNumber: json['number'],
@@ -79,7 +78,8 @@ class AyahFontsModel {
     );
   }
 
-  factory AyahFontsModel._empty() {
+  /// Creates an empty AyahFontsModel.
+  factory AyahFontsModel.empty() {
     return AyahFontsModel(
       ayahUQNumber: 0,
       ayahNumber: 0,
@@ -89,7 +89,7 @@ class AyahFontsModel {
       juz: 0,
       page: 0,
       hizb: 0,
-      sajda: dynamic,
+      sajda: false,
     );
   }
 }

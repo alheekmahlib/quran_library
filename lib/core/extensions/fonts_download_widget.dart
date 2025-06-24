@@ -90,14 +90,14 @@ extension FontsDownloadWidgetExtension on QuranCtrl {
                 child: Container(
                   height: 50,
                   margin: EdgeInsets.symmetric(vertical: 4.0),
-                  color: quranCtrl.state.fontsSelected2.value == i
+                  color: quranCtrl.state.fontsSelected.value == i
                       ? downloadFontsDialogStyle?.linearProgressColor != null
                           ? downloadFontsDialogStyle?.linearProgressColor!
                               .withValues(alpha: .05)
                           : Colors.blue.withValues(alpha: .05)
                       : null,
                   child: CheckboxListTile(
-                    value: (quranCtrl.state.fontsSelected2.value == i)
+                    value: (quranCtrl.state.fontsSelected.value == i)
                         ? true
                         : false,
                     activeColor:
@@ -142,7 +142,7 @@ extension FontsDownloadWidgetExtension on QuranCtrl {
                     onChanged: isFontsLocal! ||
                             quranCtrl.state.isDownloadedV2Fonts.value
                         ? (_) {
-                            quranCtrl.state.fontsSelected2.value = i;
+                            quranCtrl.state.fontsSelected.value = i;
                             GetStorage()
                                 .write(_StorageConstants().fontsSelected, i);
                             log('fontsSelected: $i');

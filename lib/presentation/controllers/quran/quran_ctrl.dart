@@ -56,7 +56,7 @@ class QuranCtrl extends GetxController {
     if (state.surahs.isEmpty) {
       List<dynamic> surahsJson = await _quranRepository.getFontsQuran();
       state.surahs =
-          surahsJson.map((s) => SurahFontsModel._fromJson(s)).toList();
+          surahsJson.map((s) => SurahFontsModel.fromJson(s)).toList();
 
       for (final surah in state.surahs) {
         state.allAyahs.addAll(surah.ayahs);

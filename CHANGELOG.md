@@ -1,4 +1,4 @@
-## 1.0.4
+## 1.2.6
 
 * **Fix the problem of showing the Tafsir**
 

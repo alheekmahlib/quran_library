@@ -48,6 +48,7 @@ class QuranLibraryScreen extends StatelessWidget {
     this.topTitleChild,
     this.useDefaultAppBar = true,
     this.withPageView = true,
+    this.optimizeScrolling = true,
     this.isFontsLocal = false,
     this.fontsName = '',
     this.ayahBookmarked = const [],
@@ -207,6 +208,11 @@ class QuranLibraryScreen extends StatelessWidget {
   /// [withPageView] Enable this variable if you want to display the Quran with PageView
   final bool withPageView;
 
+  /// متغير لتحسين أداء السكرول (اختياري) [optimizeScrolling]
+  ///
+  /// [optimizeScrolling] Optional variable to optimize scrolling performance
+  final bool optimizeScrolling;
+
   /// إذا كنت تريد استخدام خطوط موجودة مسبقًا في التطبيق، اجعل هذا المتغيير true [isFontsLocal]
   ///
   /// [isFontsLocal] If you want to use fonts that exists in the app, make this variable true
@@ -231,97 +237,132 @@ class QuranLibraryScreen extends StatelessWidget {
     //   QuranCtrl.instance.state.isTajweed.value = 1;
     //   GetStorage().write(StorageConstants().isTajweed, 1);
     // }
-    return GetBuilder<QuranCtrl>(
-      builder: (quranCtrl) => Directionality(
-        textDirection: TextDirection.rtl,
-        child: Scaffold(
-          backgroundColor: backgroundColor ??
-              (isDark ? const Color(0xff1E1E1E) : const Color(0xfffaf7f3)),
-          appBar: appBar ??
-              (useDefaultAppBar
-                  ? AppBar(
-                      backgroundColor: backgroundColor ??
-                          (isDark
-                              ? const Color(0xff1E1E1E)
-                              : const Color(0xfffaf7f3)),
-                      leading: Builder(
-                        builder: (context) => IconButton(
-                          icon: Icon(
-                            Icons.menu,
-                            color: isDark ? Colors.white : Colors.black,
-                          ),
-                          onPressed: () {
-                            Scaffold.of(context).openDrawer();
-                          },
-                        ),
-                      ),
-                      elevation: 0,
-                      actions: [
-                        FontsDownloadDialog(
-                          downloadFontsDialogStyle: downloadFontsDialogStyle ??
-                              DownloadFontsDialogStyle(
-                                title: 'الخطوط',
-                                titleColor:
-                                    isDark ? Colors.white : Colors.black,
-                                notes:
-                                    'لجعل مظهر المصحف مشابه لمصحف المدينة يمكنك تحميل خطوط المصحف',
-                                notesColor:
-                                    isDark ? Colors.white : Colors.black,
-                                linearProgressBackgroundColor:
-                                    Colors.blue.shade100,
-                                linearProgressColor: Colors.blue,
-                                downloadButtonBackgroundColor: Colors.blue,
-                                downloadingText: 'جارِ التحميل',
-                                backgroundColor: isDark
-                                    ? Color(0xff1E1E1E)
-                                    : const Color(0xFFF7EFE0),
+    return ScreenUtilInit(
+        designSize: const Size(392.72727272727275, 800.7272727272727),
+        minTextAdapt: true,
+        splitScreenMode: true,
+        // Use builder only if you need to use library outside ScreenUtilInit context
+        builder: (_, child) {
+          return GetBuilder<QuranCtrl>(
+            builder: (quranCtrl) => Directionality(
+              textDirection: TextDirection.rtl,
+              child: Scaffold(
+                backgroundColor: backgroundColor ??
+                    (isDark
+                        ? const Color(0xff1E1E1E)
+                        : const Color(0xfffaf7f3)),
+                appBar: appBar ??
+                    (useDefaultAppBar
+                        ? AppBar(
+                            backgroundColor: backgroundColor ??
+                                (isDark
+                                    ? const Color(0xff1E1E1E)
+                                    : const Color(0xfffaf7f3)),
+                            leading: Builder(
+                              builder: (context) => IconButton(
+                                icon: Icon(
+                                  Icons.menu,
+                                  color: isDark ? Colors.white : Colors.black,
+                                ),
+                                onPressed: () {
+                                  Scaffold.of(context).openDrawer();
+                                },
                               ),
-                          languageCode: languageCode,
-                          isFontsLocal: isFontsLocal,
-                          isDark: isDark,
+                            ),
+                            elevation: 0,
+                            actions: [
+                              FontsDownloadDialog(
+                                downloadFontsDialogStyle:
+                                    downloadFontsDialogStyle ??
+                                        DownloadFontsDialogStyle(
+                                          title: 'الخطوط',
+                                          titleColor: isDark
+                                              ? Colors.white
+                                              : Colors.black,
+                                          notes:
+                                              'لجعل مظهر المصحف مشابه لمصحف المدينة يمكنك تحميل خطوط المصحف',
+                                          notesColor: isDark
+                                              ? Colors.white
+                                              : Colors.black,
+                                          linearProgressBackgroundColor:
+                                              Colors.blue.shade100,
+                                          linearProgressColor: Colors.blue,
+                                          downloadButtonBackgroundColor:
+                                              Colors.blue,
+                                          downloadingText: 'جارِ التحميل',
+                                          backgroundColor: isDark
+                                              ? Color(0xff1E1E1E)
+                                              : const Color(0xFFF7EFE0),
+                                        ),
+                                languageCode: languageCode,
+                                isFontsLocal: isFontsLocal,
+                                isDark: isDark,
+                              )
+                            ],
+                          )
+                        : null),
+                drawer: appBar == null && useDefaultAppBar
+                    ? _DefaultDrawer(languageCode ?? 'ar', isDark)
+                    : null,
+                body: SafeArea(
+                  child: withPageView
+                      ? PageView.builder(
+                          itemCount: 604,
+                          controller: quranCtrl.pageController,
+                          padEnds: false,
+                          // شرح: اختيار نوع الفيزياء حسب إعداد التحسين
+                          // Explanation: Choose physics type based on optimization setting
+                          physics: optimizeScrolling
+                              ? const SmoothPageScrollPhysics()
+                              : const ClampingScrollPhysics(),
+                          // شرح: إضافة allowImplicitScrolling لتحسين الأداء
+                          // Explanation: Adding allowImplicitScrolling for better performance
+                          allowImplicitScrolling: true,
+                          // شرح: إضافة clipBehavior لتحسين الرسم
+                          // Explanation: Adding clipBehavior for better rendering
+                          clipBehavior: Clip.hardEdge,
+                          // شرح: تحسين معالجة تغيير الصفحة لتقليل التقطيع
+                          // Explanation: Optimized page change handling to reduce stuttering
+                          onPageChanged: (page) {
+                            // تشغيل العمليات في الخلفية لتجنب تجميد UI
+                            // Run operations in background to avoid UI freeze
+                            WidgetsBinding.instance
+                                .addPostFrameCallback((_) async {
+                              if (onPageChanged != null) {
+                                onPageChanged!(page);
+                              } else {
+                                quranCtrl.state.overlayEntry?.remove();
+                                quranCtrl.state.overlayEntry = null;
+                              }
+                              quranCtrl.saveLastPage(page + 1);
+                            });
+                          },
+                          pageSnapping: true,
+                          itemBuilder: (ctx, index) {
+                            // شرح: تحسين أداء itemBuilder لتقليل التقطيع
+                            // Explanation: Optimize itemBuilder performance to reduce stuttering
+                            return RepaintBoundary(
+                              key: ValueKey('quran_page_$index'),
+                              child: _pageViewBuild(
+                                context,
+                                index,
+                                quranCtrl,
+                                isFontsLocal!,
+                              ),
+                            );
+                          },
                         )
-                      ],
-                    )
-                  : null),
-          drawer: appBar == null && useDefaultAppBar
-              ? _DefaultDrawer(languageCode ?? 'ar', isDark)
-              : null,
-          body: SafeArea(
-            child: withPageView
-                ? PageView.builder(
-                    itemCount: 604,
-                    controller: quranCtrl.pageController,
-                    padEnds: false,
-                    physics: const BouncingScrollPhysics(),
-                    onPageChanged: (page) async {
-                      if (onPageChanged != null) {
-                        onPageChanged!(page);
-                      } else {
-                        quranCtrl.state.overlayEntry?.remove();
-                        quranCtrl.state.overlayEntry = null;
-                      }
-                      quranCtrl.saveLastPage(page + 1);
-                    },
-                    pageSnapping: true,
-                    itemBuilder: (ctx, index) {
-                      return _pageViewBuild(
-                        context,
-                        index,
-                        quranCtrl,
-                        isFontsLocal!,
-                      );
-                    },
-                  )
-                : _pageViewBuild(
-                    context,
-                    pageIndex,
-                    quranCtrl,
-                    isFontsLocal!,
-                  ),
-          ),
-        ),
-      ),
-    );
+                      : _pageViewBuild(
+                          context,
+                          pageIndex,
+                          quranCtrl,
+                          isFontsLocal!,
+                        ),
+                ),
+              ),
+            ),
+          );
+        });
   }
 
   Widget _pageViewBuild(

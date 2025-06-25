@@ -1,3 +1,7 @@
+## 1.0.4
+
+* **Fix the problem of showing the Tafsir**
+
 ## 1.0.3
 
 * **Fix the problem of showing the Tafsir**

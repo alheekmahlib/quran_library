@@ -27,10 +27,12 @@ class QuranCtrl extends GetxController {
   RxList<SurahNamesModel> surahsList = <SurahNamesModel>[].obs;
   // late QuranSearch quranSearch;
 
+  // شرح: تحسين PageController للحصول على أداء أفضل
+  // Explanation: Optimized PageController for better performance
   PageController _pageController = PageController(
-      // viewportFraction: Get.context!.currentOrientation(1 / 2, 1.0),
-      // keepPage: false,
-      );
+    keepPage: true,
+    viewportFraction: 1.0,
+  );
 
   QuranState state = QuranState();
 
@@ -301,12 +303,22 @@ class QuranCtrl extends GetxController {
     _quranRepository.saveLastPage(lastPage);
   }
 
+  // شرح: تحسين التنقل للحصول على سكرول أكثر سلاسة
+  // Explanation: Improved navigation for smoother scrolling
   void jumpToPage(int page) {
     if (_pageController.hasClients) {
-      _pageController.jumpToPage(page);
+      // استخدام animateToPage بدلاً من jumpToPage للحصول على انتقال أكثر سلاسة
+      // Use animateToPage instead of jumpToPage for smoother transition
+      _pageController.animateToPage(
+        page,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
     } else {
       _pageController = PageController(
         initialPage: page,
+        keepPage: true,
+        viewportFraction: 1.0,
       );
     }
   }

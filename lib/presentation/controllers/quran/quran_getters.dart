@@ -377,24 +377,70 @@ extension QuranGetters on QuranCtrl {
   ///
   /// Parameters:
   ///   pageIndex (int): The index of the page for which to retrieve the Ayah with a Sajda.
+  ///   isSurah (bool): Whether this is being called for a surah display (default: false).
+  ///   surahNumber (int): The surah number if isSurah is true.
   ///
   /// Returns:
   ///   `AyahModel?`: The AyahModel of the first Ayah on the given page that contains a Sajda, or null if no Sajda is found.
-  AyahModel? getAyahWithSajdaInPage(int pageIndex) =>
-      state.pages[pageIndex].firstWhereOrNull((ayah) {
-        if (ayah.sajda != false) {
-          if (ayah.sajda is Map) {
-            var sajdaDetails = ayah.sajda;
-            if (sajdaDetails['recommended'] == true ||
-                sajdaDetails['obligatory'] == true) {
-              return state.isSajda.value = true;
+  AyahModel? getAyahWithSajdaInPage(int pageIndex,
+      {bool? isSurah = false, int? surahNumber}) {
+    // شرح: إذا كان هذا عرض سورة، استخدم آيات السورة المحددة من SurahCtrl
+    // Explanation: If this is a surah display, use the specific surah ayahs from SurahCtrl
+    if (isSurah == true && surahNumber != null) {
+      final surahCtrl = SurahCtrl.instance;
+      if (surahCtrl.surahNumber == surahNumber &&
+          surahCtrl.surahAyahs.isNotEmpty) {
+        // شرح: البحث في آيات السورة الحالية بدلاً من state.pages
+        // Explanation: Search in current surah ayahs instead of state.pages
+        return surahCtrl.surahAyahs.firstWhereOrNull((ayah) {
+          if (ayah.sajda != false) {
+            if (ayah.sajda is Map) {
+              var sajdaDetails = ayah.sajda;
+              if (sajdaDetails['recommended'] == true ||
+                  sajdaDetails['obligatory'] == true) {
+                state.isSajda.value = true;
+                return true;
+              }
+            } else if (ayah.sajda == true) {
+              state.isSajda.value = true;
+              return true;
             }
-          } else {
-            return ayah.sajda == true;
           }
+          return false;
+        });
+      }
+      // شرح: إذا لم تكن السورة محملة أو لا تطابق الرقم المطلوب
+      // Explanation: If surah not loaded or doesn't match required number
+      state.isSajda.value = false;
+      return null;
+    }
+
+    // شرح: للعرض العادي للقرآن، تحقق من صحة pageIndex أولاً
+    // Explanation: For normal Quran display, check pageIndex validity first
+    if (pageIndex < 0 || pageIndex >= state.pages.length) {
+      state.isSajda.value = false;
+      return null;
+    }
+
+    // شرح: البحث في الصفحة العادية
+    // Explanation: Search in normal page
+    return state.pages[pageIndex].firstWhereOrNull((ayah) {
+      if (ayah.sajda != false) {
+        if (ayah.sajda is Map) {
+          var sajdaDetails = ayah.sajda;
+          if (sajdaDetails['recommended'] == true ||
+              sajdaDetails['obligatory'] == true) {
+            state.isSajda.value = true;
+            return true;
+          }
+        } else if (ayah.sajda == true) {
+          state.isSajda.value = true;
+          return true;
         }
-        return state.isSajda.value = false;
-      });
+      }
+      return false;
+    });
+  }
 
   /// Checks if the current Surah number matches the specified Surah number.
   ///

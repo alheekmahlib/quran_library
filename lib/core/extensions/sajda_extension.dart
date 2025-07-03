@@ -17,9 +17,11 @@ extension SajdaExtension on Widget {
   ///   - sajdaName: The name of the Sajda to be displayed.
   ///
   /// - Returns: A widget that displays the Sajda.
-  Widget showSajda(context, int pageIndex, String sajdaName) {
+  Widget showSajda(context, int pageIndex, String sajdaName,
+      {bool? isSurah = false, int? surahNumber}) {
     // log('checking sajda posision');
-    QuranCtrl.instance.getAyahWithSajdaInPage(pageIndex);
+    QuranCtrl.instance.getAyahWithSajdaInPage(pageIndex + 1,
+        isSurah: isSurah, surahNumber: surahNumber);
     return QuranCtrl.instance.state.isSajda.value
         ? Padding(
             padding: const EdgeInsets.symmetric(vertical: 8.0),

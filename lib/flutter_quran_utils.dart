@@ -47,15 +47,15 @@ class QuranLibrary {
 
     // Load data in parallel
     final futures = <Future<void>>[
+      QuranCtrl.instance.loadQuran(),
+      QuranCtrl.instance.loadFontsQuran(),
+      QuranCtrl.instance.fetchSurahs(),
       Future(() async {
         final lastPage = QuranRepository().getLastPage();
         if (lastPage != null) {
           // Handle last page if needed
         }
       }),
-      QuranCtrl.instance.loadFontsQuran(),
-      QuranCtrl.instance.loadQuran(),
-      QuranCtrl.instance.fetchSurahs(),
     ];
     await Future.wait<void>(futures);
 

@@ -36,13 +36,15 @@ TextSpan _span({
       ? true
       : false;
   if (text.isNotEmpty) {
-    final String partOne = pageSpacing
-        ? text.length < 3
-            ? ' ${text[0]}'
-            : ' ${text[0]} ${text[1]}'
-        : text.length < 3
-            ? text[0]
-            : '${text[0]}${text[1]}';
+    final String partOne =
+        text.length < 3 ? "${text[0]}\u200A" : "${text[0]}\u200A${text[1]}";
+    // final String partOne = pageSpacing
+    //     ? text.length < 3
+    //         ? ' ${text[0]}'
+    //         : ' ${text[0]} ${text[1]}'
+    //     : text.length < 3
+    //         ? text[0]
+    //         : '${text[0]}${text[1]}';
     // final String partOne = pageIndex == 250
     //     ? text.length < 3
     //         ? text[0]
@@ -68,7 +70,7 @@ TextSpan _span({
           fontFamily: isFontsLocal ? fontsName : 'p${(pageIndex + 2001)}',
           fontSize: fontSize,
           height: 2.1,
-          letterSpacing: pageSpacing ? -5 : 30,
+          // letterSpacing: pageSpacing ? -5 : 30,
           color: quranCtrl.state.fontsSelected.value == 1
               ? textColor ?? Colors.transparent
               : isDark
@@ -99,7 +101,7 @@ TextSpan _span({
           fontFamily: isFontsLocal ? fontsName : 'p${(pageIndex + 2001)}',
           fontSize: fontSize,
           height: 2.1,
-          letterSpacing: 0,
+          // letterSpacing: 0,
           // wordSpacing: wordSpacing + 10,
           color: quranCtrl.state.fontsSelected.value == 1
               ? textColor ?? Colors.transparent
@@ -133,7 +135,7 @@ TextSpan _span({
         fontFamily: isFontsLocal ? fontsName : 'p${(pageIndex + 2001)}',
         fontSize: fontSize,
         height: 2.1,
-        letterSpacing: 0,
+        // letterSpacing: 0,
         color: quranCtrl.state.fontsSelected.value == 1
             ? textColor ?? Colors.transparent
             : isDark
@@ -178,15 +180,15 @@ TextSpan _span({
               fontFamily: isFontsLocal ? fontsName : 'p${(pageIndex + 2001)}',
               fontSize: fontSize,
               height: 2.1,
-              letterSpacing: isFirstAyah &&
-                      (pageIndex == 1 ||
-                          pageIndex == 49 ||
-                          pageIndex == 476 ||
-                          pageIndex == 482 ||
-                          pageIndex == 495 ||
-                          pageIndex == 498)
-                  ? 20
-                  : null,
+              // letterSpacing: isFirstAyah &&
+              //     (pageIndex == 1 ||
+              //         pageIndex == 49 ||
+              //         pageIndex == 476 ||
+              //         pageIndex == 482 ||
+              //         pageIndex == 495 ||
+              //         pageIndex == 498)
+              // ? 20
+              // : null,
               color: ayahIconColor ?? (isDark ? Colors.white : Colors.black),
               backgroundColor: ayahBookmarked.contains(ayahUQNum)
                   ? bookmarksColor

@@ -9,16 +9,14 @@
 <img src="https://github.com/alheekmahlib/thegarlanded/blob/master/Photos/quran_package_banner.png?raw=true" width="500"/>
 </p>
 
-### :ملاحظة مهمة قبل البدء بالإستخدام: يرجى جعل 
-```dart
-  useMaterial3: false,
-```
-### لكي لا تسبب أي مشاكل في التشكيل 
+### :ملاحظة مهمة قبل البدء بالإستخدام: يرجى جعل:
 ### Important note before starting to use: Please make:
 ```dart
   useMaterial3: false,
 ```
+### لكي لا تسبب أي مشاكل في التشكيل 
 ### In order not to cause any formation problems
+
 #
 
 ## Getting started - بدء الإستخدام
@@ -28,7 +26,7 @@ In the `pubspec.yaml` of your flutter project, add the following dependency:
 ```yaml
 dependencies:
   ...
-  quran_library: ^1.2.6
+  quran_library: ^1.2.7
 ```
 
 
@@ -86,6 +84,39 @@ QuranLibraryScreen(
     downloadFontsDialogStyle: // DownloadFontsDialogStyle(),
     
     /// and more ................
+),
+```
+
+### Individual Surah Display - عرض السورة المنفصلة
+
+```dart
+/// For displaying a single surah with custom pagination
+/// لعرض سورة واحدة مع تقسيم مخصص للصفحات
+SurahDisplayScreen(
+    /// رقم السورة المراد عرضها [surahNumber]
+    /// [surahNumber] The surah number to display
+    surahNumber: 1, // For Al-Fatihah - للفاتحة
+    /// إذا تم توفيره فسيتم استدعاؤه عند تغيير صفحة السورة [onPageChanged]
+    /// [onPageChanged] if provided it will be called when a surah page changed
+    onPageChanged: (int pageIndex) => print("Surah page changed: $pageIndex"),
+    /// تمكين أو تعطيل النمط المظلم [isDark]
+    /// [isDark] enable or disable dark mode
+    isDark: false,
+    /// تغيير نمط البسملة [basmalaStyle]
+    /// [basmalaStyle] Change the style of Basmala
+    basmalaStyle: BasmalaStyle(
+        basmalaColor: Colors.black,
+        basmalaWidth: 160.0,
+        basmalaHeight: 30.0,
+    ),
+    /// تغيير نمط الشعار [bannerStyle]
+    /// [bannerStyle] Change the style of banner
+    bannerStyle: BannerStyle(
+        isImage: false,
+        bannerSvgHeight: 40.0,
+        bannerSvgWidth: 150.0,
+    ),
+    /// and more options...
 ),
 ```
 

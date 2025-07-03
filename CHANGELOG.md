@@ -1,3 +1,11 @@
+## 1.2.7
+
+* **Add SurahDisplayScreen widget for displaying individual surahs with custom pagination**
+* **Implement dynamic line height calculation for better text distribution**
+* **Fix Sajda (prostration) display in surah-only mode**
+* **Add enhanced pagination logic for first/last pages in surah display**
+* **Improve error handling for RangeError in page access**
+
 ## 1.2.6
 
 * **Fix the problem of showing the Tafsir**

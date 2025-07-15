@@ -1,49 +1,141 @@
-# سجل التغييرات (CHANGELOG)
+## 1.3.0
 
-## 1.3.0 - 2025-11-07
+*   **Restructure `lib` folder**
+*   **Improvements to `quran.dart`**
+*   **Improvements to GetX usage**
+*   **Improvements to Extensions**
+*   **Improve handling of assets and fonts**
+*   **Apply SOLID principles**
+*   **Add documentation comments**
+*   **Fix Ayah menu dialog**
 
-### التغييرات الكبرى
+## 1.2.7
 
-*   **إعادة هيكلة مجلد `lib`**: تم نقل جميع الملفات الداخلية إلى مجلد `src/` لتحسين تنظيم المشروع وفصل المسؤوليات. هذا التغيير يجعل بنية المكتبة أكثر وضوحًا واحترافية.
-*   **تحسينات على `quran.dart`**: تم تقليل حجم الملف الرئيسي `quran.dart` عن طريق نقل تعريفات `part` إلى مساراتها الجديدة داخل `src/`.
-*   **تحسينات على استخدام GetX**: تم مراجعة استخدام GetX لضمان البساطة وعدم التعقيد، مع التركيز على الاستفادة من ميزاته الأساسية بكفاءة.
-*   **تحسينات على الـ Extensions**: تم مراجعة وتحسين ملفات الـ `extensions` لزيادة قابليتها لإعادة الاستخدام ووضوحها.
-*   **تحسين التعامل مع الأصول والخطوط**: تم التأكد من أن التعامل مع الأصول (assets) والخطوط يتم بشكل فعال ومنظم.
-*   **تطبيق مبادئ SOLID**: تم تطبيق مبادئ SOLID حيثما أمكن لتحسين تصميم الكود وجعله أكثر قابلية للصيانة والتوسع.
-*   **إضافة تعليقات توضيحية (Documentation Comments)**: تم إضافة تعليقات توضيحية شاملة للكود لتحسين فهمه وتسهيل استخدامه من قبل المطورين الآخرين.
+* **Add SurahDisplayScreen widget for displaying individual surahs with custom pagination**
+* **Implement dynamic line height calculation for better text distribution**
+* **Fix Sajda (prostration) display in surah-only mode**
+* **Add enhanced pagination logic for first/last pages in surah display**
+* **Improve error handling for RangeError in page access**
 
-### دليل الترحيل (Migration Guide) من 1.2.7 إلى 1.3.0
+## 1.2.6
 
-نظرًا لإعادة هيكلة مجلد `lib`، قد تحتاج إلى تحديث بعض المسارات في مشروعك إذا كنت تستخدم المكتبة مباشرةً أو تعتمد على ملفات داخلية.
+* **Fix the problem of showing the Tafsir**
 
-1.  **تحديث مسارات الاستيراد (Import Paths)**:
-    إذا كنت تستورد أي ملفات من داخل مجلد `lib` مباشرةً (مثل `lib/core/utils/smooth_page_physics.dart` أو `lib/data/models/tafsir/tafsir.dart`)، فستحتاج إلى تحديث مسارات الاستيراد الخاصة بها لتشمل `src/`.
+## 1.0.3
 
-    **مثال (قبل)**:
-    ```dart
-    import 'package:quran_library/core/utils/smooth_page_physics.dart';
-    import 'package:quran_library/data/models/tafsir/tafsir.dart';
-    ```
+* **Fix the problem of showing the Tafsir**
+* **Fix PageView viewport Fraction**
 
-    **مثال (بعد)**:
-    ```dart
-    import 'package:quran_library/src/core/utils/smooth_page_physics.dart';
-    import 'package:quran_library/src/data/models/tafsir/tafsir.dart';
-    ```
+## 1.0.2
 
-2.  **تحديث ملف `pubspec.yaml`**: تأكد من تحديث إصدار المكتبة في ملف `pubspec.yaml` الخاص بك إلى `^1.3.0` أو أحدث.
+* **Remove GlobalKey**
+* **Fix issue #14 RenderFlex overflowed**
 
-    ```yaml
-    dependencies:
-      quran_library: ^1.3.0 # استخدم أحدث إصدار متاح
-    ```
+## 1.0.1
 
-3.  **تشغيل `flutter pub get`**: بعد تحديث `pubspec.yaml`، قم بتشغيل الأمر التالي في طرفية مشروعك:
+* **Fix pub points.**
 
-    ```bash
-    flutter pub get
-    ```
+## 1.0.0
 
-هذه التغييرات تهدف إلى تحسين بنية المكتبة وقابليتها للصيانة على المدى الطويل. نعتذر عن أي إزعاج قد تسببه هذه التغييرات.
+* **First major release.**
+* **Fix some UI.**
 
+## 0.1.11
 
+* **Merge AyahFontModel with AyahModel.**
+* **Fix the issue of opening Tafsir database multiple times.**
+* **Fix dark mode.**
+* **Fix some UI.**
+
+## 0.1.9
+
+* **BREAKING FIX: Fix the problem for MaterialApp.**
+* **fix showing tafsir.**
+
+## 0.1.8
+
+* **add showing tafsir.**
+* **fix README.**
+
+## 0.1.7
+
+* **fix Ayah 7 in Surah Ibrahim.**
+* **fix Ayah 12 in Surah Fatir.**
+
+## 0.1.6
+
+* **fix get surah art path.**
+
+## 0.1.5
+
+* **Add get surah art path.**
+
+## 0.1.4
+
+* **Add Tafsir & Translations.**
+* **Improve scroll.**
+* **Fix bookmark color.**
+* **Edit download method.**
+* **Add jumpToAyah.**
+* **Add docs.**
+* **General improvements in performance.**
+
+## 0.1.3
+
+* **Modify DownloadFontsDialogStyle.**
+
+## 0.1.2
+
+* **Improvements in the code.**
+
+## 0.1.1
+
+* **dispose QuranState, QuranCtrl, BookmarksCtrl.**
+* **some refactoring.**
+
+## 0.1.0
+
+* **Modifications and improvements in the code.**
+* **Organizing the imports.**
+* **Adding dark mode.**
+
+## 0.0.9
+
+* **fix all null check.**
+
+## 0.0.8
+
+* **Create fonts download widget.**
+
+## 0.0.7
+
+* **remove collection package.**
+* **remove intl package.**
+* **add getter to find out which font has been selected [currentFontsSelected].**
+
+## 0.0.6
+
+* **make collection package: ^1.18.0.**
+
+## 0.0.5
+
+* **Improve the search and make it also search for the page number and verse number.**
+* **Adding a function to search for the name and number of the surah.**
+* **You can now search by Arabic and English numbers.**
+
+## 0.0.4
+
+* **add a getter to Surah info dialog.**
+
+## 0.0.3
+
+* **add a widget next to the joz (optional).**
+
+## 0.0.2
+
+* **downgrade intl package to 0.19.0.**
+* **add a widget next to the surah name (optional).**
+
+## 0.0.1
+
+* **First and early version of the package.**

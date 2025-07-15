@@ -97,7 +97,7 @@ class BookmarksCtrl extends GetxController {
       }
     }
     _quranRepository.saveBookmarks(_flattenBookmarks());
-    update();
+    update(['bookmarks']);
   }
 
   /// Saves a new bookmark to the list of bookmarks.
@@ -136,7 +136,8 @@ class BookmarksCtrl extends GetxController {
     );
 
     _quranRepository.saveBookmarks(_flattenBookmarks());
-    update();
+    update(['bookmarks']);
+    QuranCtrl.instance.update();
   }
 
   /// Removes a bookmark from the list of bookmarks.
@@ -158,7 +159,8 @@ class BookmarksCtrl extends GetxController {
     });
 
     _quranRepository.saveBookmarks(_flattenBookmarks());
-    update();
+    update(['bookmarks']);
+    QuranCtrl.instance.update();
   }
 
   // تحويل العلامات إلى قائمة مسطحة لحفظها في التخزين

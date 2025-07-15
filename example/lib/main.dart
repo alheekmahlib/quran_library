@@ -1,4 +1,6 @@
 // import 'package:device_preview/device_preview.dart';
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:quran_library/quran_library.dart';
 
@@ -34,25 +36,26 @@ class _MyAppState extends State<MyApp> {
         useMaterial3: false,
       ),
       home: Scaffold(
-        body: SurahDisplayScreen(
-          surahNumber: 18,
-          isDark: false,
-          languageCode: 'ar',
-          useDefaultAppBar: false,
-        ),
-        // body: QuranLibraryScreen(
+        // body: SurahDisplayScreen(
+        //   surahNumber: 18,
         //   isDark: false,
-        //   showAyahBookmarkedIcon: true,
-        //   ayahIconColor: Color(0xffcdad80),
-        //   // backgroundColor: Colors.white,
-        //   // textColor: Colors.black,
-        //   isFontsLocal: false,
-        //   anotherMenuChild:
-        //       Icon(Icons.play_arrow_outlined, size: 28, color: Colors.grey),
-        //   anotherMenuChildOnTap: (ayah) {
-        //     log('Another Menu Child Tapped: ${ayah.ayahNumber}');
-        //   },
+        //   languageCode: 'ar',
+        //   useDefaultAppBar: false,
         // ),
+        body: QuranLibraryScreen(
+          isDark: false,
+          showAyahBookmarkedIcon: true,
+          ayahIconColor: Color(0xffcdad80),
+          // backgroundColor: Colors.white,
+          // textColor: Colors.black,
+          isFontsLocal: false,
+          optimizeScrolling: true,
+          anotherMenuChild:
+              Icon(Icons.play_arrow_outlined, size: 28, color: Colors.grey),
+          anotherMenuChildOnTap: (ayah) {
+            log('Another Menu Child Tapped: ${ayah.ayahNumber}');
+          },
+        ),
       ),
     );
   }

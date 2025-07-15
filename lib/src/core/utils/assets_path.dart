@@ -1,4 +1,4 @@
-part of '/exports.dart';
+part of '/quran.dart';
 
 class _AssetsPath {
   final surahSvgBanner = 'packages/quran_library/assets/svg/surah_banner.svg';

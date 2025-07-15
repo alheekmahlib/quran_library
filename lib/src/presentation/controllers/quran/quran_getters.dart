@@ -1,4 +1,4 @@
-part of '/exports.dart';
+part of '/quran.dart';
 
 /// Extensions on [QuranCtrl] that provides getters
 /// for [QuranCtrl]'s properties.

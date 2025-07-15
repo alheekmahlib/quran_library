@@ -1,4 +1,4 @@
-part of '/exports.dart';
+part of '/quran.dart';
 
 /// An extension on the `void` type to provide additional functionality
 /// related to Surah information.

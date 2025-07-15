@@ -1,4 +1,4 @@
-part of '/exports.dart';
+part of '/quran.dart';
 
 extension DownloadExtension on TafsirCtrl {
   Future<bool> downloadFile(String path, String url) async {

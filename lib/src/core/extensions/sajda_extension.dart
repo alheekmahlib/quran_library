@@ -1,4 +1,4 @@
-part of '/exports.dart';
+part of '/quran.dart';
 
 /// An extension on the [Widget] class to provide additional functionality
 /// related to Sajda (prostration) in the context of the Quran library.

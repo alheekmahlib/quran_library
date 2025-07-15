@@ -1,4 +1,4 @@
-part of '/exports.dart';
+part of '/quran.dart';
 
 /// A class that provides utility functions for interacting with the Quran library.
 ///

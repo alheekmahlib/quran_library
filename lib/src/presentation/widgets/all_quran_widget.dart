@@ -1,4 +1,4 @@
-part of '/exports.dart';
+part of '/quran.dart';
 
 /// ويدجت لعرض محتوى السورة المخصصة مع المعلومات المطلوبة
 /// Widget for displaying custom surah content with required information

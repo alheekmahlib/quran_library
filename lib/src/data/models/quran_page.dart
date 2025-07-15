@@ -1,4 +1,4 @@
-part of '/exports.dart';
+part of '/quran.dart';
 
 /// هذا الموديل يمثل صفحة من صفحات القرآن ويحتوي على قائمة من الآيات (AyahModel) والأسطر (LineModel)
 /// This model represents a Quran page and contains a list of ayahs (AyahModel) and lines (LineModel)

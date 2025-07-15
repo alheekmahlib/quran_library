@@ -1,4 +1,4 @@
-part of '/exports.dart';
+part of '/quran.dart';
 
 /// شرح: صفحة عرض القرآن بالخطوط المحسنة مع تحسينات الأداء
 /// Explanation: Optimized Quran page display with fonts and performance improvements

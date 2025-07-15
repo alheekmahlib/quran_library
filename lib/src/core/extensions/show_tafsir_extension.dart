@@ -1,4 +1,4 @@
-part of '/exports.dart';
+part of '/quran.dart';
 
 /// GlobalKey للوصول إلى سياق التطبيق الرئيسي كحل طوارئ
 /// GlobalKey to access main app context as emergency solution

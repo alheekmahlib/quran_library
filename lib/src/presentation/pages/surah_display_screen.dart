@@ -1,4 +1,4 @@
-part of '/exports.dart';
+part of '/quran.dart';
 
 /// شاشة لعرض سورة واحدة باستخدام SurahCtrl و _QuranLinePage
 /// Screen for displaying a single surah using SurahCtrl and _QuranLinePage

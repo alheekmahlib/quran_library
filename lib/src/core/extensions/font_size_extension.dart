@@ -1,4 +1,4 @@
-part of '/exports.dart';
+part of '/quran.dart';
 
 extension FontSizeExtension on Widget {
   Widget fontSizeDropDown(

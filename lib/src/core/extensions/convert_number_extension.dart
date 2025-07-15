@@ -1,4 +1,4 @@
-part of '/exports.dart';
+part of '/quran.dart';
 
 /// An extension on the `String` class to convert numbers in the string
 /// according to the specified language code.

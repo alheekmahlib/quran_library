@@ -1,4 +1,4 @@
-part of '/exports.dart';
+part of '/quran.dart';
 
 extension _TextSpanExtension on String {
   List<TextSpan> customTextSpans() {

@@ -1,4 +1,4 @@
-part of '/exports.dart';
+part of '/quran.dart';
 
 const _english = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
 const _arabic = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];

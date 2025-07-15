@@ -1,3 +1,3 @@
 library;
 
-export 'exports.dart';
+export 'quran.dart';

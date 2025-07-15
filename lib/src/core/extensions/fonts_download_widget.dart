@@ -1,4 +1,4 @@
-part of '/exports.dart';
+part of '/quran.dart';
 
 /// Extension on `QuranCtrl` to provide additional functionality related to fonts download widget.
 ///

@@ -1,4 +1,4 @@
-part of '/exports.dart';
+part of '/quran.dart';
 
 class _QuranConstants {
   static const List<String> quranHizbs = [

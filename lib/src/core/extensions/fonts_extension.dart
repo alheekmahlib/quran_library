@@ -1,4 +1,4 @@
-part of '/exports.dart';
+part of '/quran.dart';
 
 /// Extension to handle font-related operations for the QuranCtrl class.
 extension FontsExtension on QuranCtrl {

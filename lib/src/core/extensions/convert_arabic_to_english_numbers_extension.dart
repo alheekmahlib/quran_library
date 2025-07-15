@@ -1,4 +1,4 @@
-part of '/exports.dart';
+part of '/quran.dart';
 
 /// Extension to convert Arabic numerals to English numerals and vice versa.
 ///

@@ -1,4 +1,4 @@
-part of '/exports.dart';
+part of '/quran.dart';
 // ملاحظة هامة: يجب تضمين هذا الودجت ضمن Scaffold عند الاستدعاء حتى لا تظهر مشكلة "No Scaffold widget found"
 // Important: This widget must be shown inside a Scaffold to avoid "No Scaffold widget found" error.
 

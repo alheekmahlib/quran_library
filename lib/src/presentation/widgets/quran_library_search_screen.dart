@@ -1,4 +1,4 @@
-part of '/exports.dart';
+part of '/quran.dart';
 
 /// A widget that displays the Quran library search screen.
 ///

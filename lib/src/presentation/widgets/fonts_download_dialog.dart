@@ -1,4 +1,4 @@
-part of '/exports.dart';
+part of '/quran.dart';
 
 class FontsDownloadDialog extends StatelessWidget {
   final DownloadFontsDialogStyle? downloadFontsDialogStyle;

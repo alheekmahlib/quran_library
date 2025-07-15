@@ -1,4 +1,4 @@
-part of '/exports.dart';
+part of '/quran.dart';
 
 TextSpan _span({
   required String text,

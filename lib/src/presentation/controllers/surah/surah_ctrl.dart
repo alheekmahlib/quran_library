@@ -1,4 +1,4 @@
-part of '/exports.dart';
+part of '/quran.dart';
 
 /// كنترولر مخصص لعرض سورة واحدة بنفس تصميم QuranCtrl
 /// Dedicated controller for displaying a single surah with the same design as QuranCtrl

@@ -1,4 +1,4 @@
-part of '/exports.dart';
+part of '/quran.dart';
 
 /// A dialog displayed on long click of an Ayah to provide options like bookmarking and copying text.
 ///

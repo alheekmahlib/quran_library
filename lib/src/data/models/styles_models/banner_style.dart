@@ -1,4 +1,4 @@
-part of '/exports.dart';
+part of '/quran.dart';
 
 class BannerStyle {
   ///[bannerImagePath] if you wanna add banner as image you can provide the path

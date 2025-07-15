@@ -1,4 +1,4 @@
-part of '/exports.dart';
+part of '/quran.dart';
 
 /// Extension on [BuildContext] to provide additional utility methods.
 extension ContextExtensions on BuildContext {

@@ -1,4 +1,4 @@
-part of '/exports.dart';
+part of '/quran.dart';
 // ayah_model.dart
 // دمج خصائص موديلات الآية من ملفات json المختلفة في موديل واحد موحد
 // Unified model for Ayah from both original and downloaded fonts JSON files

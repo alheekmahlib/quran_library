@@ -1,4 +1,4 @@
-part of '/exports.dart';
+part of '/quran.dart';
 
 class TafsirCtrl extends GetxController {
   static TafsirCtrl get instance => GetInstance().putOrFind(() => TafsirCtrl());

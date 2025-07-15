@@ -1,4 +1,4 @@
-part of '/exports.dart';
+part of '/quran.dart';
 
 /// A model class that represents a single bookmark in the Quran.
 ///

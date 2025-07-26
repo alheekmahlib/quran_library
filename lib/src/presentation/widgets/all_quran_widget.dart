@@ -184,7 +184,7 @@ class AllQuranWidget extends StatelessWidget {
               Align(
                 alignment: Alignment.bottomCenter,
                 child: Text(
-                  '${pageIndex + 2}'.convertNumbersAccordingToLang(
+                  '${pageIndex + 1}'.convertNumbersAccordingToLang(
                       languageCode: languageCode),
                   style: _getPageNumberStyle(context),
                 ),
@@ -221,7 +221,7 @@ class AllQuranWidget extends StatelessWidget {
               Align(
                 alignment: Alignment.bottomCenter,
                 child: Text(
-                  '${pageIndex + 2}'.convertNumbersAccordingToLang(
+                  '${pageIndex + 1}'.convertNumbersAccordingToLang(
                       languageCode: languageCode),
                   style: _getPageNumberStyle(context),
                 ),

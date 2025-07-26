@@ -52,9 +52,9 @@ class AyahLongClickDialog extends StatelessWidget {
     // حساب العرض الفعلي للحوار بناءً على المحتوى / Calculate actual dialog width based on content
     int itemsCount =
         3; // عدد الأيقونات الأساسية (3 ألوان + نسخ + تفسير) / Basic icons count
-    if (anotherMenuChild != null)
+    if (anotherMenuChild != null) {
       itemsCount += 1; // إضافة عنصر إضافي / Additional item
-
+    }
     double dialogWidth = (itemsCount * 40) +
         (itemsCount * 16) +
         40; // عرض كل أيقونة + التباعد + الهوامش / Icon width + spacing + margins

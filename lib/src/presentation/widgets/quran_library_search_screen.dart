@@ -51,102 +51,162 @@ class QuranLibrarySearchScreen extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.max,
               children: [
-                GetBuilder<QuranCtrl>(
-                  builder: (quranCtrl) => TextField(
-                    // onSubmitted: (txt) async {
-                    //   if (txt.isNotEmpty) {
-                    //     final searchResult =
-                    //         await quranCtrl.quranSearch.search(txt);
-                    //     quranCtrl.ayahsList.value = [...searchResult];
-                    //   } else {
-                    //     quranCtrl.ayahsList.value = [];
-                    //   }
-                    // },
-
-                    onChanged: (txt) {
-                      final searchResult = QuranLibrary().search(txt);
-                      quranCtrl.ayahsList.value = [...searchResult];
-                    },
-                    style: TextStyle(
-                      color: isDark ? Colors.white : Colors.black,
-                    ),
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(
-                        borderSide: BorderSide(
-                          color: isDark ? Colors.white : Colors.black,
-                        ),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                          color: isDark ? Colors.white : Colors.black,
-                        ),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                          color: isDark ? Colors.white : Colors.black,
-                        ),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      hintText: 'بحث',
-                      hintStyle: TextStyle(
-                          color: isDark ? Colors.white : Colors.black),
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: GetX<QuranCtrl>(
-                    builder: (quranCtrl) => ListView(
-                      children: quranCtrl.ayahsList
-                          .map(
-                            (ayah) => Column(
-                              children: [
-                                ListTile(
-                                  title: Text(
-                                    ayah.text.replaceAll('\n', ' '),
-                                    style: QuranLibrary().hafsStyle.copyWith(
-                                          color: isDark
-                                              ? Colors.white
-                                              : Colors.black,
-                                        ),
-                                  ),
-                                  subtitle: Text(
-                                    ayah.arabicName!,
-                                    style: TextStyle(
-                                      color:
-                                          isDark ? Colors.white : Colors.black,
-                                    ),
-                                  ),
-                                  contentPadding: const EdgeInsets.symmetric(
-                                      horizontal: 16),
-                                  onTap: () async {
-                                    Navigator.pop(context);
-                                    quranCtrl.ayahsList.value = [];
-                                    quranCtrl.isDownloadFonts
-                                        ? await quranCtrl
-                                            .prepareFonts(ayah.page)
-                                        : null;
-                                    QuranLibrary().jumpToAyah(
-                                        ayah.page, ayah.ayahUQNumber);
-                                  },
-                                ),
-                                const Divider(
-                                  color: Colors.grey,
-                                  thickness: 1,
-                                ),
-                              ],
-                            ),
-                          )
-                          .toList(),
-                    ),
-                  ),
-                ),
+                textFieldBuild(),
+                _surahsBuild(context),
+                ayahsBuild(context),
               ],
             ),
           ),
         ),
       ),
+    );
+  }
+
+  GetBuilder<QuranCtrl> textFieldBuild() {
+    return GetBuilder<QuranCtrl>(
+      builder: (quranCtrl) => TextField(
+        // onSubmitted: (txt) async {
+        //   if (txt.isNotEmpty) {
+        //     final searchResult =
+        //         await quranCtrl.quranSearch.search(txt);
+        //     quranCtrl.ayahsList.value = [...searchResult];
+        //   } else {
+        //     quranCtrl.ayahsList.value = [];
+        //   }
+        // },
+
+        onChanged: (txt) {
+          final searchResult = QuranLibrary().search(txt);
+          quranCtrl.ayahsList.value = [...searchResult];
+          final surahResult = QuranLibrary().surahSearch(txt);
+          quranCtrl.surahList.value = [...surahResult];
+        },
+        style: TextStyle(
+          color: isDark ? Colors.white : Colors.black,
+        ),
+        decoration: InputDecoration(
+          border: OutlineInputBorder(
+            borderSide: BorderSide(
+              color: isDark ? Colors.white : Colors.black,
+            ),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(
+              color: isDark ? Colors.white : Colors.black,
+            ),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(
+              color: isDark ? Colors.white : Colors.black,
+            ),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          hintText: 'بحث',
+          hintStyle: TextStyle(color: isDark ? Colors.white : Colors.black),
+        ),
+      ),
+    );
+  }
+
+  Flexible ayahsBuild(BuildContext context) {
+    return Flexible(
+      flex: 9,
+      child: GetX<QuranCtrl>(
+        builder: (quranCtrl) => ListView(
+          children: quranCtrl.ayahsList
+              .map(
+                (ayah) => Column(
+                  children: [
+                    ListTile(
+                      title: Text(
+                        ayah.text.replaceAll('\n', ' '),
+                        style: QuranLibrary().hafsStyle.copyWith(
+                              color: isDark ? Colors.white : Colors.black,
+                            ),
+                      ),
+                      subtitle: Text(
+                        ayah.arabicName!,
+                        style: TextStyle(
+                          color: isDark ? Colors.white : Colors.black,
+                        ),
+                      ),
+                      contentPadding:
+                          const EdgeInsets.symmetric(horizontal: 16),
+                      onTap: () async {
+                        Navigator.pop(context);
+                        quranCtrl.ayahsList.value = [];
+                        quranCtrl.isDownloadFonts
+                            ? await quranCtrl.prepareFonts(ayah.page)
+                            : null;
+                        QuranLibrary().jumpToAyah(ayah.page, ayah.ayahUQNumber);
+                      },
+                    ),
+                    const Divider(
+                      color: Colors.grey,
+                      thickness: 1,
+                    ),
+                  ],
+                ),
+              )
+              .toList(),
+        ),
+      ),
+    );
+  }
+
+  Widget _surahsBuild(BuildContext context) {
+    final quranCtrl = QuranCtrl.instance;
+    return Obx(
+      () {
+        if (quranCtrl.surahList.isNotEmpty) {
+          return Expanded(
+            flex: 1,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: ListView.builder(
+                itemCount: quranCtrl.surahList.length,
+                scrollDirection: Axis.horizontal,
+                itemBuilder: (context, index) {
+                  SurahModel search = quranCtrl.surahList[index];
+                  return Directionality(
+                    textDirection: TextDirection.rtl,
+                    child: GestureDetector(
+                      onTap: () async {
+                        Navigator.pop(context);
+                        quranCtrl.surahList.value = [];
+                        quranCtrl.isDownloadFonts
+                            ? await quranCtrl.prepareFonts(search.startPage!)
+                            : null;
+                        QuranLibrary().jumpToSurah(search.surahNumber);
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                        margin: const EdgeInsets.symmetric(
+                            horizontal: 4.0, vertical: 10.0),
+                        decoration: BoxDecoration(
+                            color: Colors.blue,
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(8))),
+                        child: SvgPicture.asset(
+                          'packages/quran_library/assets/svg/surah_name/00${search.surahNumber}.svg',
+                          width: 200,
+                          height: 40,
+                          colorFilter:
+                              ColorFilter.mode(Colors.black, BlendMode.srcIn),
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          );
+        } else {
+          return SizedBox.shrink();
+        }
+      },
     );
   }
 }

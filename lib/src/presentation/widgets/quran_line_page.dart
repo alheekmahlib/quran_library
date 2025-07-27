@@ -99,11 +99,10 @@ class _QuranLinePage extends StatelessWidget {
           juzName: juzName,
           sajdaName: sajdaName,
           topTitleChild: topTitleChild,
-          child: Platform.isAndroid || Platform.isIOS
-              ? isLandscape
-                  ? SingleChildScrollView(
-                      child: _pageBuild(context, constraints))
-                  : _pageBuild(context, constraints)
+          child: isLandscape &&
+                  (Responsive.isMobile(context) ||
+                      Responsive.isMobileLarge(context))
+              ? SingleChildScrollView(child: _pageBuild(context, constraints))
               : _pageBuild(context, constraints),
         );
       },

@@ -1,3 +1,9 @@
+## 1.3.2
+
+*   **Fix Surah serach method**
+*   **Add Surah serach result**
+*   **View two pages instead of one page, for the desktop**
+
 ## 1.3.1
 
 *   **Fix page number**

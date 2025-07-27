@@ -99,10 +99,10 @@ class QuranLibrary {
   ///
   /// [search] Searches the Qur'an for the names of the surahs.
   /// Returns a list of all surahs whose name, number, or page number matches the given text.
-  List<AyahModel> surahSearch(String text) {
+  List<SurahModel> surahSearch(String text) {
     final cacheKey = 'surah_search_$text';
     if (_cache.containsKey(cacheKey)) {
-      return _cache[cacheKey] as List<AyahModel>;
+      return _cache[cacheKey] as List<SurahModel>;
     }
     final results = quranCtrl.searchSurah(text);
     _cache[cacheKey] = results;

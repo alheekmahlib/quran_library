@@ -308,7 +308,7 @@ class QuranLibraryScreen extends StatelessWidget {
                   child: withPageView
                       ? PageView.builder(
                           itemCount: 604,
-                          controller: quranCtrl.pageController,
+                          controller: quranCtrl.getPageController(context),
                           padEnds: false,
                           // شرح: اختيار نوع الفيزياء حسب إعداد التحسين
                           // Explanation: Choose physics type based on optimization setting

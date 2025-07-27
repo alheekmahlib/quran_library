@@ -66,18 +66,30 @@ class AllQuranWidget extends StatelessWidget {
 
       // شرح: التخطيط الأفقي (Landscape)
       // Explanation: Landscape layout
-      SingleChildScrollView(
-        child: Column(
-          children: [
-            _buildTopSection(context),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 40.0),
-              child: child,
+      Responsive.isMobile(context) ||
+              Responsive.isMobileLarge(context) ||
+              Responsive.isDesktop(context)
+          ? Column(
+              children: [
+                _buildTopSection(context),
+                Flexible(
+                  child: child,
+                ),
+                _buildBottomSection(context),
+              ],
+            )
+          : SingleChildScrollView(
+              child: Column(
+                children: [
+                  _buildTopSection(context),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 40.0),
+                    child: child,
+                  ),
+                  _buildBottomSection(context),
+                ],
+              ),
             ),
-            _buildBottomSection(context),
-          ],
-        ),
-      ),
     );
   }
 

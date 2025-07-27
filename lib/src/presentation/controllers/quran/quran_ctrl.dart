@@ -17,6 +17,7 @@ class QuranCtrl extends GetxController {
   int lastPage = 1;
   int? initialPage;
   RxList<AyahModel> ayahsList = <AyahModel>[].obs;
+  RxList<SurahModel> surahList = <SurahModel>[].obs;
 
   /// List of selected ayahs by their unique number
   final selectedAyahsByUnequeNumber = <int>[].obs;
@@ -266,35 +267,45 @@ class QuranCtrl extends GetxController {
         .replaceAll(RegExp(r'\s+'), ' '); // إزالة الفراغات الزائدة
   }
 
-  List<AyahModel> searchSurah(String searchText) {
+  List<SurahModel> searchSurah(String searchText) {
     if (searchText.isEmpty) {
       return [];
     } else {
       // تحويل الأرقام العربية إلى إنجليزية في النص المدخل
+      // Convert Arabic numbers to English in the input text
       final convertedSearchText =
           searchText.convertArabicNumbersToEnglish(searchText);
-      final normalizedSearchText =
-          normalizeText(convertedSearchText.toLowerCase().trim());
 
-      final filteredAyahs = ayahs.where((aya) {
+      // إزالة التشكيل وتطبيع النص المدخل
+      // Remove diacritics and normalize the input text
+      final cleanedSearchText = removeDiacriticsQuran(convertedSearchText);
+      final normalizedSearchText =
+          normalizeText(cleanedSearchText.toLowerCase().trim());
+
+      final filteredSurahs = surahs.where((surah) {
+        // إزالة التشكيل وتطبيع أسماء السور
+        // Remove diacritics and normalize surah names
+        final cleanedSurahNameAr = removeDiacriticsQuran(surah.arabicName);
         final normalizedSurahNameAr =
-            normalizeText(aya.arabicName!.toLowerCase());
+            normalizeText(cleanedSurahNameAr.toLowerCase());
         final normalizedSurahNameEn =
-            normalizeText(aya.englishName!.toLowerCase());
+            normalizeText(surah.englishName.toLowerCase());
 
         // استخدام contains بدلاً من == للسماح بمطابقة جزئية
+        // Use contains instead of == to allow partial matching
         final matchesSurahName =
             normalizedSurahNameAr.contains(normalizedSearchText) ||
                 normalizedSurahNameEn.contains(normalizedSearchText);
 
         // تحويل رقم السورة إلى نص مع تحويل الأرقام العربية
-        final surahNumberText = aya.surahNumber.toString();
+        // Convert surah number to text with Arabic number conversion
+        final surahNumberText = surah.surahNumber.toString();
         final matchesSurahNumber = surahNumberText == normalizedSearchText;
 
         return matchesSurahName || matchesSurahNumber;
       }).toList();
 
-      return filteredAyahs;
+      return filteredSurahs;
     }
   }
 
@@ -323,7 +334,12 @@ class QuranCtrl extends GetxController {
     }
   }
 
-  PageController get pageController => _pageController;
+  PageController getPageController(BuildContext context) =>
+      _pageController = PageController(
+        keepPage: true,
+        viewportFraction:
+            (Responsive.isDesktop(context) && context.isLandscape) ? 1 / 2 : 1,
+      );
 
   /// Toggle the selection of an ayah by its unique number
   void toggleAyahSelection(int ayahUnequeNumber) {
@@ -358,6 +374,69 @@ class QuranCtrl extends GetxController {
     }
 
     update();
+  }
+
+  String removeDiacriticsQuran(String input) {
+    final diacriticsMap = {
+      'أ': 'ا',
+      'إ': 'ا',
+      'آ': 'ا',
+      'إٔ': 'ا',
+      'إٕ': 'ا',
+      'إٓ': 'ا',
+      'أَ': 'ا',
+      'إَ': 'ا',
+      'آَ': 'ا',
+      'إُ': 'ا',
+      'إٌ': 'ا',
+      'إً': 'ا',
+      'ة': 'ه',
+      'ً': '',
+      'ٌ': '',
+      'ٍ': '',
+      'َ': '',
+      'ُ': '',
+      'ِ': '',
+      'ّ': '',
+      'ْ': '',
+      'ـ': '',
+      'ٰ': '',
+      'ٖ': '',
+      'ٗ': '',
+      'ٕ': '',
+      'ٓ': '',
+      'ۖ': '',
+      'ۗ': '',
+      'ۘ': '',
+      'ۙ': '',
+      'ۚ': '',
+      'ۛ': '',
+      'ۜ': '',
+      '۝': '',
+      '۞': '',
+      '۟': '',
+      '۠': '',
+      'ۡ': '',
+      'ۢ': '',
+    };
+
+    StringBuffer buffer = StringBuffer();
+    Map<int, int> indexMapping =
+        {}; // Ensure indexMapping is declared if not already globally declared
+    for (int i = 0; i < input.length; i++) {
+      String char = input[i];
+      String? mappedChar = diacriticsMap[char];
+      if (mappedChar != null) {
+        buffer.write(mappedChar);
+        if (mappedChar.isNotEmpty) {
+          indexMapping[buffer.length - 1] = i;
+        }
+      } else {
+        buffer.write(char);
+        indexMapping[buffer.length - 1] = i;
+      }
+    }
+    return buffer.toString();
   }
 
   // List<TajweedRuleModel> getTajweedRules({required String languageCode}) {

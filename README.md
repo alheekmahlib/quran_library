@@ -26,7 +26,7 @@ In the `pubspec.yaml` of your flutter project, add the following dependency:
 ```yaml
 dependencies:
   ...
-  quran_library: ^1.3.1
+  quran_library: ^1.3.2
 ```
 
 
@@ -197,6 +197,17 @@ TextField(
 ## To download Quran fonts, you have two options:
 * ### As for using the default dialog, you can modify the style in it.
 * ### Or you can create your own design using all the functions for downloading fonts.
+
+## تحتاج MACOS إلى طلب استحقاق محدد للوصول إلى الشبكة.
+### للقيام بذلك: افتح MacOS/Runner/DebugProfile.Entitlements وأضف زوج القيمة والمفتاح التالي.
+## macOS needs you to request a specific entitlement in order to access the network. 
+### To do that: open macos/Runner/DebugProfile.entitlements and add the following key-value pair.
+
+```xml
+<key>com.apple.security.network.client</key>
+<true/>
+```
+
 ```dart
 ///
 /// to get the fonts download dialog just call [getFontsDownloadDialog]

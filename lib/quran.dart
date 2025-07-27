@@ -1,6 +1,6 @@
 import 'dart:convert' show json, jsonDecode, jsonEncode;
 import 'dart:developer' show log;
-import 'dart:io' show File, Platform, Directory;
+import 'dart:io' show File, Platform, Directory, InternetAddress;
 import 'dart:math' as math show max;
 
 import 'package:another_xlider/another_xlider.dart';
@@ -21,6 +21,7 @@ import 'package:http/http.dart' as http;
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 
+import 'src/core/helpers/responsive.dart';
 import 'src/core/utils/smooth_page_physics.dart';
 import 'src/data/models/tafsir/tafsir.dart';
 

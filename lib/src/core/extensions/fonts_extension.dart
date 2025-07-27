@@ -2,6 +2,169 @@ part of '/quran.dart';
 
 /// Extension to handle font-related operations for the QuranCtrl class.
 extension FontsExtension on QuranCtrl {
+  /// يتحقق من إمكانية الوصول للإنترنت وإعدادات الشبكة
+  /// Checks internet accessibility and network settings
+  Future<bool> _checkNetworkConnectivity() async {
+    try {
+      // اختبار اتصال بسيط مع Google DNS
+      // Simple connectivity test with Google DNS
+      final result = await InternetAddress.lookup('google.com')
+          .timeout(const Duration(seconds: 5));
+      return result.isNotEmpty && result[0].rawAddress.isNotEmpty;
+    } catch (e) {
+      log('Network connectivity check failed: $e', name: 'FontsDownload');
+      return false;
+    }
+  }
+
+  /// يقترح حلول لمشاكل الشبكة في macOS
+  /// Suggests solutions for network issues on macOS
+  void _showMacOSNetworkTroubleshooting() {
+    Get.dialog(
+      AlertDialog(
+        title: const Text('مشكلة في الاتصال - Connection Issue'),
+        content: const Text(
+          'يبدو أن هناك مشكلة في الاتصال بالإنترنت أو إعدادات الشبكة في macOS.\n\n'
+          'الحلول المقترحة:\n'
+          '1. تحقق من اتصال الإنترنت\n'
+          '2. أعد تشغيل التطبيق\n'
+          '3. تحقق من إعدادات جدار الحماية\n'
+          '4. جرب استخدام VPN\n\n'
+          'It seems there\'s an internet connection or network settings issue on macOS.\n\n'
+          'Suggested solutions:\n'
+          '1. Check internet connection\n'
+          '2. Restart the application\n'
+          '3. Check firewall settings\n'
+          '4. Try using a VPN',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Get.back(),
+            child: const Text('موافق - OK'),
+          ),
+          TextButton(
+            onPressed: () {
+              Get.back();
+              _tryAlternativeDownload();
+            },
+            child: const Text('جرب طريقة بديلة - Try Alternative'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// طريقة بديلة للتحميل باستخدام Dio (للماك)
+  /// Alternative download method using Dio (for macOS)
+  Future<void> _downloadWithDio(String url, String savePath) async {
+    try {
+      final dio = Dio();
+
+      // إعدادات خاصة لـ macOS
+      // Special settings for macOS
+      dio.options.headers = {
+        'User-Agent': 'Flutter/Quran-Library-Dio',
+        'Accept': '*/*',
+        'Connection': 'keep-alive',
+      };
+
+      await dio.download(
+        url,
+        savePath,
+        onReceiveProgress: (received, total) {
+          if (total != -1) {
+            double progress = received / total * 100;
+            state.fontsDownloadProgress.value = progress;
+            update(['fontsDownloadingProgress']);
+          }
+        },
+        options: Options(
+          receiveTimeout: const Duration(minutes: 5),
+          sendTimeout: const Duration(seconds: 30),
+        ),
+      );
+    } catch (e) {
+      throw Exception('Dio download failed: $e');
+    }
+  }
+
+  /// يجرب طريقة تحميل بديلة باستخدام Dio
+  /// Tries alternative download method using Dio
+  Future<void> _tryAlternativeDownload() async {
+    try {
+      log('Trying alternative download with Dio', name: 'FontsDownload');
+
+      final appDir = await getApplicationDocumentsDirectory();
+      final zipPath = '${appDir.path}/quran_fonts.zip';
+
+      await _downloadWithDio(
+        'https://raw.githubusercontent.com/alheekmahlib/Islamic_database/main/quran_database/Quran%20Font/quran_fonts.zip',
+        zipPath,
+      );
+
+      // إذا نجح التحميل، تابع مع استخراج الملفات
+      // If download succeeds, continue with file extraction
+      final zipFile = File(zipPath);
+      await _extractAndProcessZip(zipFile);
+    } catch (e) {
+      log('Alternative download also failed: $e', name: 'FontsDownload');
+      Get.snackbar(
+        'خطأ - Error',
+        'فشل في جميع طرق التحميل - All download methods failed',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    }
+  }
+
+  /// استخراج ومعالجة ملف ZIP
+  /// Extract and process ZIP file
+  Future<void> _extractAndProcessZip(File zipFile) async {
+    try {
+      final appDir = await getApplicationDocumentsDirectory();
+      final fontsDir = Directory('${appDir.path}/quran_fonts');
+
+      final bytes = zipFile.readAsBytesSync();
+      final archive = ZipDecoder().decodeBytes(bytes);
+
+      if (archive.isEmpty) {
+        throw FormatException('Failed to extract ZIP file: Archive is empty');
+      }
+
+      // استخراج الملفات إلى مجلد الخطوط
+      // Extract files to fonts directory
+      for (final file in archive) {
+        final filename = '${fontsDir.path}/${file.name}';
+        if (file.isFile) {
+          final outFile = File(filename);
+          await outFile.create(recursive: true);
+          await outFile.writeAsBytes(file.content as List<int>);
+        }
+      }
+
+      await QuranCtrl.instance.loadFontsQuran();
+
+      // حفظ حالة التحميل في التخزين المحلي
+      // Save download status in local storage
+      GetStorage().write(_StorageConstants().isDownloadedCodeV2Fonts, true);
+      state.fontsDownloadedList.add(0); // Font index 0 as default
+      GetStorage().write(
+          _StorageConstants().fontsDownloadedList, state.fontsDownloadedList);
+
+      // تحديث حالة التحميل وإكمال شريط التقدم
+      // Update download status and complete progress bar
+      state.isDownloadedV2Fonts.value = true;
+      state.isDownloadingFonts.value = false;
+      state.fontsDownloadProgress.value = 100.0;
+
+      update(['fontsDownloadingProgress']);
+      Get.forceAppUpdate();
+
+      log('Fonts downloaded and extracted successfully', name: 'FontsDownload');
+    } catch (e) {
+      throw Exception('Failed to extract ZIP file: $e');
+    }
+  }
+
   /// Prepares fonts for the specified page index and adjacent pages.
   ///
   /// This method asynchronously loads the font for the given [pageIndex] and
@@ -76,21 +239,76 @@ extension FontsExtension on QuranCtrl {
     //   return Future.value();
     // }
 
+    // فحص الاتصال بالإنترنت أولاً (خاص بـ macOS)
+    // Check internet connectivity first (specific for macOS)
+    if (Platform.isMacOS) {
+      final hasConnection = await _checkNetworkConnectivity();
+      if (!hasConnection) {
+        _showMacOSNetworkTroubleshooting();
+        return;
+      }
+    }
+
     try {
       state.isDownloadingFonts.value = true;
       update(['fontsDownloadingProgress']);
 
-      // تحميل الملف باستخدام http.Client
-      final client = http.Client();
-      final response = await client.send(http.Request(
-        'GET',
-        Uri.parse(
-            'https://github.com/alheekmahlib/Islamic_database/raw/refs/heads/main/quran_database/Quran%20Font/quran_fonts.zip'),
-      ));
+      // قائمة بالروابط البديلة للتحميل
+      // List of alternative download URLs
+      final urls = [
+        'https://github.com/alheekmahlib/Islamic_database/raw/refs/heads/main/quran_database/Quran%20Font/quran_fonts.zip',
+        'https://raw.githubusercontent.com/alheekmahlib/Islamic_database/main/quran_database/Quran%20Font/quran_fonts.zip',
+      ];
 
-      if (response.statusCode != 200) {
-        throw Exception('Failed to download ZIP file: ${response.statusCode}');
+      // تحميل الملف باستخدام http.Client مع إعدادات محسنة للماك
+      // Download file using http.Client with improved settings for macOS
+      final client = http.Client();
+      http.StreamedResponse? response;
+      String? successUrl;
+
+      // جرب كل رابط حتى ينجح واحد منها
+      // Try each URL until one succeeds
+      for (String url in urls) {
+        try {
+          log('Attempting to download from: $url', name: 'FontsDownload');
+
+          final request = http.Request('GET', Uri.parse(url));
+          // إضافة headers إضافية للماك
+          // Add additional headers for macOS compatibility
+          request.headers.addAll({
+            'User-Agent': 'Flutter/Quran-Library',
+            'Accept': '*/*',
+            'Connection': 'keep-alive',
+            'Accept-Encoding': 'identity',
+          });
+
+          response = await client.send(request).timeout(
+            const Duration(seconds: 30),
+            onTimeout: () {
+              throw Exception('Connection timeout after 30 seconds');
+            },
+          );
+
+          if (response.statusCode == 200) {
+            successUrl = url;
+            log('Successfully connected to: $url', name: 'FontsDownload');
+            break;
+          }
+        } catch (e) {
+          log('Failed to connect to $url: $e', name: 'FontsDownload');
+          continue;
+        }
       }
+
+      // التحقق من نجاح الاتصال بأحد الروابط
+      // Check if connection to any URL succeeded
+      if (response == null || response.statusCode != 200) {
+        throw Exception(
+            'فشل في الاتصال بجميع الخوادم - Failed to connect to all servers. Status: ${response?.statusCode}');
+      }
+
+      log('Download started successfully from: $successUrl',
+          name: 'FontsDownload');
 
       // تحديد المسار الذي سيتم حفظ الملف فيه
       final appDir = await getApplicationDocumentsDirectory();
@@ -104,10 +322,12 @@ extension FontsExtension on QuranCtrl {
       final fileSink = zipFile.openWrite();
 
       // حجم الملف الإجمالي
+      // Total file size
       final contentLength = response.contentLength ?? 0;
       int totalBytesDownloaded = 0;
 
       // متابعة التدفق وكتابة البيانات في الملف مع حساب نسبة التحميل
+      // Monitor stream and write data to file with download progress calculation
       response.stream.listen(
         (List<int> chunk) {
           totalBytesDownloaded += chunk.length;
@@ -197,11 +417,20 @@ extension FontsExtension on QuranCtrl {
       );
     } catch (e) {
       log('Failed to Download Code_v2 fonts: $e', name: 'FontsDownload');
+
+      // معالجة خاصة لأخطاء macOS
+      // Special handling for macOS errors
+      if (Platform.isMacOS &&
+          e.toString().contains('Operation not permitted')) {
+        _showMacOSNetworkTroubleshooting();
+      }
+
       // تحديث حالة التحميل في حالة فشل العملية
       // Update download status if operation fails
       state.isDownloadingFonts.value = false;
       state.fontsDownloadProgress.value = 0.0;
       update(['fontsDownloadingProgress']);
+
       // رمي استثناء ليتم التعامل معه في الدالة الأم
       // Throw exception to be handled in parent function
       throw Exception('Download failed: $e');

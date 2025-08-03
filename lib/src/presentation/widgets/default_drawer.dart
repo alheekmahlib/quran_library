@@ -8,9 +8,9 @@ class _DefaultDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final jozzList = QuranLibrary().allJoz;
-    final hizbList = QuranLibrary().allHizb;
-    final surahs = QuranLibrary().getAllSurahs();
+    final jozzList = QuranLibrary.allJoz;
+    final hizbList = QuranLibrary.allHizb;
+    final surahs = QuranLibrary.getAllSurahs();
     return Drawer(
       backgroundColor:
           isDark ? const Color(0xff1E1E1E) : const Color(0xfffaf7f3),
@@ -21,6 +21,8 @@ class _DefaultDrawer extends StatelessWidget {
           _buildIndexSection(context, jozzList, hizbList, surahs),
           const SizedBox(height: 8),
           _buildBookmarksSection(),
+          const SizedBox(height: 8),
+          _buildAudioPlayer(context),
         ],
       ),
     );
@@ -45,6 +47,30 @@ class _DefaultDrawer extends StatelessWidget {
             context,
             MaterialPageRoute(
               builder: (ctx) => QuranLibrarySearchScreen(isDark: isDark),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildAudioPlayer(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.all(8.0),
+      decoration: BoxDecoration(
+        color: const Color(0xfff6d09d).withValues(alpha: isDark ? .5 : .3),
+        border: Border.all(width: 1, color: const Color(0xfff6d09d)),
+        borderRadius: const BorderRadius.all(Radius.circular(8)),
+      ),
+      child: ListTile(
+        trailing: const Icon(Icons.record_voice_over),
+        title: Text('الإستماع للقرآن', style: QuranLibrary().naskhStyle),
+        onTap: () {
+          Navigator.pop(context);
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => SurahAudioScreen(),
             ),
           );
         },

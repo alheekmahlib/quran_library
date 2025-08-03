@@ -1,19 +1,19 @@
 // import 'package:device_preview/device_preview.dart';
-import 'dart:developer';
+import 'dart:developer' show log;
 
 import 'package:flutter/material.dart';
 import 'package:quran_library/quran_library.dart';
 
 Future<void> main() async {
+  await WidgetsFlutterBinding.ensureInitialized();
+  await QuranLibrary.init();
+  await QuranLibrary.initTafsir();
   runApp(
     // DevicePreview(
     //   builder: (context) => const MyApp(),
     // ),
     const MyApp(),
   );
-
-  await QuranLibrary().init();
-  await QuranLibrary().initTafsir();
 }
 
 class MyApp extends StatefulWidget {
@@ -53,6 +53,9 @@ class _MyAppState extends State<MyApp> {
           anotherMenuChild:
               Icon(Icons.play_arrow_outlined, size: 28, color: Colors.grey),
           anotherMenuChildOnTap: (ayah) {
+            SurahAudioController.instance.state.currentAyahUnequeNumber =
+                ayah.ayahUQNumber;
+            SurahAudioController.instance.playAyah(context);
             log('Another Menu Child Tapped: ${ayah.ayahNumber}');
           },
         ),

@@ -160,6 +160,7 @@ class SurahDisplayScreen extends StatelessWidget {
               final ctrl = state.controller!;
               // شرح: إعادة تحميل السورة إذا تغير رقمها
               // Explanation: Reload surah if its number changed
+              SurahAudioController.instance;
               if (ctrl.surahNumber != surahNumber) {
                 ctrl.loadSurah(surahNumber);
               }

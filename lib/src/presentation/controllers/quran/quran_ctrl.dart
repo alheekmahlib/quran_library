@@ -344,7 +344,9 @@ class QuranCtrl extends GetxController {
   /// Toggle the selection of an ayah by its unique number
   void toggleAyahSelection(int ayahUnequeNumber) {
     if (selectedAyahsByUnequeNumber.contains(ayahUnequeNumber)) {
+      if (selectedAyahsByUnequeNumber.length > 1) {
       selectedAyahsByUnequeNumber.remove(ayahUnequeNumber);
+      }
     } else {
       selectedAyahsByUnequeNumber.clear();
       selectedAyahsByUnequeNumber.add(ayahUnequeNumber);

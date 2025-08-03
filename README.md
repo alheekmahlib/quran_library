@@ -21,6 +21,22 @@
 
 ## Getting started - بدء الإستخدام
 
+### Permissions
+
+#### Android
+The required permissions for audio playback (`WAKE_LOCK`, `FOREGROUND_SERVICE`, and `FOREGROUND_SERVICE_MEDIA_PLAYBACK`) are automatically added by the package. You don't need to manually edit your AndroidManifest.xml.
+
+#### iOS
+For background audio playback, you must add the following to your app's `Info.plist`:
+```xml
+<key>UIBackgroundModes</key>
+<array>
+  <string>audio</string>
+</array>
+```
+
+This allows audio playback to continue when the app is in the background.
+
 In the `pubspec.yaml` of your flutter project, add the following dependency:
 
 ```yaml
@@ -39,7 +55,7 @@ import 'package:quran_library/quran_library.dart';
 Initialize it - تهيئة المكتبة:
 
 ```dart
-QuranLibrary().init();
+QuranLibrary.init();
 ```
 
 ## Usage Example - مثال الإستخدام
@@ -128,9 +144,9 @@ SurahDisplayScreen(
 * ### Getting all Quran's Jozzs, Hizbs, and Surahs
 
 ```dart
-final jozzs = QuranLibrary().allJoz;
-final hizbs = QuranLibrary().allHizb;
-final surahs = QuranLibrary().getAllSurahs();
+final jozzs = QuranLibrary.allJoz;
+final hizbs = QuranLibrary.allHizb;
+final surahs = QuranLibrary.getAllSurahs();
 final ayahsOnPage = QuranLibrary().getAyahsByPage();
 
 /// [getSurahInfo] تتيح لك الحصول على سورة مع جميع بياناتها عند تمرير رقم السورة لها.
@@ -274,7 +290,7 @@ QuranLibrary().isFontsDownloaded;
 * ### Initialize tafsir - تهيئة التفسير:
 
 ```dart
-QuranLibrary().initTafsir();
+QuranLibrary.initTafsir();
 ```
 
 * ### Usage Example - مثال الإستخدام
@@ -335,4 +351,4 @@ QuranLibrary().naskhStyle;
 ```
 
 
-## لا تنسونا من صالح الدعاء 
+## لا تنسونا من صالح الدعاء

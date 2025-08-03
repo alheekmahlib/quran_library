@@ -17,14 +17,14 @@ part of '/quran.dart';
 /// set up in your Flutter project to use this class effectively.
 class QuranLibrary {
   // Cache for frequently accessed data
-  final Map<String, dynamic> _cache = {};
-  bool _isInitialized = false;
+  static final Map<String, dynamic> _cache = {};
+  static bool _isInitialized = false;
 
   /// [init] تقوم بتهيئة القرآن ويجب استدعاؤها قبل البدء في استخدام الحزمة
   ///
   /// [init] initializes the FlutterQuran,
   /// and must be called before starting using the package
-  Future<void> init(
+  static Future<void> init(
       {Map<int, List<BookmarkModel>>? userBookmarks,
       bool overwriteBookmarks = false}) async {
     if (_isInitialized) return;
@@ -34,6 +34,9 @@ class QuranLibrary {
     // Initialize state values
     final storage = GetStorage();
     final storageConstants = _StorageConstants();
+
+    /// Initialize SurahAudioController
+    SurahAudioController.instance;
 
     quranCtrl.state.isDownloadedV2Fonts.value =
         storage.read(storageConstants.isDownloadedCodeV2Fonts) ?? false;
@@ -70,7 +73,7 @@ class QuranLibrary {
   ///
   /// This instance is used to access the functionalities provided by the
   /// `QuranCtrl` class throughout the application.
-  final quranCtrl = QuranCtrl.instance;
+  static final quranCtrl = QuranCtrl.instance;
 
   /// [currentPageNumber] تعيد رقم الصفحة التي يكون المستخدم عليها حاليًا.
   /// أرقام الصفحات تبدأ من 1، لذا فإن الصفحة الأولى من القرآن هي الصفحة رقم 1.
@@ -173,7 +176,7 @@ class QuranLibrary {
       jumpToPage(quranCtrl.surahsStart[surah - 1] + 1);
 
   /// [allJoz] returns list of all Quran joz' names
-  List<String> get allJoz {
+  static List<String> get allJoz {
     if (_cache.containsKey('allJoz')) {
       return _cache['allJoz'] as List<String>;
     }
@@ -188,7 +191,7 @@ class QuranLibrary {
   /// [allHizb] يعيد قائمة بأسماء جميع أجزاء القرآن.
   ///
   /// [allHizb] returns list of all Quran hizbs' names
-  List<String> get allHizb {
+  static List<String> get allHizb {
     if (_cache.containsKey('allHizb')) {
       return _cache['allHizb'] as List<String>;
     }
@@ -201,7 +204,7 @@ class QuranLibrary {
   /// [getAllSurahs] يعيد قائمة بأسماء السور.
   ///
   /// [getAllSurahs] returns list of all Quran surahs' names
-  List<String> getAllSurahs({bool isArabic = true}) {
+  static List<String> getAllSurahs({bool isArabic = true}) {
     final cacheKey = 'allSurahs_${isArabic ? 'ar' : 'en'}';
     if (_cache.containsKey(cacheKey)) {
       return _cache[cacheKey] as List<String>;
@@ -506,7 +509,7 @@ class QuranLibrary {
 
   /// تهيئة بيانات التفسير عند بدء التطبيق.
   /// Initialize tafsir data when the app starts.
-  Future<void> initTafsir() async {
+  static Future<void> initTafsir() async {
     drift.driftRuntimeOptions.dontWarnAboutMultipleDatabases = true;
     return TafsirCtrl.instance.initTafsir();
   }

@@ -6,28 +6,31 @@ import 'dart:math' as math show max;
 import 'package:another_xlider/another_xlider.dart';
 import 'package:another_xlider/models/handler_animation.dart';
 import 'package:another_xlider/models/trackbar.dart';
-import 'package:archive/archive.dart';
+import 'package:archive/archive.dart' show ZipDecoder;
 import 'package:dio/dio.dart';
 import 'package:drift/drift.dart' as drift;
-import 'package:drift/native.dart';
+import 'package:drift/native.dart' show NativeDatabase;
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:get/get.dart';
+import 'package:get/get.dart' hide Response;
 import 'package:get_storage/get_storage.dart';
-import 'package:http/http.dart' as http;
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 
+import 'audio/surah_audio/audio_surah_list_screen.dart';
+import 'audio/surah_audio/controller/surah_audio_controller.dart';
 import 'src/core/helpers/responsive.dart';
 import 'src/core/utils/smooth_page_physics.dart';
 import 'src/data/models/tafsir/tafsir.dart';
 
+export 'audio/surah_audio/controller/surah_audio_controller.dart';
+
 part 'src/core/extensions/convert_arabic_to_english_numbers_extension.dart';
 part 'src/core/extensions/convert_number_extension.dart';
-part 'src/core/extensions/download_estension.dart';
+part 'src/core/extensions/download_extension.dart';
 part 'src/core/extensions/extensions.dart';
 part 'src/core/extensions/font_size_extension.dart';
 part 'src/core/extensions/fonts_download_widget.dart';

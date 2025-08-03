@@ -259,12 +259,17 @@ extension FontsExtension on QuranCtrl {
         'https://github.com/alheekmahlib/Islamic_database/raw/refs/heads/main/quran_database/Quran%20Font/quran_fonts.zip',
         'https://raw.githubusercontent.com/alheekmahlib/Islamic_database/main/quran_database/Quran%20Font/quran_fonts.zip',
       ];
+      // تحميل الملف باستخدام Dio
 
       // تحميل الملف باستخدام http.Client مع إعدادات محسنة للماك
       // Download file using http.Client with improved settings for macOS
-      final client = http.Client();
-      http.StreamedResponse? response;
+      // final response = dio.get(
+      //   'https://github.com/alheekmahlib/Islamic_database/raw/refs/heads/main/quran_database/Quran%20Font/quran_fonts.zip',
+      //   options: Options(responseType: ResponseType.stream),
+      // );
+      final dio = Dio();
       String? successUrl;
+      late Response response;
 
       // جرب كل رابط حتى ينجح واحد منها
       // Try each URL until one succeeds
@@ -272,23 +277,28 @@ extension FontsExtension on QuranCtrl {
         try {
           log('Attempting to download from: $url', name: 'FontsDownload');
 
-          final request = http.Request('GET', Uri.parse(url));
-          // إضافة headers إضافية للماك
-          // Add additional headers for macOS compatibility
-          request.headers.addAll({
-            'User-Agent': 'Flutter/Quran-Library',
-            'Accept': '*/*',
-            'Connection': 'keep-alive',
-            'Accept-Encoding': 'identity',
-          });
+          response = await dio.get(url,
+              options: Options(
+                responseType: ResponseType.stream,
+                sendTimeout: Duration(seconds: 30),
+                headers: {
+                  'User-Agent': 'Flutter/Quran-Library',
+                  'Accept': '*/*',
+                  'Connection': 'keep-alive',
+                  'Accept-Encoding': 'identity',
+                },
+              ));
 
-          response = await client.send(request).timeout(
-            const Duration(seconds: 30),
-            onTimeout: () {
-              throw Exception('Connection timeout after 30 seconds');
-            },
-          );
+// التحقق من نجاح الاتصال بأحد الروابط
+          // Check if connection to any URL succeeded
+          if (response.statusCode != 200) {
+            log('Failed to connect to $url: ${response.statusCode}',
+                name: 'FontsDownload');
+            break;
+          }
 
+          log('Download started successfully from: $successUrl',
+              name: 'FontsDownload');
           if (response.statusCode == 200) {
             successUrl = url;
             log('Successfully connected to: $url', name: 'FontsDownload');
@@ -299,16 +309,6 @@ extension FontsExtension on QuranCtrl {
           continue;
         }
       }
-
-      // التحقق من نجاح الاتصال بأحد الروابط
-      // Check if connection to any URL succeeded
-      if (response == null || response.statusCode != 200) {
-        throw Exception(
-            'فشل في الاتصال بجميع الخوادم - Failed to connect to all servers. Status: ${response?.statusCode}');
-      }
-
-      log('Download started successfully from: $successUrl',
-          name: 'FontsDownload');
 
       // تحديد المسار الذي سيتم حفظ الملف فيه
       final appDir = await getApplicationDocumentsDirectory();
@@ -322,13 +322,13 @@ extension FontsExtension on QuranCtrl {
       final fileSink = zipFile.openWrite();
 
       // حجم الملف الإجمالي
-      // Total file size
-      final contentLength = response.contentLength ?? 0;
+      final contentLength = int.tryParse(
+              response.headers.value(Headers.contentLengthHeader) ?? '0') ??
+          0;
       int totalBytesDownloaded = 0;
 
       // متابعة التدفق وكتابة البيانات في الملف مع حساب نسبة التحميل
-      // Monitor stream and write data to file with download progress calculation
-      response.stream.listen(
+      (response.data as ResponseBody).stream.listen(
         (List<int> chunk) {
           totalBytesDownloaded += chunk.length;
           fileSink.add(chunk);
@@ -411,7 +411,7 @@ extension FontsExtension on QuranCtrl {
         },
         onError: (error) {
           log('Error during download: $error');
-          client.close();
+          dio.close();
         },
         cancelOnError: true,
       );

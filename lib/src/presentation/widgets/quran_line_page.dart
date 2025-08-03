@@ -185,7 +185,8 @@ class _QuranLinePage extends StatelessWidget {
                     return Column(
                       children: [
                         SizedBox(
-                          width: deviceSize.width - 32,
+                          width: deviceSize.width,
+                          // width: deviceSize.width - 32,
                           child: QuranLine(
                             context,
                             line,

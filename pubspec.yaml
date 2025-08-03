@@ -10,25 +10,35 @@ environment:
 
 dependencies:
   another_xlider: ^3.0.2
+  arabic_numbers: ^1.0.0
   archive: ^4.0.7
+  audio_service: ^0.18.18
+  toastification: ^3.0.3
+  connectivity_plus: ^6.1.4
   dio: ^5.8.0+1
   drift: ^2.27.0
   flutter:
     sdk: flutter
+  flutter_cache_manager: ^3.4.1
   flutter_screenutil: ^5.9.3
+  flutter_sliding_box: ^1.1.5
   flutter_svg: ^2.1.0
   get: ^4.7.2
   get_storage: ^2.1.1
-  http: ^1.4.0
+  just_audio: ^0.10.4
+  lottie: ^3.3.1
   path: ^1.9.0
   path_provider: ^2.1.5
+  rxdart: ^0.28.0
+  scrollable_positioned_list: ^0.3.8
+  mini_music_visualizer: ^1.1.4
 
 # This package supports all platforms listed below.
 # But note that it works and fits on mobile size devices
 # Additional Screen Sizes will be supported later
 platforms:
-  ? android
   #  web:
+  ? android
   ? ios
   ? linux
   ? macos
@@ -56,6 +66,14 @@ package_rename_config:
     package_name: com.alheekmah.quranPackage
 
 flutter:
+  plugin:
+    platforms:
+      android:
+        package: com.alheekmah.quranPackage
+        pluginClass: QuranLibraryPlugin
+      # ios:
+      #   pluginClass: QuranLibraryPlugin
+
   assets:
     - assets/
     - assets/fonts/
@@ -63,6 +81,7 @@ flutter:
     - assets/fonts/NotoNaskhArabic-VariableFont_wght.ttf
     - assets/fonts/UthmanicHafs_V20.ttf
     - assets/jsons/
+    - assets/lottie/
     - assets/svg/
     - assets/svg/surah_name/
     - assets/saadiV4.db

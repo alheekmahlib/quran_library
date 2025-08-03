@@ -1,0 +1,55 @@
+part of 'surah_audio_controller.dart';
+
+class SurahAudioState {
+  /// -------- [Variables] ----------
+  ArabicNumbers arabicNumber = ArabicNumbers();
+
+  AudioPlayer audioPlayer = AudioPlayer();
+  RxBool isDownloading = false.obs;
+  RxBool isPlaying = false.obs;
+  RxString progressString = "0".obs;
+  RxDouble progress = 0.0.obs;
+  RxInt currentAudioListSurahNum = 1.obs;
+  var cancelToken = CancelToken();
+  late Uri cachedArtUri;
+  TextEditingController textController = TextEditingController();
+  RxInt selectedSurahIndex = 0.obs;
+  final surahsScrollController = ItemScrollController();
+  RxString surahReaderValue = "https://download.quranicaudio.com/quran/".obs;
+  RxString surahReaderNameValue = "abdul_basit_murattal/".obs;
+  final bool isDisposed = false;
+  List<AudioSource>? surahsPlayList;
+  List<Map<int, AudioSource>> downloadSurahsPlayList = [];
+  double? lastTime;
+  RxInt lastPosition = 0.obs;
+  Rx<PositionData>? positionData;
+  var activeButton = RxString('');
+  final boxController = BoxController();
+  final TextEditingController textEditingController = TextEditingController();
+  RxInt surahReaderIndex = 1.obs;
+  final Rx<Map<int, bool>> surahDownloadStatus = Rx<Map<int, bool>>({});
+  Map<int, bool> ayahsDownloadStatus =
+      Map.fromEntries(List.generate(6236, (i) => MapEntry(i + 1, false)));
+  RxInt seekNextSeconds = 5.obs;
+  final box = GetStorage();
+  RxInt fileSize = 0.obs;
+  RxInt downloadProgress = 0.obs;
+  RxBool audioServiceInitialized = false.obs;
+  RxBool isDirectPlaying = false.obs;
+  late Directory dir;
+  bool snackBarShownForBatch = false;
+
+  /// ===== single verse =====
+  int currentAyahUnequeNumber = 1;
+
+  int tmpDownloadedAyahsCount = 0;
+  RxInt ayahReaderIndex = 1.obs;
+
+  /// if true, then play single ayah only.
+  /// false state is not ready.
+  bool playSingleAyahOnly = true;
+
+  // TODO: let user change it.
+  String appIconUrl =
+      'https://raw.githubusercontent.com/alheekmahlib/thegarlanded/master/Photos/ios-1024.png';
+}

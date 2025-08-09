@@ -1,13 +1,6 @@
-import 'package:audio_service/audio_service.dart';
-import 'package:get/get_utils/src/extensions/internacionalization.dart';
-import 'package:just_audio/just_audio.dart';
-import 'package:path/path.dart';
-import 'package:quran_library/quran.dart';
-import 'package:rxdart/rxdart.dart' as r;
+part of '../../../audio.dart';
 
-import '/audio/constants/readers_constants.dart';
-
-extension SurahAudioGetters on SurahAudioController {
+extension SurahAudioGetters on AudioCtrl {
   /// -------- [Getters] ----------
   String get localSurahFilePath {
     return '${state.dir.path}/${state.surahReaderNameValue.value}${state.currentAudioListSurahNum.value.toString().padLeft(3, "0")}.mp3';
@@ -18,13 +11,40 @@ extension SurahAudioGetters on SurahAudioController {
   }
 
   /// single verse
-  AyahModel get currentAyah => QuranCtrl.instance.ayahs
-      .firstWhere((a) => a.ayahUQNumber == state.currentAyahUnequeNumber);
-  SurahModel get currentAyahsSurah => QuranCtrl.instance.surahs
-      .firstWhere((s) => s.surahNumber == currentAyah.surahNumber!);
+  /// الحصول على الآية الحالية - Get current ayah
+  AyahModel get currentAyah {
+    try {
+      return QuranCtrl.instance.ayahs
+          .firstWhere((a) => a.ayahUQNumber == state.currentAyahUniqueNumber);
+    } catch (e) {
+      // في حالة عدم العثور على الآية، إرجاع الآية الأولى
+      // If ayah not found, return first ayah
+      return QuranCtrl.instance.ayahs.first;
+    }
+  }
+
+  /// الحصول على السورة الحالية للآية - Get current surah for the ayah
+  SurahModel get currentAyahsSurah {
+    try {
+      return QuranCtrl.instance.surahs
+          .firstWhere((s) => s.surahNumber == currentAyah.surahNumber!);
+    } catch (e) {
+      // في حالة عدم العثور على السورة، إرجاع السورة الأولى
+      // If surah not found, return first surah
+      return QuranCtrl.instance.surahs.first;
+    }
+  }
 
   /// single verse
   int get currentSurahNumber => currentAyahsSurah.surahNumber;
+
+  int get currentAyahInPage => state.currentAyahUniqueNumber == 1
+      ? QuranCtrl.instance.state.allAyahs
+              .firstWhere((ayah) =>
+                  ayah.page == QuranCtrl.instance.state.currentPageNumber.value)
+              .ayahNumber -
+          1
+      : state.currentAyahUniqueNumber;
 
   Stream<PositionData> get audioStream => positionDataStream;
 
@@ -98,7 +118,7 @@ extension SurahAudioGetters on SurahAudioController {
   String get currentAyahFileName {
     if (ReadersConstants.ayahReaderInfo[state.ayahReaderIndex.value]['url'] ==
         ReadersConstants.ayahs1stSource) {
-      return '$ayahReaderValue/${state.currentAyahUnequeNumber}.mp3';
+      return '$ayahReaderValue/${state.currentAyahUniqueNumber}.mp3';
     } else {
       final surahNum = currentAyahsSurah.surahNumber.toString().padLeft(3, '0');
       final currentAyahNumber =
@@ -126,11 +146,11 @@ extension SurahAudioGetters on SurahAudioController {
       );
 
   MediaItem get mediaItemForCurrentAyah => MediaItem(
-        id: '${state.currentAyahUnequeNumber}',
+        id: '${state.currentAyahUniqueNumber}',
         title: QuranCtrl.instance
             .getPageAyahsByIndex(
                 QuranCtrl.instance.state.currentPageNumber.value - 1)
-            .firstWhere((a) => a.ayahUQNumber == state.currentAyahUnequeNumber)
+            .firstWhere((a) => a.ayahUQNumber == state.currentAyahUniqueNumber)
             .text,
         artist:
             '${ReadersConstants.ayahReaderInfo[state.ayahReaderIndex.value]['name']}'
@@ -156,7 +176,7 @@ extension SurahAudioGetters on SurahAudioController {
               QuranCtrl.instance.state.currentPageNumber.value - 1)
           .last
           .ayahUQNumber ==
-      state.currentAyahUnequeNumber;
+      state.currentAyahUniqueNumber;
 
   bool get isFirstAyahInPage =>
       QuranCtrl.instance
@@ -164,7 +184,7 @@ extension SurahAudioGetters on SurahAudioController {
               QuranCtrl.instance.state.currentPageNumber.value - 1)
           .first
           .ayahUQNumber ==
-      state.currentAyahUnequeNumber;
+      state.currentAyahUniqueNumber;
 
   bool get isLastAyahInSurah =>
       QuranCtrl.instance
@@ -173,7 +193,7 @@ extension SurahAudioGetters on SurahAudioController {
           .ayahs
           .last
           .ayahUQNumber ==
-      state.currentAyahUnequeNumber;
+      state.currentAyahUniqueNumber;
 
   bool get isFirstAyahInSurah =>
       QuranCtrl.instance
@@ -182,7 +202,7 @@ extension SurahAudioGetters on SurahAudioController {
           .ayahs
           .first
           .ayahUQNumber ==
-      state.currentAyahUnequeNumber;
+      state.currentAyahUniqueNumber;
 
   bool get isLastAyahInSurahButNotInPage =>
       isLastAyahInSurah && !isLastAyahInPage;

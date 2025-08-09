@@ -1,19 +1,14 @@
-import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-
-import '../controller/extensions/surah_audio_getters.dart';
-import '../controller/extensions/surah_audio_storage_getters.dart';
-import '../controller/surah_audio_controller.dart';
+part of '../../audio.dart';
 
 class SurahSeekBar extends StatelessWidget {
   const SurahSeekBar({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return GetBuilder<SurahAudioController>(
+    return GetBuilder<AudioCtrl>(
         id: 'seekBar_id',
         builder: (c) => c.state.isDownloading.value
-            ? GetX<SurahAudioController>(builder: (c) {
+            ? GetX<AudioCtrl>(builder: (c) {
                 return SliderWidget.downloading(
                     currentPosition: c.state.downloadProgress.value.toInt(),
                     filesCount: c.state.fileSize.value,

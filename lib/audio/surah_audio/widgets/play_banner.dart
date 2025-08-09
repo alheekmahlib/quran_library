@@ -1,10 +1,4 @@
-import 'package:flutter/material.dart';
-import 'package:mini_music_visualizer/mini_music_visualizer.dart';
-import 'package:quran_library/audio/surah_audio/controller/extensions/surah_audio_ui.dart';
-import 'package:quran_library/audio/surah_audio/controller/surah_audio_controller.dart';
-import 'package:quran_library/core/utils/custom_widgets.dart';
-
-import '/core/utils/ui_helper.dart';
+part of '../../audio.dart';
 
 class PlayBanner extends StatelessWidget {
   const PlayBanner({super.key});
@@ -23,7 +17,7 @@ class PlayBanner extends StatelessWidget {
             color: Theme.of(context).colorScheme.surface.withValues(alpha: .2),
             borderRadius: const BorderRadius.all(Radius.circular(8)),
           ),
-          margin: UiHelper.customOrientation(
+          margin: UiHelper.currentOrientation(
               const EdgeInsets.only(top: 75.0, right: 16.0),
               const EdgeInsets.only(bottom: 16.0, left: 32.0),
               context),
@@ -31,16 +25,15 @@ class PlayBanner extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               CustomWidgets.surahNameWidget(
-                  SurahAudioController
-                      .instance.state.currentAudioListSurahNum.value,
+                  AudioCtrl.instance.state.currentAudioListSurahNum.value,
                   width: 100,
                   Theme.of(context).hintColor),
-              MiniMusicVisualizer(
-                color: Theme.of(context).colorScheme.surface,
-                width: 4,
-                height: 15,
-                animate: true,
-              ),
+              // MiniMusicVisualizer(
+              //   color: Theme.of(context).colorScheme.surface,
+              //   width: 4,
+              //   height: 15,
+              //   animate: true,
+              // ),
               Container(
                 height: 80,
                 width: 10,
@@ -55,9 +48,9 @@ class PlayBanner extends StatelessWidget {
           ),
         ),
         onTap: () {
-          SurahAudioController.instance.jumpToSurah(SurahAudioController
-                  .instance.state.currentAudioListSurahNum.value -
-              1);
+          // SurahAudioController.instance.jumpToSurah(SurahAudioController
+          //         .instance.state.currentAudioListSurahNum.value -
+          //     1);
         },
       ),
     );

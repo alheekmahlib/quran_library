@@ -10,7 +10,6 @@ environment:
 
 dependencies:
   another_xlider: ^3.0.2
-  arabic_numbers: ^1.0.0
   archive: ^4.0.7
   audio_service: ^0.18.18
   toastification: ^3.0.3
@@ -21,7 +20,6 @@ dependencies:
     sdk: flutter
   flutter_cache_manager: ^3.4.1
   flutter_screenutil: ^5.9.3
-  flutter_sliding_box: ^1.1.5
   flutter_svg: ^2.1.0
   get: ^4.7.2
   get_storage: ^2.1.1
@@ -31,7 +29,7 @@ dependencies:
   path_provider: ^2.1.5
   rxdart: ^0.28.0
   scrollable_positioned_list: ^0.3.8
-  mini_music_visualizer: ^1.1.4
+  flutter_sliding_panel: ^0.0.5
 
 # This package supports all platforms listed below.
 # But note that it works and fits on mobile size devices
@@ -83,7 +81,6 @@ flutter:
     - assets/jsons/
     - assets/lottie/
     - assets/svg/
-    - assets/svg/surah_name/
     - assets/saadiV4.db
     - assets/en.json
 
@@ -97,3 +94,6 @@ flutter:
     - family: hafs
       fonts:
         - asset: assets/fonts/UthmanicHafs_V20.ttf
+    - family: surahName
+      fonts:
+        - asset: assets/fonts/surah_name_naskh.ttf

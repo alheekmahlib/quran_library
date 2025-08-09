@@ -1,17 +1,12 @@
-import 'package:flutter/material.dart';
-import 'package:just_audio/just_audio.dart';
-
-import '/core/constants/lottie_constants.dart';
-import '/core/constants/svg_paths.dart';
-import '/core/utils/custom_widgets.dart';
-import '/quran.dart';
+part of '../audio.dart';
 
 class PlayAyah extends StatelessWidget {
-  const PlayAyah({super.key});
+  final AyahAudioStyle? style;
+  const PlayAyah({super.key, this.style});
 
   @override
   Widget build(BuildContext context) {
-    final audioCtrl = SurahAudioController.instance;
+    final audioCtrl = AudioCtrl.instance;
     return SizedBox(
       width: 28,
       height: 28,
@@ -25,34 +20,38 @@ class PlayAyah extends StatelessWidget {
               (audioCtrl.state.isDownloading.value &&
                   audioCtrl.state.progress.value == 0)) {
             return CustomWidgets.customLottie(
-                LottieConstants.assetsLottiePlayButton,
+                LottieConstants.get(LottieConstants.assetsLottiePlayButton),
                 width: 20.0,
                 height: 20.0);
           } else if (playerState != null && !playerState.playing) {
             return GestureDetector(
               child: CustomWidgets.customSvgWithColor(
-                SvgPath.svgPlayArrow,
-                height: 25,
+                style?.playIconPath ?? AssetsPath.assets.playArrow,
+                height: style?.playIconHeight ?? 25,
                 ctx: context,
+                color: style?.playIconColor ?? (Colors.blue),
               ),
               onTap: () async {
                 QuranCtrl.instance.selectedAyahsByUnequeNumber.isNotEmpty
                     ? audioCtrl.state.isDirectPlaying.value = false
                     : audioCtrl.state.isDirectPlaying.value = true;
                 QuranCtrl.instance.state.isPlayExpanded.value = true;
-                audioCtrl.playAyah(context);
+                audioCtrl.playAyah(
+                    context, audioCtrl.state.currentAyahUniqueNumber,
+                    playSingleAyah: true);
               },
             );
           }
           return GestureDetector(
             child: CustomWidgets.customSvgWithColor(
-              SvgPath.svgPauseArrow,
-              height: 25,
+              style?.pauseIconPath ?? AssetsPath.assets.pauseArrow,
+              height: style?.pauseIconHeight ?? 25,
               ctx: context,
+              color: style?.playIconColor ?? (Colors.blue),
             ),
             onTap: () {
               QuranCtrl.instance.state.isPlayExpanded.value = true;
-              audioCtrl.playAyah(context);
+              audioCtrl.pausePlayer();
             },
           );
         },

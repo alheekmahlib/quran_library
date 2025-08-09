@@ -47,14 +47,15 @@ class SurahHeaderWidget extends StatelessWidget {
                 fit: BoxFit.fill),
           ),
           alignment: Alignment.center,
-          child: SvgPicture.asset(
-            'packages/quran_library/assets/svg/surah_name/00$surahNumber.svg',
-            width: surahNameStyle?.surahNameWidth ?? 70,
-            height: surahNameStyle?.surahNameHeight ?? 37,
-            colorFilter: ColorFilter.mode(
-                surahNameStyle?.surahNameColor ??
-                    (isDark ? Colors.white : Colors.black),
-                BlendMode.srcIn),
+          child: Text(
+            AudioCtrl.instance.state.currentAudioListSurahNum.value.toString(),
+            style: TextStyle(
+              color: surahNameStyle?.surahNameColor ?? Colors.black,
+              fontFamily: "surahName",
+              fontSize: 42,
+              package: "quran_library",
+            ),
+            textAlign: TextAlign.center,
           ),
         ),
       );
@@ -80,19 +81,21 @@ class SurahHeaderWidget extends StatelessWidget {
                 SvgPicture.asset(
                   bannerStyle?.bannerSvgPath ??
                       (isDark
-                          ? _AssetsPath().surahSvgBannerDark
-                          : _AssetsPath().surahSvgBanner),
+                          ? AssetsPath.assets.surahSvgBannerDark
+                          : AssetsPath.assets.surahSvgBanner),
                   width: bannerStyle?.bannerSvgWidth ?? 150.0,
                   height: bannerStyle?.bannerSvgHeight ?? 40.0,
                 ),
-                SvgPicture.asset(
-                  'packages/quran_library/assets/svg/surah_name/00$surahNumber.svg',
-                  width: surahNameStyle?.surahNameWidth ?? 70,
-                  height: surahNameStyle?.surahNameHeight ?? 37,
-                  colorFilter: ColorFilter.mode(
-                      surahNameStyle?.surahNameColor ??
-                          (isDark ? Colors.white : Colors.black),
-                      BlendMode.srcIn),
+                Text(
+                  surahNumber.toString(),
+                  style: TextStyle(
+                    color: surahNameStyle?.surahNameColor ??
+                        (isDark ? Colors.white : Colors.black),
+                    fontFamily: "surahName",
+                    fontSize: 32,
+                    package: "quran_library",
+                  ),
+                  textAlign: TextAlign.center,
                 ),
               ],
             ),

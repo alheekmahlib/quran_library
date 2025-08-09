@@ -1,22 +1,50 @@
 part of '/quran.dart';
 
-class _AssetsPath {
-  final surahSvgBanner = 'packages/quran_library/assets/svg/surah_banner.svg';
-  final surahSvgBannerDark =
-      'packages/quran_library/assets/svg/surah_banner_dark.svg';
-  final besmAllah2 = 'packages/quran_library/assets/svg/besmAllah2.svg';
-  final besmAllah = 'packages/quran_library/assets/svg/besmAllah.svg';
-  final ayahBookmarked =
-      'packages/quran_library/assets/svg/ayah_bookmarked.svg';
-  final sajdaIcon = 'packages/quran_library/assets/svg/sajda_icon.svg';
-  final suraNum = 'packages/quran_library/assets/svg/sora_num.svg';
+abstract class _AssetsPath {
+  _AssetsPath._();
+  String get surahSvgBanner;
+  String get surahSvgBannerDark;
+  String get besmAllah2;
+  String get besmAllah;
+  String get ayahBookmarked;
+  String get sajdaIcon;
+  String get suraNum;
+  String get playArrow;
+  String get pauseArrow;
+  String get checkMark;
+  String get alert;
+  String get backward;
+  String get rewind;
+}
 
-  ///Singleton factory
-  static final _AssetsPath _instance = _AssetsPath._internal();
+class AssetsPath implements _AssetsPath {
+  // 1. اجعل الـ constructor خاصًا
+  AssetsPath._();
 
-  factory _AssetsPath() {
-    return _instance;
+  // 2. أنشئ نسخة ثابتة (singleton) للوصول إليها بسهولة
+  static final AssetsPath assets = AssetsPath._();
+
+  // 3. حدد البادئة مرة واحدة
+  static const String _prefix = "packages/quran_library/assets/svg/";
+
+  // 4. الدالة السحرية noSuchMethod
+  @override
+  dynamic noSuchMethod(Invocation invocation) {
+    if (invocation.isGetter) {
+      // استخراج اسم الـ getter (مثل: playArrow)
+      final getterName = invocation.memberName.toString().split('"')[1];
+
+      // تحويل اسم المتغير من camelCase (playArrow) إلى اسم الملف
+      // هذا المثال يفترض أن اسم الملف هو نفسه اسم المتغير مع .svg
+      // إذا كان اسم الملف مختلفًا (مثل play-arrow.svg)، سنحتاج لتعديل بسيط
+      final fileName = '$getterName.svg';
+
+      // إذا كانت أسماء ملفاتك تستخدم الشرطة السفلية (snake_case)
+      // final fileName = '${_camelToSnake(getterName)}.svg';
+
+      // إرجاع المسار الكامل
+      return '$_prefix$fileName';
+    }
+    return super.noSuchMethod(invocation);
   }
-
-  _AssetsPath._internal();
 }

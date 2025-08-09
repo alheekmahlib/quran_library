@@ -26,6 +26,8 @@ class _QuranLinePage extends StatelessWidget {
   final List<int> ayahBookmarked;
   final Widget? anotherMenuChild;
   final void Function(AyahModel ayah)? anotherMenuChildOnTap;
+  final Widget? secondMenuChild;
+  final void Function(AyahModel ayah)? secondMenuChildOnTap;
 
   _QuranLinePage({
     required this.context,
@@ -52,6 +54,8 @@ class _QuranLinePage extends StatelessWidget {
     required this.ayahBookmarked,
     this.anotherMenuChild,
     this.anotherMenuChildOnTap,
+    this.secondMenuChild,
+    this.secondMenuChildOnTap,
   });
 
   final quranCtrl = QuranCtrl.instance;
@@ -61,7 +65,8 @@ class _QuranLinePage extends StatelessWidget {
     return Container(
       height: MediaQuery.sizeOf(context).height,
       padding: EdgeInsets.symmetric(
-          horizontal: context.currentOrientation(16.0, 64.0), vertical: 16.0),
+          horizontal: UiHelper.currentOrientation(16.0, 64.0, context),
+          vertical: 16.0),
       child: pageIndex == 0 || pageIndex == 1
 
           /// This is for first 2 pages of Quran: Al-Fatihah and Al-Baqarah
@@ -117,11 +122,12 @@ class _QuranLinePage extends StatelessWidget {
           ? MediaQuery.sizeOf(context).height
           : MediaQuery.sizeOf(context).height * .63,
       padding: EdgeInsets.symmetric(
-          vertical: context.currentOrientation(
+          vertical: UiHelper.currentOrientation(
               MediaQuery.sizeOf(context).width * .16,
-              MediaQuery.sizeOf(context).height * .01),
-          horizontal: context.currentOrientation(
-              MediaQuery.sizeOf(context).width * .12, 0.0)),
+              MediaQuery.sizeOf(context).height * .01,
+              context),
+          horizontal: UiHelper.currentOrientation(
+              MediaQuery.sizeOf(context).width * .12, 0.0, context)),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -132,8 +138,8 @@ class _QuranLinePage extends StatelessWidget {
                 BannerStyle(
                   isImage: false,
                   bannerSvgPath: isDark
-                      ? _AssetsPath().surahSvgBannerDark
-                      : _AssetsPath().surahSvgBanner,
+                      ? AssetsPath.assets.surahSvgBannerDark
+                      : AssetsPath.assets.surahSvgBanner,
                   bannerSvgHeight: 40.0,
                   bannerSvgWidth: 150.0,
                   bannerImagePath: '',
@@ -206,6 +212,8 @@ class _QuranLinePage extends StatelessWidget {
                             ayahBookmarked: ayahBookmarked,
                             anotherMenuChild: anotherMenuChild,
                             anotherMenuChildOnTap: anotherMenuChildOnTap,
+                            secondMenuChild: secondMenuChild,
+                            secondMenuChildOnTap: secondMenuChildOnTap,
                           ),
                         ),
                       ],
@@ -245,8 +253,8 @@ class _QuranLinePage extends StatelessWidget {
                                 BannerStyle(
                                   isImage: false,
                                   bannerSvgPath: isDark
-                                      ? _AssetsPath().surahSvgBannerDark
-                                      : _AssetsPath().surahSvgBanner,
+                                      ? AssetsPath.assets.surahSvgBannerDark
+                                      : AssetsPath.assets.surahSvgBanner,
                                   bannerSvgHeight: 40.0,
                                   bannerSvgWidth: 150.0,
                                   bannerImagePath: '',
@@ -302,9 +310,10 @@ class _QuranLinePage extends StatelessWidget {
                           ),
                         SizedBox(
                           width: deviceSize.width - 20,
-                          height: (context.currentOrientation(
+                          height: (UiHelper.currentOrientation(
                                       constraints.maxHeight,
-                                      MediaQuery.sizeOf(context).width * 1.6) -
+                                      MediaQuery.sizeOf(context).width * 1.6,
+                                      context) -
                                   (quranCtrl.staticPages[pageIndex]
                                           .numberOfNewSurahs *
                                       (line.ayahs[0].surahNumber != 9
@@ -333,6 +342,8 @@ class _QuranLinePage extends StatelessWidget {
                             ayahBookmarked: ayahBookmarked,
                             anotherMenuChild: anotherMenuChild,
                             anotherMenuChildOnTap: anotherMenuChildOnTap,
+                            secondMenuChild: secondMenuChild,
+                            secondMenuChildOnTap: secondMenuChildOnTap,
                           ),
                         ),
                       ],

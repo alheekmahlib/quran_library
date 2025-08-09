@@ -30,7 +30,7 @@ extension SajdaExtension on Widget {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  SvgPicture.asset(_AssetsPath().sajdaIcon,
+                  SvgPicture.asset(AssetsPath.assets.sajdaIcon,
                       height: 15,
                       colorFilter: ColorFilter.mode(
                           const Color(0xff77554B), BlendMode.srcIn)),

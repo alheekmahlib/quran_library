@@ -20,6 +20,8 @@ class QuranLine extends StatelessWidget {
     this.anotherMenuChild,
     this.anotherMenuChildOnTap,
     required this.isDark,
+    this.secondMenuChild,
+    this.secondMenuChildOnTap,
   });
 
   final quranCtrl = QuranCtrl.instance;
@@ -42,6 +44,8 @@ class QuranLine extends StatelessWidget {
   final Widget? anotherMenuChild;
   final void Function(AyahModel ayah)? anotherMenuChildOnTap;
   final bool isDark;
+  final Widget? secondMenuChild;
+  final void Function(AyahModel ayah)? secondMenuChildOnTap;
 
   @override
   Widget build(BuildContext context) {
@@ -67,6 +71,7 @@ class QuranLine extends StatelessWidget {
                     if (onPagePress != null) {
                       onPagePress!();
                     }
+                    quranCtrl.isShowControl.toggle();
                     quranCtrl.clearSelection();
                     quranCtrl.state.overlayEntry?.remove();
                     quranCtrl.state.overlayEntry = null;
@@ -102,6 +107,8 @@ class QuranLine extends StatelessWidget {
                             pageIndex: pageIndex,
                             anotherMenuChild: anotherMenuChild,
                             anotherMenuChildOnTap: anotherMenuChildOnTap,
+                            secondMenuChild: secondMenuChild,
+                            secondMenuChildOnTap: secondMenuChildOnTap,
                           ),
                         );
 

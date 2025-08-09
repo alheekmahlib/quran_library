@@ -1,9 +1,15 @@
 class LottieConstants {
   LottieConstants._();
+  static const String _packageBasePath =
+      'packages/quran_library/assets/lottie/';
 
-  /// assets/lottie/play_button.json
-  static const String assetsLottiePlayButton = "assets/lottie/play_button.json";
+  /// play_button.json
+  static String get assetsLottiePlayButton => "play_button.json";
 
-  /// assets/lottie/quran_au_ic.json
-  static const String assetsLottieQuranAuIc = "assets/lottie/quran_au_ic.json";
+  /// quran_au_ic.json
+  static String get assetsLottieQuranAuIc => "quran_au_ic.json";
+
+  static String get(String assetName) {
+    return _packageBasePath + assetName;
+  }
 }

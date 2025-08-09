@@ -1,8 +1,6 @@
-import '/audio/constants/readers_constants.dart';
-import '/audio/constants/storage_constants.dart';
-import '../surah_audio_controller.dart';
+part of '../../../audio.dart';
 
-extension SurahAudioStorageGetters on SurahAudioController {
+extension SurahAudioStorageGetters on AudioCtrl {
   /// -------- [Storage] ----------
 
   Future loadLastSurahListen() async {
@@ -42,6 +40,19 @@ extension SurahAudioStorageGetters on SurahAudioController {
     state.surahReaderNameValue.value =
         state.box.read(StorageConstants.surahAudioPlayerName) ??
             'abdul_basit_murattal/';
+    state.surahReaderIndex.value =
+        state.box.read(StorageConstants.surahReaderIndex) ?? 0;
+  }
+
+  void loadAyahReader() {
+    state.ayahReaderValue.value =
+        state.box.read(StorageConstants.ayahAudioPlayerSound) ??
+            ReadersConstants.ayahs1stSource;
+    state.ayahReaderNameValue.value =
+        state.box.read(StorageConstants.ayahAudioPlayerName) ??
+            'abdul_basit_murattal/';
+    state.ayahReaderIndex.value =
+        state.box.read(StorageConstants.ayahReaderIndex) ?? 0;
     state.surahReaderIndex.value =
         state.box.read(StorageConstants.surahReaderIndex) ?? 0;
   }

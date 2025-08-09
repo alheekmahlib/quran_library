@@ -20,6 +20,8 @@ class AyahLongClickDialog extends StatelessWidget {
     this.anotherMenuChild,
     this.anotherMenuChildOnTap,
     required this.isDark,
+    this.secondMenuChild,
+    this.secondMenuChildOnTap,
   });
 
   /// The AyahModel that is the target of the long click event.
@@ -39,7 +41,9 @@ class AyahLongClickDialog extends StatelessWidget {
   final int index;
   final int pageIndex;
   final Widget? anotherMenuChild;
+  final Widget? secondMenuChild;
   final void Function(AyahModel ayah)? anotherMenuChildOnTap;
+  final void Function(AyahModel ayah)? secondMenuChildOnTap;
   final BuildContext context;
   final bool isDark;
 
@@ -53,6 +57,9 @@ class AyahLongClickDialog extends StatelessWidget {
     int itemsCount =
         3; // عدد الأيقونات الأساسية (3 ألوان + نسخ + تفسير) / Basic icons count
     if (anotherMenuChild != null) {
+      itemsCount += 1; // إضافة عنصر إضافي / Additional item
+    }
+    if (secondMenuChild != null) {
       itemsCount += 1; // إضافة عنصر إضافي / Additional item
     }
     double dialogWidth = (itemsCount * 40) +
@@ -248,6 +255,22 @@ class AyahLongClickDialog extends StatelessWidget {
                         QuranCtrl.instance.state.overlayEntry = null;
                       },
                       child: anotherMenuChild ?? const SizedBox(),
+                    )
+                  : const SizedBox(),
+              secondMenuChild != null
+                  ? context.verticalDivider(
+                      height: 30, color: const Color(0xffe8decb))
+                  : const SizedBox(),
+              secondMenuChild != null
+                  ? GestureDetector(
+                      onTap: () {
+                        if (secondMenuChildOnTap != null) {
+                          secondMenuChildOnTap!(ayah!);
+                        }
+                        QuranCtrl.instance.state.overlayEntry?.remove();
+                        QuranCtrl.instance.state.overlayEntry = null;
+                      },
+                      child: secondMenuChild ?? const SizedBox(),
                     )
                   : const SizedBox(),
             ],

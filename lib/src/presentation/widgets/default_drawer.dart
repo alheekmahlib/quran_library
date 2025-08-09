@@ -3,8 +3,9 @@ part of '/quran.dart';
 class _DefaultDrawer extends StatelessWidget {
   final String languageCode;
   final bool isDark;
+  final SurahAudioStyle? style;
 
-  const _DefaultDrawer(this.languageCode, this.isDark);
+  const _DefaultDrawer(this.languageCode, this.isDark, {this.style});
 
   @override
   Widget build(BuildContext context) {
@@ -70,7 +71,7 @@ class _DefaultDrawer extends StatelessWidget {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (_) => SurahAudioScreen(),
+              builder: (_) => SurahAudioScreen(style: style, isDark: isDark),
             ),
           );
         },
@@ -171,7 +172,7 @@ class _DefaultDrawer extends StatelessWidget {
                       alignment: Alignment.center,
                       children: [
                         SvgPicture.asset(
-                          _AssetsPath().suraNum,
+                          AssetsPath.assets.suraNum,
                           width: 50,
                           height: 50,
                           colorFilter:
@@ -189,12 +190,15 @@ class _DefaultDrawer extends StatelessWidget {
                 ),
                 Expanded(
                   flex: 8,
-                  child: SvgPicture.asset(
-                    'packages/quran_library/assets/svg/surah_name/00${index + 1}.svg',
-                    width: 200,
-                    height: 40,
-                    colorFilter:
-                        ColorFilter.mode(Colors.black, BlendMode.srcIn),
+                  child: Text(
+                    (index + 1).toString(),
+                    style: TextStyle(
+                      color: (isDark ? Colors.white : Colors.black),
+                      fontFamily: "surahName",
+                      fontSize: 38,
+                      package: "quran_library",
+                    ),
+                    textAlign: TextAlign.center,
                   ),
                 ),
               ],

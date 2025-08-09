@@ -48,12 +48,18 @@ class QuranLibraryScreen extends StatelessWidget {
     this.topTitleChild,
     this.useDefaultAppBar = true,
     this.withPageView = true,
-    this.optimizeScrolling = true,
     this.isFontsLocal = false,
     this.fontsName = '',
     this.ayahBookmarked = const [],
     this.anotherMenuChild,
     this.anotherMenuChildOnTap,
+    this.secondMenuChild,
+    this.secondMenuChildOnTap,
+    this.ayahStyle,
+    this.surahStyle,
+    this.isShowAudioSlider = true,
+    this.appIconUrlForPlayAudioInBackground,
+    required this.parentContext,
   });
 
   /// إذا قمت بإضافة شريط التطبيقات هنا فإنه سيحل محل شريط التطبيقات الافتراضية [appBar]
@@ -208,11 +214,6 @@ class QuranLibraryScreen extends StatelessWidget {
   /// [withPageView] Enable this variable if you want to display the Quran with PageView
   final bool withPageView;
 
-  /// متغير لتحسين أداء السكرول (اختياري) [optimizeScrolling]
-  ///
-  /// [optimizeScrolling] Optional variable to optimize scrolling performance
-  final bool optimizeScrolling;
-
   /// إذا كنت تريد استخدام خطوط موجودة مسبقًا في التطبيق، اجعل هذا المتغيير true [isFontsLocal]
   ///
   /// [isFontsLocal] If you want to use fonts that exists in the app, make this variable true
@@ -228,11 +229,81 @@ class QuranLibraryScreen extends StatelessWidget {
   /// [ayahBookmarked] Pass the list of bookmarked ayahs
   final List<int>? ayahBookmarked;
 
+  /// زر إضافي أول لقائمة خيارات الآية - يمكن إضافة أيقونة أو نص مخصص [anotherMenuChild]
+  ///
+  /// [anotherMenuChild] First additional button for ayah options menu - you can add custom icon or text
   final Widget? anotherMenuChild;
+
+  /// دالة يتم استدعاؤها عند الضغط على الزر الإضافي الأول في قائمة خيارات الآية [anotherMenuChildOnTap]
+  ///
+  /// [anotherMenuChildOnTap] Function called when pressing the first additional button in ayah options menu
   final void Function(AyahModel ayah)? anotherMenuChildOnTap;
+
+  /// زر إضافي ثاني لقائمة خيارات الآية - يمكن إضافة أيقونة أو نص مخصص [secondMenuChild]
+  ///
+  /// [secondMenuChild] Second additional button for ayah options menu - you can add custom icon or text
+  final Widget? secondMenuChild;
+
+  /// دالة يتم استدعاؤها عند الضغط على الزر الإضافي الثاني في قائمة خيارات الآية [secondMenuChildOnTap]
+  ///
+  /// [secondMenuChildOnTap] Function called when pressing the second additional button in ayah options menu
+  final void Function(AyahModel ayah)? secondMenuChildOnTap;
+
+  /// نمط تخصيص مظهر المشغل الصوتي للآيات - يتحكم في الألوان والخطوط والأيقونات [ayahStyle]
+  ///
+  /// [ayahStyle] Audio player style customization for ayahs - controls colors, fonts, and icons
+  final AyahAudioStyle? ayahStyle;
+
+  /// نمط تخصيص مظهر المشغل الصوتي للسور - يتحكم في الألوان والخطوط والأيقونات [surahStyle]
+  ///
+  /// [surahStyle] Audio player style customization for surahs - controls colors, fonts, and icons
+  final SurahAudioStyle? surahStyle;
+
+  /// إظهار أو إخفاء سلايدر التحكم في الصوت السفلي [isShowAudioSlider]
+  ///
+  /// [isShowAudioSlider] Show or hide the bottom audio control slider
+  final bool? isShowAudioSlider;
+
+  /// رابط أيقونة التطبيق للمشغل الصوتي / App icon URL for audio player
+  /// [appIconUrlForPlayAudioInBackground] يمكن تمرير رابط مخصص لأيقونة التطبيق في المشغل الصوتي
+  /// [appIconUrlForPlayAudioInBackground] You can pass a custom URL for the app icon in the audio player
+  final String? appIconUrlForPlayAudioInBackground;
+
+  /// السياق المطلوب من المستخدم لإدارة العمليات الداخلية للمكتبة [parentContext]
+  /// مثل الوصول إلى MediaQuery، Theme، والتنقل بين الصفحات
+  ///
+  /// مثال على الاستخدام:
+  /// ```dart
+  /// QuranLibraryScreen(
+  ///   parentContext: context, // تمرير السياق من الويدجت الأب
+  ///   // باقي المعاملات...
+  /// )
+  /// ```
+  ///
+  /// [parentContext] Required context from user for internal library operations
+  /// such as accessing MediaQuery, Theme, and navigation between pages
+  ///
+  /// Usage example:
+  /// ```dart
+  /// QuranLibraryScreen(
+  ///   parentContext: context, // Pass context from parent widget
+  ///   // other parameters...
+  /// )
+  /// ```
+  final BuildContext parentContext;
 
   @override
   Widget build(BuildContext context) {
+    // تحديث رابط أيقونة التطبيق إذا تم تمريره / Update app icon URL if provided
+    // Update app icon URL if provided
+    if (appIconUrlForPlayAudioInBackground != null &&
+        appIconUrlForPlayAudioInBackground!.isNotEmpty) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        AudioCtrl.instance
+            .updateAppIconUrl(appIconUrlForPlayAudioInBackground!);
+      });
+    }
+
     // if (isDark!) {
     //   QuranCtrl.instance.state.isTajweed.value = 1;
     //   GetStorage().write(StorageConstants().isTajweed, 1);
@@ -256,13 +327,13 @@ class QuranLibraryScreen extends StatelessWidget {
                                 ? const Color(0xff1E1E1E)
                                 : const Color(0xfffaf7f3)),
                         leading: Builder(
-                          builder: (context) => IconButton(
+                          builder: (buildContext) => IconButton(
                             icon: Icon(
                               Icons.menu,
                               color: isDark ? Colors.white : Colors.black,
                             ),
                             onPressed: () {
-                              Scaffold.of(context).openDrawer();
+                              Scaffold.of(buildContext).openDrawer();
                             },
                           ),
                         ),
@@ -297,61 +368,89 @@ class QuranLibraryScreen extends StatelessWidget {
                       )
                     : null),
             drawer: appBar == null && useDefaultAppBar
-                ? _DefaultDrawer(languageCode ?? 'ar', isDark)
+                ? _DefaultDrawer(languageCode ?? 'ar', isDark,
+                    style: surahStyle ?? SurahAudioStyle())
                 : null,
             body: SafeArea(
-              child: withPageView
-                  ? PageView.builder(
-                      itemCount: 604,
-                      controller: quranCtrl._pageController,
-                      padEnds: false,
-                      // شرح: اختيار نوع الفيزياء حسب إعداد التحسين
-                      // Explanation: Choose physics type based on optimization setting
-                      physics: optimizeScrolling
-                          ? const SmoothPageScrollPhysics()
-                          : const ClampingScrollPhysics(),
-                      // شرح: إضافة allowImplicitScrolling لتحسين الأداء
-                      // Explanation: Adding allowImplicitScrolling for better performance
-                      allowImplicitScrolling: true,
-                      // شرح: إضافة clipBehavior لتحسين الرسم
-                      // Explanation: Adding clipBehavior for better rendering
-                      clipBehavior: Clip.hardEdge,
-                      // شرح: تحسين معالجة تغيير الصفحة لتقليل التقطيع
-                      // Explanation: Optimized page change handling to reduce stuttering
-                      onPageChanged: (page) {
-                        // تشغيل العمليات في الخلفية لتجنب تجميد UI
-                        // Run operations in background to avoid UI freeze
-                        WidgetsBinding.instance.addPostFrameCallback((_) async {
-                          if (onPageChanged != null) {
-                            onPageChanged!(page);
-                          } else {
-                            quranCtrl.state.overlayEntry?.remove();
-                            quranCtrl.state.overlayEntry = null;
-                          }
-                          quranCtrl.saveLastPage(page + 1);
-                        });
-                      },
-                      pageSnapping: true,
-                      itemBuilder: (ctx, index) {
-                        // شرح: تحسين أداء itemBuilder لتقليل التقطيع
-                        // Explanation: Optimize itemBuilder performance to reduce stuttering
-                        return RepaintBoundary(
-                          key: ValueKey('quran_page_$index'),
-                          child: _pageViewBuild(
-                            context,
-                            index,
-                            quranCtrl,
-                            isFontsLocal!,
-                          ),
-                        );
-                      },
-                    )
-                  : _pageViewBuild(
-                      context,
-                      pageIndex,
-                      quranCtrl,
-                      isFontsLocal!,
-                    ),
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  withPageView
+                      ? PageView.builder(
+                          itemCount: 604,
+                          controller: quranCtrl._pageController,
+                          padEnds: false,
+                          // شرح: اختيار نوع الفيزياء حسب إعداد التحسين
+                          // Explanation: Choose physics type based on optimization setting
+                          physics: const ClampingScrollPhysics(),
+                          // شرح: إضافة allowImplicitScrolling لتحسين الأداء
+                          // Explanation: Adding allowImplicitScrolling for better performance
+                          allowImplicitScrolling: true,
+                          // شرح: إضافة clipBehavior لتحسين الرسم
+                          // Explanation: Adding clipBehavior for better rendering
+                          clipBehavior: Clip.hardEdge,
+                          // شرح: تحسين معالجة تغيير الصفحة لتقليل التقطيع
+                          // Explanation: Optimized page change handling to reduce stuttering
+                          onPageChanged: (page) {
+                            // تشغيل العمليات في الخلفية لتجنب تجميد UI
+                            // Run operations in background to avoid UI freeze
+                            WidgetsBinding.instance
+                                .addPostFrameCallback((_) async {
+                              if (onPageChanged != null) {
+                                onPageChanged!(page);
+                              } else {
+                                quranCtrl.state.overlayEntry?.remove();
+                                quranCtrl.state.overlayEntry = null;
+                              }
+                              quranCtrl.saveLastPage(page + 1);
+                            });
+                          },
+                          pageSnapping: true,
+                          itemBuilder: (ctx, index) {
+                            // شرح: تحسين أداء itemBuilder لتقليل التقطيع
+                            // Explanation: Optimize itemBuilder performance to reduce stuttering
+                            return RepaintBoundary(
+                              key: ValueKey('quran_page_$index'),
+                              child: _pageViewBuild(
+                                parentContext,
+                                index,
+                                quranCtrl,
+                                isFontsLocal!,
+                              ),
+                            );
+                          },
+                        )
+                      : _pageViewBuild(
+                          parentContext,
+                          pageIndex,
+                          quranCtrl,
+                          isFontsLocal!,
+                        ),
+
+                  // السلايدر السفلي - يظهر من الأسفل للأعلى
+                  // Bottom slider - appears from bottom to top
+                  isShowAudioSlider!
+                      ? Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                          child: Obx(() => BottomSlider(
+                                isVisible:
+                                    QuranCtrl.instance.isShowControl.value,
+                                onClose: () {
+                                  QuranCtrl.instance.isShowControl.value =
+                                      false;
+                                  SliderController.instance.hideBottomContent();
+                                },
+                                style: ayahStyle ?? AyahAudioStyle(),
+                                contentChild: SizedBox.shrink(),
+                                child: Flexible(
+                                  child: AudioWidget(
+                                      style: ayahStyle ?? AyahAudioStyle()),
+                                ),
+                              )),
+                        )
+                      : SizedBox.shrink(),
+                ],
+              ),
             ),
           ),
         ),
@@ -360,12 +459,14 @@ class QuranLibraryScreen extends StatelessWidget {
   }
 
   Widget _pageViewBuild(
-    BuildContext context,
+    BuildContext
+        userContext, // سياق المستخدم للوصول لخصائص التطبيق / User context for app properties
     int pageIndex,
     QuranCtrl quranCtrl,
     bool isFontsLocal,
   ) {
-    final deviceSize = MediaQuery.of(context).size;
+    final deviceSize = MediaQuery.of(userContext)
+        .size; // استخدام سياق المستخدم / Using user context
     List<String> newSurahs = [];
     quranCtrl.isDownloadFonts
         ? quranCtrl.prepareFonts(pageIndex, isFontsLocal: isFontsLocal)
@@ -374,6 +475,7 @@ class QuranLibraryScreen extends StatelessWidget {
     return GetBuilder<QuranCtrl>(
       init: QuranCtrl.instance,
       builder: (quranCtrl) => GestureDetector(
+        /// TODO: في تكبير الخط وتصغيره اللمس لا يستجيب بسرعة ويحتاج إلى تعديل
         onScaleStart: (details) => quranCtrl.state.baseScaleFactor.value =
             quranCtrl.state.scaleFactor.value,
         onScaleUpdate: (ScaleUpdateDetails details) =>
@@ -396,7 +498,7 @@ class QuranLibraryScreen extends StatelessWidget {
                         isRight: pageIndex.isEven ? true : false,
                         topTitleChild: topTitleChild,
                         child: _QuranFontsPage(
-                          context: context,
+                          context: userContext,
                           pageIndex: pageIndex,
                           bookmarkList: bookmarkList,
                           textColor: ayahSelectedFontColor ?? textColor,
@@ -422,6 +524,8 @@ class QuranLibraryScreen extends StatelessWidget {
                           ayahBookmarked: ayahBookmarked!,
                           anotherMenuChild: anotherMenuChild,
                           anotherMenuChildOnTap: anotherMenuChildOnTap,
+                          secondMenuChild: secondMenuChild,
+                          secondMenuChildOnTap: secondMenuChildOnTap,
                         ),
                       ))
               : quranCtrl.staticPages.isEmpty || quranCtrl.isLoading.value
@@ -429,7 +533,7 @@ class QuranLibraryScreen extends StatelessWidget {
                       child: circularProgressWidget ??
                           const CircularProgressIndicator())
                   : _QuranLinePage(
-                      context: context,
+                      context: userContext,
                       pageIndex: pageIndex,
                       bookmarkList: bookmarkList,
                       textColor: textColor,
@@ -453,6 +557,8 @@ class QuranLibraryScreen extends StatelessWidget {
                       ayahBookmarked: ayahBookmarked!,
                       anotherMenuChild: anotherMenuChild,
                       anotherMenuChildOnTap: anotherMenuChildOnTap,
+                      secondMenuChild: secondMenuChild,
+                      secondMenuChildOnTap: secondMenuChildOnTap,
                     )),
           quranCtrl.staticPages.isEmpty || quranCtrl.isLoading.value
               ? Center(
@@ -466,7 +572,7 @@ class QuranLibraryScreen extends StatelessWidget {
                   isRight: pageIndex.isEven ? true : false,
                   topTitleChild: topTitleChild,
                   child: _QuranTextScale(
-                    context: context,
+                    context: userContext,
                     pageIndex: pageIndex,
                     bookmarkList: bookmarkList,
                     textColor: ayahSelectedFontColor ?? textColor,
@@ -483,13 +589,15 @@ class QuranLibraryScreen extends StatelessWidget {
                     surahNumber: surahNumber,
                     bookmarksAyahs: bookmarkCtrl.bookmarksAyahs,
                     ayahSelectedBackgroundColor: ayahSelectedBackgroundColor,
-                    onAyahPress: onPagePress,
+                    onPagePress: onPagePress,
                     languageCode: languageCode,
                     isDark: isDark,
                     circularProgressWidget: circularProgressWidget,
                     ayahBookmarked: ayahBookmarked!,
                     anotherMenuChild: anotherMenuChild,
                     anotherMenuChildOnTap: anotherMenuChildOnTap,
+                    secondMenuChild: secondMenuChild,
+                    secondMenuChildOnTap: secondMenuChildOnTap,
                   ),
                 ),
         ),

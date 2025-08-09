@@ -1,16 +1,6 @@
-import 'dart:developer' show log;
+part of '../../../audio.dart';
 
-import 'package:flutter/scheduler.dart';
-import 'package:get/get.dart';
-import 'package:just_audio/just_audio.dart';
-
-import '/audio/constants/readers_constants.dart';
-import '/audio/constants/storage_constants.dart';
-import '/core/extensions/string_extensions.dart';
-import '/quran.dart';
-import '../../controller/extensions/surah_audio_getters.dart';
-
-extension SurahAudioUi on SurahAudioController {
+extension SurahAudioUi on AudioCtrl {
   Future<void> changeAudioSource() async {
     state.surahDownloadStatus.value[state.currentAudioListSurahNum.value] ??
             false
@@ -24,7 +14,7 @@ extension SurahAudioUi on SurahAudioController {
           ));
   }
 
-  void changeReadersOnTap(int index) {
+  void changeSurahReadersOnTap(BuildContext context, int index) {
     initializeSurahDownloadStatus();
     state.surahReaderValue.value =
         ReadersConstants.surahReaderInfo[index]['readerD'];
@@ -37,36 +27,36 @@ extension SurahAudioUi on SurahAudioController {
     state.box.write(StorageConstants.surahReaderIndex, index);
     state.surahReaderIndex.value = index;
     changeAudioSource();
-    Get.back();
+    Navigator.of(context).pop();
   }
 
-  void searchSurah(String searchInput) {
-    final surahList = QuranCtrl.instance.state.surahs;
-
-    int index;
-    if (int.tryParse(searchInput.convertArabicToEnglishNumbers) != null) {
-      // If input is a number, search by surah number
-      index = surahList.indexWhere((surah) =>
-          surah.surahNumber ==
-          int.parse(searchInput.convertArabicToEnglishNumbers));
-    } else {
-      // If input is text, search by surah name
-      index = surahList.indexWhere(
-          (surah) => surah.arabicName.removeDiacritics.contains(searchInput));
-    }
-
-    log('surahNumber: $index');
-    if (index != -1 && state.surahsScrollController.isAttached) {
-      jumpToSurah(index);
-      state.selectedSurahIndex.value = index;
-    }
+  void changeAyahReadersOnTap(BuildContext context, int index) {
+    state.ayahReaderNameValue.value =
+        ReadersConstants.ayahReaderInfo[index]['readerD'];
+    state.ayahReaderValue.value =
+        ReadersConstants.ayahReaderInfo[index]['readerI'];
+    state.box.write(StorageConstants.ayahAudioPlayerSound,
+        ReadersConstants.ayahReaderInfo[index]['readerD']);
+    state.box.write(StorageConstants.ayahAudioPlayerName,
+        ReadersConstants.ayahReaderInfo[index]['readerN']);
+    state.box.write(StorageConstants.ayahReaderIndex, index);
+    state.ayahReaderIndex.value = index;
+    Navigator.of(context).pop();
+    playAyah(context, state.currentAyahUniqueNumber,
+        playSingleAyah: state.playSingleAyahOnly);
   }
 
-  void jumpToSurah(int index) async {
-    // Ensure ScrollablePositionedList is fully built
-    SchedulerBinding.instance.addPostFrameCallback((_) {
-      Future.delayed(const Duration(milliseconds: 700))
-          .then((_) => state.surahsScrollController.jumpTo(index: index));
+  void sheetState() {
+    state.panelController.addListener(() {
+      // تحديث حالة الـ Sheet بناءً على الوضعية الحالية
+      // Update Sheet state based on current status
+      if (state.panelController.status.index == 0) {
+        state.isSheetOpen.value = true;
+        log('Sheet is now open', name: 'SurahAudioController');
+      } else {
+        state.isSheetOpen.value = false;
+        log('Sheet is now closed', name: 'SurahAudioController');
+      }
     });
   }
 }

@@ -512,13 +512,13 @@ extension QuranGetters on QuranCtrl {
 
 // String get surahBannerPath {
 //   if (themeCtrl.isBlueMode) {
-//     return SvgPath.svgSurahBanner1;
+//     return AssetsPath.assets.svgSurahBanner1;
 //   } else if (themeCtrl.isBrownMode) {
-//     return SvgPath.svgSurahBanner2;
+//     return AssetsPath.assets.svgSurahBanner2;
 //   } else if (themeCtrl.isOldMode) {
-//     return SvgPath.svgSurahBanner4;
+//     return AssetsPath.assets.svgSurahBanner4;
 //   } else {
-//     return SvgPath.svgSurahBanner3;
+//     return AssetsPath.assets.svgSurahBanner3;
 //   }
 // }
 }

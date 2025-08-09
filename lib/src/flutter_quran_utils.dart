@@ -36,7 +36,7 @@ class QuranLibrary {
     final storageConstants = _StorageConstants();
 
     /// Initialize SurahAudioController
-    SurahAudioController.instance;
+    AudioCtrl.instance;
 
     quranCtrl.state.isDownloadedV2Fonts.value =
         storage.read(storageConstants.isDownloadedCodeV2Fonts) ?? false;
@@ -218,27 +218,44 @@ class QuranLibrary {
     return surahList;
   }
 
-  /// [getAllSurahsArtPath] يعيد قائمة بمسارات المخطوطات الخاصة بإسماء السور.
+  /// [getAllSurahsArtPath] يعيد قائمة ويدجيت المخطوطات الخاصة بإسماء السور.
   ///
-  /// [getAllSurahsArtPath] returns list of all Quran surahs' name artistic manuscript path
-  List<String> getAllSurahsArtPath() {
+  /// [getAllSurahsArtPath] returns list of widgets for all Quran surahs' name artistic manuscript path
+  List<Widget> getAllSurahsArtPath({Color? color}) {
     if (_cache.containsKey('allSurahsArtPath')) {
-      return _cache['allSurahsArtPath'] as List<String>;
+      return _cache['allSurahsArtPath'] as List<Widget>;
     }
-    final paths = List.generate(quranCtrl.surahs.length,
-        (i) => 'packages/quran_library/assets/svg/surah_name/00$i.svg');
+    final paths = List.generate(
+        quranCtrl.surahs.length,
+        (i) => Text(
+              (i + 1).toString(),
+              style: TextStyle(
+                color: color ?? Colors.black,
+                fontFamily: "surahName",
+                fontSize: 38,
+                package: "quran_library",
+              ),
+            ));
     _cache['allSurahsArtPath'] = paths;
     return paths;
   }
 
-  /// [getSurahArtPath] يعيد مسار المخطوطة الخاصة بإسم السور.
+  /// [getSurahArtPath] يعيد ويدجيت المخطوطة الخاصة بإسم السور.
   ///
-  /// [getSurahArtPath] returns Quran surah' name artistic manuscript path
-  String getSurahArtPath({required int index}) {
+  /// [getSurahArtPath] returns widget for Quran surah name artistic manuscript path
+  Widget getSurahArtPath({required int index, Color? color}) {
     if (_cache.containsKey('allSurahsArtPath')) {
-      return _cache['allSurahsArtPath'] as String;
+      return _cache['allSurahsArtPath'] as Widget;
     }
-    final paths = 'packages/quran_library/assets/svg/surah_name/00$index.svg';
+    final paths = Text(
+      (index + 1).toString(),
+      style: TextStyle(
+        color: color ?? Colors.black,
+        fontFamily: "surahName",
+        fontSize: 38,
+        package: "quran_library",
+      ),
+    );
     _cache['allSurahsArtPath'] = paths;
     return paths;
   }

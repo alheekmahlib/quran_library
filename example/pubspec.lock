@@ -9,14 +9,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.2"
-  arabic_numbers:
-    dependency: transitive
-    description:
-      name: arabic_numbers
-      sha256: e8786218a2c299314d069556b0f30ce2e441fb0565e988b67c77ac97b1152ffb
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.0.0"
   archive:
     dependency: transitive
     description:
@@ -251,14 +243,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "5.9.3"
-  flutter_sliding_box:
+  flutter_sliding_panel:
     dependency: transitive
     description:
-      name: flutter_sliding_box
-      sha256: "93d3e42c5128813c53b890a84c1f221ac44c90a38394f00b2acff408df30d7cb"
+      name: flutter_sliding_panel
+      sha256: "2bb06ac71954b8304092485a0e6fdd03eafb4bb0d2b915ce98e61a62fc8a580d"
       url: "https://pub.dev"
     source: hosted
-    version: "1.1.5"
+    version: "0.0.5"
   flutter_svg:
     dependency: transitive
     description:
@@ -429,14 +421,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.15.0"
-  mini_music_visualizer:
-    dependency: transitive
-    description:
-      name: mini_music_visualizer
-      sha256: "779a957424ce9a09cc00989a8cf9b7541ec22316d9781a43e701afa6acacf274"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.1.4"
   nested:
     dependency: transitive
     description:

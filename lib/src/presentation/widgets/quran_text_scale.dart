@@ -12,7 +12,7 @@ class _QuranTextScale extends StatelessWidget {
     this.bannerStyle,
     this.onSurahBannerPress,
     this.onAyahLongPress,
-    this.onAyahPress,
+    this.onPagePress,
     this.bookmarksColor,
     this.textColor,
     this.ayahIconColor,
@@ -26,6 +26,8 @@ class _QuranTextScale extends StatelessWidget {
     required this.ayahBookmarked,
     this.anotherMenuChild,
     this.anotherMenuChildOnTap,
+    this.secondMenuChild,
+    this.secondMenuChildOnTap,
   });
 
   final quranCtrl = QuranCtrl.instance;
@@ -41,7 +43,7 @@ class _QuranTextScale extends StatelessWidget {
   final Function(SurahNamesModel surah)? onSurahBannerPress;
   final Function(LongPressStartDetails details, AyahModel ayah)?
       onAyahLongPress;
-  final VoidCallback? onAyahPress;
+  final VoidCallback? onPagePress;
   final Color? bookmarksColor;
   final Color? textColor;
   final Color? ayahIconColor;
@@ -54,15 +56,18 @@ class _QuranTextScale extends StatelessWidget {
   final bool showAyahBookmarkedIcon;
   final Widget? anotherMenuChild;
   final void Function(AyahModel ayah)? anotherMenuChildOnTap;
+  final Widget? secondMenuChild;
+  final void Function(AyahModel ayah)? secondMenuChildOnTap;
 
   @override
   Widget build(BuildContext context) {
     return GetBuilder<QuranCtrl>(
       builder: (quranCtrl) => GestureDetector(
         onTap: () {
-          if (onAyahPress != null) {
-            onAyahPress!();
+          if (onPagePress != null) {
+            onPagePress!();
           }
+          quranCtrl.isShowControl.toggle();
           quranCtrl.clearSelection();
           quranCtrl.state.overlayEntry?.remove();
           quranCtrl.state.overlayEntry = null;
@@ -98,8 +103,10 @@ class _QuranTextScale extends StatelessWidget {
                                         BannerStyle(
                                           isImage: false,
                                           bannerSvgPath: isDark
-                                              ? _AssetsPath().surahSvgBannerDark
-                                              : _AssetsPath().surahSvgBanner,
+                                              ? AssetsPath
+                                                  .assets.surahSvgBannerDark
+                                              : AssetsPath
+                                                  .assets.surahSvgBanner,
                                           bannerSvgHeight: 40.0,
                                           bannerSvgWidth: 150.0,
                                           bannerImagePath: '',
@@ -268,6 +275,10 @@ class _QuranTextScale extends StatelessWidget {
                                                     anotherMenuChild,
                                                 anotherMenuChildOnTap:
                                                     anotherMenuChildOnTap,
+                                                secondMenuChild:
+                                                    secondMenuChild,
+                                                secondMenuChildOnTap:
+                                                    secondMenuChildOnTap,
                                               ),
                                             );
 
@@ -314,8 +325,10 @@ class _QuranTextScale extends StatelessWidget {
                                         BannerStyle(
                                           isImage: false,
                                           bannerSvgPath: isDark
-                                              ? _AssetsPath().surahSvgBannerDark
-                                              : _AssetsPath().surahSvgBanner,
+                                              ? AssetsPath
+                                                  .assets.surahSvgBannerDark
+                                              : AssetsPath
+                                                  .assets.surahSvgBanner,
                                           bannerSvgHeight: 40.0,
                                           bannerSvgWidth: 150.0,
                                           bannerImagePath: '',

@@ -1,8 +1,7 @@
-part of 'surah_audio_controller.dart';
+part of '../../audio.dart';
 
 class SurahAudioState {
   /// -------- [Variables] ----------
-  ArabicNumbers arabicNumber = ArabicNumbers();
 
   AudioPlayer audioPlayer = AudioPlayer();
   RxBool isDownloading = false.obs;
@@ -14,9 +13,11 @@ class SurahAudioState {
   late Uri cachedArtUri;
   TextEditingController textController = TextEditingController();
   RxInt selectedSurahIndex = 0.obs;
-  final surahsScrollController = ItemScrollController();
+  final ScrollController surahListController = ScrollController();
   RxString surahReaderValue = "https://download.quranicaudio.com/quran/".obs;
   RxString surahReaderNameValue = "abdul_basit_murattal/".obs;
+  RxString ayahReaderValue = "https://download.quranicaudio.com/quran/".obs;
+  RxString ayahReaderNameValue = "abdul_basit_murattal/".obs;
   final bool isDisposed = false;
   List<AudioSource>? surahsPlayList;
   List<Map<int, AudioSource>> downloadSurahsPlayList = [];
@@ -24,7 +25,6 @@ class SurahAudioState {
   RxInt lastPosition = 0.obs;
   Rx<PositionData>? positionData;
   var activeButton = RxString('');
-  final boxController = BoxController();
   final TextEditingController textEditingController = TextEditingController();
   RxInt surahReaderIndex = 1.obs;
   final Rx<Map<int, bool>> surahDownloadStatus = Rx<Map<int, bool>>({});
@@ -40,16 +40,19 @@ class SurahAudioState {
   bool snackBarShownForBatch = false;
 
   /// ===== single verse =====
-  int currentAyahUnequeNumber = 1;
+  int currentAyahUniqueNumber = 1;
 
   int tmpDownloadedAyahsCount = 0;
-  RxInt ayahReaderIndex = 1.obs;
+  RxInt ayahReaderIndex = 0.obs;
 
   /// if true, then play single ayah only.
   /// false state is not ready.
   bool playSingleAyahOnly = true;
 
-  // TODO: let user change it.
-  String appIconUrl =
-      'https://raw.githubusercontent.com/alheekmahlib/thegarlanded/master/Photos/ios-1024.png';
+  // App icon URL - يمكن للمستخدم تخصيصه / User can customize the app icon URL
+  RxString appIconUrl =
+      'https://raw.githubusercontent.com/alheekmahlib/thegarlanded/master/Photos/ios-1024.png'
+          .obs;
+  SlidingPanelController panelController = SlidingPanelController();
+  RxBool isSheetOpen = false.obs;
 }

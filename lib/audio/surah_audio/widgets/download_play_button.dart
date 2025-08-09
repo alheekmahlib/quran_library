@@ -1,25 +1,23 @@
-import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:just_audio/just_audio.dart';
-
-import '/core/utils/custom_widgets.dart';
-import '../../../core/constants/lottie_constants.dart';
-import '../controller/surah_audio_controller.dart';
+part of '../../audio.dart';
 
 class DownloadPlayButton extends StatelessWidget {
-  const DownloadPlayButton({super.key});
+  final SurahAudioStyle? style;
+  const DownloadPlayButton({super.key, this.style});
 
   @override
   Widget build(BuildContext context) {
-    final surahAudioCtrl = SurahAudioController.instance;
+    final surahAudioCtrl = AudioCtrl.instance;
     return SizedBox(
       width: 40,
       child: Obx(
         () => surahAudioCtrl.state.isDownloading.value
-            ? CustomWidgets.customClose(
-                height: 20,
-                width: 20,
-                close: () => surahAudioCtrl.cancelDownload(),
+            ? IconButton(
+                icon: Icon(
+                  Icons.close,
+                  color: style?.iconColor ?? Colors.black,
+                  size: 28,
+                ),
+                onPressed: () => surahAudioCtrl.cancelDownload(),
               )
             : StreamBuilder<PlayerState>(
                 stream: surahAudioCtrl.state.audioPlayer.playerStateStream,
@@ -29,7 +27,8 @@ class DownloadPlayButton extends StatelessWidget {
                   if (processingState == ProcessingState.loading ||
                       processingState == ProcessingState.buffering) {
                     return CustomWidgets.customLottie(
-                        LottieConstants.assetsLottiePlayButton,
+                        LottieConstants.get(
+                            LottieConstants.assetsLottiePlayButton),
                         width: 20.0,
                         height: 20.0);
                   } else {
@@ -40,7 +39,7 @@ class DownloadPlayButton extends StatelessWidget {
                           label: 'download'.tr,
                           child: const Icon(Icons.cloud_download_outlined)),
                       iconSize: 24.0,
-                      color: Theme.of(context).colorScheme.primary,
+                      color: style?.iconColor ?? Colors.blue,
                       onPressed: () async {
                         if (surahAudioCtrl.state.isDownloading.value) {
                           surahAudioCtrl.cancelDownload();
@@ -51,7 +50,7 @@ class DownloadPlayButton extends StatelessWidget {
                             true) {
                           surahAudioCtrl.state.isPlaying.value = true;
                         } else {
-                          await surahAudioCtrl.startDownload(context);
+                          await surahAudioCtrl.startDownload();
                         }
                       },
                     );

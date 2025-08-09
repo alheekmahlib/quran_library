@@ -2,21 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:toastification/toastification.dart';
 
-import '../constants/svg_paths.dart';
+import '../../quran.dart';
 
 class UiHelper {
   UiHelper._();
 
-  static double screenWidth(double smallWidth, double largeWidth,
-      {required BuildContext context}) {
-    final size = MediaQuery.sizeOf(context);
-    if (size.width <= 600) {
-      return smallWidth;
-    }
-    return largeWidth;
-  }
-
-  static dynamic customOrientation(var n1, var n2, BuildContext context) {
+  /// Returns the current orientation based on the provided parameters.
+  ///
+  /// This method takes two parameters, [n1] and [n2], and determines the
+  /// current orientation. The exact behavior and return type are dynamic
+  /// and depend on the implementation details.
+  ///
+  /// - Parameters:
+  ///   - n1: The first parameter used to determine the orientation.
+  ///   - n2: The second parameter used to determine the orientation.
+  ///
+  /// - Returns: The current orientation based on the provided parameters.
+  static dynamic currentOrientation(var n1, var n2, BuildContext context) {
     Orientation orientation = MediaQuery.orientationOf(context);
     return orientation == Orientation.portrait ? n1 : n2;
   }
@@ -53,7 +55,9 @@ class UiHelper {
                   child: Opacity(
                     opacity: .8,
                     child: SvgPicture.asset(
-                      isDone! ? SvgPath.svgCheckMark : SvgPath.svgAlert,
+                      isDone!
+                          ? AssetsPath.assets.checkMark
+                          : AssetsPath.assets.alert,
                       height: 25,
                     ),
                   ),
@@ -103,7 +107,7 @@ class UiHelper {
                 child: Opacity(
                   opacity: .8,
                   child: SvgPicture.asset(
-                    SvgPath.svgAlert,
+                    AssetsPath.assets.alert,
                     height: 25,
                   ),
                 ),

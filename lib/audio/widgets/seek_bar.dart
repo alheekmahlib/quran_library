@@ -1,4 +1,4 @@
-part of '../surah_audio/controller/surah_audio_controller.dart';
+part of '../audio.dart';
 
 class PositionData {
   final Duration position;
@@ -27,16 +27,21 @@ class SliderWidget extends StatefulWidget {
   final double horizontalPadding;
   final double? currentPosition;
   final double? filesCount;
+  final Color? thumbColor;
 
   factory SliderWidget.downloading({
     required int currentPosition,
     required int filesCount,
     required double horizontalPadding,
+    Color? thumbColor,
+    Color? activeTrackColor,
+    Color? inactiveTrackColor,
   }) {
     return SliderWidget(
       currentPosition: currentPosition.toDouble(),
       filesCount: filesCount.toDouble(),
       horizontalPadding: horizontalPadding,
+      thumbColor: thumbColor,
     );
   }
   factory SliderWidget.player({
@@ -55,6 +60,7 @@ class SliderWidget extends StatefulWidget {
     int max = 10,
     int min = 0,
     bool fullWidth = false,
+    Color? thumbColor,
   }) {
     return SliderWidget(
       position: position,
@@ -72,6 +78,7 @@ class SliderWidget extends StatefulWidget {
       max: max,
       min: min,
       fullWidth: fullWidth,
+      thumbColor: thumbColor,
     );
   }
 
@@ -95,6 +102,7 @@ class SliderWidget extends StatefulWidget {
     this.fullWidth = false,
     required this.horizontalPadding,
     super.key,
+    this.thumbColor,
   });
 
   @override
@@ -125,10 +133,9 @@ class _SliderWidgetState extends State<SliderWidget> {
             padding: EdgeInsets.symmetric(horizontal: widget.horizontalPadding),
             child: SliderTheme(
               data: SliderTheme.of(context).copyWith(
-                activeTrackColor: widget.activeTrackColor ??
-                    Theme.of(context).colorScheme.primary,
-                inactiveTrackColor: widget.inactiveTrackColor ??
-                    Theme.of(context).colorScheme.surface,
+                activeTrackColor: widget.activeTrackColor ?? Colors.blue,
+                inactiveTrackColor: widget.inactiveTrackColor ?? Colors.grey,
+                thumbColor: widget.thumbColor ?? Colors.blue,
                 thumbShape: CustomSliderThumbRect(
                   thumbRadius: 20,
                   min: widget.min,
@@ -165,19 +172,17 @@ class _SliderWidgetState extends State<SliderWidget> {
                     padding: const EdgeInsets.symmetric(
                         horizontal: 8.0, vertical: 2.0),
                     decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.primary,
+                      color: Colors.blue,
                       borderRadius: const BorderRadius.all(
                         Radius.circular(4),
                       ),
                     ),
                     child: Text(
                       'downloading'.tr,
-                      style: TextStyle(
-                        color:
-                            widget.textColor ?? Theme.of(context).canvasColor,
-                        fontSize: 16,
-                        fontFamily: 'kufi',
-                      ),
+                      style: QuranLibrary().naskhStyle.copyWith(
+                            color: widget.textColor ?? Colors.white,
+                            fontSize: 16,
+                          ),
                     ),
                   )
                 : Row(
@@ -187,7 +192,7 @@ class _SliderWidgetState extends State<SliderWidget> {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 8.0, vertical: 2.0),
                         decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.primary,
+                          color: Colors.blue,
                           borderRadius: const BorderRadius.only(
                             topLeft: Radius.circular(4),
                             bottomLeft: Radius.circular(4),
@@ -199,19 +204,17 @@ class _SliderWidgetState extends State<SliderWidget> {
                                       ?.group(1) ??
                                   '$remaining')
                               .convertArabicToEnglishNumbers,
-                          style: TextStyle(
-                            color: widget.textColor ??
-                                Theme.of(context).canvasColor,
-                            fontSize: 16,
-                            fontFamily: 'kufi',
-                          ),
+                          style: QuranLibrary().naskhStyle.copyWith(
+                                color: widget.textColor ?? Colors.white,
+                                fontSize: 16,
+                              ),
                         ),
                       ),
                       Container(
                         padding: const EdgeInsets.symmetric(
                             horizontal: 8.0, vertical: 2.0),
                         decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.primary,
+                          color: Colors.blue,
                           borderRadius: const BorderRadius.only(
                             topRight: Radius.circular(4),
                             bottomRight: Radius.circular(4),
@@ -223,12 +226,10 @@ class _SliderWidgetState extends State<SliderWidget> {
                                       ?.group(1) ??
                                   '$total')
                               .convertArabicToEnglishNumbers,
-                          style: TextStyle(
-                            color: widget.textColor ??
-                                Theme.of(context).canvasColor,
-                            fontSize: 16,
-                            fontFamily: 'kufi',
-                          ),
+                          style: QuranLibrary().naskhStyle.copyWith(
+                                color: widget.textColor ?? Colors.white,
+                                fontSize: 16,
+                              ),
                         ),
                       ),
                     ],

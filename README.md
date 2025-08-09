@@ -65,7 +65,15 @@ QuranLibrary.init();
 ```dart
 /// You can just add it to your code like this:
 /// يمكنك فقط إضافته إلى الكود الخاص بك هكذا:
-Scaffold(body: QuranLibraryScreen());
+class MyQuranPage extends StatelessWidget {
+  
+  @override
+  Widget build(BuildContext context) {
+    return QuranLibraryScreen(
+      parentContext: context, // مطلوب - Required
+    );
+  }
+}
 ```
 
 
@@ -74,6 +82,10 @@ Scaffold(body: QuranLibraryScreen());
 
 ```dart
 QuranLibraryScreen(
+    /// **مطلوب** - تمرير السياق من الويدجت الأب [parentContext]
+    /// **Required** - Pass context from parent widget [parentContext]
+    parentContext: context,
+    
     /// إذا قمت بإضافة شريط التطبيقات هنا فإنه سيحل محل شريط التطبيقات الافتراضية [appBar]
     /// [appBar] if if provided it will replace the default app bar
     appBar: ...,

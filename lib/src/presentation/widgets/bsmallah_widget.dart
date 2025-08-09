@@ -55,8 +55,8 @@ class BasmallahWidget extends StatelessWidget {
     return Center(
       child: SvgPicture.asset(
         surahNumber == 95 || surahNumber == 97
-            ? _AssetsPath().besmAllah2
-            : _AssetsPath().besmAllah,
+            ? AssetsPath.assets.besmAllah2
+            : AssetsPath.assets.besmAllah,
         width: basmalaStyle?.basmalaWidth ?? 150,
         height: basmalaStyle?.basmalaHeight ?? 40,
         colorFilter: ColorFilter.mode(

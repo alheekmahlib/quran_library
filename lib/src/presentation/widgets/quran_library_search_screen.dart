@@ -182,19 +182,23 @@ class QuranLibrarySearchScreen extends StatelessWidget {
                         QuranLibrary().jumpToSurah(search.surahNumber);
                       },
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                        alignment: Alignment.center,
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
                         margin: const EdgeInsets.symmetric(
                             horizontal: 4.0, vertical: 10.0),
                         decoration: BoxDecoration(
                             color: Colors.blue,
                             borderRadius:
                                 const BorderRadius.all(Radius.circular(8))),
-                        child: SvgPicture.asset(
-                          'packages/quran_library/assets/svg/surah_name/00${search.surahNumber}.svg',
-                          width: 200,
-                          height: 40,
-                          colorFilter:
-                              ColorFilter.mode(Colors.black, BlendMode.srcIn),
+                        child: Text(
+                          search.surahNumber.toString(),
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontFamily: "surahName",
+                            fontSize: 36,
+                            package: "quran_library",
+                          ),
+                          textAlign: TextAlign.center,
                         ),
                       ),
                     ),

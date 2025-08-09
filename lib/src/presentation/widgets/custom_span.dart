@@ -169,7 +169,7 @@ TextSpan _span({
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8.0),
               child: SvgPicture.asset(
-                _AssetsPath().ayahBookmarked,
+                AssetsPath.assets.ayahBookmarked,
                 height: 100,
                 width: 100,
               ),
@@ -285,7 +285,7 @@ TextSpan _customSpan({
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
                   child: SvgPicture.asset(
-                    _AssetsPath().ayahBookmarked,
+                    AssetsPath.assets.ayahBookmarked,
                     height: 35,
                   ),
                 ))

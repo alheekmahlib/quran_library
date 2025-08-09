@@ -144,7 +144,7 @@ extension SurahInfoExtension on void {
                             alignment: Alignment.center,
                             children: [
                               SvgPicture.asset(
-                                'packages/quran_library/assets/svg/sora_num.svg',
+                                AssetsPath.assets.suraNum,
                                 height: 40,
                                 width: 40,
                                 colorFilter: ColorFilter.mode(
@@ -182,13 +182,15 @@ extension SurahInfoExtension on void {
                             ),
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 12, vertical: 6),
-                            child: SvgPicture.asset(
-                              'packages/quran_library/assets/svg/surah_name/00${surah.number}.svg',
-                              height: 45,
-                              colorFilter: ColorFilter.mode(
-                                  surahStyle?.surahNameColor ??
-                                      (isDark ? Colors.white : Colors.black),
-                                  BlendMode.srcIn),
+                            child: Text(
+                              surah.number.toString(),
+                              style: TextStyle(
+                                color: surahStyle?.surahNameColor ??
+                                    (isDark ? Colors.white : Colors.black),
+                                fontFamily: "surahName",
+                                fontSize: 38,
+                                package: "quran_library",
+                              ),
                             ),
                           ),
                         ],
@@ -321,67 +323,73 @@ extension SurahInfoExtension on void {
                                 child: TabBarView(
                                   children: <Widget>[
                                     // تبويب أسماء السورة
-                                    Container(
-                                      width: width,
-                                      margin: const EdgeInsets.symmetric(
-                                          vertical: 8, horizontal: 8),
-                                      padding: const EdgeInsets.all(16),
-                                      decoration: BoxDecoration(
-                                        color: surahStyle?.backgroundColor ??
-                                            (isDark
-                                                ? const Color(0xff1E1E1E)
-                                                : Colors.white),
-                                        borderRadius: BorderRadius.circular(16),
-                                        boxShadow: [
-                                          BoxShadow(
-                                            color: Colors.grey
-                                                .withValues(alpha: 0.10),
-                                            blurRadius: 8,
-                                            offset: const Offset(0, 0),
-                                          ),
-                                        ],
-                                        border: Border.symmetric(
-                                          horizontal: BorderSide(
-                                            color: Colors.grey
-                                                .withValues(alpha: 0.18),
-                                            width: 1.2,
-                                          ),
-                                        ),
-                                      ),
-                                      child: RichText(
-                                        text: TextSpan(
-                                          children: [
-                                            TextSpan(
-                                              children: surah.surahNames
-                                                  .customTextSpans(),
-                                              style: TextStyle(
-                                                color: surahStyle?.textColor ??
-                                                    (isDark
-                                                        ? Colors.white
-                                                        : Colors.black),
-                                                fontFamily: "naskh",
-                                                fontSize: 22,
-                                                height: 2,
-                                                package: "quran_library",
-                                              ),
+                                    SingleChildScrollView(
+                                      child: Container(
+                                        width: width,
+                                        margin: const EdgeInsets.symmetric(
+                                            vertical: 8, horizontal: 8),
+                                        padding: const EdgeInsets.all(16),
+                                        decoration: BoxDecoration(
+                                          color: surahStyle?.backgroundColor ??
+                                              (isDark
+                                                  ? const Color(0xff1E1E1E)
+                                                  : Colors.white),
+                                          borderRadius:
+                                              BorderRadius.circular(16),
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color: Colors.grey
+                                                  .withValues(alpha: 0.10),
+                                              blurRadius: 8,
+                                              offset: const Offset(0, 0),
                                             ),
-                                            TextSpan(
-                                              children: surah.surahNamesFromBook
-                                                  .customTextSpans(),
-                                              style: TextStyle(
-                                                color: surahStyle?.textColor ??
-                                                    (isDark
-                                                        ? Colors.white
-                                                        : Colors.black),
-                                                fontFamily: "naskh",
-                                                fontSize: 18,
-                                                height: 2,
-                                                package: "quran_library",
-                                              ),
-                                            )
                                           ],
+                                          border: Border.symmetric(
+                                            horizontal: BorderSide(
+                                              color: Colors.grey
+                                                  .withValues(alpha: 0.18),
+                                              width: 1.2,
+                                            ),
+                                          ),
                                         ),
-                                        textAlign: TextAlign.justify,
+                                        child: RichText(
+                                          text: TextSpan(
+                                            children: [
+                                              TextSpan(
+                                                children: surah.surahNames
+                                                    .customTextSpans(),
+                                                style: TextStyle(
+                                                  color:
+                                                      surahStyle?.textColor ??
+                                                          (isDark
+                                                              ? Colors.white
+                                                              : Colors.black),
+                                                  fontFamily: "naskh",
+                                                  fontSize: 22,
+                                                  height: 2,
+                                                  package: "quran_library",
+                                                ),
+                                              ),
+                                              TextSpan(
+                                                children: surah
+                                                    .surahNamesFromBook
+                                                    .customTextSpans(),
+                                                style: TextStyle(
+                                                  color:
+                                                      surahStyle?.textColor ??
+                                                          (isDark
+                                                              ? Colors.white
+                                                              : Colors.black),
+                                                  fontFamily: "naskh",
+                                                  fontSize: 18,
+                                                  height: 2,
+                                                  package: "quran_library",
+                                                ),
+                                              )
+                                            ],
+                                          ),
+                                          textAlign: TextAlign.justify,
+                                        ),
                                       ),
                                     ),
                                     // تبويب عن السورة

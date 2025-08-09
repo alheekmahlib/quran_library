@@ -30,6 +30,8 @@ class _QuranFontsPage extends StatelessWidget {
   final List<int> ayahBookmarked;
   final Widget? anotherMenuChild;
   final void Function(AyahModel ayah)? anotherMenuChildOnTap;
+  final Widget? secondMenuChild;
+  final void Function(AyahModel ayah)? secondMenuChildOnTap;
 
   const _QuranFontsPage({
     required this.context,
@@ -57,6 +59,8 @@ class _QuranFontsPage extends StatelessWidget {
     required this.ayahBookmarked,
     this.anotherMenuChild,
     this.anotherMenuChildOnTap,
+    this.secondMenuChild,
+    this.secondMenuChildOnTap,
   });
 
   @override
@@ -69,6 +73,7 @@ class _QuranFontsPage extends StatelessWidget {
           if (onPagePress != null) {
             onPagePress!();
           } else {
+            quranCtrl.isShowControl.toggle();
             quranCtrl.clearSelection();
             quranCtrl.state.overlayEntry?.remove();
             quranCtrl.state.overlayEntry = null;
@@ -81,9 +86,10 @@ class _QuranFontsPage extends StatelessWidget {
                 : const EdgeInsets.symmetric(horizontal: 16.0),
             margin: pageIndex == 0 || pageIndex == 1
                 ? EdgeInsets.symmetric(
-                    vertical: context.currentOrientation(
+                    vertical: UiHelper.currentOrientation(
                         MediaQuery.sizeOf(context).width * .16,
-                        MediaQuery.sizeOf(context).height * .01))
+                        MediaQuery.sizeOf(context).height * .01,
+                        context))
                 : EdgeInsets.zero,
             child: quranCtrl.state.pages.isEmpty
                 ? circularProgressWidget ??
@@ -126,8 +132,8 @@ class _QuranFontsPage extends StatelessWidget {
                               BannerStyle(
                                 isImage: false,
                                 bannerSvgPath: isDark
-                                    ? _AssetsPath().surahSvgBannerDark
-                                    : _AssetsPath().surahSvgBanner,
+                                    ? AssetsPath.assets.surahSvgBannerDark
+                                    : AssetsPath.assets.surahSvgBanner,
                                 bannerSvgHeight: 100.0,
                                 bannerSvgWidth: 150.0,
                                 bannerImagePath: '',
@@ -218,8 +224,8 @@ class _QuranFontsPage extends StatelessWidget {
                               BannerStyle(
                                 isImage: false,
                                 bannerSvgPath: isDark
-                                    ? _AssetsPath().surahSvgBannerDark
-                                    : _AssetsPath().surahSvgBanner,
+                                    ? AssetsPath.assets.surahSvgBannerDark
+                                    : AssetsPath.assets.surahSvgBanner,
                                 bannerSvgHeight: 140.0,
                                 bannerSvgWidth: 150.0,
                                 bannerImagePath: '',
@@ -362,6 +368,8 @@ class _QuranFontsPage extends StatelessWidget {
                       pageIndex: pageIndex,
                       anotherMenuChild: anotherMenuChild,
                       anotherMenuChildOnTap: anotherMenuChildOnTap,
+                      secondMenuChild: secondMenuChild,
+                      secondMenuChildOnTap: secondMenuChildOnTap,
                     ),
                   );
 

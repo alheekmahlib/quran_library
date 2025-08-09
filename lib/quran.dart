@@ -20,14 +20,13 @@ import 'package:get_storage/get_storage.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 
-import 'audio/surah_audio/audio_surah_list_screen.dart';
-import 'audio/surah_audio/controller/surah_audio_controller.dart';
+import 'audio/audio.dart';
+import 'core/utils/ui_helper.dart';
 import 'src/core/helpers/responsive.dart';
-import 'src/core/utils/smooth_page_physics.dart';
 import 'src/data/models/tafsir/tafsir.dart';
 
-export 'audio/surah_audio/controller/surah_audio_controller.dart';
-
+part 'core/widgets/slider/bottom_slider.dart';
+part 'core/widgets/slider/controller/slider_controller.dart';
 part 'src/core/extensions/convert_arabic_to_english_numbers_extension.dart';
 part 'src/core/extensions/convert_number_extension.dart';
 part 'src/core/extensions/download_extension.dart';

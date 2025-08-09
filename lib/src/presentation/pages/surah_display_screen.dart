@@ -35,6 +35,13 @@ class SurahDisplayScreen extends StatelessWidget {
     this.anotherMenuChildOnTap,
     this.juzName,
     this.sajdaName,
+    this.secondMenuChild,
+    this.secondMenuChildOnTap,
+    this.ayahStyle,
+    this.surahStyle,
+    this.isShowAudioSlider = true,
+    this.appIconUrlForPlayAudioInBackground,
+    required this.parentContext,
   });
 
   /// رقم السورة المراد عرضها
@@ -131,9 +138,6 @@ class SurahDisplayScreen extends StatelessWidget {
   /// List of bookmarked ayahs
   final List<int> ayahBookmarked;
 
-  final Widget? anotherMenuChild;
-  final void Function(AyahModel ayah)? anotherMenuChildOnTap;
-
   /// اسم الجزء
   /// Juz name
   final String? juzName;
@@ -142,8 +146,80 @@ class SurahDisplayScreen extends StatelessWidget {
   /// Sajda name
   final String? sajdaName;
 
+  /// زر إضافي أول لقائمة خيارات الآية - يمكن إضافة أيقونة أو نص مخصص [anotherMenuChild]
+  ///
+  /// [anotherMenuChild] First additional button for ayah options menu - you can add custom icon or text
+  final Widget? anotherMenuChild;
+
+  /// دالة يتم استدعاؤها عند الضغط على الزر الإضافي الأول في قائمة خيارات الآية [anotherMenuChildOnTap]
+  ///
+  /// [anotherMenuChildOnTap] Function called when pressing the first additional button in ayah options menu
+  final void Function(AyahModel ayah)? anotherMenuChildOnTap;
+
+  /// زر إضافي ثاني لقائمة خيارات الآية - يمكن إضافة أيقونة أو نص مخصص [secondMenuChild]
+  ///
+  /// [secondMenuChild] Second additional button for ayah options menu - you can add custom icon or text
+  final Widget? secondMenuChild;
+
+  /// دالة يتم استدعاؤها عند الضغط على الزر الإضافي الثاني في قائمة خيارات الآية [secondMenuChildOnTap]
+  ///
+  /// [secondMenuChildOnTap] Function called when pressing the second additional button in ayah options menu
+  final void Function(AyahModel ayah)? secondMenuChildOnTap;
+
+  /// نمط تخصيص مظهر المشغل الصوتي للآيات - يتحكم في الألوان والخطوط والأيقونات [ayahStyle]
+  ///
+  /// [ayahStyle] Audio player style customization for ayahs - controls colors, fonts, and icons
+  final AyahAudioStyle? ayahStyle;
+
+  /// نمط تخصيص مظهر المشغل الصوتي للسور - يتحكم في الألوان والخطوط والأيقونات [surahStyle]
+  ///
+  /// [surahStyle] Audio player style customization for surahs - controls colors, fonts, and icons
+  final SurahAudioStyle? surahStyle;
+
+  /// إظهار أو إخفاء سلايدر التحكم في الصوت السفلي [isShowAudioSlider]
+  ///
+  /// [isShowAudioSlider] Show or hide the bottom audio control slider
+  final bool? isShowAudioSlider;
+
+  /// رابط أيقونة التطبيق للمشغل الصوتي / App icon URL for audio player
+  /// [appIconUrlForPlayAudioInBackground] يمكن تمرير رابط مخصص لأيقونة التطبيق في المشغل الصوتي
+  /// [appIconUrlForPlayAudioInBackground] You can pass a custom URL for the app icon in the audio player
+  final String? appIconUrlForPlayAudioInBackground;
+
+  /// السياق المطلوب من المستخدم لإدارة العمليات الداخلية للمكتبة [parentContext]
+  /// مثل الوصول إلى MediaQuery، Theme، والتنقل بين الصفحات
+  ///
+  /// مثال على الاستخدام:
+  /// ```dart
+  /// QuranLibraryScreen(
+  ///   parentContext: context, // تمرير السياق من الويدجت الأب
+  ///   // باقي المعاملات...
+  /// )
+  /// ```
+  ///
+  /// [parentContext] Required context from user for internal library operations
+  /// such as accessing MediaQuery, Theme, and navigation between pages
+  ///
+  /// Usage example:
+  /// ```dart
+  /// QuranLibraryScreen(
+  ///   parentContext: context, // Pass context from parent widget
+  ///   // other parameters...
+  /// )
+  /// ```
+  final BuildContext parentContext;
+
   @override
   Widget build(BuildContext context) {
+    // تحديث رابط أيقونة التطبيق إذا تم تمريره / Update app icon URL if provided
+    // Update app icon URL if provided
+    if (appIconUrlForPlayAudioInBackground != null &&
+        appIconUrlForPlayAudioInBackground!.isNotEmpty) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        AudioCtrl.instance
+            .updateAppIconUrl(appIconUrlForPlayAudioInBackground!);
+      });
+    }
     // شرح: تهيئة الشاشة وإعداد المقاييس
     // Explanation: Initialize screen and setup dimensions
     return ScreenUtilInit(
@@ -160,7 +236,7 @@ class SurahDisplayScreen extends StatelessWidget {
               final ctrl = state.controller!;
               // شرح: إعادة تحميل السورة إذا تغير رقمها
               // Explanation: Reload surah if its number changed
-              SurahAudioController.instance;
+              AudioCtrl.instance;
               if (ctrl.surahNumber != surahNumber) {
                 ctrl.loadSurah(surahNumber);
               }
@@ -198,7 +274,38 @@ class SurahDisplayScreen extends StatelessWidget {
                 drawer: appBar == null && useDefaultAppBar
                     ? _DefaultDrawer(languageCode ?? 'ar', isDark)
                     : null,
-                body: SafeArea(child: _buildSurahBody(context, surahCtrl)),
+                body: SafeArea(
+                    child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    _buildSurahBody(parentContext, surahCtrl),
+
+                    // السلايدر السفلي - يظهر من الأسفل للأعلى
+                    // Bottom slider - appears from bottom to top
+                    isShowAudioSlider!
+                        ? Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 16.0),
+                            child: Obx(() => BottomSlider(
+                                  isVisible:
+                                      QuranCtrl.instance.isShowControl.value,
+                                  onClose: () {
+                                    QuranCtrl.instance.isShowControl.value =
+                                        false;
+                                    SliderController.instance
+                                        .hideBottomContent();
+                                  },
+                                  style: ayahStyle ?? AyahAudioStyle(),
+                                  contentChild: SizedBox.shrink(),
+                                  child: Flexible(
+                                    child: AudioWidget(
+                                        style: ayahStyle ?? AyahAudioStyle()),
+                                  ),
+                                )),
+                          )
+                        : SizedBox.shrink(),
+                  ],
+                )),
               ),
             );
           },
@@ -266,7 +373,7 @@ class SurahDisplayScreen extends StatelessWidget {
 
     return Container(
       padding: EdgeInsets.symmetric(
-        horizontal: context.currentOrientation(16.0, 64.0),
+        horizontal: UiHelper.currentOrientation(16.0, 64.0, context),
         vertical: 16.0,
       ),
       child: (surahCtrl.surahPages[pageIndex].ayahs[0].surahNumber! == 1 ||
@@ -353,6 +460,10 @@ class SurahDisplayScreen extends StatelessWidget {
                             onPagePress: onPagePress,
                             ayahBookmarked: ayahBookmarked,
                             anotherMenuChildOnTap: anotherMenuChildOnTap,
+                            anotherMenuChild: anotherMenuChild,
+                            ayahSelectedFontColor: ayahSelectedFontColor,
+                            secondMenuChild: secondMenuChild,
+                            secondMenuChildOnTap: secondMenuChildOnTap,
                           ),
                         );
                       }).toList(),
@@ -376,8 +487,8 @@ class SurahDisplayScreen extends StatelessWidget {
           BannerStyle(
             isImage: false,
             bannerSvgPath: isDark
-                ? _AssetsPath().surahSvgBannerDark
-                : _AssetsPath().surahSvgBanner,
+                ? AssetsPath.assets.surahSvgBannerDark
+                : AssetsPath.assets.surahSvgBanner,
             bannerSvgHeight: 40.0,
             bannerSvgWidth: 150.0,
             bannerImagePath: '',
@@ -490,11 +601,12 @@ class SurahDisplayScreen extends StatelessWidget {
           : null,
       padding: isFirstPage
           ? EdgeInsets.symmetric(
-              vertical: context.currentOrientation(
+              vertical: UiHelper.currentOrientation(
                   MediaQuery.sizeOf(context).width * .16,
-                  MediaQuery.sizeOf(context).height * .01),
-              horizontal: context.currentOrientation(
-                  MediaQuery.sizeOf(context).width * .12, 0.0))
+                  MediaQuery.sizeOf(context).height * .01,
+                  context),
+              horizontal: UiHelper.currentOrientation(
+                  MediaQuery.sizeOf(context).width * .12, 0.0, context))
           : EdgeInsets.zero,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -537,6 +649,9 @@ class SurahDisplayScreen extends StatelessWidget {
                               ayahBookmarked: ayahBookmarked,
                               anotherMenuChild: anotherMenuChild,
                               anotherMenuChildOnTap: anotherMenuChildOnTap,
+                              ayahSelectedFontColor: ayahSelectedFontColor,
+                              secondMenuChild: secondMenuChild,
+                              secondMenuChildOnTap: secondMenuChildOnTap,
                             ),
                           ),
                         ],

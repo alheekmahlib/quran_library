@@ -1,75 +1,66 @@
-import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-
-import '/audio/surah_audio/controller/surah_audio_controller.dart';
-import '/core/constants/svg_paths.dart';
-import '/core/utils/custom_widgets.dart';
-import '/core/utils/ui_helper.dart';
-import '../../widgets/online_play_button.dart';
-import '../../widgets/skip_next.dart';
-import '../../widgets/skip_previouse.dart';
+part of '../../audio.dart';
 
 class CollapsedPlayWidget extends StatelessWidget {
-  const CollapsedPlayWidget({super.key});
+  final SurahAudioStyle? style;
+  const CollapsedPlayWidget({super.key, this.style});
 
   @override
   Widget build(BuildContext context) {
-    double width = MediaQuery.sizeOf(context).width;
     return Align(
       alignment: Alignment.centerLeft,
       child: Container(
-        width: UiHelper.customOrientation(width, width * .5, context),
+        height: MediaQuery.sizeOf(context).height,
+        width: UiHelper.currentOrientation(MediaQuery.sizeOf(context).width,
+            MediaQuery.sizeOf(context).width * .5, context),
+        margin: const EdgeInsets.symmetric(horizontal: 16),
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.primary.withValues(alpha: .15),
-        ),
-        child: Stack(
-          children: [
-            Align(
-              alignment: Alignment.bottomRight,
-              child: Opacity(
-                opacity: .6,
-                child: CustomWidgets.customSvgWithColor(
-                  SvgPath.svgDecorations,
-                  height: 60,
-                  ctx: context,
-                ),
-              ),
+          color: style?.audioSliderBackgroundColor ?? const Color(0xfffaf7f3),
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withValues(alpha: .3),
+              blurRadius: 5,
+              spreadRadius: 0,
+              offset: const Offset(0, -10),
             ),
-            Align(
-              alignment: Alignment.topLeft,
-              child: RotatedBox(
-                quarterTurns: 2,
-                child: Opacity(
-                  opacity: .6,
-                  child: CustomWidgets.customSvgWithColor(
-                    SvgPath.svgDecorations,
-                    height: 60,
-                    ctx: context,
-                  ),
-                ),
+          ],
+        ),
+        child: Column(
+          children: [
+            SizedBox(height: 8.0),
+            Container(
+              width: 70,
+              height: 10,
+              decoration: BoxDecoration(
+                color: Colors.grey,
+                borderRadius: BorderRadius.circular(8),
               ),
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 32.0),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 32.0, vertical: 16),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Row(
                     children: [
-                      SkipToPrevious(),
-                      OnlinePlayButton(
-                        isRepeat: false,
-                      ),
-                      SkipToNext(),
+                      SurahSkipToPrevious(style: style),
+                      OnlinePlayButton(),
+                      SurahSkipToNext(style: style),
                     ],
                   ),
                   Obx(
-                    () => CustomWidgets.surahNameWidget(
-                      SurahAudioController
-                          .instance.state.currentAudioListSurahNum.value,
-                      Theme.of(context).colorScheme.primary,
-                      height: 50,
-                      width: 100,
+                    () => Text(
+                      AudioCtrl.instance.state.currentAudioListSurahNum.value
+                          .toString(),
+                      style: TextStyle(
+                        color: style?.surahNameColor ?? Colors.black,
+                        fontFamily: "surahName",
+                        fontSize: 42,
+                        package: "quran_library",
+                      ),
+                      textAlign: TextAlign.center,
                     ),
                   ),
                 ],

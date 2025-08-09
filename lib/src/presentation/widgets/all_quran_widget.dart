@@ -33,7 +33,7 @@ class AllQuranWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return context.currentOrientation(
+    return UiHelper.currentOrientation(
       // شرح: التخطيط العمودي (Portrait)
       // Explanation: Portrait layout
       Stack(
@@ -90,6 +90,7 @@ class AllQuranWidget extends StatelessWidget {
                 ],
               ),
             ),
+      context,
     );
   }
 
@@ -122,8 +123,8 @@ class AllQuranWidget extends StatelessWidget {
                                 (i) => Text(
                                       ' ${quranCtrl.getSurahsByPage(pageIndex)[i].arabicName.replaceAll('سُورَةُ ', '')} ',
                                       style: TextStyle(
-                                          fontSize: context.currentOrientation(
-                                              18.0, 22.0),
+                                          fontSize: UiHelper.currentOrientation(
+                                              18.0, 22.0, context),
                                           // fontWeight: FontWeight.bold,
                                           fontFamily: 'naskh',
                                           color: const Color(0xff77554B)),
@@ -146,8 +147,8 @@ class AllQuranWidget extends StatelessWidget {
                                 (i) => Text(
                                       ' ${quranCtrl.getSurahsByPage(pageIndex)[i].arabicName.replaceAll('سُورَةُ ', '')} ',
                                       style: TextStyle(
-                                          fontSize: context.currentOrientation(
-                                              18.0, 22.0),
+                                          fontSize: UiHelper.currentOrientation(
+                                              18.0, 22.0, context),
                                           // fontWeight: FontWeight.bold,
                                           fontFamily: 'naskh',
                                           color: const Color(0xff77554B)),
@@ -262,7 +263,7 @@ class AllQuranWidget extends StatelessWidget {
   /// Get text style
   TextStyle _getTextStyle(BuildContext context) {
     return TextStyle(
-      fontSize: context.currentOrientation(18.0, 22.0),
+      fontSize: UiHelper.currentOrientation(18.0, 22.0, context),
       fontFamily: 'naskh',
       color: const Color(0xff77554B),
       package: 'quran_library',
@@ -273,7 +274,7 @@ class AllQuranWidget extends StatelessWidget {
   /// Get page number style
   TextStyle _getPageNumberStyle(BuildContext context) {
     return TextStyle(
-      fontSize: context.currentOrientation(20.0, 22.0),
+      fontSize: UiHelper.currentOrientation(20.0, 22.0, context),
       fontFamily: 'naskh',
       color: const Color(0xff77554B),
       package: 'quran_library',

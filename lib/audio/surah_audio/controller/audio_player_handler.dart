@@ -1,11 +1,11 @@
-part of 'surah_audio_controller.dart';
+part of '../../audio.dart';
 
 class AudioPlayerHandler extends BaseAudioHandler
     with QueueHandler, SeekHandler {
   static final AudioPlayerHandler _instance = AudioPlayerHandler._internal();
   static AudioPlayerHandler get instance => _instance;
 
-  final surahCtrl = SurahAudioController.instance;
+  final surahCtrl = AudioCtrl.instance;
 
   // final audioHandler = AudioService();
 

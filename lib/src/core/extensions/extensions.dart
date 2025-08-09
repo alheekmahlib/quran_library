@@ -2,36 +2,6 @@ part of '/quran.dart';
 
 /// Extension on [BuildContext] to provide additional utility methods.
 extension ContextExtensions on BuildContext {
-  /// Returns the current orientation based on the provided parameters.
-  ///
-  /// This method takes two parameters, [n1] and [n2], and determines the
-  /// current orientation. The exact behavior and return type are dynamic
-  /// and depend on the implementation details.
-  ///
-  /// - Parameters:
-  ///   - n1: The first parameter used to determine the orientation.
-  ///   - n2: The second parameter used to determine the orientation.
-  ///
-  /// - Returns: The current orientation based on the provided parameters.
-  dynamic currentOrientation(var n1, var n2) {
-    Orientation orientation = MediaQuery.orientationOf(this);
-    return orientation == Orientation.portrait ? n1 : n2;
-  }
-
-  /// Determines the platform and returns the appropriate value based on the provided parameters.
-  ///
-  /// This method takes two parameters, [p1] and [p2], and returns one of them
-  /// based on the current platform. If the platform is iOS, Android, or Fuchsia,
-  /// it returns [p1]. Otherwise, it returns [p2].
-  ///
-  /// - Parameters:
-  ///   - p1: The value to return if the platform is iOS, Android, or Fuchsia.
-  ///   - p2: The value to return if the platform is not iOS, Android, or Fuchsia.
-  ///
-  /// - Returns: The appropriate value based on the current platform.
-  dynamic definePlatform(var p1, var p2) =>
-      (Platform.isIOS || Platform.isAndroid || Platform.isFuchsia) ? p1 : p2;
-
   /// Creates a vertical divider widget with the specified width, height, and color.
   ///
   /// The [width] parameter specifies the width of the divider. If not provided, it defaults to a standard width.

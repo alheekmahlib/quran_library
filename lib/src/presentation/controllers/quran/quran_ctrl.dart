@@ -26,6 +26,7 @@ class QuranCtrl extends GetxController {
   RxDouble baseScaleFactor = 1.0.obs;
   final isLoading = true.obs;
   RxList<SurahNamesModel> surahsList = <SurahNamesModel>[].obs;
+  RxBool isShowControl = false.obs;
   // late QuranSearch quranSearch;
 
   // شرح: تحسين PageController للحصول على أداء أفضل
@@ -345,7 +346,7 @@ class QuranCtrl extends GetxController {
   void toggleAyahSelection(int ayahUnequeNumber) {
     if (selectedAyahsByUnequeNumber.contains(ayahUnequeNumber)) {
       if (selectedAyahsByUnequeNumber.length > 1) {
-      selectedAyahsByUnequeNumber.remove(ayahUnequeNumber);
+        selectedAyahsByUnequeNumber.remove(ayahUnequeNumber);
       }
     } else {
       selectedAyahsByUnequeNumber.clear();

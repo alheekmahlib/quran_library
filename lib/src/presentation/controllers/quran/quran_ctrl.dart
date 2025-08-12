@@ -31,7 +31,7 @@ class QuranCtrl extends GetxController {
 
   // شرح: تحسين PageController للحصول على أداء أفضل
   // Explanation: Optimized PageController for better performance
-  PageController _pageController = PageController(
+  PageController quranPagesController = PageController(
     keepPage: true,
     viewportFraction: 1.0,
   );
@@ -58,7 +58,7 @@ class QuranCtrl extends GetxController {
     isLoading.close();
     surahsList.close();
     state.dispose();
-    _pageController.dispose();
+    quranPagesController.dispose();
     super.onClose();
   }
 
@@ -318,16 +318,16 @@ class QuranCtrl extends GetxController {
   // شرح: تحسين التنقل للحصول على سكرول أكثر سلاسة
   // Explanation: Improved navigation for smoother scrolling
   void jumpToPage(int page) {
-    if (_pageController.hasClients) {
+    if (quranPagesController.hasClients) {
       // استخدام animateToPage بدلاً من jumpToPage للحصول على انتقال أكثر سلاسة
       // Use animateToPage instead of jumpToPage for smoother transition
-      _pageController.animateToPage(
+      quranPagesController.animateToPage(
         page,
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
       );
     } else {
-      _pageController = PageController(
+      quranPagesController = PageController(
         initialPage: page,
         keepPage: true,
         viewportFraction: 1.0,
@@ -336,24 +336,27 @@ class QuranCtrl extends GetxController {
   }
 
   PageController getPageController(BuildContext context) =>
-      _pageController = PageController(
+      quranPagesController = PageController(
         keepPage: true,
         viewportFraction:
             (Responsive.isDesktop(context) && context.isLandscape) ? 1 / 2 : 1,
       );
 
   /// Toggle the selection of an ayah by its unique number
-  void toggleAyahSelection(int ayahUnequeNumber) {
-    if (selectedAyahsByUnequeNumber.contains(ayahUnequeNumber)) {
+  void toggleAyahSelection(int ayahUnequeNumber, {bool forceAddition = false}) {
+    log('selectedAyahs: ${selectedAyahsByUnequeNumber.join(', ')}');
+    if (!forceAddition &&
+        selectedAyahsByUnequeNumber.contains(ayahUnequeNumber)) {
       if (selectedAyahsByUnequeNumber.length > 1) {
         selectedAyahsByUnequeNumber.remove(ayahUnequeNumber);
       }
     } else {
       selectedAyahsByUnequeNumber.clear();
       selectedAyahsByUnequeNumber.add(ayahUnequeNumber);
-      selectedAyahsByUnequeNumber.refresh();
     }
     selectedAyahsByUnequeNumber.refresh();
+
+    log('selectedAyahs: ${selectedAyahsByUnequeNumber.join(', ')}');
   }
 
   void clearSelection() {
@@ -376,7 +379,7 @@ class QuranCtrl extends GetxController {
       state.scaleFactor.value = newScaleFactor;
     }
 
-    update();
+    update(['_pageViewBuild']);
   }
 
   String removeDiacriticsQuran(String input) {

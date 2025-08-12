@@ -43,11 +43,10 @@ class DownloadPlayButton extends StatelessWidget {
                       onPressed: () async {
                         if (surahAudioCtrl.state.isDownloading.value) {
                           surahAudioCtrl.cancelDownload();
-                        } else if (surahAudioCtrl
-                                    .state.surahDownloadStatus.value[
-                                surahAudioCtrl
-                                    .state.currentAudioListSurahNum.value] ==
-                            true) {
+                        } else if (surahAudioCtrl.state
+                            .isSurahDownloadedByNumber(surahAudioCtrl
+                                .state.currentAudioListSurahNum.value)
+                            .value) {
                           surahAudioCtrl.state.isPlaying.value = true;
                         } else {
                           await surahAudioCtrl.startDownload();

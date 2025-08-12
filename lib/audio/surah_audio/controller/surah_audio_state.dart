@@ -28,6 +28,8 @@ class SurahAudioState {
   final TextEditingController textEditingController = TextEditingController();
   RxInt surahReaderIndex = 1.obs;
   final Rx<Map<int, bool>> surahDownloadStatus = Rx<Map<int, bool>>({});
+  RxBool isSurahDownloadedByNumber(int surahNumber) =>
+      (surahDownloadStatus.value[surahNumber] ?? false).obs;
   Map<int, bool> ayahsDownloadStatus =
       Map.fromEntries(List.generate(6236, (i) => MapEntry(i + 1, false)));
   RxInt seekNextSeconds = 5.obs;

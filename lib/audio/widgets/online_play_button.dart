@@ -32,9 +32,10 @@ class OnlinePlayButton extends StatelessWidget {
                   surahAudioCtrl.cancelDownload();
                   surahAudioCtrl.state.isPlaying.value = true;
                   // await surahAudioCtrl.state.audioPlayer.pause();
-                  surahAudioCtrl.state.surahDownloadStatus.value[surahAudioCtrl
-                              .state.currentAudioListSurahNum.value] ??
-                          false
+                  surahAudioCtrl.state
+                          .isSurahDownloadedByNumber(surahAudioCtrl
+                              .state.currentAudioListSurahNum.value)
+                          .value
                       ? await surahAudioCtrl.startDownload()
                       : await surahAudioCtrl.state.audioPlayer.play();
                 },

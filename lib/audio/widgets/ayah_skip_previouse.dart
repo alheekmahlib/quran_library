@@ -19,7 +19,7 @@ class AyahSkipToPrevious extends StatelessWidget {
             size: style?.previousIconHeight ?? 38,
           ),
         ),
-        onPressed: () async => await AudioCtrl.instance.skipPreviousAyah(
+        onPressed: () => AudioCtrl.instance.skipPreviousAyah(
             context, AudioCtrl.instance.state.currentAyahUniqueNumber),
       ),
     );

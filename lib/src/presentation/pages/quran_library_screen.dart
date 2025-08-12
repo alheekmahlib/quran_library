@@ -378,7 +378,7 @@ class QuranLibraryScreen extends StatelessWidget {
                   withPageView
                       ? PageView.builder(
                           itemCount: 604,
-                          controller: quranCtrl._pageController,
+                          controller: quranCtrl.quranPagesController,
                           padEnds: false,
                           // شرح: اختيار نوع الفيزياء حسب إعداد التحسين
                           // Explanation: Choose physics type based on optimization setting
@@ -391,18 +391,20 @@ class QuranLibraryScreen extends StatelessWidget {
                           clipBehavior: Clip.hardEdge,
                           // شرح: تحسين معالجة تغيير الصفحة لتقليل التقطيع
                           // Explanation: Optimized page change handling to reduce stuttering
-                          onPageChanged: (page) {
+                          onPageChanged: (pageIndex) {
                             // تشغيل العمليات في الخلفية لتجنب تجميد UI
                             // Run operations in background to avoid UI freeze
                             WidgetsBinding.instance
                                 .addPostFrameCallback((_) async {
                               if (onPageChanged != null) {
-                                onPageChanged!(page);
+                                onPageChanged!(pageIndex);
                               } else {
                                 quranCtrl.state.overlayEntry?.remove();
                                 quranCtrl.state.overlayEntry = null;
                               }
-                              quranCtrl.saveLastPage(page + 1);
+                              quranCtrl.state.currentPageNumber.value =
+                                  pageIndex + 1;
+                              quranCtrl.saveLastPage(pageIndex + 1);
                             });
                           },
                           pageSnapping: true,
@@ -473,9 +475,9 @@ class QuranLibraryScreen extends StatelessWidget {
         : null;
     final bookmarkCtrl = BookmarksCtrl.instance;
     return GetBuilder<QuranCtrl>(
+      id: '_pageViewBuild',
       init: QuranCtrl.instance,
       builder: (quranCtrl) => GestureDetector(
-        /// TODO: في تكبير الخط وتصغيره اللمس لا يستجيب بسرعة ويحتاج إلى تعديل
         onScaleStart: (details) => quranCtrl.state.baseScaleFactor.value =
             quranCtrl.state.scaleFactor.value,
         onScaleUpdate: (ScaleUpdateDetails details) =>

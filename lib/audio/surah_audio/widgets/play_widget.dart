@@ -76,9 +76,10 @@ class PlayWidget extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               Obx(
-                () => surahCtrl.state.surahDownloadStatus.value[
-                            surahCtrl.state.currentAudioListSurahNum.value] ??
-                        false
+                () => surahCtrl.state
+                        .isSurahDownloadedByNumber(
+                            surahCtrl.state.currentAudioListSurahNum.value)
+                        .value
                     ? const SizedBox.shrink()
                     : DownloadPlayButton(style: style),
               ),

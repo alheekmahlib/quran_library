@@ -6,9 +6,6 @@ class QuranState {
   List<List<AyahModel>> pages = [];
   List<AyahModel> allAyahs = [];
 
-  /// Page Controller
-  PageController quranPageController = PageController();
-
   RxInt currentPageNumber = 1.obs;
   RxBool isPlayExpanded = false.obs;
   RxBool isSajda = false.obs;
@@ -31,7 +28,6 @@ class QuranState {
   // Note: GlobalKey<ScaffoldState> has been removed to avoid conflicts with other applications
 
   void dispose() {
-    quranPageController.dispose();
     currentPageNumber.close();
     isPlayExpanded.close();
     isSajda.close();

@@ -11,10 +11,17 @@ extension AyahCtrlExtension on AudioCtrl {
     bool isSurahDownloaded = state.box.read(surahKey) ?? false;
 
     try {
+      if (state.isPlaying.value || state.audioPlayer.playing) {
+        await state.audioPlayer.stop();
+      }
+      QuranCtrl.instance.toggleAyahSelection(state.currentAyahUniqueNumber);
       final filePath = isSurahDownloaded
           ? join(state.dir.path, currentAyahFileName)
           : await _downloadFileIfNotExist(currentAyahUrl, currentAyahFileName,
-              context: context, ayahUqNumber: currentAyahUniqueNumber);
+              // ignore: use_build_context_synchronously
+              context: context,
+              ayahUqNumber: currentAyahUniqueNumber);
+
       await state.audioPlayer.setAudioSource(
         AudioSource.file(
           filePath,
@@ -27,7 +34,6 @@ extension AyahCtrlExtension on AudioCtrl {
           .then((_) => state.isPlaying.value = true)
           .whenComplete(() {
         QuranCtrl.instance.clearSelection();
-        state.audioPlayer.stop();
         state.isPlaying.value = false;
       });
       log('تحميل سورة $selectedSurahAyahsFileNames تم بنجاح.');
@@ -50,16 +56,21 @@ extension AyahCtrlExtension on AudioCtrl {
       state.snackBarShownForBatch = false;
       final List<Future<String>> futures = List.generate(
         selectedSurahAyahsFileNames.length,
-        (i) => _downloadFileIfNotExist(ayahsUrls[i], ayahsFilesNames[i],
-                setDownloadingStatus: false,
-                context: context,
-                // استخدام الرقم الفريد مباشرة بدلاً من الوصول لآيات السورة
-                // Use unique number directly instead of accessing surah ayahs
-                ayahUqNumber: currentAyahUniqueNumber + i)
-            .whenComplete(() {
-          log('${state.tmpDownloadedAyahsCount} => download completed at ${DateTime.now().millisecond}');
-          state.tmpDownloadedAyahsCount++;
-        }),
+        (i) {
+          final furure = _downloadFileIfNotExist(
+                  ayahsUrls[i], ayahsFilesNames[i],
+                  setDownloadingStatus: false,
+                  context: context,
+                  // استخدام الرقم الفريد مباشرة بدلاً من الوصول لآيات السورة
+                  // Use unique number directly instead of accessing surah ayahs
+                  ayahUqNumber: currentAyahUniqueNumber)
+              .whenComplete(() {
+            log('${state.tmpDownloadedAyahsCount} => download completed at ${DateTime.now().millisecond}');
+            state.tmpDownloadedAyahsCount++;
+          });
+          currentAyahUniqueNumber++;
+          return furure;
+        },
       );
 
       state.isDownloading.value = true;
@@ -74,24 +85,6 @@ extension AyahCtrlExtension on AudioCtrl {
     }
 
     try {
-      // التأكد من صحة الفهرس قبل التعيين / Validate index before setting
-      int initialIndex = state.isDirectPlaying.value
-          ? currentAyahInPage
-          : currentAyahUniqueNumber;
-
-      // التأكد من أن الفهرس في النطاق الصحيح / Ensure index is within valid range
-      if (initialIndex >= ayahsFilesNames.length) {
-        initialIndex = 0;
-        log('Initial index was out of range, setting to 0',
-            name: 'AudioController');
-      }
-
-      if (initialIndex < 0) {
-        initialIndex = 0;
-        log('Initial index was negative, setting to 0',
-            name: 'AudioController');
-      }
-
       // إنشاء مصادر الصوت / Create audio sources
       final audioSources = List.generate(
         ayahsFilesNames.length,
@@ -110,6 +103,8 @@ extension AyahCtrlExtension on AudioCtrl {
         }
       }
 
+      final initialIndex = selectedSurahAyahsUrls.indexOf(currentAyahUrl);
+
       // تعيين مصدر الصوت مع الفهرس الصحيح / Set audio source with correct index
       await state.audioPlayer.setAudioSources(
         audioSources,
@@ -121,14 +116,21 @@ extension AyahCtrlExtension on AudioCtrl {
 
       // الاستماع لتغييرات الفهرس / Listen to index changes
       state.audioPlayer.currentIndexStream.listen((index) async {
+        final currentIndex = (state.audioPlayer.currentIndex ?? 0);
+        log('index: $index | currentIndex: $currentIndex', name: 'index');
         if (index != null && index < ayahsFilesNames.length) {
-          if (isLastAyahInPageButNotInSurah || isLastAyahInSurahAndPage) {
-            await moveToNextPage(withScroll: true);
-          }
           state.currentAyahUniqueNumber =
-              currentAyahsSurah.ayahs[index].ayahUQNumber;
-          currentAyahUniqueNumber = currentAyahsSurah.ayahs[index].ayahUQNumber;
-          QuranCtrl.instance.toggleAyahSelection(currentAyahUniqueNumber);
+              currentAyahsSurah.ayahs[currentIndex].ayahUQNumber;
+
+          QuranCtrl.instance.toggleAyahSelection(state.currentAyahUniqueNumber);
+          if (QuranCtrl.instance
+                  .getPageAyahsByIndex(
+                      QuranCtrl.instance.state.currentPageNumber.value)
+                  .first
+                  .ayahUQNumber ==
+              (state.currentAyahUniqueNumber)) {
+            await moveToNextPage();
+          }
           log('Current playing index: $index', name: 'AudioController');
         }
       });
@@ -171,55 +173,58 @@ extension AyahCtrlExtension on AudioCtrl {
     // }
   }
 
-  /// TODO: Implement skipNextAyah and skipPreviousAyah methods
-  Future<void> skipNextAyah(
-      BuildContext context, int currentAyahUniqueNumber) async {
-    if (currentAyahUniqueNumber == 6236) {
-      return await pausePlayer();
-    } else if (isLastAyahInPageButNotInSurah || isLastAyahInSurahAndPage) {
-      currentAyahUniqueNumber += 1;
-      await moveToNextPage(withScroll: true);
-      QuranCtrl.instance.toggleAyahSelection(currentAyahUniqueNumber);
-      await state.audioPlayer.seekToNext();
+  Future<void> skipNextAyah(BuildContext context, int ayahUniqueNumber) async {
+    if (state.playSingleAyahOnly) await pausePlayer();
+    if (ayahUniqueNumber == 6236 || isLastAyahInSurah) {
+      return;
+    }
+    if (isLastAyahInPageButNotInSurah) {
+      await moveToNextPage();
+    }
+    state.currentAyahUniqueNumber += 1;
+    QuranCtrl.instance.toggleAyahSelection(state.currentAyahUniqueNumber,
+        forceAddition: true);
+    if (state.playSingleAyahOnly) {
+      // ignore: use_build_context_synchronously
+      return _playSingleAyahFile(context, ayahUniqueNumber);
     } else {
-      currentAyahUniqueNumber += 1;
-      QuranCtrl.instance.toggleAyahSelection(currentAyahUniqueNumber);
-      await state.audioPlayer.seekToNext();
+      return state.audioPlayer.seekToNext();
     }
   }
 
   Future<void> skipPreviousAyah(
-      BuildContext context, int currentAyahUniqueNumber) async {
-    if (currentAyahUniqueNumber == 1) {
-      return await pausePlayer();
-    } else if (isFirstAyahInPageButNotInSurah) {
-      currentAyahUniqueNumber -= 1;
-      moveToPreviousPage();
-      QuranCtrl.instance.toggleAyahSelection(currentAyahUniqueNumber);
-      await state.audioPlayer.seekToPrevious();
+      BuildContext context, int ayahUniqueNumber) async {
+    if (state.playSingleAyahOnly) await pausePlayer();
+    if (ayahUniqueNumber == 1 || isFirstAyahInSurah) {
+      return;
+    }
+
+    if (isFirstAyahInPageButNotInSurah) {
+      await moveToPreviousPage();
+    }
+    state.currentAyahUniqueNumber -= 1;
+    QuranCtrl.instance.toggleAyahSelection(state.currentAyahUniqueNumber,
+        forceAddition: true);
+    if (state.playSingleAyahOnly) {
+      // ignore: use_build_context_synchronously
+      return _playSingleAyahFile(context, ayahUniqueNumber);
     } else {
-      currentAyahUniqueNumber -= 1;
-      await state.audioPlayer.seekToPrevious();
+      return state.audioPlayer.seekToPrevious();
     }
   }
 
-  Future<void> moveToNextPage({bool withScroll = true}) async {
-    if (withScroll) {
-      await QuranCtrl.instance.state.quranPageController.animateToPage(
-          (QuranCtrl.instance.state.currentPageNumber.value),
-          duration: const Duration(milliseconds: 600),
-          curve: Curves.easeInOut);
-      log('Going To Next Page at: ${QuranCtrl.instance.state.currentPageNumber.value} ');
-    }
+  Future<void> moveToNextPage({int? customPageIndex}) {
+    return QuranCtrl.instance.quranPagesController.animateToPage(
+        (customPageIndex ?? QuranCtrl.instance.state.currentPageNumber.value),
+        duration: const Duration(milliseconds: 600),
+        curve: Curves.easeInOut);
   }
 
-  void moveToPreviousPage({bool withScroll = true}) {
-    if (withScroll) {
-      QuranCtrl.instance.state.quranPageController.animateToPage(
-          (QuranCtrl.instance.state.currentPageNumber.value - 2),
-          duration: const Duration(milliseconds: 600),
-          curve: Curves.easeInOut);
-    }
+  Future<void> moveToPreviousPage({bool withScroll = true}) {
+    return QuranCtrl.instance.quranPagesController.animateToPage(
+        (QuranCtrl.instance.state.currentPageNumber.value - 2),
+        duration: const Duration(milliseconds: 600),
+        curve: Curves.easeInOut);
   }
 
   /// تحديث خريطة الآيات المحملة - Update downloaded ayahs map

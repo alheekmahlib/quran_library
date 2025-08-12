@@ -86,12 +86,14 @@ class SurahAudioList extends StatelessWidget {
     bool isDark,
   ) {
     final isSelected = surahAudioCtrl.state.selectedSurahIndex.value == index;
+    final isDownloaded =
+        surahAudioCtrl.state.isSurahDownloadedByNumber(surahNumber);
 
     return GestureDetector(
-      onTap: () {
+      onTap: () async {
         surahAudioCtrl.state.selectedSurahIndex.value = index;
         surahAudioCtrl.state.currentAudioListSurahNum.value = index + 1;
-        surahAudioCtrl.changeAudioSource();
+        await surahAudioCtrl.changeAudioSource();
       },
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
@@ -247,15 +249,16 @@ class SurahAudioList extends StatelessWidget {
 
               /// TODO: يوجد مشكلة، عند تحميل السورة، الأيقونة لا تتغير
               /// لكن يجب ان يكون الحفظ حسب رقم السورة + اسم القارء
-              child: Icon(
-                surahAudioCtrl.state.surahDownloadStatus.value[surahNumber] ??
-                        false
-                    ? Icons.download_done
-                    : Icons.cloud_download_outlined,
-                color: isSelected
-                    ? Colors.white
-                    : (style?.primaryColor ?? Colors.blue),
-                size: 20.0,
+              child: Obx(
+                () => Icon(
+                  isDownloaded.value
+                      ? Icons.download_done
+                      : Icons.cloud_download_outlined,
+                  color: isSelected
+                      ? Colors.white
+                      : (style?.primaryColor ?? Colors.blue),
+                  size: 20.0,
+                ),
               ),
             ),
           ],

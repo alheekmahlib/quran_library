@@ -38,7 +38,7 @@ class PlayAyah extends StatelessWidget {
                 QuranCtrl.instance.state.isPlayExpanded.value = true;
                 audioCtrl.playAyah(
                     context, audioCtrl.state.currentAyahUniqueNumber,
-                    playSingleAyah: true);
+                    playSingleAyah: audioCtrl.state.playSingleAyahOnly);
               },
             );
           }
@@ -49,9 +49,9 @@ class PlayAyah extends StatelessWidget {
               ctx: context,
               color: style?.playIconColor ?? (Colors.blue),
             ),
-            onTap: () {
+            onTap: () async {
+              await audioCtrl.pausePlayer();
               QuranCtrl.instance.state.isPlayExpanded.value = true;
-              audioCtrl.pausePlayer();
             },
           );
         },

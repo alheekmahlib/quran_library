@@ -38,14 +38,6 @@ extension SurahAudioGetters on AudioCtrl {
   /// single verse
   int get currentSurahNumber => currentAyahsSurah.surahNumber;
 
-  int get currentAyahInPage => state.currentAyahUniqueNumber == 1
-      ? QuranCtrl.instance.state.allAyahs
-              .firstWhere((ayah) =>
-                  ayah.page == QuranCtrl.instance.state.currentPageNumber.value)
-              .ayahNumber -
-          1
-      : state.currentAyahUniqueNumber;
-
   Stream<PositionData> get audioStream => positionDataStream;
 
   MediaItem get mediaItem => MediaItem(
@@ -66,17 +58,17 @@ extension SurahAudioGetters on AudioCtrl {
   Future<void> updateMediaItemAndPlay() async {
     final newMediaItem = mediaItem;
     AudioPlayerHandler.instance.mediaItem.add(newMediaItem);
-    await state.audioPlayer.setAudioSource(
-        state.surahDownloadStatus.value[state.currentAudioListSurahNum.value] ==
-                false
-            ? AudioSource.uri(
-                Uri.parse(urlSurahFilePath),
-                tag: newMediaItem,
-              )
-            : AudioSource.file(
-                localSurahFilePath,
-                tag: newMediaItem,
-              ));
+    await state.audioPlayer.setAudioSource(state
+            .isSurahDownloadedByNumber(state.currentAudioListSurahNum.value)
+            .value
+        ? AudioSource.file(
+            localSurahFilePath,
+            tag: newMediaItem,
+          )
+        : AudioSource.uri(
+            Uri.parse(urlSurahFilePath),
+            tag: newMediaItem,
+          ));
   }
 
   Stream<PositionData> get positionDataStream =>

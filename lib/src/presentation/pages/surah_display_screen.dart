@@ -550,9 +550,9 @@ class SurahDisplayScreen extends StatelessWidget {
   ) {
     final isLandscape =
         MediaQuery.of(context).orientation == Orientation.landscape;
-    final currentPage = surahCtrl.getRealQuranPageNumber(pageIndex);
+    final currentPageNumber = surahCtrl.getRealQuranPageNumber(pageIndex);
     return AllQuranWidget(
-        pageIndex: currentPage - 1,
+        pageIndex: currentPageNumber - 1,
         languageCode: languageCode,
         juzName: juzName,
         sajdaName: sajdaName,
@@ -570,7 +570,7 @@ class SurahDisplayScreen extends StatelessWidget {
                         deviceSize,
                         surahCtrl,
                         pageIndex,
-                        currentPage - 1))
+                        currentPageNumber - 1))
                 : _firstTwoSurahs(
                     context,
                     isFirstPageInFirstOrSecondSurah,
@@ -578,9 +578,15 @@ class SurahDisplayScreen extends StatelessWidget {
                     deviceSize,
                     surahCtrl,
                     pageIndex,
-                    currentPage - 1)
-            : _firstTwoSurahs(context, isFirstPageInFirstOrSecondSurah,
-                surahPage, deviceSize, surahCtrl, pageIndex, currentPage - 1));
+                    currentPageNumber - 1)
+            : _firstTwoSurahs(
+                context,
+                isFirstPageInFirstOrSecondSurah,
+                surahPage,
+                deviceSize,
+                surahCtrl,
+                pageIndex,
+                currentPageNumber - 1));
   }
 
   Widget _firstTwoSurahs(

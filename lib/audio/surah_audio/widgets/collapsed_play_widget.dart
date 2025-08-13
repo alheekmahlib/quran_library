@@ -48,7 +48,7 @@ class CollapsedPlayWidget extends StatelessWidget {
                       SurahSkipToPrevious(style: style),
                       OnlinePlayButton(),
                       SurahSkipToNext(style: style),
-                    ],
+                    ].reversed.toList(),
                   ),
                   Obx(
                     () => Text(

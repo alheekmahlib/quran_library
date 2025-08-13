@@ -10,7 +10,7 @@ class StorageConstants {
   static const String surahReaderIndex = 'SURAH_READER_INDEX';
   static const String ayahReaderIndex = 'AYAH_READER_INDEX';
   static const String lastSurah = 'LAST_SURAH';
-  static const String selectedSurah = "SELECTED_SURAH";
+  static const String selectedSurahIndex = "SELECTED_SURAH_INDEX";
   static const String lastPosition = "LAST_POSITION";
   static const String audioServiceInitialized = "AUDIO_SERVICE_INITIALIZED";
 }

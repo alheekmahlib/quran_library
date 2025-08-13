@@ -94,6 +94,25 @@ class PlayWidget extends StatelessWidget {
               children: [
                 Row(
                   children: [
+                    SurahSkipToNext(style: style),
+                    SizedBox(width: 8),
+                    GestureDetector(
+                      onTap: () => surahCtrl.state.audioPlayer.seek(Duration(
+                          seconds: surahCtrl.state.seekNextSeconds.value += 5)),
+                      child: SvgPicture.asset(
+                        AssetsPath.assets.rewind,
+                        colorFilter: ColorFilter.mode(
+                            style!.playIconColor ?? Colors.blue,
+                            BlendMode.srcIn),
+                        height: 30,
+                        width: 30,
+                      ),
+                    ),
+                  ],
+                ),
+                OnlinePlayButton(),
+                Row(
+                  children: [
                     GestureDetector(
                       onTap: () {
                         surahCtrl.state.audioPlayer.seek(Duration(
@@ -102,32 +121,15 @@ class PlayWidget extends StatelessWidget {
                       },
                       child: SvgPicture.asset(
                         AssetsPath.assets.backward,
-                        colorFilter:
-                            ColorFilter.mode(Colors.white, BlendMode.srcIn),
+                        colorFilter: ColorFilter.mode(
+                            style!.playIconColor ?? Colors.blue,
+                            BlendMode.srcIn),
                         height: 30,
                         width: 30,
                       ),
                     ),
                     SizedBox(width: 8),
                     SurahSkipToPrevious(style: style),
-                  ],
-                ),
-                OnlinePlayButton(),
-                Row(
-                  children: [
-                    SurahSkipToNext(style: style),
-                    SizedBox(width: 8),
-                    GestureDetector(
-                      onTap: () => surahCtrl.state.audioPlayer.seek(Duration(
-                          seconds: surahCtrl.state.seekNextSeconds.value += 5)),
-                      child: SvgPicture.asset(
-                        AssetsPath.assets.rewind,
-                        colorFilter:
-                            ColorFilter.mode(Colors.white, BlendMode.srcIn),
-                        height: 30,
-                        width: 30,
-                      ),
-                    ),
                   ],
                 ),
               ],

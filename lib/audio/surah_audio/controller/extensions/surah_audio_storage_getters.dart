@@ -5,11 +5,12 @@ extension SurahAudioStorageGetters on AudioCtrl {
 
   Future loadLastSurahListen() async {
     int? lastSurah = state.box.read(StorageConstants.lastSurah) ?? 1;
-    int? selectedSurah = state.box.read(StorageConstants.selectedSurah) ?? 1;
+    int? selectedSurah =
+        state.box.read(StorageConstants.selectedSurahIndex) ?? 0;
     int? lastPosition = state.box.read(StorageConstants.lastPosition) ?? 0;
     return {
       StorageConstants.lastSurah: lastSurah,
-      StorageConstants.selectedSurah: selectedSurah,
+      StorageConstants.selectedSurahIndex: selectedSurah,
       StorageConstants.lastPosition: lastPosition,
     };
   }
@@ -17,10 +18,10 @@ extension SurahAudioStorageGetters on AudioCtrl {
   Future<void> loadLastSurahAndPosition() async {
     final lastSurahData = await loadLastSurahListen();
 
-    state.currentAudioListSurahNum.value =
-        lastSurahData[StorageConstants.lastSurah];
     state.selectedSurahIndex.value =
-        lastSurahData[StorageConstants.selectedSurah];
+        lastSurahData[StorageConstants.lastSurah] - 1;
+    state.selectedSurahIndex.value =
+        lastSurahData[StorageConstants.selectedSurahIndex];
     state.lastPosition.value = lastSurahData[StorageConstants.lastPosition];
   }
 
@@ -28,7 +29,7 @@ extension SurahAudioStorageGetters on AudioCtrl {
     state.box.write(
         StorageConstants.lastSurah, state.currentAudioListSurahNum.value);
     state.box.write(
-      StorageConstants.selectedSurah,
+      StorageConstants.selectedSurahIndex,
       state.selectedSurahIndex.value,
     );
   }

@@ -8,9 +8,9 @@ class SurahAudioState {
   RxBool isPlaying = false.obs;
   RxString progressString = "0".obs;
   RxDouble progress = 0.0.obs;
-  RxInt currentAudioListSurahNum = 1.obs;
+  RxInt get currentAudioListSurahNum => (selectedSurahIndex.value + 1).obs;
   var cancelToken = CancelToken();
-  late Uri cachedArtUri;
+  Uri? cachedArtUri;
   TextEditingController textController = TextEditingController();
   RxInt selectedSurahIndex = 0.obs;
   final ScrollController surahListController = ScrollController();

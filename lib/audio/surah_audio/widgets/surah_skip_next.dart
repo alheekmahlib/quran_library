@@ -20,8 +20,7 @@ class SurahSkipToNext extends StatelessWidget {
             size: style!.nextIconHeight ?? 38,
           ),
         ),
-        onTap: () async => await audioCtrl.skipNextAyah(
-            context, audioCtrl.state.currentAyahUniqueNumber),
+        onTap: () async => await audioCtrl.playNextSurah(),
       ),
     );
   }

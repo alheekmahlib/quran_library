@@ -53,9 +53,9 @@ class AudioWidget extends StatelessWidget {
                               children: [
                                 // تقليل المسافات عند المساحة المحدودة
                                 // Reduce spacing when space is limited
-                                SizedBox(height: targetHeight > 120 ? 11 : 4),
+                                SizedBox(height: targetHeight > 120 ? 4 : 2),
                                 ChangeReader(style: style!),
-                                SizedBox(height: 4),
+                                // SizedBox(height: 4),
                                 // جعل الـ Slider مرن ليأخذ المساحة المتبقية
                                 // Make slider flexible to take remaining space
                                 Expanded(

@@ -211,6 +211,7 @@ class SurahDisplayScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AudioCtrl.instance;
     // تحديث رابط أيقونة التطبيق إذا تم تمريره / Update app icon URL if provided
     // Update app icon URL if provided
     if (appIconUrlForPlayAudioInBackground != null &&

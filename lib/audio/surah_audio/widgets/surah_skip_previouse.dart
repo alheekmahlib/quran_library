@@ -19,8 +19,7 @@ class SurahSkipToPrevious extends StatelessWidget {
             size: style?.previousIconHeight ?? 38,
           ),
         ),
-        onPressed: () async => await AudioCtrl.instance.skipPreviousAyah(
-            context, AudioCtrl.instance.state.currentAyahUniqueNumber),
+        onPressed: () async => await AudioCtrl.instance.playPreviousSurah(),
       ),
     );
   }

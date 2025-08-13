@@ -20,14 +20,16 @@ class AudioCtrl extends GetxController {
     ]);
 
     super.onInit();
-    loadSurahReader();
-    loadAyahReader();
+
     state.surahsPlayList = List.generate(114, (i) {
-      state.currentAudioListSurahNum.value = i + 1;
+      state.selectedSurahIndex.value = i;
       return AudioSource.uri(
         Uri.parse(urlSurahFilePath),
       );
     });
+    state.selectedSurahIndex.value = 0;
+    loadSurahReader();
+    loadAyahReader();
 
     state.audioServiceInitialized.value =
         state.box.read(StorageConstants.audioServiceInitialized) ?? false;
@@ -83,7 +85,10 @@ class AudioCtrl extends GetxController {
 
   /// -------- [DownloadingMethods] ----------
 
-  Future<void> downloadSurah(BuildContext? context) async {
+  Future<void> downloadSurah(BuildContext? context, {int? surahNum}) async {
+    if (surahNum != null) {
+      state.selectedSurahIndex.value = (surahNum - 1);
+    }
     String filePath = localSurahFilePath;
     File file = File(filePath);
     log("File Path: $filePath", name: 'AudioCtrl');
@@ -113,8 +118,7 @@ class AudioCtrl extends GetxController {
         log("Downloading from URL: $urlSurahFilePath", name: 'AudioCtrl');
         if (await _downloadFile(filePath, urlSurahFilePath)) {
           _addFileAudioSourceToPlayList(filePath);
-          onDownloadSuccess(int.parse(
-              state.currentAudioListSurahNum.value.toString().padLeft(3, "0")));
+          onDownloadSuccess(state.currentAudioListSurahNum.value);
           log("File successfully downloaded and saved to $filePath",
               name: 'AudioCtrl');
           await state.audioPlayer
@@ -272,12 +276,11 @@ class AudioCtrl extends GetxController {
   }
 
   Future<Map<int, bool>> checkAllSurahsDownloaded() async {
-    Directory? directory = await getApplicationDocumentsDirectory();
     Map<int, bool> surahDownloadStatus = {};
 
     for (int i = 1; i <= 114; i++) {
       String filePath =
-          '${directory.path}/${state.surahReaderNameValue.value}${i.toString().padLeft(3, '0')}.mp3';
+          '${state.dir.path}/${state.surahReaderNameValue.value}${i.toString().padLeft(3, '0')}.mp3';
       File file = File(filePath);
       surahDownloadStatus[i] = await file.exists();
     }
@@ -299,7 +302,7 @@ class AudioCtrl extends GetxController {
   Future<void> _addDownloadedSurahToPlaylist() async {
     for (int i = 1; i <= 114; i++) {
       String filePath =
-          '${state.dir.path}/${state.surahReaderNameValue.value}${i.toString().padLeft(3, "0")}.mp3';
+          '${state.dir.path}/${state.surahReaderNameValue.value}${i.toString().padLeft(3, '0')}.mp3';
 
       File file = File(filePath);
 

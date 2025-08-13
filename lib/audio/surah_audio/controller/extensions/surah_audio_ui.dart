@@ -43,6 +43,7 @@ extension SurahAudioUi on AudioCtrl {
     state.box.write(StorageConstants.ayahReaderIndex, index);
     state.ayahReaderIndex.value = index;
     Navigator.of(context).pop();
+    update(['audio_seekBar_id']);
     playAyah(context, state.currentAyahUniqueNumber,
         playSingleAyah: state.playSingleAyahOnly);
   }

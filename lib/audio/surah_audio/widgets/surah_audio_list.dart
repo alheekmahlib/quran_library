@@ -92,7 +92,6 @@ class SurahAudioList extends StatelessWidget {
     return GestureDetector(
       onTap: () async {
         surahAudioCtrl.state.selectedSurahIndex.value = index;
-        surahAudioCtrl.state.currentAudioListSurahNum.value = index + 1;
         await surahAudioCtrl.changeAudioSource();
       },
       child: AnimatedContainer(
@@ -236,30 +235,52 @@ class SurahAudioList extends StatelessWidget {
 
             // شرح: أيقونة التشغيل المحسنة
             // Explanation: Enhanced play icon
-            Container(
-              width: 36.0,
-              height: 36.0,
-              decoration: BoxDecoration(
-                color: isSelected
-                    ? (style?.primaryColor ?? Colors.blue)
-                    : (style?.primaryColor ?? Colors.blue)
-                        .withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(18.0),
-              ),
-
-              /// TODO: يوجد مشكلة، عند تحميل السورة، الأيقونة لا تتغير
-              /// لكن يجب ان يكون الحفظ حسب رقم السورة + اسم القارء
-              child: Obx(
-                () => Icon(
-                  isDownloaded.value
-                      ? Icons.download_done
-                      : Icons.cloud_download_outlined,
-                  color: isSelected
-                      ? Colors.white
-                      : (style?.primaryColor ?? Colors.blue),
-                  size: 20.0,
+            Column(
+              children: [
+                Container(
+                  width: 36.0,
+                  height: 36.0,
+                  decoration: BoxDecoration(
+                    color: isSelected
+                        ? (style?.primaryColor ?? Colors.blue)
+                        : (style?.primaryColor ?? Colors.blue)
+                            .withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(18.0),
+                  ),
+                  child: GestureDetector(
+                    onTap: () => surahAudioCtrl.downloadSurah(context,
+                        surahNum: surahNumber),
+                    child: Obx(
+                      () => Icon(
+                        isDownloaded.value
+                            ? Icons.download_done
+                            : Icons.cloud_download_outlined,
+                        color: isSelected
+                            ? Colors.white
+                            : (style?.primaryColor ?? Colors.blue),
+                        size: 20.0,
+                      ),
+                    ),
+                  ),
                 ),
-              ),
+                Obx(
+                  () {
+                    if (index ==
+                            surahAudioCtrl.state.selectedSurahIndex.value &&
+                        surahAudioCtrl.state.isDownloading.value &&
+                        !isDownloaded.value) {
+                      return SizedBox(
+                        height: 10,
+                        width: 40,
+                        child: LinearProgressIndicator(
+                          value: surahAudioCtrl.state.progress.value,
+                        ),
+                      );
+                    }
+                    return SizedBox.shrink();
+                  },
+                )
+              ],
             ),
           ],
         ),

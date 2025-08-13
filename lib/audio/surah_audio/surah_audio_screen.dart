@@ -9,8 +9,8 @@ class SurahAudioScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final surahCtrl = AudioCtrl.instance;
-    surahCtrl.loadSurahReader();
-    surahCtrl.loadLastSurahListen;
+    // surahCtrl.loadSurahReader();
+    // surahCtrl.loadLastSurahListen;
     return Scaffold(
       backgroundColor: const Color(0xfffaf7f3),
       appBar: AppBar(
@@ -25,7 +25,7 @@ class SurahAudioScreen extends StatelessWidget {
           controller: surahCtrl.state.panelController,
           config: SlidingPanelConfig(
             anchorPosition: 100,
-            expandPosition: MediaQuery.sizeOf(context).height * .5,
+            expandPosition: MediaQuery.sizeOf(context).height * .6,
           ),
           pageContent: BackDropWidget(style: style, isDark: isDark),
           panelContent: Obx(() => !surahCtrl.state.isSheetOpen.value

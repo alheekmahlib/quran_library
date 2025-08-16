@@ -207,9 +207,9 @@ extension QuranGetters on QuranCtrl {
   ///
   /// Returns:
   ///   `List<SurahModel>`: A list of SurahModel representing the Surahs on the specified page.
-  List<SurahModel> getSurahsByPage(int pageNumber) {
-    if (getPageAyahsByIndex(pageNumber).isEmpty) return [];
-    List<AyahModel> pageAyahs = getPageAyahsByIndex(pageNumber);
+  List<SurahModel> getSurahsByPageNumber(int pageNumber) {
+    if (getPageAyahsByIndex(pageNumber - 1).isEmpty) return [];
+    List<AyahModel> pageAyahs = getPageAyahsByIndex(pageNumber - 1);
     List<SurahModel> surahsOnPage = [];
     for (AyahModel ayah in pageAyahs) {
       SurahModel surah = state.surahs.firstWhere((s) => s.ayahs.contains(ayah),
@@ -239,8 +239,9 @@ extension QuranGetters on QuranCtrl {
   ///
   /// Returns:
   ///   `SurahModel`: The SurahModel representing the Surah of the first Ayah on the specified page.
-  SurahModel getCurrentSurahByPage(int pageNumber) => state.surahs.firstWhere(
-      (s) => s.ayahs.contains(getPageAyahsByIndex(pageNumber).first));
+  SurahModel getCurrentSurahByPageNumber(int pageNumber) =>
+      state.surahs.firstWhere(
+          (s) => s.ayahs.contains(getPageAyahsByIndex(pageNumber - 1).first));
 
   /// Retrieves the Surah data for a given Ayah.
   ///
@@ -452,7 +453,8 @@ extension QuranGetters on QuranCtrl {
   /// Returns:
   ///   `bool`: true if the current Surah number matches the specified Surah number, false otherwise.
   bool getCurrentSurahNumber(int surahNum) =>
-      getCurrentSurahByPage(state.currentPageNumber.value).surahNumber - 1 ==
+      getCurrentSurahByPageNumber(state.currentPageNumber.value).surahNumber -
+          1 ==
       surahNum;
 
   /// Checks if the current Juz number matches the specified Juz number.

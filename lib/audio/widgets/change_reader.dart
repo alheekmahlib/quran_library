@@ -30,50 +30,49 @@ class ChangeReader extends StatelessWidget {
       padding: const EdgeInsets.all(16.0),
       child: Column(
         mainAxisSize: MainAxisSize.min,
-        children: List.generate(
-            ReadersConstants.ayahReaderInfo.length,
-            (index) => ListTile(
-                  title: Text(
-                    '${ReadersConstants.ayahReaderInfo[index]['name']}'.tr,
-                    style: QuranLibrary().naskhStyle.copyWith(
-                          color: style!.readerNameInItemColor ??
-                              (AudioCtrl.instance.state.ayahReaderIndex.value ==
-                                      ReadersConstants.ayahReaderInfo[index]
-                                          ['index']
-                                  ? isDark!
-                                      ? Colors.white
-                                      : Colors.black
-                                  : const Color(0xffcdba72)),
-                          fontSize: style!.readerNameInItemFontSize ?? 14,
-                        ),
+        children:
+            List.generate(ReadersConstants.ayahReaderInfo.length, (index) {
+          final isSelected = AudioCtrl.instance.state.ayahReaderIndex.value ==
+              ReadersConstants.ayahReaderInfo[index]['index'];
+          return ListTile(
+            title: Text(
+              '${ReadersConstants.ayahReaderInfo[index]['name']}'.tr,
+              style: QuranLibrary().naskhStyle.copyWith(
+                    color: style!.readerNameInItemColor ??
+                        (isSelected
+                            ? isDark!
+                                ? Colors.white
+                                : Colors.black
+                            : const Color(0xffcdba72)),
+                    fontSize: style!.readerNameInItemFontSize ?? 14,
                   ),
-                  trailing: Container(
-                    height: 20,
-                    width: 20,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                          color:
-                              AudioCtrl.instance.state.ayahReaderIndex.value ==
-                                      ReadersConstants.ayahReaderInfo[index]
-                                          ['index']
-                                  ? isDark!
-                                      ? Colors.white
-                                      : Colors.black
-                                  : const Color(0xffcdba72),
-                          width: 2),
-                      // color: const Color(0xff39412a),
-                    ),
-                    child: AudioCtrl.instance.state.ayahReaderIndex.value ==
-                            ReadersConstants.ayahReaderInfo[index]['index']
-                        ? Icon(Icons.done,
-                            size: 14,
-                            color: Theme.of(context).colorScheme.inversePrimary)
-                        : null,
-                  ),
-                  onTap: () =>
-                      AudioCtrl.instance.changeAyahReadersOnTap(context, index),
-                )),
+            ),
+            trailing: Container(
+              height: 20,
+              width: 20,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(
+                    color: isSelected
+                        ? isDark!
+                            ? Colors.white
+                            : Colors.black
+                        : const Color(0xffcdba72),
+                    width: 2),
+                // color: const Color(0xff39412a),
+              ),
+              child: isSelected
+                  ? Icon(
+                      Icons.done,
+                      size: 16,
+                      color: Colors.black,
+                    )
+                  : null,
+            ),
+            onTap: () =>
+                AudioCtrl.instance.changeAyahReadersOnTap(context, index),
+          );
+        }),
       ),
     );
   }

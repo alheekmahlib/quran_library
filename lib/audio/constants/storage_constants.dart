@@ -3,8 +3,6 @@ part of '../audio.dart';
 class StorageConstants {
   StorageConstants._();
   static const String readerName = 'READER_NAME';
-  static const String surahAudioPlayerSound = 'SURAH_AUDIO_PLAYER_SOUND';
-  static const String surahAudioPlayerName = 'SURAH_AUDIO_PLAYER_NAME';
   static const String ayahAudioPlayerSound = 'AYAH_AUDIO_PLAYER_SOUND';
   static const String ayahAudioPlayerName = 'AYAH_AUDIO_PLAYER_NAME';
   static const String surahReaderIndex = 'SURAH_READER_INDEX';

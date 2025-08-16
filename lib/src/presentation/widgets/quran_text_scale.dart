@@ -221,7 +221,8 @@ class _QuranTextScale extends StatelessWidget {
                                       fontSize: 20 *
                                           quranCtrl.state.scaleFactor.value,
                                       surahNum: quranCtrl
-                                          .getCurrentSurahByPage(pageIndex)
+                                          .getCurrentSurahByPageNumber(
+                                              pageIndex + 1)
                                           .surahNumber,
                                       ayahUQNum: ayahs[ayahIndex].ayahUQNumber,
                                       hasBookmark: ayahBookmarked.contains(

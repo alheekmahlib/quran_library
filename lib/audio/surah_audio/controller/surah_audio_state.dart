@@ -4,6 +4,7 @@ class SurahAudioState {
   /// -------- [Variables] ----------
 
   AudioPlayer audioPlayer = AudioPlayer();
+  bool isPlayingSurahsMode = false;
   RxBool isDownloading = false.obs;
   RxBool isPlaying = false.obs;
   RxString progressString = "0".obs;
@@ -14,8 +15,10 @@ class SurahAudioState {
   TextEditingController textController = TextEditingController();
   RxInt selectedSurahIndex = 0.obs;
   final ScrollController surahListController = ScrollController();
-  RxString surahReaderValue = "https://download.quranicaudio.com/quran/".obs;
-  RxString surahReaderNameValue = "abdul_basit_murattal/".obs;
+  String get surahReaderValue =>
+      ReadersConstants.surahReaderInfo[surahReaderIndex.value]['readerD'];
+  String get surahReaderNameValue =>
+      ReadersConstants.surahReaderInfo[surahReaderIndex.value]['readerN'];
   RxString ayahReaderValue = "https://download.quranicaudio.com/quran/".obs;
   RxString ayahReaderNameValue = "abdul_basit_murattal/".obs;
   final bool isDisposed = false;
@@ -38,7 +41,9 @@ class SurahAudioState {
   RxInt downloadProgress = 0.obs;
   RxBool audioServiceInitialized = false.obs;
   RxBool isDirectPlaying = false.obs;
-  late Directory dir;
+  Directory? _dir;
+  Future<Directory> get dir async =>
+      _dir ??= await getApplicationDocumentsDirectory();
   bool snackBarShownForBatch = false;
 
   /// ===== single verse =====
@@ -49,7 +54,7 @@ class SurahAudioState {
 
   /// if true, then play single ayah only.
   /// false state is not ready.
-  bool playSingleAyahOnly = true;
+  bool playSingleAyahOnly = false;
 
   // App icon URL - يمكن للمستخدم تخصيصه / User can customize the app icon URL
   RxString appIconUrl =

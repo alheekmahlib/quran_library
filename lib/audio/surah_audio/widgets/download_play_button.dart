@@ -41,6 +41,7 @@ class DownloadPlayButton extends StatelessWidget {
                       iconSize: 24.0,
                       color: style?.iconColor ?? Colors.blue,
                       onPressed: () async {
+                        surahAudioCtrl.state.isPlayingSurahsMode = true;
                         if (surahAudioCtrl.state.isDownloading.value) {
                           surahAudioCtrl.cancelDownload();
                         } else if (surahAudioCtrl.state

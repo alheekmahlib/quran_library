@@ -17,14 +17,6 @@ extension SurahAudioUi on AudioCtrl {
 
   void changeSurahReadersOnTap(BuildContext context, int index) {
     initializeSurahDownloadStatus();
-    state.surahReaderValue.value =
-        ReadersConstants.surahReaderInfo[index]['readerD'];
-    state.surahReaderNameValue.value =
-        ReadersConstants.surahReaderInfo[index]['readerN'];
-    state.box.write(StorageConstants.surahAudioPlayerSound,
-        ReadersConstants.surahReaderInfo[index]['readerD']);
-    state.box.write(StorageConstants.surahAudioPlayerName,
-        ReadersConstants.surahReaderInfo[index]['readerN']);
     state.box.write(StorageConstants.surahReaderIndex, index);
     state.surahReaderIndex.value = index;
     changeAudioSource();

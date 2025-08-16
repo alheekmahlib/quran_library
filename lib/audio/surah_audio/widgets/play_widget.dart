@@ -1,8 +1,8 @@
 part of '../../audio.dart';
 
-class PlayWidget extends StatelessWidget {
+class PlaySurahsWidget extends StatelessWidget {
   final SurahAudioStyle? style;
-  PlayWidget({super.key, this.style});
+  PlaySurahsWidget({super.key, this.style});
 
   final surahCtrl = AudioCtrl.instance;
 

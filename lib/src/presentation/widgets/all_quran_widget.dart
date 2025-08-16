@@ -116,12 +116,14 @@ class AllQuranWidget extends StatelessWidget {
                         surahName!,
                         style: _getTextStyle(context),
                       )
-                    : quranCtrl.getSurahsByPage(pageIndex).isNotEmpty
+                    : quranCtrl.getSurahsByPageNumber(pageIndex + 1).isNotEmpty
                         ? Row(
                             children: List.generate(
-                                quranCtrl.getSurahsByPage(pageIndex).length,
+                                quranCtrl
+                                    .getSurahsByPageNumber(pageIndex + 1)
+                                    .length,
                                 (i) => Text(
-                                      ' ${quranCtrl.getSurahsByPage(pageIndex)[i].arabicName.replaceAll('سُورَةُ ', '')} ',
+                                      ' ${quranCtrl.getSurahsByPageNumber(pageIndex + 1)[i].arabicName.replaceAll('سُورَةُ ', '')} ',
                                       style: TextStyle(
                                           fontSize: UiHelper.currentOrientation(
                                               18.0, 22.0, context),
@@ -140,12 +142,14 @@ class AllQuranWidget extends StatelessWidget {
                         surahName!,
                         style: _getTextStyle(context),
                       )
-                    : quranCtrl.getSurahsByPage(pageIndex).isNotEmpty
+                    : quranCtrl.getSurahsByPageNumber(pageIndex + 1).isNotEmpty
                         ? Row(
                             children: List.generate(
-                                quranCtrl.getSurahsByPage(pageIndex).length,
+                                quranCtrl
+                                    .getSurahsByPageNumber(pageIndex + 1)
+                                    .length,
                                 (i) => Text(
-                                      ' ${quranCtrl.getSurahsByPage(pageIndex)[i].arabicName.replaceAll('سُورَةُ ', '')} ',
+                                      ' ${quranCtrl.getSurahsByPageNumber(pageIndex + 1)[i].arabicName.replaceAll('سُورَةُ ', '')} ',
                                       style: TextStyle(
                                           fontSize: UiHelper.currentOrientation(
                                               18.0, 22.0, context),

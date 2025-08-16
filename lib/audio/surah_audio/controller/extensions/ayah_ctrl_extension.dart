@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 part of '../../../audio.dart';
 
 extension AyahCtrlExtension on AudioCtrl {
@@ -16,7 +18,7 @@ extension AyahCtrlExtension on AudioCtrl {
       }
       QuranCtrl.instance.toggleAyahSelection(state.currentAyahUniqueNumber);
       final filePath = isSurahDownloaded
-          ? join(state.dir.path, currentAyahFileName)
+          ? join((await state.dir).path, currentAyahFileName)
           : await _downloadFileIfNotExist(currentAyahUrl, currentAyahFileName,
               // ignore: use_build_context_synchronously
               context: context,
@@ -46,7 +48,7 @@ extension AyahCtrlExtension on AudioCtrl {
   /// play Ayahs
   /// تشغيل الآيات
   Future<void> _playAyahsFile(
-      BuildContext context, int currentAyahUniqueNumber) async {
+      BuildContext? context, int currentAyahUniqueNumber) async {
     state.tmpDownloadedAyahsCount = 0;
     final ayahsFilesNames = selectedSurahAyahsFileNames;
     final ayahsUrls = selectedSurahAyahsUrls;
@@ -85,18 +87,19 @@ extension AyahCtrlExtension on AudioCtrl {
     }
 
     try {
+      final directory = await state.dir;
       // إنشاء مصادر الصوت / Create audio sources
       final audioSources = List.generate(
         ayahsFilesNames.length,
         (i) => AudioSource.file(
-          join(state.dir.path, ayahsFilesNames[i]),
+          join(directory.path, ayahsFilesNames[i]),
           tag: mediaItemsForCurrentSurah[i],
         ),
       );
 
       // التأكد من وجود ملفات الصوت / Verify audio files exist
       for (int i = 0; i < ayahsFilesNames.length; i++) {
-        final filePath = join(state.dir.path, ayahsFilesNames[i]);
+        final filePath = join(directory.path, ayahsFilesNames[i]);
         if (!await File(filePath).exists()) {
           log('Audio file does not exist: $filePath', name: 'AudioController');
           throw Exception('ملف الصوت غير موجود: ${ayahsFilesNames[i]}');
@@ -125,7 +128,7 @@ extension AyahCtrlExtension on AudioCtrl {
           QuranCtrl.instance.toggleAyahSelection(state.currentAyahUniqueNumber);
           if (QuranCtrl.instance
                   .getPageAyahsByIndex(
-                      QuranCtrl.instance.state.currentPageNumber.value)
+                      QuranCtrl.instance.state.currentPageNumber.value - 1)
                   .first
                   .ayahUQNumber ==
               (state.currentAyahUniqueNumber)) {
@@ -137,19 +140,24 @@ extension AyahCtrlExtension on AudioCtrl {
 
       state.isPlaying.value = true;
       await state.audioPlayer.play();
+
+      state.audioPlayer.playerStateStream.listen((d) {
+        if (d.processingState == ProcessingState.completed &&
+            !state.playSingleAyahOnly &&
+            currentSurahNumber < 114) {
+          state.currentAyahUniqueNumber++;
+          _playAyahsFile(context, state.currentAyahUniqueNumber);
+        }
+      });
     } catch (e) {
       state.isPlaying.value = false;
       await state.audioPlayer.stop();
       log('Error in ayahs playFile: $e', name: 'AudioController');
 
       // إظهار رسالة خطأ للمستخدم / Show error message to user
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('خطأ في تشغيل الآيات: ${e.toString()}'),
-            backgroundColor: Colors.red,
-          ),
-        );
+      if (context != null) {
+        UiHelper.showCustomErrorSnackBar(
+            'خطأ في تشغيل الآيات: ${e.toString()}', context);
       }
     }
   }
@@ -161,13 +169,17 @@ extension AyahCtrlExtension on AudioCtrl {
     QuranCtrl.instance.isShowControl.value = true;
     SliderController.instance.setMediumHeight(context);
     SliderController.instance.updateBottomHandleVisibility(true);
+    if (state.audioPlayer.playing) await pausePlayer();
     Future.delayed(
       const Duration(milliseconds: 400),
       () => QuranCtrl.instance.state.isPlayExpanded.value = true,
     );
+
     if (playSingleAyah) {
+      // ignore: use_build_context_synchronously
       await _playSingleAyahFile(context, currentAyahUniqueNumber);
     } else {
+      // ignore: use_build_context_synchronously
       await _playAyahsFile(context, currentAyahUniqueNumber);
     }
     // }
@@ -237,7 +249,7 @@ extension AyahCtrlExtension on AudioCtrl {
           orElse: () => throw StateError('No ayah found with number $i'),
         );
 
-        String filePath = '${state.dir.path}/$ayahReaderValue/$i.mp3';
+        String filePath = '${(await state.dir).path}/$ayahReaderValue/$i.mp3';
         File file = File(filePath);
         final exists = await file.exists();
 

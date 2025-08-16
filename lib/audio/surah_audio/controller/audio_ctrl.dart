@@ -11,7 +11,7 @@ class AudioCtrl extends GetxController {
   @override
   Future<void> onInit() async {
     initializeSurahDownloadStatus();
-    state.dir = await getApplicationDocumentsDirectory();
+    state._dir ??= await getApplicationDocumentsDirectory();
     await Future.wait([
       _addDownloadedSurahToPlaylist(),
       _updateDownloadedAyahsMap(),
@@ -55,7 +55,8 @@ class AudioCtrl extends GetxController {
 
     // Listen to player state changes to play the next Surah automatically
     state.audioPlayer.playerStateStream.listen((playerState) async {
-      if (playerState.processingState == ProcessingState.completed) {
+      if (playerState.processingState == ProcessingState.completed &&
+          state.isPlayingSurahsMode) {
         await playNextSurah();
       }
     });
@@ -113,7 +114,7 @@ class AudioCtrl extends GetxController {
       } else {
         state.isPlaying.value = true;
         log("File doesn't exist. Downloading...", name: 'AudioCtrl');
-        log("state.sorahReaderNameValue: ${state.surahReaderNameValue.value}",
+        log("state.sorahReaderNameValue: ${state.surahReaderNameValue}",
             name: 'AudioCtrl');
         log("Downloading from URL: $urlSurahFilePath", name: 'AudioCtrl');
         if (await _downloadFile(filePath, urlSurahFilePath)) {
@@ -142,7 +143,7 @@ class AudioCtrl extends GetxController {
       bool showSnakbars = true,
       bool setDownloadingStatus = true,
       int? ayahUqNumber}) async {
-    String path = join(state.dir.path, fileName);
+    String path = join((await state.dir).path, fileName);
     var file = File(path);
     bool exists = await file.exists();
     final connectivity = (await Connectivity().checkConnectivity());
@@ -178,9 +179,8 @@ class AudioCtrl extends GetxController {
       } else {
         // إزالة استخدام BuildContext عبر async gap - استخدام Get.context بدلاً من ذلك
         // Avoid using BuildContext across async gap - use Get.context instead
-        if (Get.context != null) {
-          UiHelper.showCustomErrorSnackBar(
-              'لا يوجد اتصال بالإنترنت', Get.context!);
+        if (context != null && context.mounted) {
+          UiHelper.showCustomErrorSnackBar('لا يوجد اتصال بالإنترنت', context);
         }
       }
     }
@@ -277,10 +277,11 @@ class AudioCtrl extends GetxController {
 
   Future<Map<int, bool>> checkAllSurahsDownloaded() async {
     Map<int, bool> surahDownloadStatus = {};
+    final directory = await state.dir;
 
     for (int i = 1; i <= 114; i++) {
       String filePath =
-          '${state.dir.path}/${state.surahReaderNameValue.value}${i.toString().padLeft(3, '0')}.mp3';
+          '${directory.path}/${state.surahReaderNameValue}${i.toString().padLeft(3, '0')}.mp3';
       File file = File(filePath);
       surahDownloadStatus[i] = await file.exists();
     }
@@ -300,9 +301,10 @@ class AudioCtrl extends GetxController {
   }
 
   Future<void> _addDownloadedSurahToPlaylist() async {
+    final directory = await state.dir;
     for (int i = 1; i <= 114; i++) {
       String filePath =
-          '${state.dir.path}/${state.surahReaderNameValue.value}${i.toString().padLeft(3, '0')}.mp3';
+          '${directory.path}/${state.surahReaderNameValue}${i.toString().padLeft(3, '0')}.mp3';
 
       File file = File(filePath);
 

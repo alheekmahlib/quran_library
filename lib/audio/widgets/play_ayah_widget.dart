@@ -36,6 +36,7 @@ class PlayAyah extends StatelessWidget {
                     ? audioCtrl.state.isDirectPlaying.value = false
                     : audioCtrl.state.isDirectPlaying.value = true;
                 QuranCtrl.instance.state.isPlayExpanded.value = true;
+                audioCtrl.state.isPlayingSurahsMode = false;
                 audioCtrl.playAyah(
                     context, audioCtrl.state.currentAyahUniqueNumber,
                     playSingleAyah: audioCtrl.state.playSingleAyahOnly);

@@ -35,12 +35,6 @@ extension SurahAudioStorageGetters on AudioCtrl {
   }
 
   void loadSurahReader() {
-    state.surahReaderValue.value =
-        state.box.read(StorageConstants.surahAudioPlayerSound) ??
-            ReadersConstants.surahUrl1;
-    state.surahReaderNameValue.value =
-        state.box.read(StorageConstants.surahAudioPlayerName) ??
-            'abdul_basit_murattal/';
     state.surahReaderIndex.value =
         state.box.read(StorageConstants.surahReaderIndex) ?? 0;
   }

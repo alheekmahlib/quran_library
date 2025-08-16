@@ -471,7 +471,7 @@ class QuranLibrary {
   /// To know the names of the surahs on any page, just call [getAllSurahInPageByPageNumber]
   /// And just pass the page number to it.
   List<SurahModel> getAllSurahInPageByPageNumber({required int pageNumber}) =>
-      quranCtrl.getSurahsByPage(pageNumber);
+      quranCtrl.getSurahsByPageNumber(pageNumber);
 
   /// لجلب بيانات السورة الحالية عن طريق رقم الصفحة
   /// يمكنك إستخدام [getCurrentSurahDataByPageNumber].
@@ -479,7 +479,7 @@ class QuranLibrary {
   /// To fetch the current Surah data by page number,
   /// you can use [getCurrentSurahDataByPageNumber].
   SurahModel getCurrentSurahDataByPageNumber({required int pageNumber}) =>
-      quranCtrl.getCurrentSurahByPage(pageNumber);
+      quranCtrl.getCurrentSurahByPageNumber(pageNumber);
 
   /// لجلب بيانات السورة الحالية عن طريق بيانات الآية
   /// يمكنك إستخدام [getCurrentSurahDataByAyah].
@@ -512,7 +512,7 @@ class QuranLibrary {
   /// To fetch the Ayahs in the page by page number,
   /// you can use [getPageAyahsByPageNumber].
   List<AyahModel> getPageAyahsByPageNumber({required int pageNumber}) =>
-      quranCtrl.getPageAyahsByIndex(pageNumber);
+      quranCtrl.getPageAyahsByIndex(pageNumber - 1);
 
   /// لجلب آيات الصفحة عن طريق رقم الصفحة
   /// يمكنك إستخدام [getTajweedRules].

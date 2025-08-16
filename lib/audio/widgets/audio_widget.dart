@@ -1,9 +1,9 @@
 part of '../audio.dart';
 
-class AudioWidget extends StatelessWidget {
+class AyahsAudioWidget extends StatelessWidget {
   final AyahAudioStyle? style;
   final bool? isDark;
-  AudioWidget({super.key, this.style, this.isDark});
+  AyahsAudioWidget({super.key, this.style, this.isDark});
   final quranCtrl = QuranCtrl.instance;
   final audioCtrl = AudioCtrl.instance;
 

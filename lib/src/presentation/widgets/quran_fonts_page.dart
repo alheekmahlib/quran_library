@@ -331,7 +331,9 @@ class _QuranFontsPage extends StatelessWidget {
             isSelected: quranCtrl.selectedAyahsByUnequeNumber
                 .contains(ayahs[ayahIndex].ayahUQNumber),
             fontSize: 100,
-            surahNum: quranCtrl.getCurrentSurahByPage(pageIndex).surahNumber,
+            surahNum: quranCtrl
+                .getCurrentSurahByPageNumber(pageIndex + 1)
+                .surahNumber,
             ayahUQNum: ayahs[ayahIndex].ayahUQNumber,
             ayahNum: ayahs[ayahIndex].ayahNumber,
             ayahBookmarked: ayahBookmarked,

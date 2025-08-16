@@ -8,7 +8,7 @@ class QuranState {
 
   RxInt currentPageNumber = 1.obs;
   RxBool isPlayExpanded = false.obs;
-  RxBool isSajda = false.obs;
+  // RxBool isSajda => false.obs;
   RxInt isBold = 0.obs;
   RxDouble scaleFactor = 1.0.obs;
   RxDouble baseScaleFactor = 1.0.obs;
@@ -30,7 +30,6 @@ class QuranState {
   void dispose() {
     currentPageNumber.close();
     isPlayExpanded.close();
-    isSajda.close();
     isBold.close();
     scaleFactor.close();
     baseScaleFactor.close();

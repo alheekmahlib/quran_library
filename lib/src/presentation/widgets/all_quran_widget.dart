@@ -213,8 +213,7 @@ class AllQuranWidget extends StatelessWidget {
                 alignment: Alignment.bottomLeft,
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: showSajda(context, pageIndex, sajdaName ?? 'سجدة',
-                      isSurah: isSurah, surahNumber: surahCtrl.surahNumber),
+                  child: showSajda(context, pageIndex, sajdaName ?? 'سجدة'),
                 ),
               ),
             ],
@@ -222,14 +221,11 @@ class AllQuranWidget extends StatelessWidget {
         : Stack(
             alignment: Alignment.center,
             children: [
-              // شرح: السجدة (يمين)
-              // Explanation: Sajda (right)
               Align(
                 alignment: Alignment.bottomRight,
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: showSajda(context, pageIndex, sajdaName ?? 'سجدة',
-                      isSurah: isSurah, surahNumber: surahCtrl.surahNumber),
+                  child: showSajda(context, pageIndex, sajdaName ?? 'سجدة'),
                 ),
               ),
 

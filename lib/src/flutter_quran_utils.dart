@@ -411,6 +411,11 @@ class QuranLibrary {
   /// To find out which font has been selected, just call [currentFontsSelected]
   int get currentFontsSelected => quranCtrl.state.fontsSelected.value;
 
+  /// لمعرفة ما إذا كانت الخطوط قيد التحميل، ما عليك سوى إستدعاء [isPreparingDownloadFonts]
+  ///
+  /// To find out whether fonts are being downloaded, just call [isPreparingDownloadFonts]
+  bool get isPreparingDownloadFonts => quranCtrl.isPreparingDownloadFonts;
+
   /// لتبديل نوع الخط مع تحميله إذا لم يكن محملاً من قبل
   /// هذه الدالة تلقائيًا ستقوم بتحميل الخط إذا كان غير متوفر ثم تعيينه
   ///
@@ -639,6 +644,312 @@ class QuranLibrary {
           {required int pageNumber, String? databaseName}) async =>
       await TafsirCtrl.instance
           .fetchTafsirPage(pageNumber, databaseName: databaseName!);
+
+  /// يقوم بتشغيل آية أو مجموعة من الآيات الصوتية بدءًا من الآية المحددة.
+  /// يمكن تشغيل آية واحدة فقط أو الاستمرار في تشغيل الآيات التالية.
+  ///
+  /// [context] سياق التطبيق المطلوب للوصول إلى موارد الصوت.
+  /// [currentAyahUniqueNumber] الرقم الفريد للآية التي سيتم تشغيلها.
+  /// [playSingleAyah] إذا كان true، سيتم تشغيل آية واحدة فقط.
+  /// إذا كان false، سيستمر التشغيل للآيات التالية.
+  ///
+  /// Plays audio for a verse or a group of verses starting from the specified verse.
+  /// Can play a single verse only or continue playing subsequent verses.
+  ///
+  /// [context] The application context required to access audio resources.
+  /// [currentAyahUniqueNumber] The unique number of the verse to be played.
+  /// [playSingleAyah] If true, only a single verse will be played.
+  /// If false, playback will continue to subsequent verses.
+  ///
+  /// مثال للاستخدام / Example usage:
+  /// ```dart
+  /// await quranLibrary().playAyah(
+  ///   context: context,
+  ///   currentAyahUniqueNumber: 1,
+  ///   playSingleAyah: true,
+  /// );
+  /// ```
+  Future<void> playAyah(
+          {required BuildContext context,
+          required int currentAyahUniqueNumber,
+          required bool playSingleAyah}) async =>
+      await AudioCtrl.instance.playAyah(context, currentAyahUniqueNumber,
+          playSingleAyah: playSingleAyah);
+
+  /// ينتقل إلى الآية التالية وبدء تشغيلها صوتياً.
+  /// يتم استخدام هذه الدالة للتنقل السريع للآية التالية أثناء التشغيل الصوتي.
+  ///
+  /// [context] سياق التطبيق المطلوب للوصول إلى موارد الصوت.
+  /// [currentAyahUniqueNumber] الرقم الفريد للآية الحالية للانتقال من بعدها إلى التالية.
+  ///
+  /// Moves to the next verse and starts playing it audio.
+  /// This function is used for quick navigation to the next verse during audio playback.
+  ///
+  /// [context] The application context required to access audio resources.
+  /// [currentAyahUniqueNumber] The unique number of the current verse to move forward from.
+  ///
+  /// مثال للاستخدام / Example usage:
+  /// ```dart
+  /// await quranLibrary().seekNextAyah(
+  ///   context: context,
+  ///   currentAyahUniqueNumber: 5,
+  /// );
+  /// ```
+  Future<void> seekNextAyah(
+          {required BuildContext context,
+          required int currentAyahUniqueNumber}) async =>
+      await AudioCtrl.instance.skipNextAyah(context, currentAyahUniqueNumber);
+
+  /// ينتقل إلى الآية السابقة وبدء تشغيلها صوتياً.
+  /// يتم استخدام هذه الدالة للتنقل السريع للآية السابقة أثناء التشغيل الصوتي.
+  ///
+  /// [context] سياق التطبيق المطلوب للوصول إلى موارد الصوت.
+  /// [currentAyahUniqueNumber] الرقم الفريد للآية الحالية للانتقال من قبلها إلى السابقة.
+  ///
+  /// Moves to the previous verse and starts playing it audio.
+  /// This function is used for quick navigation to the previous verse during audio playback.
+  ///
+  /// [context] The application context required to access audio resources.
+  /// [currentAyahUniqueNumber] The unique number of the current verse to move backward from.
+  ///
+  /// مثال للاستخدام / Example usage:
+  /// ```dart
+  /// await quranLibrary().seekPreviousAyah(
+  ///   context: context,
+  ///   currentAyahUniqueNumber: 10,
+  /// );
+  /// ```
+  Future<void> seekPreviousAyah(
+          {required BuildContext context,
+          required int currentAyahUniqueNumber}) async =>
+      await AudioCtrl.instance
+          .skipPreviousAyah(context, currentAyahUniqueNumber);
+
+  /// يقوم بتشغيل سورة كاملة صوتياً بدءًا من الآية الأولى حتى الآية الأخيرة في السورة.
+  /// يمكن استخدام هذه الدالة لتشغيل أي سورة من القرآن الكريم بالكامل.
+  ///
+  /// [surahNumber] رقم السورة التي سيتم تشغيلها (من 1 إلى 114).
+  /// يجب أن يكون رقم السورة صحيحاً ومتوفراً في المصحف.
+  ///
+  /// Plays a complete surah audio from the first verse to the last verse in the surah.
+  /// This function can be used to play any complete surah from the Holy Quran.
+  ///
+  /// [surahNumber] The number of the surah to be played (from 1 to 114).
+  /// The surah number must be valid and available in the Quran.
+  ///
+  /// مثال للاستخدام / Example usage:
+  /// ```dart
+  /// // تشغيل سورة الفاتحة (السورة رقم 1)
+  /// // Play Surah Al-Fatiha (Surah number 1)
+  /// await quranLibrary.playSurah(surahNumber: 1);
+  ///
+  /// // تشغيل سورة البقرة (السورة رقم 2)
+  /// // Play Surah Al-Baqarah (Surah number 2)
+  /// await quranLibrary().playSurah(surahNumber: 2);
+  /// ```
+  Future<void> playSurah({required int surahNumber}) async =>
+      await AudioCtrl.instance.playSurah(surahNumber: surahNumber);
+
+  /// ينتقل إلى السورة التالية وبدء تشغيلها صوتياً بالكامل.
+  /// يتم استخدام هذه الدالة للانتقال السريع للسورة التالية أثناء التشغيل الصوتي.
+  /// إذا كانت السورة الحالية هي الأخيرة (سورة الناس)، فسيتم العودة إلى السورة الأولى (الفاتحة).
+  ///
+  /// هذه الدالة مفيدة لإنشاء قائمة تشغيل متتالية للسور.
+  ///
+  /// Moves to the next surah and starts playing it completely in audio.
+  /// This function is used for quick navigation to the next surah during audio playback.
+  /// If the current surah is the last one (Surah An-Nas), it will return to the first surah (Al-Fatiha).
+  ///
+  /// This function is useful for creating a sequential playlist of surahs.
+  ///
+  /// مثال للاستخدام / Example usage:
+  /// ```dart
+  /// // إذا كان يتم تشغيل سورة الفاتحة، سينتقل إلى سورة البقرة
+  /// // If Al-Fatiha is playing, it will move to Al-Baqarah
+  /// await quranLibrary().seekToNextSurah();
+  /// ```
+  Future<void> seekToNextSurah() async =>
+      await AudioCtrl.instance.playNextSurah();
+
+  /// ينتقل إلى السورة السابقة وبدء تشغيلها صوتياً بالكامل.
+  /// يتم استخدام هذه الدالة للانتقال السريع للسورة السابقة أثناء التشغيل الصوتي.
+  /// إذا كانت السورة الحالية هي الأولى (الفاتحة)، فسيتم الانتقال إلى السورة الأخيرة (الناس).
+  ///
+  /// هذه الدالة مفيدة للتنقل العكسي في قائمة تشغيل السور.
+  ///
+  /// Moves to the previous surah and starts playing it completely in audio.
+  /// This function is used for quick navigation to the previous surah during audio playback.
+  /// If the current surah is the first one (Al-Fatiha), it will move to the last surah (An-Nas).
+  ///
+  /// This function is useful for backward navigation in the surah playlist.
+  ///
+  /// مثال للاستخدام / Example usage:
+  /// ```dart
+  /// // إذا كان يتم تشغيل سورة البقرة، سينتقل إلى سورة الفاتحة
+  /// // If Al-Baqarah is playing, it will move to Al-Fatiha
+  /// await quranLibrary().seekToPreviousSurah();
+  /// ```
+  Future<void> seekToPreviousSurah() async =>
+      await AudioCtrl.instance.playPreviousSurah();
+
+  /// يبدأ تحميل ملفات الصوت الخاصة بسورة معينة لتكون متاحة للتشغيل دون الحاجة للاتصال بالإنترنت.
+  /// هذه الدالة مفيدة لتحميل السور مسبقاً وتخزينها محلياً لتحسين الأداء وتوفير البيانات.
+  ///
+  /// [surahNumber] رقم السورة التي سيتم تحميل ملفاتها الصوتية (من 1 إلى 114).
+  /// يجب أن يكون رقم السورة صحيحاً ومتوفراً في المصحف.
+  /// سيتم تحميل جميع آيات السورة المحددة.
+  ///
+  /// Starts downloading audio files for a specific surah to be available for offline playback.
+  /// This function is useful for pre-downloading surahs and storing them locally to improve performance and save data.
+  ///
+  /// [surahNumber] The number of the surah whose audio files will be downloaded (from 1 to 114).
+  /// The surah number must be valid and available in the Quran.
+  /// All verses of the specified surah will be downloaded.
+  ///
+  /// مثال للاستخدام / Example usage:
+  /// ```dart
+  /// // تحميل سورة الفاتحة للتشغيل دون اتصال
+  /// // Download Surah Al-Fatiha for offline playback
+  /// await quranLibrary().startDownloadSurah(surahNumber: 1);
+  ///
+  /// // تحميل سورة البقرة للتشغيل دون اتصال
+  /// // Download Surah Al-Baqarah for offline playback
+  /// await quranLibrary().startDownloadSurah(surahNumber: 2);
+  /// ```
+  Future<void> startDownloadSurah({required int surahNumber}) async =>
+      await AudioCtrl.instance.startDownload(surahNumber: surahNumber);
+
+  /// يلغي عملية تحميل الملفات الصوتية الجارية حالياً.
+  /// هذه الدالة مفيدة عندما يريد المستخدم إيقاف التحميل لتوفير البيانات أو تحرير مساحة التخزين.
+  /// يمكن استخدامها لإلغاء تحميل أي سورة قيد التحميل حالياً.
+  ///
+  /// لا تحتاج هذه الدالة لأي معاملات، وستقوم بإلغاء أي عملية تحميل نشطة.
+  /// الملفات المحملة جزئياً سيتم حذفها لتوفير مساحة التخزين.
+  ///
+  /// Cancels the currently ongoing audio file download process.
+  /// This function is useful when the user wants to stop the download to save data or free up storage space.
+  /// It can be used to cancel the download of any surah currently being downloaded.
+  ///
+  /// This function doesn't require any parameters and will cancel any active download operation.
+  /// Partially downloaded files will be deleted to save storage space.
+  ///
+  /// مثال للاستخدام / Example usage:
+  /// ```dart
+  /// // إلغاء تحميل السورة الجاري حالياً
+  /// // Cancel the currently ongoing surah download
+  /// quranLibrary().cancelDownloadSurah();
+  ///
+  /// // يمكن استخدامها مع واجهة المستخدم
+  /// // Can be used with user interface
+  /// onPressed: () => quranLibrary().cancelDownloadSurah(),
+  /// ```
+  void cancelDownloadSurah() => AudioCtrl.instance.cancelDownload();
+
+  /// يحصل على رقم السورة الحالية والأخيرة التي تم تشغيلها في مشغل الصوت.
+  /// هذا المعرف مفيد لمعرفة السورة التي يتم تشغيلها حالياً أو آخر سورة تم تشغيلها.
+  /// يمكن استخدام هذا الرقم للتنقل أو لعرض معلومات السورة في واجهة المستخدم.
+  ///
+  /// Gets the current and last surah number that was played in the audio player.
+  /// This identifier is useful for knowing which surah is currently playing or the last surah that was played.
+  /// This number can be used for navigation or displaying surah information in the user interface.
+  ///
+  /// مثال للاستخدام / Example usage:
+  /// ```dart
+  /// int currentSurah = quranLibrary().currentAndLastSurahNumber;
+  /// print('السورة الحالية: $currentSurah'); // Current surah: [number]
+  ///
+  /// // استخدام الرقم للتنقل
+  /// // Use the number for navigation
+  /// if (currentSurah > 0) {
+  ///   quranLibrary().jumpToSurah(currentSurah);
+  /// }
+  /// ```
+  int get currentAndLastSurahNumber =>
+      AudioCtrl.instance.state.currentAudioListSurahNum.value;
+
+  /// يحول الموضع الأخير للتشغيل الصوتي إلى نص منسق للوقت (مثل "05:23" أو "1:30:45").
+  /// هذا مفيد لعرض الموضع الأخير للمستخدم بطريقة سهلة القراءة في واجهة المستخدم.
+  /// يتم تنسيق الوقت تلقائياً ليظهر بصيغة مناسبة (دقائق:ثوان أو ساعات:دقائق:ثوان).
+  ///
+  /// Converts the last audio playback position to formatted time text (like "05:23" or "1:30:45").
+  /// This is useful for displaying the last position to the user in an easy-to-read format in the UI.
+  /// The time is automatically formatted to show in appropriate format (minutes:seconds or hours:minutes:seconds).
+  ///
+  /// مثال للاستخدام / Example usage:
+  /// ```dart
+  /// String lastTime = quranLibrary().formatLastPositionToTime;
+  /// print('الموضع الأخير: $lastTime'); // Last position: 05:23
+  ///
+  /// // عرض في واجهة المستخدم
+  /// // Display in user interface
+  /// Text('آخر موضع تشغيل: $lastTime'),
+  /// ```
+  String get formatLastPositionToTime => AudioCtrl.instance.formatDuration(
+      Duration(seconds: AudioCtrl.instance.state.lastPosition.value));
+
+  /// يحول الموضع الأخير للتشغيل الصوتي إلى كائن Duration للاستخدام في العمليات البرمجية.
+  /// هذا مفيد عندما تحتاج لإجراء عمليات حسابية على الوقت أو للتحكم في مشغل الصوت برمجياً.
+  /// يمكن استخدام كائن Duration في العديد من عمليات Flutter الزمنية.
+  ///
+  /// Converts the last audio playback position to a Duration object for use in programming operations.
+  /// This is useful when you need to perform calculations on time or control the audio player programmatically.
+  /// The Duration object can be used in many Flutter time-related operations.
+  ///
+  /// مثال للاستخدام / Example usage:
+  /// ```dart
+  /// Duration lastDuration = quranLibrary().formatLastPositionToDuration;
+  /// print('الثواني: ${lastDuration.inSeconds}'); // Seconds: 323
+  ///
+  /// // استخدام في مشغل الصوت
+  /// // Use in audio player
+  /// audioPlayer.seek(lastDuration);
+  ///
+  /// // مقارنة الأوقات
+  /// // Compare times
+  /// if (lastDuration > Duration(minutes: 5)) {
+  ///   print('التشغيل استمر أكثر من 5 دقائق');
+  /// }
+  /// ```
+  Duration get formatLastPositionToDuration =>
+      Duration(seconds: AudioCtrl.instance.state.lastPosition.value);
+
+  /// يتابع التشغيل الصوتي من الموضع الأخير الذي توقف عنده المستخدم.
+  /// هذه الدالة مفيدة جداً لتوفير تجربة مستخدم سلسة حيث يمكن للمستخدم الاستمرار من حيث توقف.
+  /// تقوم بتحميل المصدر الصوتي الأخير وبدء التشغيل من الموضع المحفوظ تلقائياً.
+  ///
+  /// يتم حفظ الموضع الأخير تلقائياً عند إيقاف التشغيل أو إغلاق التطبيق.
+  ///
+  /// Continues audio playback from the last position where the user stopped.
+  /// This function is very useful for providing a smooth user experience where the user can continue from where they left off.
+  /// It loads the last audio source and automatically starts playing from the saved position.
+  ///
+  /// The last position is automatically saved when stopping playback or closing the app.
+  ///
+  /// مثال للاستخدام / Example usage:
+  /// ```dart
+  /// // تشغيل من الموضع الأخير
+  /// // Play from last position
+  /// await quranLibrary().playLastPosition();
+  ///
+  /// // مع معالجة الأخطاء
+  /// // With error handling
+  /// try {
+  ///   await quranLibrary().playLastPosition();
+  ///   print('تم استئناف التشغيل من الموضع الأخير');
+  /// } catch (e) {
+  ///   print('خطأ في تشغيل الموضع الأخير: $e');
+  /// }
+  ///
+  /// // في زر واجهة المستخدم
+  /// // In UI button
+  /// ElevatedButton(
+  ///   onPressed: () => quranLibrary().playLastPosition(),
+  ///   child: Text('متابعة من حيث توقفت'),
+  /// ),
+  /// ```
+  Future<void> playLastPosition() async => await AudioCtrl.instance
+      .lastAudioSource()
+      .then((_) => AudioCtrl.instance.state.audioPlayer.play());
 
   /// [hafsStyle] هو النمط الافتراضي للقرآن، مما يضمن عرض جميع الأحرف الخاصة بشكل صحيح.
   ///

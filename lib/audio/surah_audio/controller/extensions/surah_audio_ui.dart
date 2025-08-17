@@ -1,16 +1,14 @@
 part of '../../../audio.dart';
 
 extension SurahAudioUi on AudioCtrl {
-  Future<void> changeAudioSource() {
-    return state
-            .isSurahDownloadedByNumber(state.currentAudioListSurahNum.value)
-            .value
-        ? state.audioPlayer.setAudioSource(AudioSource.uri(
-            Uri.parse(urlSurahFilePath),
+  void changeAudioSource() {
+    state.isSurahDownloadedByNumber(state.currentAudioListSurahNum.value).value
+        ? state.audioPlayer.setAudioSource(AudioSource.file(
+            localSurahFilePath,
             tag: mediaItem,
           ))
-        : state.audioPlayer.setAudioSource(AudioSource.file(
-            localSurahFilePath,
+        : state.audioPlayer.setAudioSource(AudioSource.uri(
+            Uri.parse(urlSurahFilePath),
             tag: mediaItem,
           ));
   }

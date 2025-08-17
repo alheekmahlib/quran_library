@@ -9,8 +9,8 @@ class SurahSkipToNext extends StatelessWidget {
   Widget build(BuildContext context) {
     return StreamBuilder<SequenceState?>(
       stream: audioCtrl.state.audioPlayer.sequenceStateStream,
-      builder: (context, snapshot) => GestureDetector(
-        child: Semantics(
+      builder: (context, snapshot) => IconButton(
+        icon: Semantics(
           button: true,
           enabled: true,
           label: 'next'.tr,
@@ -20,7 +20,7 @@ class SurahSkipToNext extends StatelessWidget {
             size: style!.nextIconHeight ?? 38,
           ),
         ),
-        onTap: () async => await audioCtrl.playNextSurah(),
+        onPressed: () async => await audioCtrl.playNextSurah(),
       ),
     );
   }

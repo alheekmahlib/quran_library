@@ -86,7 +86,7 @@ class AudioCtrl extends GetxController {
 
   /// -------- [DownloadingMethods] ----------
 
-  Future<void> downloadSurah(BuildContext? context, {int? surahNum}) async {
+  Future<void> downloadSurah({int? surahNum}) async {
     if (surahNum != null) {
       state.selectedSurahIndex.value = (surahNum - 1);
     }
@@ -293,11 +293,11 @@ class AudioCtrl extends GetxController {
     state.cancelToken.cancel('Request cancelled');
   }
 
-  Future<void> startDownload() async {
+  Future<void> startDownload({int? surahNumber}) async {
     // إزالة BuildContext تماماً وجعل الدالة تستخدم Get.context داخلياً
     // Remove BuildContext completely and let the function use Get.context internally
     await state.audioPlayer.pause();
-    await downloadSurah(null);
+    await downloadSurah(surahNum: surahNumber);
   }
 
   Future<void> _addDownloadedSurahToPlaylist() async {

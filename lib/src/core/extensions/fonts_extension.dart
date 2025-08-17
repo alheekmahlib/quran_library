@@ -154,6 +154,7 @@ extension FontsExtension on QuranCtrl {
       // Update download status and complete progress bar
       state.isDownloadedV2Fonts.value = true;
       state.isDownloadingFonts.value = false;
+      state.isPreparingDownload.value = false;
       state.fontsDownloadProgress.value = 100.0;
 
       update(['fontsDownloadingProgress']);
@@ -250,6 +251,7 @@ extension FontsExtension on QuranCtrl {
     }
 
     try {
+      state.isPreparingDownload.value = true;
       state.isDownloadingFonts.value = true;
       update(['fontsDownloadingProgress']);
 
@@ -333,6 +335,7 @@ extension FontsExtension on QuranCtrl {
           totalBytesDownloaded += chunk.length;
           fileSink.add(chunk);
           state.isDownloadingFonts.value = true;
+          state.isPreparingDownload.value = false;
           // حساب نسبة التحميل
           if (contentLength > 0) {
             double progress = totalBytesDownloaded / contentLength * 100;
@@ -398,6 +401,7 @@ extension FontsExtension on QuranCtrl {
             // Update download status and complete progress bar
             state.isDownloadedV2Fonts.value = true;
             state.isDownloadingFonts.value = false;
+            state.isPreparingDownload.value = false;
             state.fontsDownloadProgress.value = 100.0;
 
             update(['fontsDownloadingProgress']);
@@ -428,6 +432,7 @@ extension FontsExtension on QuranCtrl {
       // تحديث حالة التحميل في حالة فشل العملية
       // Update download status if operation fails
       state.isDownloadingFonts.value = false;
+      state.isPreparingDownload.value = false;
       state.fontsDownloadProgress.value = 0.0;
       update(['fontsDownloadingProgress']);
 

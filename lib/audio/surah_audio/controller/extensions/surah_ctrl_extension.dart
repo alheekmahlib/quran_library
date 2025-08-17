@@ -25,6 +25,17 @@ extension SurahCtrlExtension on AudioCtrl {
     }
   }
 
+  Future<void> playSurah({required int surahNumber}) async {
+    state.currentAudioListSurahNum.value = surahNumber;
+    changeAudioSource();
+    cancelDownload();
+    state.isPlaying.value = true;
+    // await state.audioPlayer.pause();
+    state.isSurahDownloadedByNumber(surahNumber).value
+        ? await startDownload()
+        : await state.audioPlayer.play();
+  }
+
   Future<void> _addFileAudioSourceToPlayList(String filePath) async {
     state.downloadSurahsPlayList.add({
       state.currentAudioListSurahNum.value: AudioSource.file(

@@ -107,27 +107,45 @@ extension FontsDownloadWidgetExtension on QuranCtrl {
                         ? const SizedBox.shrink()
                         : isFontsLocal!
                             ? const SizedBox.shrink()
-                            : IconButton(
-                                onPressed: () async {
-                                  quranCtrl.state.isDownloadedV2Fonts.value
-                                      ? await quranCtrl.deleteFonts()
-                                      : quranCtrl.state.isDownloadingFonts.value
-                                          ? null
-                                          : await quranCtrl
-                                              .downloadAllFontsZipFile(i);
-                                  log('fontIndex: $i');
-                                },
-                                icon: downloadFontsDialogStyle?.iconWidget ??
-                                    Icon(
-                                      quranCtrl.state.isDownloadedV2Fonts.value
-                                          ? Icons.delete_forever
-                                          : Icons.downloading_outlined,
-                                      color:
-                                          downloadFontsDialogStyle?.iconColor ??
-                                              Colors.blue,
-                                      size: downloadFontsDialogStyle?.iconSize,
+                            : Obx(() => quranCtrl
+                                    .state.isPreparingDownload.value
+                                ? SizedBox(
+                                    width: 24,
+                                    height: 24,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2.0,
+                                      color: downloadFontsDialogStyle
+                                              ?.linearProgressColor ??
+                                          Colors.blue,
                                     ),
-                              ),
+                                  )
+                                : IconButton(
+                                    onPressed: () async {
+                                      quranCtrl.state.isDownloadedV2Fonts.value
+                                          ? await quranCtrl.deleteFonts()
+                                          : quranCtrl.state.isDownloadingFonts
+                                                      .value ||
+                                                  quranCtrl.state
+                                                      .isPreparingDownload.value
+                                              ? null
+                                              : await quranCtrl
+                                                  .downloadAllFontsZipFile(i);
+                                      log('fontIndex: $i');
+                                    },
+                                    icon:
+                                        downloadFontsDialogStyle?.iconWidget ??
+                                            Icon(
+                                              quranCtrl.state
+                                                      .isDownloadedV2Fonts.value
+                                                  ? Icons.delete_forever
+                                                  : Icons.downloading_outlined,
+                                              color: downloadFontsDialogStyle
+                                                      ?.iconColor ??
+                                                  Colors.blue,
+                                              size: downloadFontsDialogStyle
+                                                  ?.iconSize,
+                                            ),
+                                  )),
                     title: Text(
                       titleList[i],
                       style: downloadFontsDialogStyle?.fontNameStyle ??

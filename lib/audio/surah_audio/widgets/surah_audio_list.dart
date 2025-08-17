@@ -92,7 +92,7 @@ class SurahAudioList extends StatelessWidget {
     return GestureDetector(
       onTap: () async {
         surahAudioCtrl.state.selectedSurahIndex.value = index;
-        await surahAudioCtrl.changeAudioSource();
+        surahAudioCtrl.changeAudioSource();
       },
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
@@ -248,8 +248,8 @@ class SurahAudioList extends StatelessWidget {
                     borderRadius: BorderRadius.circular(18.0),
                   ),
                   child: GestureDetector(
-                    onTap: () => surahAudioCtrl.downloadSurah(context,
-                        surahNum: surahNumber),
+                    onTap: () =>
+                        surahAudioCtrl.downloadSurah(surahNum: surahNumber),
                     child: Obx(
                       () => Icon(
                         isDownloaded.value

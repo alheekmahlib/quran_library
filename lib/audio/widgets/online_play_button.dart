@@ -1,7 +1,8 @@
 part of '../audio.dart';
 
 class OnlinePlayButton extends StatelessWidget {
-  const OnlinePlayButton({super.key});
+  final SurahAudioStyle? style;
+  const OnlinePlayButton({super.key, this.style});
 
   @override
   Widget build(BuildContext context) {
@@ -18,17 +19,17 @@ class OnlinePlayButton extends StatelessWidget {
             if (processingState == ProcessingState.buffering) {
               return CustomWidgets.customLottie(
                   LottieConstants.get(LottieConstants.assetsLottiePlayButton),
-                  width: 20.0,
-                  height: 20.0);
+                  width: style?.playIconHeight ?? 20.0,
+                  height: style?.playIconHeight ?? 20.0);
             } else if (playerState != null && !playerState.playing) {
-              return GestureDetector(
-                child: CustomWidgets.customSvgWithColor(
-                  AssetsPath.assets.playArrow,
-                  height: 30,
+              return IconButton(
+                icon: CustomWidgets.customSvgWithColor(
+                  style?.playIconPath ?? AssetsPath.assets.playArrow,
+                  height: style?.playIconHeight ?? 30,
                   ctx: context,
-                  color: Colors.blue,
+                  color: style?.playIconColor ?? Colors.blue,
                 ),
-                onTap: () async {
+                onPressed: () async {
                   surahAudioCtrl.cancelDownload();
                   surahAudioCtrl.state.isPlaying.value = true;
                   // await surahAudioCtrl.state.audioPlayer.pause();
@@ -42,14 +43,14 @@ class OnlinePlayButton extends StatelessWidget {
               );
             } else if (processingState != ProcessingState.completed ||
                 !playerState!.playing) {
-              return GestureDetector(
-                child: CustomWidgets.customSvgWithColor(
-                  AssetsPath.assets.pauseArrow,
-                  height: 30,
+              return IconButton(
+                icon: CustomWidgets.customSvgWithColor(
+                  style?.pauseIconPath ?? AssetsPath.assets.pauseArrow,
+                  height: style?.pauseIconHeight ?? 30,
                   ctx: context,
-                  color: Colors.blue,
+                  color: style?.playIconColor ?? Colors.blue,
                 ),
-                onTap: () {
+                onPressed: () {
                   surahAudioCtrl.state.isPlaying.value = false;
                   surahAudioCtrl.state.audioPlayer.pause();
                 },
@@ -62,10 +63,9 @@ class OnlinePlayButton extends StatelessWidget {
                     label: 'replaySurah'.tr,
                     child: Icon(
                       Icons.replay,
-                      color: Colors.blue,
+                      color: style?.playIconColor ?? Colors.blue,
                     )),
-                iconSize: 24.0,
-                color: Theme.of(context).canvasColor,
+                iconSize: style?.playIconHeight ?? 24.0,
                 onPressed: () => surahAudioCtrl.state.audioPlayer.seek(
                     Duration.zero,
                     index: surahAudioCtrl

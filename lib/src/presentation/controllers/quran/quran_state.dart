@@ -22,6 +22,7 @@ class QuranState {
   RxList<int> fontsDownloadedList = <int>[].obs;
   RxInt fontsSelected = 0.obs;
   RxDouble fontsDownloadProgress = 0.0.obs;
+  RxBool isPreparingDownload = false.obs;
   OverlayEntry? overlayEntry;
 
   // ملاحظة: تم إزالة GlobalKey<ScaffoldState> لتجنب التعارض مع التطبيقات الأخرى
@@ -38,6 +39,7 @@ class QuranState {
     fontsDownloadedList.close();
     fontsSelected.close();
     fontsDownloadProgress.close();
+    isPreparingDownload.close();
     overlayEntry?.remove();
   }
 }

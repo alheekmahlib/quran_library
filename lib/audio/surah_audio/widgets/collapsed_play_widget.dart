@@ -44,9 +44,11 @@ class CollapsedPlayWidget extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       SurahSkipToPrevious(style: style),
-                      OnlinePlayButton(),
+                      OnlinePlayButton(style: style),
                       SurahSkipToNext(style: style),
                     ].reversed.toList(),
                   ),

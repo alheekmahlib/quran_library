@@ -1,3 +1,20 @@
+## 2.0.0
+
+* **Add comprehensive audio playback system for Quran recitation**
+* **Implement verse-by-verse audio playback with navigation controls**
+* **Add complete surah audio playback functionality**
+* **Implement background audio playback support for Android and iOS**
+* **Add audio download management for offline playback**
+* **Implement resume functionality to continue from last position**
+* **Add position tracking and time formatting utilities**
+* **Implement seek controls for next/previous ayah and surah navigation**
+* **Add comprehensive audio example with complete UI controls**
+* **Enhance documentation with detailed Arabic and English comments**
+* **Add interactive table of contents to README**
+* **Improve code documentation with extensive function explanations**
+* **Add audio features summary with all capabilities listed**
+* **Implement proper permissions handling for audio playback**
+
 ## 1.3.2
 
 *   **Fix Surah serach method**

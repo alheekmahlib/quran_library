@@ -9,8 +9,8 @@ class SurahAudioScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final surahCtrl = AudioCtrl.instance;
-    // surahCtrl.loadSurahReader();
-    // surahCtrl.loadLastSurahListen;
+    surahCtrl.sheetState();
+    surahCtrl.loadLastSurahListen;
     return Scaffold(
       backgroundColor: const Color(0xfffaf7f3),
       appBar: AppBar(

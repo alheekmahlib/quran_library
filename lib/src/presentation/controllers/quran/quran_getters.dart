@@ -8,6 +8,8 @@ extension QuranGetters on QuranCtrl {
   RxBool get isDownloadedFonts =>
       QuranCtrl.instance.state.fontsSelected.value == 1 ? true.obs : false.obs;
 
+  bool get isPreparingDownloadFonts => state.isPreparingDownload.value;
+
   /// تبديل نوع الخط وتحميله إذا لم يكن محملاً من قبل
   ///
   /// Switch font type and download it if not already downloaded
@@ -51,6 +53,7 @@ extension QuranGetters on QuranCtrl {
     // If the font is not downloaded, download it first then set it
     try {
       log('Starting font download', name: 'QuranGetters');
+      state.isPreparingDownload.value = true;
       state.isDownloadingFonts.value = true;
       // تهيئة قيمة تقدم التحميل
       // Initialize download progress value
@@ -66,6 +69,7 @@ extension QuranGetters on QuranCtrl {
       log('Font downloaded and selected', name: 'QuranGetters');
     } catch (e) {
       state.isDownloadingFonts.value = false;
+      state.isPreparingDownload.value = false;
       update(['fontsDownloadingProgress']);
       log('Error downloading font: $e', name: 'QuranGetters');
     }

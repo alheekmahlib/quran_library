@@ -30,8 +30,8 @@ class AyahsAudioWidget extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      PlayAyah(style: style!),
-                      ChangeReader(style: style!),
+                      PlayAyahWidget(style: style!),
+                      AyahChangeReader(style: style!),
                     ],
                   ),
                 ),
@@ -54,7 +54,7 @@ class AyahsAudioWidget extends StatelessWidget {
                                 // تقليل المسافات عند المساحة المحدودة
                                 // Reduce spacing when space is limited
                                 SizedBox(height: targetHeight > 120 ? 4 : 2),
-                                ChangeReader(style: style!),
+                                AyahChangeReader(style: style!),
                                 // SizedBox(height: 4),
                                 // جعل الـ Slider مرن ليأخذ المساحة المتبقية
                                 // Make slider flexible to take remaining space
@@ -68,7 +68,7 @@ class AyahsAudioWidget extends StatelessWidget {
                                               final data = c.state
                                                   .tmpDownloadedAyahsCount;
                                               log('$data => REBUILDING  ${audioCtrl.state.tmpDownloadedAyahsCount}');
-                                              return SliderWidget.downloading(
+                                              return PackageSliderWidget.downloading(
                                                   currentPosition: data,
                                                   filesCount: audioCtrl
                                                       .currentAyahFileName
@@ -86,14 +86,15 @@ class AyahsAudioWidget extends StatelessWidget {
                                                           .seekBarHorizontalPadding ??
                                                       0);
                                             })
-                                          : StreamBuilder<PositionData>(
+                                          : StreamBuilder<PackagePositionData>(
                                               stream:
                                                   audioCtrl.positionDataStream,
                                               builder: (context, snapshot) {
                                                 if (snapshot.hasData) {
                                                   final positionData =
                                                       snapshot.data;
-                                                  return SliderWidget.player(
+                                                  return PackageSliderWidget
+                                                      .player(
                                                     horizontalPadding: style!
                                                             .seekBarHorizontalPadding ??
                                                         0.0,
@@ -133,7 +134,7 @@ class AyahsAudioWidget extends StatelessWidget {
                                           MainAxisAlignment.spaceEvenly,
                                       children: [
                                         AyahSkipToPrevious(style: style),
-                                        PlayAyah(style: style),
+                                        PlayAyahWidget(style: style),
                                         AyahSkipToNext(style: style),
                                       ],
                                     ),

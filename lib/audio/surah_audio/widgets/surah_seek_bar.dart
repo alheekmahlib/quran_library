@@ -9,12 +9,12 @@ class SurahSeekBar extends StatelessWidget {
         id: 'seekBar_id',
         builder: (c) => c.state.isDownloading.value
             ? GetX<AudioCtrl>(builder: (c) {
-                return SliderWidget.downloading(
+                return PackageSliderWidget.downloading(
                     currentPosition: c.state.downloadProgress.value.toInt(),
                     filesCount: c.state.fileSize.value,
                     horizontalPadding: 32.0);
               })
-            : StreamBuilder<PositionData>(
+            : StreamBuilder<PackagePositionData>(
                 stream: c.positionDataStream,
                 builder: (context, snapshot) {
                   if (snapshot.hasData && snapshot.data != null) {
@@ -22,7 +22,7 @@ class SurahSeekBar extends StatelessWidget {
                     final positionData = snapshot.data;
 
                     c.updateControllerValues(positionData!);
-                    return SliderWidget.player(
+                    return PackageSliderWidget.player(
                       horizontalPadding: 32.0,
                       duration: positionData.duration,
                       position: c.state.lastTime != null

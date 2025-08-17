@@ -1,8 +1,8 @@
 part of '../../audio.dart';
 
-class CollapsedPlayWidget extends StatelessWidget {
+class SurahCollapsedPlayWidget extends StatelessWidget {
   final SurahAudioStyle? style;
-  const CollapsedPlayWidget({super.key, this.style});
+  const SurahCollapsedPlayWidget({super.key, this.style});
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +48,7 @@ class CollapsedPlayWidget extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       SurahSkipToPrevious(style: style),
-                      OnlinePlayButton(style: style),
+                      SurahOnlinePlayButton(style: style),
                       SurahSkipToNext(style: style),
                     ].reversed.toList(),
                   ),

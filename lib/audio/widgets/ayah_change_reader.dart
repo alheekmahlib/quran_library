@@ -1,9 +1,9 @@
 part of '../audio.dart';
 
-class ChangeReader extends StatelessWidget {
+class AyahChangeReader extends StatelessWidget {
   final AyahAudioStyle? style;
   final bool? isDark;
-  const ChangeReader({super.key, this.style, this.isDark = false});
+  const AyahChangeReader({super.key, this.style, this.isDark = false});
 
   @override
   Widget build(BuildContext context) {

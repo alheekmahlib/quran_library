@@ -1,7 +1,7 @@
 part of '../../audio.dart';
 
-class PlayBanner extends StatelessWidget {
-  const PlayBanner({super.key});
+class SurahPlayBanner extends StatelessWidget {
+  const SurahPlayBanner({super.key});
 
   @override
   Widget build(BuildContext context) {

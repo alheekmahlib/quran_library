@@ -1,8 +1,8 @@
 part of '../../audio.dart';
 
-class ChangeSurahReader extends StatelessWidget {
+class SurahChangeSurahReader extends StatelessWidget {
   final SurahAudioStyle? style;
-  ChangeSurahReader({super.key, this.style});
+  SurahChangeSurahReader({super.key, this.style});
   final surahAudioCtrl = AudioCtrl.instance;
 
   @override

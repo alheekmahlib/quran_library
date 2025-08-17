@@ -2,10 +2,10 @@ part of '../../audio.dart';
 
 /// ويدجت خلفية تشغيل الصوت مع تصميم متجاوب للوضعين الأفقي والعمودي
 /// Background widget for audio playback with responsive design for portrait and landscape orientations
-class BackDropWidget extends StatelessWidget {
+class SurahBackDropWidget extends StatelessWidget {
   final SurahAudioStyle? style;
   final bool? isDark;
-  const BackDropWidget({super.key, this.style, this.isDark});
+  const SurahBackDropWidget({super.key, this.style, this.isDark});
 
   @override
   Widget build(BuildContext context) {
@@ -83,7 +83,7 @@ class BackDropWidget extends StatelessWidget {
           // شرح: كارد آخر استماع مع تصميم محسن
           // Explanation: Last listen card with enhanced design
           _buildEnhancedCard(
-            child: LastListen(style: style),
+            child: SurahLastListen(style: style),
             context: context,
             elevation: 8.0,
             isDark: isDark,
@@ -147,7 +147,7 @@ class BackDropWidget extends StatelessWidget {
                 // شرح: كارد آخر استماع
                 // Explanation: Last listen card
                 _buildEnhancedCard(
-                  child: LastListen(style: style),
+                  child: SurahLastListen(style: style),
                   context: context,
                   elevation: 8.0,
                   isDark: isDark,

@@ -1,14 +1,14 @@
 part of '../audio.dart';
 
-class PositionData {
+class PackagePositionData {
   final Duration position;
   final Duration bufferedPosition;
   final Duration duration;
 
-  PositionData(this.position, this.bufferedPosition, this.duration);
+  PackagePositionData(this.position, this.bufferedPosition, this.duration);
 }
 
-class SliderWidget extends StatefulWidget {
+class PackageSliderWidget extends StatefulWidget {
   final Duration? duration;
   final Duration? position;
   // final Duration bufferedPosition;
@@ -29,7 +29,7 @@ class SliderWidget extends StatefulWidget {
   final double? filesCount;
   final Color? thumbColor;
 
-  factory SliderWidget.downloading({
+  factory PackageSliderWidget.downloading({
     required int currentPosition,
     required int filesCount,
     required double horizontalPadding,
@@ -37,14 +37,14 @@ class SliderWidget extends StatefulWidget {
     Color? activeTrackColor,
     Color? inactiveTrackColor,
   }) {
-    return SliderWidget(
+    return PackageSliderWidget(
       currentPosition: currentPosition.toDouble(),
       filesCount: filesCount.toDouble(),
       horizontalPadding: horizontalPadding,
       thumbColor: thumbColor,
     );
   }
-  factory SliderWidget.player({
+  factory PackageSliderWidget.player({
     required Duration position,
     required Duration duration,
     required double horizontalPadding,
@@ -62,7 +62,7 @@ class SliderWidget extends StatefulWidget {
     bool fullWidth = false,
     Color? thumbColor,
   }) {
-    return SliderWidget(
+    return PackageSliderWidget(
       position: position,
       duration: duration,
       horizontalPadding: horizontalPadding,
@@ -82,7 +82,7 @@ class SliderWidget extends StatefulWidget {
     );
   }
 
-  const SliderWidget({
+  const PackageSliderWidget({
     this.currentPosition = 0,
     this.filesCount,
     this.duration,
@@ -106,10 +106,10 @@ class SliderWidget extends StatefulWidget {
   });
 
   @override
-  State<SliderWidget> createState() => _SliderWidgetState();
+  State<PackageSliderWidget> createState() => _PackageSliderWidgetState();
 }
 
-class _SliderWidgetState extends State<SliderWidget> {
+class _PackageSliderWidgetState extends State<PackageSliderWidget> {
   double _sliderValue = 0;
   @override
   void initState() {

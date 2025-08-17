@@ -1,7 +1,7 @@
 part of '../../audio.dart';
 
-class RepeatWidget extends StatelessWidget {
-  RepeatWidget({super.key});
+class SurahRepeatWidget extends StatelessWidget {
+  SurahRepeatWidget({super.key});
 
   final surahAudioCtrl = AudioCtrl.instance;
 

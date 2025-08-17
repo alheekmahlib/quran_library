@@ -2,10 +2,10 @@ part of '../../audio.dart';
 
 /// ويدجت آخر استماع مع دعم تمرير الألوان والأنماط
 /// Last listen widget with color and style passing support
-class LastListen extends StatelessWidget {
+class SurahLastListen extends StatelessWidget {
   final SurahAudioStyle? style;
 
-  LastListen({super.key, this.style});
+  SurahLastListen({super.key, this.style});
 
   final surahAudioCtrl = AudioCtrl.instance;
 

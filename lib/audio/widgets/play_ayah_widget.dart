@@ -1,8 +1,8 @@
 part of '../audio.dart';
 
-class PlayAyah extends StatelessWidget {
+class PlayAyahWidget extends StatelessWidget {
   final AyahAudioStyle? style;
-  const PlayAyah({super.key, this.style});
+  const PlayAyahWidget({super.key, this.style});
 
   @override
   Widget build(BuildContext context) {

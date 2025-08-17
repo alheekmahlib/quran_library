@@ -1,6 +1,6 @@
 part of '../../../audio.dart';
 
-extension SurahAudioStorageGetters on AudioCtrl {
+extension SurahAudioStorage on AudioCtrl {
   /// -------- [Storage] ----------
 
   Future loadLastSurahListen() async {

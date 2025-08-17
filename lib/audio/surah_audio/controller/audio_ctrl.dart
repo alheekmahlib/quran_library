@@ -6,7 +6,7 @@ class AudioCtrl extends GetxController {
       ? Get.find<AudioCtrl>()
       : Get.put<AudioCtrl>(AudioCtrl._(), permanent: true);
 
-  SurahAudioState state = SurahAudioState();
+  SurahState state = SurahState();
 
   @override
   Future<void> onInit() async {
@@ -74,7 +74,7 @@ class AudioCtrl extends GetxController {
 
   Future<void> initAudioService() async {
     await AudioService.init(
-      builder: () => AudioPlayerHandler.instance,
+      builder: () => AudioHandler.instance,
       config: const AudioServiceConfig(
         androidNotificationChannelId: 'com.alheekmah.quranPackage.audio',
         androidNotificationChannelName: 'Audio playback',
@@ -326,7 +326,7 @@ class AudioCtrl extends GetxController {
     return "${twoDigits(duration.inHours)}:$twoDigitMinutes:$twoDigitSeconds";
   }
 
-  void updateControllerValues(PositionData positionData) {
+  void updateControllerValues(PackagePositionData positionData) {
     audioStream.listen((p) {
       state.lastPosition.value = p.position.inSeconds;
       state.seekNextSeconds.value = p.position.inSeconds;

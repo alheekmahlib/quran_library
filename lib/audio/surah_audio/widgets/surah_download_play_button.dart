@@ -1,8 +1,8 @@
 part of '../../audio.dart';
 
-class DownloadPlayButton extends StatelessWidget {
+class SurahDownloadPlayButton extends StatelessWidget {
   final SurahAudioStyle? style;
-  const DownloadPlayButton({super.key, this.style});
+  const SurahDownloadPlayButton({super.key, this.style});
 
   @override
   Widget build(BuildContext context) {

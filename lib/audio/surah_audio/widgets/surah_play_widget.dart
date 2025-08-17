@@ -68,7 +68,7 @@ class PlaySurahsWidget extends StatelessWidget {
               ],
             ),
           ),
-          ChangeSurahReader(style: style),
+          SurahChangeSurahReader(style: style),
           const SizedBox(height: 16),
           const SurahSeekBar(),
           const SizedBox(height: 16),
@@ -81,9 +81,9 @@ class PlaySurahsWidget extends StatelessWidget {
                             surahCtrl.state.currentAudioListSurahNum.value)
                         .value
                     ? const SizedBox.shrink()
-                    : DownloadPlayButton(style: style),
+                    : SurahDownloadPlayButton(style: style),
               ),
-              RepeatWidget()
+              SurahRepeatWidget()
             ],
           ),
           const SizedBox(height: 16),
@@ -110,7 +110,7 @@ class PlaySurahsWidget extends StatelessWidget {
                     ),
                   ],
                 ),
-                OnlinePlayButton(),
+                SurahOnlinePlayButton(),
                 Row(
                   children: [
                     GestureDetector(

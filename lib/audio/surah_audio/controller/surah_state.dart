@@ -1,6 +1,6 @@
 part of '../../audio.dart';
 
-class SurahAudioState {
+class SurahState {
   /// -------- [Variables] ----------
 
   AudioPlayer audioPlayer = AudioPlayer();
@@ -26,7 +26,7 @@ class SurahAudioState {
   List<Map<int, AudioSource>> downloadSurahsPlayList = [];
   double? lastTime;
   RxInt lastPosition = 0.obs;
-  Rx<PositionData>? positionData;
+  Rx<PackagePositionData>? positionData;
   var activeButton = RxString('');
   final TextEditingController textEditingController = TextEditingController();
   RxInt surahReaderIndex = 1.obs;

@@ -1,8 +1,8 @@
-part of '../audio.dart';
+part of '../../audio.dart';
 
-class OnlinePlayButton extends StatelessWidget {
+class SurahOnlinePlayButton extends StatelessWidget {
   final SurahAudioStyle? style;
-  const OnlinePlayButton({super.key, this.style});
+  const SurahOnlinePlayButton({super.key, this.style});
 
   @override
   Widget build(BuildContext context) {

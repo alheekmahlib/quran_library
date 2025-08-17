@@ -1,6 +1,6 @@
 part of '../../../audio.dart';
 
-extension SurahAudioGetters on AudioCtrl {
+extension SurahGetters on AudioCtrl {
   /// -------- [Getters] ----------
   String get localSurahFilePath {
     return '${state._dir!.path}/${state.surahReaderNameValue}${state.currentAudioListSurahNum.value.toString().padLeft(3, "0")}.mp3';
@@ -38,7 +38,7 @@ extension SurahAudioGetters on AudioCtrl {
   /// single verse
   int get currentSurahNumber => currentAyahsSurah.surahNumber;
 
-  Stream<PositionData> get audioStream => positionDataStream;
+  Stream<PackagePositionData> get audioStream => positionDataStream;
 
   MediaItem get mediaItem => MediaItem(
         id: '${state.currentAudioListSurahNum.value}',
@@ -57,7 +57,7 @@ extension SurahAudioGetters on AudioCtrl {
 
   Future<void> updateMediaItemAndPlay() async {
     final newMediaItem = mediaItem;
-    AudioPlayerHandler.instance.mediaItem.add(newMediaItem);
+    AudioHandler.instance.mediaItem.add(newMediaItem);
     await state.audioPlayer.setAudioSource(state
             .isSurahDownloadedByNumber(state.currentAudioListSurahNum.value)
             .value
@@ -71,20 +71,20 @@ extension SurahAudioGetters on AudioCtrl {
           ));
   }
 
-  Stream<PositionData> get positionDataStream =>
-      r.Rx.combineLatest3<Duration, Duration, Duration?, PositionData>(
+  Stream<PackagePositionData> get positionDataStream =>
+      r.Rx.combineLatest3<Duration, Duration, Duration?, PackagePositionData>(
           state.audioPlayer.positionStream,
           state.audioPlayer.bufferedPositionStream,
           state.audioPlayer.durationStream,
-          (position, bufferedPosition, duration) => PositionData(
+          (position, bufferedPosition, duration) => PackagePositionData(
               position, bufferedPosition, duration ?? Duration.zero));
 
-  Stream<PositionData> get downloadPositionDataStream =>
-      r.Rx.combineLatest3<Duration, Duration, Duration?, PositionData>(
+  Stream<PackagePositionData> get downloadPositionDataStream =>
+      r.Rx.combineLatest3<Duration, Duration, Duration?, PackagePositionData>(
           state.audioPlayer.positionStream,
           state.audioPlayer.bufferedPositionStream,
           state.audioPlayer.durationStream,
-          (position, bufferedPosition, duration) => PositionData(
+          (position, bufferedPosition, duration) => PackagePositionData(
               position, bufferedPosition, duration ?? Duration.zero));
   String get ayahReaderValue =>
       ReadersConstants.ayahReaderInfo[state.ayahReaderIndex.value]['readerD'];

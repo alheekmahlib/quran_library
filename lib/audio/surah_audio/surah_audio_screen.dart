@@ -27,9 +27,9 @@ class SurahAudioScreen extends StatelessWidget {
             anchorPosition: 100,
             expandPosition: MediaQuery.sizeOf(context).height * .6,
           ),
-          pageContent: BackDropWidget(style: style, isDark: isDark),
+          pageContent: SurahBackDropWidget(style: style, isDark: isDark),
           panelContent: Obx(() => !surahCtrl.state.isSheetOpen.value
-              ? CollapsedPlayWidget(style: style)
+              ? SurahCollapsedPlayWidget(style: style)
               : PlaySurahsWidget(style: style)),
         ),
       ),

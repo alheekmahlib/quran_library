@@ -1,15 +1,14 @@
 part of '../../audio.dart';
 
-class AudioPlayerHandler extends BaseAudioHandler
-    with QueueHandler, SeekHandler {
-  static final AudioPlayerHandler _instance = AudioPlayerHandler._internal();
-  static AudioPlayerHandler get instance => _instance;
+class AudioHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
+  static final AudioHandler _instance = AudioHandler._internal();
+  static AudioHandler get instance => _instance;
 
   final surahCtrl = AudioCtrl.instance;
 
   // final audioHandler = AudioService();
 
-  AudioPlayerHandler._internal() {
+  AudioHandler._internal() {
     // الاستماع لتغيرات حالة التشغيل
     surahCtrl.state.audioPlayer.playbackEventStream
         .map(_transformEvent)

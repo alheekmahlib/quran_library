@@ -1,6 +1,6 @@
 part of '../../../audio.dart';
 
-extension SurahAudioUi on AudioCtrl {
+extension SurahUi on AudioCtrl {
   void changeAudioSource() {
     state.isSurahDownloadedByNumber(state.currentAudioListSurahNum.value).value
         ? state.audioPlayer.setAudioSource(AudioSource.file(

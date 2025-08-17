@@ -20,9 +20,7 @@ extension AyahCtrlExtension on AudioCtrl {
       final filePath = isSurahDownloaded
           ? join((await state.dir).path, currentAyahFileName)
           : await _downloadFileIfNotExist(currentAyahUrl, currentAyahFileName,
-              // ignore: use_build_context_synchronously
-              context: context,
-              ayahUqNumber: currentAyahUniqueNumber);
+              context: context, ayahUqNumber: currentAyahUniqueNumber);
 
       await state.audioPlayer.setAudioSource(
         AudioSource.file(
@@ -176,10 +174,8 @@ extension AyahCtrlExtension on AudioCtrl {
     );
 
     if (playSingleAyah) {
-      // ignore: use_build_context_synchronously
       await _playSingleAyahFile(context, currentAyahUniqueNumber);
     } else {
-      // ignore: use_build_context_synchronously
       await _playAyahsFile(context, currentAyahUniqueNumber);
     }
     // }
@@ -197,7 +193,6 @@ extension AyahCtrlExtension on AudioCtrl {
     QuranCtrl.instance.toggleAyahSelection(state.currentAyahUniqueNumber,
         forceAddition: true);
     if (state.playSingleAyahOnly) {
-      // ignore: use_build_context_synchronously
       return _playSingleAyahFile(context, ayahUniqueNumber);
     } else {
       return state.audioPlayer.seekToNext();
@@ -218,7 +213,6 @@ extension AyahCtrlExtension on AudioCtrl {
     QuranCtrl.instance.toggleAyahSelection(state.currentAyahUniqueNumber,
         forceAddition: true);
     if (state.playSingleAyahOnly) {
-      // ignore: use_build_context_synchronously
       return _playSingleAyahFile(context, ayahUniqueNumber);
     } else {
       return state.audioPlayer.seekToPrevious();

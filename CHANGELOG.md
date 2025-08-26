@@ -1,3 +1,7 @@
+## 2.0.1
+
+* **Fixed some issues**
+
 ## 2.0.0
 
 * **Add comprehensive audio playback system for Quran recitation**

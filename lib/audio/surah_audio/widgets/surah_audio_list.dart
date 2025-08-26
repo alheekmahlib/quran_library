@@ -13,65 +13,70 @@ class SurahAudioList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.all(12.0),
-      padding: const EdgeInsets.symmetric(vertical: 4.0),
-      decoration: BoxDecoration(
-        // شرح: تدرج لوني جميل للخلفية
-        // Explanation: Beautiful gradient background
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [
-            (style?.backgroundColor ?? const Color(0xfffaf7f3))
-                .withValues(alpha: 0.05),
-            (style?.backgroundColor ?? const Color(0xfffaf7f3))
-                .withValues(alpha: 0.02),
+    return ScreenUtilInit(
+      designSize: const Size(392.72727272727275, 800.7272727272727),
+      minTextAdapt: true,
+      splitScreenMode: true,
+      child: Container(
+        margin: const EdgeInsets.all(12.0),
+        padding: const EdgeInsets.symmetric(vertical: 4.0),
+        decoration: BoxDecoration(
+          // شرح: تدرج لوني جميل للخلفية
+          // Explanation: Beautiful gradient background
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              (style?.backgroundColor ?? const Color(0xfffaf7f3))
+                  .withValues(alpha: 0.05),
+              (style?.backgroundColor ?? const Color(0xfffaf7f3))
+                  .withValues(alpha: 0.02),
+            ],
+          ),
+          borderRadius: BorderRadius.all(
+            Radius.circular(style?.borderRadius ?? 16.0),
+          ),
+          border: Border.all(
+            width: 1.5,
+            color: (style?.backgroundColor ?? const Color(0xfffaf7f3))
+                .withValues(alpha: 0.2),
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: (style?.backgroundColor ?? const Color(0xfffaf7f3))
+                  .withValues(alpha: 0.1),
+              blurRadius: 8.0,
+              spreadRadius: 1.0,
+              offset: const Offset(0, 2),
+            ),
           ],
         ),
-        borderRadius: BorderRadius.all(
-          Radius.circular(style?.borderRadius ?? 16.0),
-        ),
-        border: Border.all(
-          width: 1.5,
-          color: (style?.backgroundColor ?? const Color(0xfffaf7f3))
-              .withValues(alpha: 0.2),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: (style?.backgroundColor ?? const Color(0xfffaf7f3))
-                .withValues(alpha: 0.1),
-            blurRadius: 8.0,
-            spreadRadius: 1.0,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: ListView.builder(
-        shrinkWrap: true,
-        controller: surahAudioCtrl.state.surahListController,
-        physics: const BouncingScrollPhysics(),
-        addAutomaticKeepAlives: true,
-        addRepaintBoundaries: true,
-        itemCount: quranCtrl.state.surahs.length,
-        scrollDirection: Axis.vertical,
-        itemBuilder: (_, index) {
-          final surah = quranCtrl.state.surahs[index];
-          int surahNumber = index + 1;
+        child: ListView.builder(
+          shrinkWrap: true,
+          controller: surahAudioCtrl.state.surahListController,
+          physics: const BouncingScrollPhysics(),
+          addAutomaticKeepAlives: true,
+          addRepaintBoundaries: true,
+          itemCount: quranCtrl.state.surahs.length,
+          scrollDirection: Axis.vertical,
+          itemBuilder: (_, index) {
+            final surah = quranCtrl.state.surahs[index];
+            int surahNumber = index + 1;
 
-          return Obx(
-            () => Container(
-              margin: const EdgeInsets.symmetric(vertical: 4.0),
-              child: _buildEnhancedSurahItem(
-                context,
-                surah,
-                index,
-                surahNumber,
-                isDark,
+            return Obx(
+              () => Container(
+                margin: const EdgeInsets.symmetric(vertical: 4.0),
+                child: _buildEnhancedSurahItem(
+                  context,
+                  surah,
+                  index,
+                  surahNumber,
+                  isDark,
+                ),
               ),
-            ),
-          );
-        },
+            );
+          },
+        ),
       ),
     );
   }

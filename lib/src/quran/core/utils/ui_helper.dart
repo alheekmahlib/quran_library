@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:toastification/toastification.dart';
 
-import '../../quran.dart';
+import '../../../../quran.dart';
 
 class UiHelper {
   UiHelper._();

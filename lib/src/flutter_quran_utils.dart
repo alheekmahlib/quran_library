@@ -549,7 +549,7 @@ class QuranLibrary {
   /// الحصول على قائمة أسماء التفاسير والترجمات.
   /// Get the list of tafsir and translation names.
   List<TafsirNameModel> get tafsirAndTraslationCollection =>
-      tafsirAndTranslateNames;
+      TafsirCtrl.instance.items;
 
   /// تغيير التفسير المختار عند الضغط على زر التبديل.
   /// Change the selected tafsir when the switch button is pressed.

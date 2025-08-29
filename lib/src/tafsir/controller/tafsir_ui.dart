@@ -71,7 +71,7 @@ extension TafsirUi on TafsirCtrl {
     await initializeDatabase();
     await fetchData(
         pageNumber ?? QuranCtrl.instance.state.currentPageNumber.value);
-    log('Database initialized for: ${tafsirAndTranslateNames[radioValue.value].databaseName}',
+    log('Database initialized for: ${items[radioValue.value].databaseName}',
         name: 'TafsirUi');
   }
 }

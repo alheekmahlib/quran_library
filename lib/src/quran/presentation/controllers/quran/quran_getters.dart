@@ -197,6 +197,20 @@ extension QuranGetters on QuranCtrl {
   ///   `List<AyahModel>`: A list of AyahModel representing the Ayahs on the specified page.
   List<AyahModel> getPageAyahsByIndex(int pageIndex) => state.pages[pageIndex];
 
+  /// get page number by ayah unique number
+
+  int getPageNumberByAyahUqNumber(int ayahUnequeNumber) => state.pages
+          .firstWhere(
+              (p) =>
+                  p.isEmpty == false &&
+                  p.any((a) => a.ayahUQNumber == ayahUnequeNumber),
+              orElse: () => [])
+          .isEmpty
+      ? 1
+      : state.pages.indexOf(state.pages.firstWhere(
+              (p) => p.any((a) => a.ayahUQNumber == ayahUnequeNumber))) +
+          1;
+
   /// will return the surah number of the first ayahs..
   /// even if the page contains another surah.
   int getSurahNumberFromPage(int pageNumber) => state.surahs

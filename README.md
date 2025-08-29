@@ -335,6 +335,24 @@ QuranLibrary.initTafsir();
 * ### Usage Example - مثال الإستخدام
 
 ```dart
+// get current list
+
+
+final all = TafsirController.instance.items; // includes defaults + customs
+
+// add a custom sql file (File is from file picker)
+
+final added = await TafsirController.instance.addCustomFromFile(
+
+  sourceFile: pickedFile,
+
+  displayName: 'My Custom Tafsir',
+
+  bookName: 'My Book',
+
+  type: TafsirFileType.sqlite,
+
+);
 /// Show a popup menu to change the tafsir style.
 /// إظهار قائمة منبثقة لتغيير نوع التفسير.
 QuranLibrary().changeTafsirPopupMenu(TafsirStyle tafsirStyle, {int? pageNumber});

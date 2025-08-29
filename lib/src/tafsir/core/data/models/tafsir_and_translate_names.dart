@@ -1,6 +1,6 @@
 part of '../../../tafsir.dart';
 
-List<TafsirNameModel> tafsirAndTranslateNames = [
+final List<TafsirNameModel> defaultTafsirList = [
   TafsirNameModel(
     name: 'تفسير ابن كثير',
     bookName: 'تفسير القرآن العظيم',

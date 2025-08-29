@@ -2,8 +2,8 @@
 import 'dart:developer' show log;
 
 import 'package:flutter/material.dart';
-import 'package:quran_library/audio/audio.dart';
 import 'package:quran_library/quran_library.dart';
+import 'package:quran_library/src/audio/audio.dart';
 
 Future<void> main() async {
   await WidgetsFlutterBinding.ensureInitialized();

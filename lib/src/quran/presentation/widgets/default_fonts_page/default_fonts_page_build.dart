@@ -156,7 +156,7 @@ class DefaultFontsPageBuild extends StatelessWidget {
                             bookmarkCtrl.bookmarksAyahs,
                             bookmarkCtrl.bookmarks,
                             boxFit: line.ayahs.last.centered!
-                                ? BoxFit.scaleDown
+                                ? BoxFit.contain
                                 : BoxFit.fill,
                             onDefaultAyahLongPress: onAyahLongPress,
                             bookmarksColor: bookmarksColor,

@@ -42,7 +42,7 @@ class AyahsAudioWidget extends StatelessWidget {
                         // تحديد الارتفاع بناءً على المساحة المتاحة مع حد أدنى وأقصى
                         // Determine height based on available space with min/max limits
                         final availableHeight = constraints.maxHeight;
-                        final targetHeight = availableHeight.clamp(80.0, 165.0);
+                        final targetHeight = availableHeight.clamp(80.0, 175.0);
 
                         return SizedBox(
                             height: targetHeight,

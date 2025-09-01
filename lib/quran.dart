@@ -18,9 +18,9 @@ import 'package:get/get.dart' hide Response;
 import 'package:get_storage/get_storage.dart';
 import 'package:path_provider/path_provider.dart';
 
-import 'src/quran/core/utils/ui_helper.dart';
 import 'src/audio/audio.dart';
 import 'src/quran/core/helpers/responsive.dart';
+import 'src/quran/core/utils/ui_helper.dart';
 import 'src/tafsir/tafsir.dart';
 
 part 'src/audio/widgets/slider/bottom_slider.dart';

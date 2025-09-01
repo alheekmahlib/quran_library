@@ -36,6 +36,8 @@ class QuranLibrary {
     final storageConstants = _StorageConstants();
 
     /// Initialize SurahAudioController
+    QuranCtrl.instance;
+    _initTafsir(); // no need to await, just to init the controller
     AudioCtrl.instance;
 
     quranCtrl.state.isDownloadedV2Fonts.value =
@@ -531,7 +533,7 @@ class QuranLibrary {
 
   /// تهيئة بيانات التفسير عند بدء التطبيق.
   /// Initialize tafsir data when the app starts.
-  static Future<void> initTafsir() async {
+  static Future<void> _initTafsir() async {
     drift.driftRuntimeOptions.dontWarnAboutMultipleDatabases = true;
     return TafsirCtrl.instance.initTafsir();
   }
@@ -539,7 +541,7 @@ class QuranLibrary {
   /// إظهار قائمة منبثقة لتغيير نوع التفسير.
   /// Show a popup menu to change the tafsir style.
   Widget changeTafsirPopupMenu(TafsirStyle tafsirStyle, {int? pageNumber}) =>
-      ChangeTafsir(tafsirStyle: tafsirStyle, pageNumber: pageNumber);
+      ChangeTafsirPopUp(tafsirStyle: tafsirStyle, pageNumber: pageNumber);
 
   /// التحقق إذا كان التفسير تم تحميله مسبقاً.
   /// Check if the tafsir is already downloaded.

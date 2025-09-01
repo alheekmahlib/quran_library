@@ -16,8 +16,11 @@ extension TafsirUi on TafsirCtrl {
   /// شرح: تغيير التفسير أو الترجمة عند تغيير الاختيار
   /// Explanation: Change tafsir/translation when selection changes
   Future<void> handleRadioValueChanged(int val, {int? pageNumber}) async {
-    log('start changing Tafsir', name: 'TafsirUi');
+    if (radioValue.value == val) {
+      return;
+    }
     radioValue.value = val;
+    log('start changing Tafsir', name: 'TafsirUi');
     box.write(_StorageConstants().radioValue, val);
     if (val <= 4) {
       isTafsir.value = true;
@@ -30,12 +33,13 @@ extension TafsirUi on TafsirCtrl {
       isTafsir.value = false;
       String langCode = _getLangCodeForRadio(val);
       translationLangCode.value = langCode;
+      await fetchTranslate();
       box.write(_StorageConstants().translationLangCode, langCode);
       box.write(_StorageConstants().isTafsir, false);
       tafseerList.clear(); // شرح: مسح قائمة التفسير عند اختيار الترجمة
-      await fetchTranslate();
     }
-    update(['change_tafsir']);
+    update(['change_tafsir', 'change_font_size']);
+    // update(['ActualTafsirWidget']);
   }
 
   /// شرح: إرجاع كود اللغة المناسب حسب قيمة الراديو

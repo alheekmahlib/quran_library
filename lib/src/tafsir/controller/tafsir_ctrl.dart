@@ -31,6 +31,8 @@ class TafsirCtrl extends GetxController {
   var isLoading = false.obs;
   var translationLangCode = 'en'.obs;
 
+  late Directory _dir;
+
   /// شرح: متغير لحفظ اسم قاعدة البيانات الحالية
   /// Explanation: Variable to store the current database name
   String? currentDbFileName;
@@ -176,14 +178,19 @@ class TafsirCtrl extends GetxController {
     await box.write(_customTafsirsKey, json.encode(customOnly));
   }
 
+  bool _isTafsirInitialized = false;
+
   @override
   Future<void> onInit() async {
-    super.onInit();
     // start from defaults
+    _dir = await getApplicationDocumentsDirectory();
     _items.clear();
     _items.addAll(defaultTafsirList);
+    if (!_isTafsirInitialized) {
+      await initTafsir();
+    }
     await _loadPersistedCustoms();
-    await initTafsir();
+    super.onInit();
   }
 
   /// شرح: تهيئة التفسير مع التأكد من عدم تكرار إنشاء قاعدة البيانات
@@ -192,6 +199,8 @@ class TafsirCtrl extends GetxController {
     initializeTafsirDownloadStatus();
     await loadTafseer();
     await initializeDatabase();
+    _isTafsirInitialized = true;
+    log('TafsirCtrl initialized.', name: 'TafsirCtrl');
   }
 
   Future<void> loadTafseer() async {
@@ -276,10 +285,9 @@ class TafsirCtrl extends GetxController {
   /// Explanation: Fetch translation
   Future<void> fetchTranslate() async {
     try {
-      Directory databasePath = await getApplicationDocumentsDirectory();
       String path = radioValue.value == 5
           ? 'packages/quran_library/assets/en.json'
-          : join(databasePath.path, '${translationLangCode.value}.json');
+          : join(_dir.path, '${translationLangCode.value}.json');
       isLoading.value = true;
       String jsonString;
       if (radioValue.value == 5) {
@@ -308,21 +316,21 @@ class TafsirCtrl extends GetxController {
   /// شرح: تحميل قاعدة بيانات التفسير أو الترجمة
   /// Explanation: Download tafsir or translation database
   Future<void> tafsirDownload(int i) async {
-    Directory databasePath = await getApplicationDocumentsDirectory();
     String path;
     String fileUrl;
     final idx = (i >= 0 && i < items.length) ? i : 0;
     final selected = items[idx];
     if (isTafsir.value) {
-      path = join(databasePath.path, selected.databaseName);
+      path = join(_dir.path, selected.databaseName);
       fileUrl =
           'https://github.com/alheekmahlib/Islamic_database/raw/refs/heads/main/tafseer_database/${selected.databaseName}';
     } else {
-      path = join(databasePath.path, '${selected.bookName}.json');
+      path = join(_dir.path, '${selected.bookName}.json');
       fileUrl =
           'https://github.com/alheekmahlib/Islamic_database/raw/refs/heads/main/quran_database/translate/${selected.bookName}.json';
     }
     if (!onDownloading.value) {
+      update(['change_tafsir']);
       await downloadFile(path, fileUrl).then((_) async {
         onDownloadSuccess(i);
         await saveTafsirDownloadIndex(i);
@@ -334,10 +342,10 @@ class TafsirCtrl extends GetxController {
           await handleRadioValueChanged(i);
           await fetchTranslate();
         }
-        update(['change_tafsir']);
       });
       log('Downloading from URL: $fileUrl', name: 'TafsirCtrl');
     }
+    update(['change_tafsir']);
   }
 
   /// شرح: تهيئة حالة تحميل التفسير
@@ -365,10 +373,9 @@ class TafsirCtrl extends GetxController {
   /// شرح: فحص جميع ملفات التفسير
   /// Explanation: Check all tafsir files
   Future<Map<int, bool>> checkAllTafsirDownloaded() async {
-    Directory? directory = await getApplicationDocumentsDirectory();
     for (int i = 0; i < items.length; i++) {
       final dbName = items[i].databaseName;
-      String filePath = '${directory.path}/$dbName';
+      String filePath = '${_dir.path}/$dbName';
       File file = File(filePath);
       tafsirDownloadStatus.value[i] = await file.exists();
     }

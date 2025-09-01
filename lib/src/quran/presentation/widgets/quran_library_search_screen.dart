@@ -77,9 +77,9 @@ class QuranLibrarySearchScreen extends StatelessWidget {
 
         onChanged: (txt) {
           final searchResult = QuranLibrary().search(txt);
-          quranCtrl.ayahsList.value = [...searchResult];
+          quranCtrl.searchResultAyahs.value = [...searchResult];
           final surahResult = QuranLibrary().surahSearch(txt);
-          quranCtrl.surahList.value = [...surahResult];
+          quranCtrl.searchResultSurahs.value = [...surahResult];
         },
         style: TextStyle(
           color: isDark ? Colors.white : Colors.black,
@@ -115,7 +115,7 @@ class QuranLibrarySearchScreen extends StatelessWidget {
       flex: 9,
       child: GetX<QuranCtrl>(
         builder: (quranCtrl) => ListView(
-          children: quranCtrl.ayahsList
+          children: quranCtrl.searchResultAyahs
               .map(
                 (ayah) => Column(
                   children: [
@@ -136,7 +136,7 @@ class QuranLibrarySearchScreen extends StatelessWidget {
                           const EdgeInsets.symmetric(horizontal: 16),
                       onTap: () async {
                         Navigator.pop(context);
-                        quranCtrl.ayahsList.value = [];
+                        quranCtrl.searchResultAyahs.value = [];
                         quranCtrl.isDownloadFonts
                             ? await quranCtrl.prepareFonts(ayah.page)
                             : null;
@@ -160,22 +160,22 @@ class QuranLibrarySearchScreen extends StatelessWidget {
     final quranCtrl = QuranCtrl.instance;
     return Obx(
       () {
-        if (quranCtrl.surahList.isNotEmpty) {
+        if (quranCtrl.searchResultSurahs.isNotEmpty) {
           return Expanded(
             flex: 1,
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: ListView.builder(
-                itemCount: quranCtrl.surahList.length,
+                itemCount: quranCtrl.searchResultSurahs.length,
                 scrollDirection: Axis.horizontal,
                 itemBuilder: (context, index) {
-                  SurahModel search = quranCtrl.surahList[index];
+                  SurahModel search = quranCtrl.searchResultSurahs[index];
                   return Directionality(
                     textDirection: TextDirection.rtl,
                     child: GestureDetector(
                       onTap: () async {
                         Navigator.pop(context);
-                        quranCtrl.surahList.value = [];
+                        quranCtrl.searchResultSurahs.value = [];
                         quranCtrl.isDownloadFonts
                             ? await quranCtrl.prepareFonts(search.startPage!)
                             : null;

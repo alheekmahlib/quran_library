@@ -11,6 +11,7 @@ class AudioCtrl extends GetxController {
   @override
   Future<void> onInit() async {
     initializeSurahDownloadStatus();
+    QuranCtrl.instance;
     state._dir ??= await getApplicationDocumentsDirectory();
     await Future.wait([
       _addDownloadedSurahToPlaylist(),

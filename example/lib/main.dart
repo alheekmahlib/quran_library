@@ -8,7 +8,6 @@ import 'package:quran_library/src/audio/audio.dart';
 Future<void> main() async {
   await WidgetsFlutterBinding.ensureInitialized();
   await QuranLibrary.init();
-  await QuranLibrary.initTafsir();
   runApp(
     // DevicePreview(
     //   builder: (context) => const MyApp(),

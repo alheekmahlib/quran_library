@@ -326,12 +326,6 @@ QuranLibrary().isFontsDownloaded;
 # to avoid any problems when showing the tafsir
 
 
-* ### Initialize tafsir - تهيئة التفسير:
-
-```dart
-QuranLibrary.initTafsir();
-```
-
 * ### Usage Example - مثال الإستخدام
 
 ```dart

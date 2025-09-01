@@ -12,12 +12,12 @@ class QuranCtrl extends GetxController {
   RxList<QuranPageModel> staticPages = <QuranPageModel>[].obs;
   RxList<int> quranStops = <int>[].obs;
   RxList<int> surahsStart = <int>[].obs;
-  RxList<SurahModel> surahs = <SurahModel>[].obs;
-  final RxList<AyahModel> ayahs = <AyahModel>[].obs;
+  final List<SurahModel> surahs = [];
+  final List<AyahModel> ayahs = [];
   int lastPage = 1;
   int? initialPage;
-  RxList<AyahModel> ayahsList = <AyahModel>[].obs;
-  RxList<SurahModel> surahList = <SurahModel>[].obs;
+  final RxList<AyahModel> searchResultAyahs = <AyahModel>[].obs;
+  final RxList<SurahModel> searchResultSurahs = <SurahModel>[].obs;
 
   /// List of selected ayahs by their unique number
   final selectedAyahsByUnequeNumber = <int>[].obs;
@@ -27,6 +27,8 @@ class QuranCtrl extends GetxController {
   final isLoading = true.obs;
   RxList<SurahNamesModel> surahsList = <SurahNamesModel>[].obs;
   RxBool isShowControl = false.obs;
+
+  late Directory _dir;
   // late QuranSearch quranSearch;
 
   // شرح: تحسين PageController للحصول على أداء أفضل
@@ -38,11 +40,11 @@ class QuranCtrl extends GetxController {
 
   QuranState state = QuranState();
 
-  // @override
-  // void onInit() {
-  //   _initSearch();
-  //   super.onInit();
-  // }
+  @override
+  void onInit() async {
+    _dir = await getApplicationDocumentsDirectory();
+    super.onInit();
+  }
 
   @override
   void onClose() {
@@ -50,9 +52,7 @@ class QuranCtrl extends GetxController {
     quranStops.close();
     surahsStart.close();
     selectedAyahsByUnequeNumber.close();
-    surahs.close();
-    ayahs.close();
-    ayahsList.close();
+    searchResultAyahs.close();
     scaleFactor.close();
     baseScaleFactor.close();
     isLoading.close();

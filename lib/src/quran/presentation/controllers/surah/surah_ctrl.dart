@@ -20,7 +20,7 @@ class SurahCtrl extends GetxController {
 
   /// آيات السورة
   /// Surah ayahs
-  RxList<AyahModel> surahAyahs = <AyahModel>[].obs;
+  List<AyahModel> surahAyahs = [];
 
   /// معلومات السورة
   /// Surah information
@@ -40,7 +40,6 @@ class SurahCtrl extends GetxController {
   @override
   void onClose() {
     surahPages.close();
-    surahAyahs.close();
     currentSurah.close();
     isLoading.close();
     _pageController.dispose();
@@ -67,28 +66,28 @@ class SurahCtrl extends GetxController {
 
       // شرح: فلترة آيات السورة المطلوبة
       // Explanation: Filter required surah ayahs
-      final allAyahs = quranCtrl.ayahs
+      final selectedSurahAyahs = quranCtrl.ayahs
           .where((ayah) => ayah.surahNumber == surahNumber)
           .toList();
 
-      log('Loading surah $surahNumber, found ${allAyahs.length} ayahs',
+      log('Loading surah $surahNumber, found ${selectedSurahAyahs.length} ayahs',
           name: 'SurahCtrl');
 
-      if (allAyahs.isEmpty) {
+      if (selectedSurahAyahs.isEmpty) {
         log('No ayahs found for surah $surahNumber', name: 'SurahCtrl');
         isLoading(false);
         return;
       }
 
-      surahAyahs.assignAll(allAyahs);
+      surahAyahs.assignAll(selectedSurahAyahs);
 
       // شرح: إنشاء معلومات السورة
       // Explanation: Create surah information
-      currentSurah.value = _createSurahModel(allAyahs.first);
+      currentSurah.value = _createSurahModel(selectedSurahAyahs.first);
 
       // شرح: تقسيم آيات السورة إلى صفحات باستخدام نفس منطق QuranCtrl
       // Explanation: Divide surah ayahs into pages using the same logic as QuranCtrl
-      await _createSurahPages(allAyahs);
+      await _createSurahPages(selectedSurahAyahs);
 
       log('Created ${surahPages.length} pages for surah $surahNumber',
           name: 'SurahCtrl');

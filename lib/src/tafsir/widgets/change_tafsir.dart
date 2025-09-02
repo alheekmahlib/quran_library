@@ -14,7 +14,7 @@ class ChangeTafsirPopUp extends StatelessWidget {
   Widget build(BuildContext context) {
     // tafsirCtrl.initializeTafsirDownloadStatus();
     return GetBuilder<TafsirCtrl>(
-        id: 'change_tafsir',
+        id: 'tafsirs_menu_list',
         builder: (tafsirCtrl) {
           return PopupMenuButton(
             position: PopupMenuPosition.under,
@@ -23,8 +23,8 @@ class ChangeTafsirPopUp extends StatelessWidget {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16),
             ),
-            itemBuilder: (context) =>
-                List.generate(tafsirCtrl.items.length, (index) {
+            itemBuilder: (context) => List.generate(
+                tafsirCtrl.tafsirAndTranslationsItems.length, (index) {
               return PopupMenuItem(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 8.0, vertical: 0.0),
@@ -122,7 +122,10 @@ class ChangeTafsirPopUp extends StatelessWidget {
                   children: [
                     Text(
                       tafsirNameList?[tafsirCtrl.radioValue.value].name ??
-                          tafsirCtrl.items[tafsirCtrl.radioValue.value].name,
+                          tafsirCtrl
+                              .tafsirAndTranslationsItems[
+                                  tafsirCtrl.radioValue.value]
+                              .name,
                       style: QuranLibrary().naskhStyle.copyWith(
                             color: tafsirStyle.unSelectedTafsirColor ??
                                 const Color(0xffCDAD80),
@@ -170,7 +173,8 @@ class TafsirItemWidget extends StatelessWidget {
         tafsirCtrl.tafsirDownloadIndexList.contains(tafsirIndex);
     return ListTile(
       title: Text(
-        tafsirNameList?[tafsirIndex].name ?? tafsirCtrl.items[tafsirIndex].name,
+        tafsirNameList?[tafsirIndex].name ??
+            tafsirCtrl.tafsirAndTranslationsItems[tafsirIndex].name,
         style: QuranLibrary().naskhStyle.copyWith(
               color: tafsirCtrl.radioValue.value == tafsirIndex
                   ? tafsirStyle.selectedTafsirColor ?? Colors.black
@@ -183,7 +187,7 @@ class TafsirItemWidget extends StatelessWidget {
         tafsirIndex >= 5
             ? ''
             : tafsirNameList?[tafsirIndex].bookName ??
-                tafsirCtrl.items[tafsirIndex].bookName,
+                tafsirCtrl.tafsirAndTranslationsItems[tafsirIndex].bookName,
         style: QuranLibrary().naskhStyle.copyWith(
               color: tafsirCtrl.radioValue.value == tafsirIndex
                   ? tafsirStyle.selectedTafsirColor ?? Colors.black
@@ -251,7 +255,7 @@ class TafsirItemWidget extends StatelessWidget {
             pageNumber: pageNumber);
         // GetStorage().write(_StorageConstants().radioValue, index);
         // tafsirCtrl.fetchTranslate();
-        // tafsirCtrl.update(['change_tafsir']);
+        // tafsirCtrl.update(['tafsirs_menu_list']);
         if (context.mounted) Navigator.of(context).pop();
       },
       leading: Container(
@@ -279,7 +283,7 @@ class TafsirItemWidget extends StatelessWidget {
                   alignment: Alignment.center,
                   child: Text(
                     tafsirNameList?[tafsirIndex].name ??
-                        tafsirCtrl.items[tafsirIndex].name,
+                        tafsirCtrl.tafsirAndTranslationsItems[tafsirIndex].name,
                     style: QuranLibrary().naskhStyle.copyWith(
                           color: tafsirCtrl.radioValue.value == tafsirIndex
                               ? tafsirStyle.selectedTafsirColor ?? Colors.black

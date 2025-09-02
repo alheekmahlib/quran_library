@@ -8,16 +8,16 @@ class TafsirNameModel {
   final String
       databaseName; // for defaults this is filename, for custom this can be filename in app dir
   final bool isCustom;
+  final bool isTranslation;
   final TafsirFileType? type;
-  final String? filePath; // absolute path for custom files
 
   TafsirNameModel({
     required this.name,
     required this.bookName,
     required this.databaseName,
     this.isCustom = false,
+    this.isTranslation = false,
     this.type,
-    this.filePath,
   });
 
   factory TafsirNameModel.fromJson(Map<String, dynamic> j) => TafsirNameModel(
@@ -30,7 +30,6 @@ class TafsirNameModel {
             : (j['type'] == 'sqlite'
                 ? TafsirFileType.sqlite
                 : TafsirFileType.json),
-        filePath: j['filePath'] as String?,
       );
 
   Map<String, dynamic> toJson() => {
@@ -41,6 +40,5 @@ class TafsirNameModel {
         'type': type == null
             ? null
             : (type == TafsirFileType.sqlite ? 'sqlite' : 'json'),
-        'filePath': filePath,
       };
 }

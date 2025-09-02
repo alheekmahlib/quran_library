@@ -37,7 +37,7 @@ class QuranLibrary {
 
     /// Initialize SurahAudioController
     QuranCtrl.instance;
-    _initTafsir(); // no need to await, just to init the controller
+    await _initTafsir();
     AudioCtrl.instance;
 
     quranCtrl.state.isDownloadedV2Fonts.value =
@@ -535,7 +535,7 @@ class QuranLibrary {
   /// Initialize tafsir data when the app starts.
   static Future<void> _initTafsir() async {
     drift.driftRuntimeOptions.dontWarnAboutMultipleDatabases = true;
-    return TafsirCtrl.instance.initTafsir();
+    return TafsirCtrl.instance.onInit();
   }
 
   /// إظهار قائمة منبثقة لتغيير نوع التفسير.
@@ -550,8 +550,8 @@ class QuranLibrary {
 
   /// الحصول على قائمة أسماء التفاسير والترجمات.
   /// Get the list of tafsir and translation names.
-  List<TafsirNameModel> get tafsirAndTraslationCollection =>
-      TafsirCtrl.instance.items;
+  List<TafsirNameModel> get tafsirAndTraslationsCollection =>
+      TafsirCtrl.instance.tafsirAndTranslationsItems;
 
   /// تغيير التفسير المختار عند الضغط على زر التبديل.
   /// Change the selected tafsir when the switch button is pressed.
@@ -567,13 +567,13 @@ class QuranLibrary {
   List<TranslationModel> get translationList =>
       TafsirCtrl.instance.translationList;
 
-  /// التحقق إذا كان الوضع الحالي هو التفسير.
-  /// Check if the current mode is tafsir.
+  /// التحقق إذا كان الوضع الحالي هو التفسير أو الترجمة.
+  /// Check if the current mode is tafsir or translation.
   bool get isTafsir => TafsirCtrl.instance.isTafsir.value;
 
   /// الحصول على رقم التفسير المختار حالياً.
   /// Get the currently selected tafsir index.
-  int get tafsirSelected => TafsirCtrl.instance.radioValue.value;
+  int get selectedTafsirIndex => TafsirCtrl.instance.radioValue.value;
 
   /// جلب الترجمات من المصدر.
   /// Fetch translations from the source.
@@ -618,9 +618,8 @@ class QuranLibrary {
 
   /// إغلاق قاعدة البيانات وإعادة تهيئتها (عادة عند تغيير التفسير).
   /// Close and re-initialize the database (usually when changing the tafsir).
-  Future<void> closeAndInitializeDatabase({int? pageNumber}) async =>
-      await TafsirCtrl.instance
-          .closeAndInitializeDatabase(pageNumber: pageNumber!);
+  Future<void> closeAndInitializeDatabase() async =>
+      await TafsirCtrl.instance.closeAndReinitializeDatabase();
 
   /// للحصول على التفسير الخاص بالآية،
   ///  فقط قم بتمرير رقم الآية لـ [getTafsirOfAyah].

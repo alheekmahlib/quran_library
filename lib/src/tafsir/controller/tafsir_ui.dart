@@ -22,60 +22,49 @@ extension TafsirUi on TafsirCtrl {
     radioValue.value = val;
     log('start changing Tafsir', name: 'TafsirUi');
     box.write(_StorageConstants().radioValue, val);
-    if (val <= 4) {
+    if (val < translationsStartIndex) {
       isTafsir.value = true;
       box.write(_StorageConstants().isTafsir, true);
-      await closeAndInitializeDatabase(
-        pageNumber:
-            pageNumber ?? QuranCtrl.instance.state.currentPageNumber.value,
-      );
+      await closeAndReinitializeDatabase();
+      await fetchData(
+          pageNumber ?? QuranCtrl.instance.state.currentPageNumber.value);
     } else {
       isTafsir.value = false;
-      String langCode = _getLangCodeForRadio(val);
-      translationLangCode.value = langCode;
+      String langCode = tafsirAndTranslationsItems[val].bookName;
+      translationLangCode = langCode;
       await fetchTranslate();
       box.write(_StorageConstants().translationLangCode, langCode);
       box.write(_StorageConstants().isTafsir, false);
       tafseerList.clear(); // شرح: مسح قائمة التفسير عند اختيار الترجمة
     }
-    update(['change_tafsir', 'change_font_size']);
+    update(['tafsirs_menu_list', 'change_font_size']);
     // update(['ActualTafsirWidget']);
-  }
-
-  /// شرح: إرجاع كود اللغة المناسب حسب قيمة الراديو
-  /// Explanation: Get language code for radio value
-  String _getLangCodeForRadio(int val) {
-    switch (val) {
-      case 5:
-        return 'en';
-      case 6:
-        return 'es';
-      case 7:
-        return 'be';
-      case 8:
-        return 'urdu';
-      case 9:
-        return 'so';
-      case 10:
-        return 'in';
-      case 11:
-        return 'ku';
-      case 12:
-        return 'tr';
-      default:
-        return 'en';
-    }
   }
 
   /// شرح: إغلاق القاعدة وتهيئتها من جديد عند تغيير التفسير
   /// Explanation: Close and reinitialize DB when tafsir changes
-  Future<void> closeAndInitializeDatabase({int? pageNumber}) async {
+  Future<void> closeAndReinitializeDatabase() async {
+    _isDbInitialized = false;
     tafseerList.clear();
+    if (isCurrentATranslation) {
+      log('Selected item is traanslation item, skipping DB init.',
+          name: 'TafsirCtrl');
+      return;
+    }
+    if (isCurrentNotAsqlTafsir) {
+      log('Selected item is not a SQLite DB, skipping DB init.',
+          name: 'TafsirCtrl');
+      return;
+    }
+    if (isCurrentAcustomTafsir) {
+      log('Selected item is CustomTafsir item, skipping DB init.',
+          name: 'TafsirCtrl');
+      return;
+    }
     await closeCurrentDatabase();
     await initializeDatabase();
-    await fetchData(
-        pageNumber ?? QuranCtrl.instance.state.currentPageNumber.value);
-    log('Database initialized for: ${items[radioValue.value].databaseName}',
+
+    log('Database initialized for: ${tafsirAndTranslationsItems[radioValue.value].databaseName}',
         name: 'TafsirUi');
   }
 }

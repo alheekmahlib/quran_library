@@ -5,9 +5,19 @@ class TafsirCtrl extends GetxController {
   static TafsirCtrl get instance =>
       GetInstance().putOrFind(() => TafsirCtrl._privateConstructor());
 
-  RxList<TafsirTableData> tafseerList = <TafsirTableData>[].obs;
-  String? selectedDBName = 'saadiV3.db';
   Rx<TafsirDatabase?> database = Rx<TafsirDatabase?>(null);
+  RxList<TafsirTableData> tafseerList = <TafsirTableData>[].obs;
+
+  static const _defaultDownloadedDbName = 'saadiV4.db';
+  static const _defaultDownloadedTranslationLangCode = 'en';
+
+  String? selectedDBName = _defaultDownloadedDbName;
+  String translationLangCode = 'en';
+
+  int get translationsStartIndex =>
+      tafsirAndTranslationsItems.indexWhere((el) =>
+          el.isTranslation == true &&
+          el.bookName == _defaultDownloadedTranslationLangCode);
   // RxString selectedTableName = MufaserName.saadi.name.obs;
   RxInt radioValue = 3.obs;
   final box = GetStorage();
@@ -28,35 +38,29 @@ class TafsirCtrl extends GetxController {
   // var isSelected = (-1.0).obs;
   RxBool isTafsir = true.obs;
   RxList<TranslationModel> translationList = <TranslationModel>[].obs;
+  final List<TafsirNameModel> tafsirAndTranslationsItems = [];
   var isLoading = false.obs;
-  var translationLangCode = 'en'.obs;
 
-  late Directory _dir;
+  late Directory _appDir;
 
   /// شرح: متغير لحفظ اسم قاعدة البيانات الحالية
   /// Explanation: Variable to store the current database name
-  String? currentDbFileName;
+  String? _currentDbFileName;
 
   static const String _customTafsirsKey = 'custom_tafsirs_v1';
-  final List<TafsirNameModel> _items = [];
 
-  List<TafsirNameModel> get items => List.unmodifiable(_items);
-  List<TafsirNameModel> get customItems =>
-      List.unmodifiable(_items.where((e) => e.isCustom));
+  List<TafsirNameModel> get tafsirWithoutTranslationItems =>
+      tafsirAndTranslationsItems.where((t) => !t.isTranslation).toList();
+  List<TafsirNameModel> get translationsWithoutTafsirItems =>
+      tafsirAndTranslationsItems.where((t) => t.isTranslation).toList();
 
-  /// Add multiple custom tafsir models (they should already point to valid filePath)
-  Future<void> addCustomList(List<TafsirNameModel> models) async {
-    var added = false;
-    for (final m in models) {
-      final exists = _items.any((e) =>
-          e.isCustom && e.databaseName == m.databaseName && e.name == m.name);
-      if (!exists) {
-        _items.add(m);
-        added = true;
-      }
-    }
-    if (added) await _persistCustoms();
-  }
+  List<TafsirNameModel> get customTafsirAndTranslationsItems =>
+      tafsirAndTranslationsItems.where((e) => e.isCustom).toList();
+
+  List<TafsirNameModel> get customTafsirWithoutTranslationsItems =>
+      customTafsirAndTranslationsItems.where((e) => !e.isTranslation).toList();
+  List<TafsirNameModel> get customTranslationsItems =>
+      customTafsirAndTranslationsItems.where((e) => e.isTranslation).toList();
 
   Future<void> _loadPersistedCustoms() async {
     final raw = box.read(_customTafsirsKey);
@@ -65,107 +69,29 @@ class TafsirCtrl extends GetxController {
       final List<dynamic> arr = json.decode(raw) as List<dynamic>;
       for (final e in arr) {
         final Map<String, dynamic> m = Map<String, dynamic>.from(e);
-        final model = TafsirNameModel.fromJson(m);
+        final customTafsirEntry = CustomTafsirEntry.fromJson(m);
         // verify file exists for custom entries; if missing skip
-        if (model.isCustom) {
-          if (model.filePath == null) continue;
-          if (await File(model.filePath!).exists()) {
-            _items.add(model);
-          } else {
-            // optionally try to resolve by databaseName in app dir
-            final appDir = await getApplicationSupportDirectory();
-            final f = File(join(appDir.path, model.databaseName));
-            if (await f.exists()) {
-              final fixed = TafsirNameModel(
-                name: model.name,
-                bookName: model.bookName,
-                databaseName: model.databaseName,
-                isCustom: true,
-                type: model.type,
-                filePath: f.path,
-              );
-              _items.add(fixed);
-            }
-          }
-        }
+        tafsirAndTranslationsItems.add(customTafsirEntry.model);
+        customTafsirEntries.add(customTafsirEntry);
       }
     } catch (e) {
       if (kDebugMode) print('Failed to load custom tafsirs: $e');
     }
   }
 
-  Future<TafsirNameModel> addCustomFromFile({
-    required File sourceFile,
-    required String displayName,
-    required String bookName,
-    required TafsirFileType type,
-  }) async {
-    final appDir = await getApplicationSupportDirectory();
-    await appDir.create(recursive: true);
-    final ext = type == TafsirFileType.sqlite ? '.db' : '.json';
-    final filename = '${DateTime.now().millisecondsSinceEpoch}$ext';
-    final dest = File(join(appDir.path, filename));
-    await sourceFile.copy(dest.path);
-
-    final model = TafsirNameModel(
-      name: displayName,
-      bookName: bookName,
-      databaseName: filename,
-      isCustom: true,
-      type: type,
-      filePath: dest.path,
-    );
-
-    _items.add(model);
-    await _persistCustoms();
-    return model;
-  }
-
-  Future<TafsirNameModel> addCustomFromBytes({
-    required List<int> bytes,
-    required String displayName,
-    required String bookName,
-    required TafsirFileType type,
-    String? filenameHint,
-  }) async {
-    final appDir = await getApplicationSupportDirectory();
-    await appDir.create(recursive: true);
-    final ext = type == TafsirFileType.sqlite ? '.db' : '.json';
-    final filename = filenameHint != null
-        ? '${DateTime.now().millisecondsSinceEpoch}_$filenameHint$ext'
-        : '${DateTime.now().millisecondsSinceEpoch}$ext';
-    final dest = File(join(appDir.path, filename));
-    await dest.writeAsBytes(bytes);
-
-    final model = TafsirNameModel(
-      name: displayName,
-      bookName: bookName,
-      databaseName: filename,
-      isCustom: true,
-      type: type,
-      filePath: dest.path,
-    );
-
-    _items.add(model);
-    await _persistCustoms();
-    return model;
-  }
-
-  Future<void> removeCustom(TafsirNameModel model) async {
+  Future<void> removeCustomTafsir(TafsirNameModel model) async {
     if (!model.isCustom) return;
-    // remove file if exists
-    if (model.filePath != null) {
-      try {
-        final f = File(model.filePath!);
-        if (await f.exists()) await f.delete();
-      } catch (_) {}
-    } else {
+    if (model.type == TafsirFileType.sqlite && model.databaseName.isNotEmpty) {
       // try by databaseName inside app dir
-      final appDir = await getApplicationSupportDirectory();
-      final f = File(join(appDir.path, model.databaseName));
+
+      final f = File(join(_appDir.path, model.databaseName));
       if (await f.exists()) await f.delete();
     }
-    _items.removeWhere((e) =>
+    customTafsirEntries.removeWhere((e) =>
+        e.model.isCustom &&
+        e.model.databaseName == model.databaseName &&
+        e.model.name == model.name);
+    tafsirAndTranslationsItems.removeWhere((e) =>
         e.isCustom &&
         e.databaseName == model.databaseName &&
         e.name == model.name);
@@ -173,8 +99,14 @@ class TafsirCtrl extends GetxController {
   }
 
   Future<void> _persistCustoms() async {
-    final customOnly =
-        _items.where((e) => e.isCustom).map((e) => e.toJson()).toList();
+    final customOnly = tafsirAndTranslationsItems
+        .where((e) => e.isCustom)
+        .map((e) => customTafsirEntries
+            .firstWhereOrNull((c) =>
+                c.model.name == e.name ||
+                c.model.databaseName == e.databaseName)
+            ?.toJson())
+        .toList();
     await box.write(_customTafsirsKey, json.encode(customOnly));
   }
 
@@ -183,9 +115,9 @@ class TafsirCtrl extends GetxController {
   @override
   Future<void> onInit() async {
     // start from defaults
-    _dir = await getApplicationDocumentsDirectory();
-    _items.clear();
-    _items.addAll(defaultTafsirList);
+    _appDir = await getApplicationSupportDirectory();
+    tafsirAndTranslationsItems.clear();
+    tafsirAndTranslationsItems.addAll(_defaultTafsirList);
     if (!_isTafsirInitialized) {
       await initTafsir();
     }
@@ -193,20 +125,29 @@ class TafsirCtrl extends GetxController {
     super.onInit();
   }
 
+  bool _isDbInitialized = false;
+
   /// شرح: تهيئة التفسير مع التأكد من عدم تكرار إنشاء قاعدة البيانات
   /// Explanation: Initialize tafsir and avoid redundant DB creation
   Future<void> initTafsir() async {
-    initializeTafsirDownloadStatus();
-    await loadTafseer();
+    if (_isTafsirInitialized) {
+      log('TafsirCtrl already initialized, skipping.', name: 'TafsirCtrl');
+      return;
+    }
+    _initializeTafsirDownloadStatus();
+    await _loadSelectedDefaultTafseer();
     await initializeDatabase();
     _isTafsirInitialized = true;
     log('TafsirCtrl initialized.', name: 'TafsirCtrl');
   }
 
-  Future<void> loadTafseer() async {
+  Future<void> _loadSelectedDefaultTafseer() async {
     isTafsir.value = box.read(_StorageConstants().isTafsir) ?? true;
-    radioValue.value = box.read(_StorageConstants().radioValue) ?? 3;
-    translationLangCode.value =
+    radioValue.value = box.read(_StorageConstants().radioValue) ??
+        tafsirAndTranslationsItems.indexWhere(
+          (el) => el.databaseName == _defaultDownloadedDbName,
+        );
+    translationLangCode =
         box.read(_StorageConstants().translationLangCode) ?? 'en';
     TafsirCtrl.instance.fontSizeArabic.value =
         box.read(_StorageConstants().fontSize) ?? 20.0;
@@ -216,15 +157,27 @@ class TafsirCtrl extends GetxController {
   /// Explanation: Only initialize DB if name changed
   Future<void> initializeDatabase() async {
     // guard index
-    final idx = (radioValue.value >= 0 && radioValue.value < items.length)
+    final idx = (radioValue.value >= 0 &&
+            radioValue.value < tafsirAndTranslationsItems.length)
         ? radioValue.value
         : 0;
-    String dbName = items[idx].databaseName;
-    if (database.value == null || currentDbFileName != dbName) {
+    if (isCurrentATranslation) {
+      log('Selected item is a translation, skipping DB init.',
+          name: 'TafsirCtrl');
+      return;
+    }
+    if (isCurrentNotAsqlTafsir) {
+      log('Selected item is not a SQLite DB, skipping DB init.',
+          name: 'TafsirCtrl');
+      return;
+    }
+    String dbName = tafsirWithoutTranslationItems[idx].databaseName;
+    if (database.value == null || _currentDbFileName != dbName) {
       await database.value?.close();
       database.value = TafsirDatabase(dbName);
-      currentDbFileName = dbName;
+      _currentDbFileName = dbName;
       log('Database object created.', name: 'TafsirCtrl');
+      _isDbInitialized = true;
     }
     log('Database initialized.', name: 'TafsirCtrl');
   }
@@ -241,8 +194,30 @@ class TafsirCtrl extends GetxController {
   /// شرح: جلب بيانات التفسير للصفحة المطلوبة
   /// Explanation: Fetch tafsir data for the requested page
   Future<void> fetchData(int pageNum) async {
-    await initializeDatabase();
+    // await initializeDatabase();
+    if (!_isDbInitialized) {
+      await initializeDatabase();
+    }
     try {
+      if (isCurrentAcustomTafsir) {
+        final customEntry = customTafsirEntries.firstWhereOrNull((e) =>
+            e.model.databaseName ==
+                customTafsirAndTranslationsItems[radioValue.value]
+                    .databaseName &&
+            e.model.name ==
+                customTafsirAndTranslationsItems[radioValue.value].name);
+        if (customEntry != null) {
+          final items = customEntry.items
+              .where((e) => e.pageNum == pageNum)
+              .toList(growable: false);
+          tafseerList.assignAll(items);
+          log('Loaded ${items.length} entries from custom tafsir.',
+              name: 'TafsirCtrl');
+        } else {
+          log('Custom tafsir entry not found.', name: 'TafsirCtrl');
+        }
+        return;
+      }
       final List<TafsirTableData> tafsir =
           await database.value!.getTafsirByPage(pageNum);
       log('Fetched tafsir: [32m${tafsir.length} entries', name: 'TafsirCtrl');
@@ -265,6 +240,24 @@ class TafsirCtrl extends GetxController {
     if (database.value == null) {
       throw Exception('Database not initialized');
     }
+    if (isCurrentAcustomTafsir) {
+      final customEntry = customTafsirEntries.firstWhereOrNull((e) =>
+          e.model.databaseName ==
+              customTafsirAndTranslationsItems[radioValue.value].databaseName &&
+          e.model.name ==
+              customTafsirAndTranslationsItems[radioValue.value].name);
+      if (customEntry != null) {
+        final items = customEntry.items
+            .where((e) => e.pageNum == pageNum)
+            .toList(growable: false);
+        log('Loaded ${items.length} entries from custom tafsir.',
+            name: 'TafsirCtrl');
+        return items;
+      } else {
+        log('Custom tafsir entry not found.', name: 'TafsirCtrl');
+        return [];
+      }
+    }
     return await database.value!
         .getTafsirByPage(pageNum, databaseName: databaseName);
   }
@@ -277,6 +270,25 @@ class TafsirCtrl extends GetxController {
     if (database.value == null) {
       throw Exception('Database not initialized');
     }
+    if (isCurrentAcustomTafsir) {
+      final customEntry = customTafsirEntries.firstWhereOrNull((e) =>
+          e.model.databaseName ==
+              customTafsirAndTranslationsItems[radioValue.value].databaseName &&
+          e.model.name ==
+              customTafsirAndTranslationsItems[radioValue.value].name);
+      if (customEntry != null) {
+        final items = customEntry.items
+            .where((e) => customEntry.ayahUnqNum(e.ayahNum) == ayahUQNumber)
+            .toList(growable: false);
+        log('Loaded ${items.length} entries from custom tafsir.',
+            name: 'TafsirCtrl');
+        return items;
+      } else {
+        log('Custom tafsir entry not found.', name: 'TafsirCtrl');
+        return [];
+      }
+    }
+
     return await database.value!
         .getTafsirByAyah(ayahUQNumber, databaseName: databaseName);
   }
@@ -285,12 +297,12 @@ class TafsirCtrl extends GetxController {
   /// Explanation: Fetch translation
   Future<void> fetchTranslate() async {
     try {
-      String path = radioValue.value == 5
+      String path = radioValue.value == translationsStartIndex
           ? 'packages/quran_library/assets/en.json'
-          : join(_dir.path, '${translationLangCode.value}.json');
+          : join(_appDir.path, '$translationLangCode.json');
       isLoading.value = true;
       String jsonString;
-      if (radioValue.value == 5) {
+      if (radioValue.value == translationsStartIndex) {
         jsonString = await rootBundle
             .loadString('packages/quran_library/assets/en.json');
       } else {
@@ -309,7 +321,7 @@ class TafsirCtrl extends GetxController {
     } finally {
       isLoading.value = false;
     }
-    update(['change_tafsir']);
+    update(['tafsirs_menu_list']);
   }
 
   /// ------------[DownloadMethods]------------
@@ -318,47 +330,41 @@ class TafsirCtrl extends GetxController {
   Future<void> tafsirDownload(int i) async {
     String path;
     String fileUrl;
-    final idx = (i >= 0 && i < items.length) ? i : 0;
-    final selected = items[idx];
+    final idx = (i >= 0 && i < tafsirAndTranslationsItems.length) ? i : 0;
+    final selected = tafsirAndTranslationsItems[idx];
     if (isTafsir.value) {
-      path = join(_dir.path, selected.databaseName);
+      path = join(_appDir.path, selected.databaseName);
       fileUrl =
           'https://github.com/alheekmahlib/Islamic_database/raw/refs/heads/main/tafseer_database/${selected.databaseName}';
     } else {
-      path = join(_dir.path, '${selected.bookName}.json');
+      path = join(_appDir.path, '${selected.bookName}.json');
       fileUrl =
           'https://github.com/alheekmahlib/Islamic_database/raw/refs/heads/main/quran_database/translate/${selected.bookName}.json';
     }
     if (!onDownloading.value) {
-      update(['change_tafsir']);
+      update(['tafsirs_menu_list']);
       await downloadFile(path, fileUrl).then((_) async {
-        onDownloadSuccess(i);
-        await saveTafsirDownloadIndex(i);
-        await loadTafsirDownloadIndices();
-        if (isTafsir.value) {
-          await handleRadioValueChanged(i);
-          await fetchData(QuranCtrl.instance.state.currentPageNumber.value + 1);
-        } else {
-          await handleRadioValueChanged(i);
-          await fetchTranslate();
-        }
+        _onDownloadSuccess(i);
+        await _saveTafsirDownloadIndex(i);
+        await _loadTafsirDownloadIndices();
+        await handleRadioValueChanged(i);
       });
       log('Downloading from URL: $fileUrl', name: 'TafsirCtrl');
     }
-    update(['change_tafsir']);
+    update(['tafsirs_menu_list']);
   }
 
   /// شرح: تهيئة حالة تحميل التفسير
   /// Explanation: Initialize tafsir download status
-  void initializeTafsirDownloadStatus() async {
-    Map<int, bool> initialStatus = await checkAllTafsirDownloaded();
+  void _initializeTafsirDownloadStatus() async {
+    Map<int, bool> initialStatus = await _checkAllTafsirDownloaded();
     tafsirDownloadStatus.value = initialStatus;
-    await loadTafsirDownloadIndices();
+    await _loadTafsirDownloadIndices();
   }
 
   /// شرح: تحديث حالة التحميل
   /// Explanation: Update download status
-  void updateDownloadStatus(int tafsirNumber, bool downloaded) {
+  void _updateDownloadStatus(int tafsirNumber, bool downloaded) {
     final newStatus = Map<int, bool>.from(tafsirDownloadStatus.value);
     newStatus[tafsirNumber] = downloaded;
     tafsirDownloadStatus.value = newStatus;
@@ -366,16 +372,16 @@ class TafsirCtrl extends GetxController {
 
   /// شرح: عند نجاح التحميل
   /// Explanation: On download success
-  void onDownloadSuccess(int tafsirNumber) {
-    updateDownloadStatus(tafsirNumber, true);
+  void _onDownloadSuccess(int tafsirNumber) {
+    _updateDownloadStatus(tafsirNumber, true);
   }
 
   /// شرح: فحص جميع ملفات التفسير
   /// Explanation: Check all tafsir files
-  Future<Map<int, bool>> checkAllTafsirDownloaded() async {
-    for (int i = 0; i < items.length; i++) {
-      final dbName = items[i].databaseName;
-      String filePath = '${_dir.path}/$dbName';
+  Future<Map<int, bool>> _checkAllTafsirDownloaded() async {
+    for (int i = 0; i < tafsirAndTranslationsItems.length; i++) {
+      final dbName = tafsirAndTranslationsItems[i].databaseName;
+      String filePath = '${_appDir.path}/$dbName';
       File file = File(filePath);
       tafsirDownloadStatus.value[i] = await file.exists();
     }
@@ -384,8 +390,14 @@ class TafsirCtrl extends GetxController {
 
   /// شرح: حفظ أرقام التفسير المحملة
   /// Explanation: Save downloaded tafsir indices
-  Future<void> saveTafsirDownloadIndex(int tafsirNumber) async {
-    List<dynamic> savedIndices = box.read('tafsirDownloadIndices') ?? [3, 5];
+  Future<void> _saveTafsirDownloadIndex(int tafsirNumber) async {
+    List<dynamic> savedIndices = box.read('tafsirDownloadIndices') ??
+        [
+          tafsirAndTranslationsItems.indexWhere(
+                  (t) => t.databaseName == _defaultDownloadedDbName) +
+              1,
+          translationsStartIndex
+        ];
     if (!savedIndices.contains(tafsirNumber)) {
       savedIndices.add(tafsirNumber);
       await box.write('tafsirDownloadIndices', savedIndices);
@@ -394,69 +406,24 @@ class TafsirCtrl extends GetxController {
 
   /// شرح: تحميل أرقام التفسير المحملة
   /// Explanation: Load downloaded tafsir indices
-  Future<void> loadTafsirDownloadIndices() async {
+  Future<void> _loadTafsirDownloadIndices() async {
     var rawList = box.read('tafsirDownloadIndices');
     List<int> savedIndices =
         rawList is List ? rawList.map((e) => e as int).toList() : [3, 5];
     tafsirDownloadIndexList.value = savedIndices;
   }
 
-  RxList<CustomTafsirEntry> customTafsirEntries = <CustomTafsirEntry>[].obs;
-
-  Future<void> buildCustomTafsirEntries({int previewPage = 1}) async {
-    customTafsirEntries.clear();
-    final appDir = await getApplicationSupportDirectory();
-    for (final model in customItems) {
-      try {
-        List<TafsirTableData> loadedItems = [];
-        if (model.type == TafsirFileType.sqlite) {
-          // Try filePath first, then app dir + databaseName
-          final dbPath =
-              model.filePath ?? join(appDir.path, model.databaseName);
-          // create a temporary db instance to read preview (TafsirDatabase must accept path/name)
-          final tmpDb = TafsirDatabase(dbPath);
-          try {
-            loadedItems = await tmpDb.getTafsirByPage(previewPage);
-            // If you want to tag each TafsirTableData with the source name, do so here
-            // (depends on TafsirTableData fields — if it has a `source` or `tafsirName` field set it)
-          } finally {
-            await tmpDb.close();
-          }
-        } else if (model.type == TafsirFileType.json) {
-          // JSON: read file and convert to TafsirTableData - requires mapping details
-          final jsonPath =
-              model.filePath ?? join(appDir.path, model.databaseName);
-          final f = File(jsonPath);
-          if (await f.exists()) {
-            final content = await f.readAsString();
-            final decoded = json.decode(content);
-            // TODO: map `decoded` to List<TafsirTableData>
-            // loadedItems = mapJsonToTafsirTableData(decoded);
-          }
-        }
-        customTafsirEntries.add(CustomTafsirEntry(
-          name: model.name,
-          model: model,
-          items: loadedItems,
-        ));
-      } catch (e) {
-        if (kDebugMode) print('Failed to load preview for ${model.name}: $e');
-        customTafsirEntries
-            .add(CustomTafsirEntry(name: model.name, model: model, items: []));
-      }
-    }
-    update(['change_tafsir']);
-  }
+  List<CustomTafsirEntry> customTafsirEntries = [];
 
   /// Add CustomTafsirEntry objects (persist models and register entries)
-  Future<void> addCustomEntries(List<CustomTafsirEntry> entries) async {
+  Future<void> addCustomTafsirEntries(List<CustomTafsirEntry> entries) async {
     var added = false;
     for (final entry in entries) {
       final m = entry.model;
-      final exists = _items.any((e) =>
+      final exists = tafsirAndTranslationsItems.any((e) =>
           e.isCustom && e.databaseName == m.databaseName && e.name == m.name);
       if (!exists) {
-        _items.add(m);
+        tafsirAndTranslationsItems.add(m);
         added = true;
       }
     }
@@ -468,7 +435,7 @@ class TafsirCtrl extends GetxController {
           e.name == entry.name);
       if (!already) customTafsirEntries.add(entry);
     }
-    update(['change_tafsir']);
+    update(['tafsirs_menu_list']);
   }
 }
 
@@ -476,10 +443,31 @@ class CustomTafsirEntry {
   final String name;
   final TafsirNameModel model;
   final List<TafsirTableData> items;
+  final int prevSurhasLastAyahUnqNum;
+  int ayahUnqNum(int ayahNum) => prevSurhasLastAyahUnqNum + ayahNum;
 
-  CustomTafsirEntry({
+  const CustomTafsirEntry({
     required this.name,
     required this.model,
     required this.items,
+    required this.prevSurhasLastAyahUnqNum,
   });
+
+  factory CustomTafsirEntry.fromJson(Map<String, dynamic> j) =>
+      CustomTafsirEntry(
+        name: j['name'] as String,
+        model: TafsirNameModel.fromJson(
+            Map<String, dynamic>.from(j['model'] as Map)),
+        items: (j['items'] as List)
+            .map((e) => TafsirTableData.fromJson(Map<String, dynamic>.from(e)))
+            .toList(),
+        prevSurhasLastAyahUnqNum: j['prevSurhasLastAyahUnqNum'] as int,
+      );
+
+  Map<String, dynamic> toJson() => {
+        'name': name,
+        'model': model.toJson(),
+        'items': items.map((e) => e.toJson()).toList(),
+        'prevSurhasLastAyahUnqNum': prevSurhasLastAyahUnqNum,
+      };
 }

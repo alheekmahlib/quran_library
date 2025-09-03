@@ -5,6 +5,8 @@ import 'dart:io' show File, Directory;
 import 'package:dio/dio.dart';
 import 'package:drift/drift.dart' as drift;
 import 'package:drift/native.dart' show NativeDatabase;
+import 'package:drift/src/runtime/api/runtime_api.dart'
+    show InternalConnectionUserApi;
 import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'

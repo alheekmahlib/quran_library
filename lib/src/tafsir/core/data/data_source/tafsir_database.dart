@@ -50,13 +50,15 @@ drift.LazyDatabase _openConnection(String dbFileName) {
     log('Inside LazyDatabase for: $dbFileName');
     final dbFolder = await getApplicationDocumentsDirectory();
     log('Application documents directory: ${dbFolder.path}');
-
+    final selectedDefaultTafsir = TafsirCtrl.instance.radioValue.value ==
+        TafsirCtrl.instance._defaultTafsirIndex;
+    if (selectedDefaultTafsir) {}
     final file = File(join(dbFolder.path, dbFileName));
 
     if (!await file.exists()) {
       log('Database file does not exist, copying from assets');
       try {
-        ByteData data = TafsirCtrl.instance.radioValue.value == 3
+        ByteData data = selectedDefaultTafsir
             ? await rootBundle.load('packages/quran_library/assets/$dbFileName')
             : await rootBundle.load(join(dbFolder.path, dbFileName));
         List<int> bytes =

@@ -437,6 +437,17 @@ extension QuranGetters on QuranCtrl {
           1 ==
       surahNum;
 
+  /// Retrieves the unique Ayah number for a specific Ayah on a given page.
+  int getAyahUnqNumberByPageAndIndex(int page, int index) =>
+      state.pages[page - 1][index].ayahUQNumber;
+
+  /// Retrieves the unique Ayah number for a specific Ayah given its Surah and Ayah numbers.
+  int getAyahUnqNumberBySurahAndAyahNumber(int surahNumber, int ayahNumber) =>
+      state.allAyahs
+          .firstWhere(
+              (a) => a.surahNumber == surahNumber && a.ayahNumber == ayahNumber)
+          .ayahUQNumber;
+
   /// Checks if the current Juz number matches the specified Juz number.
   ///
   /// This method compares the Juz number of the current page with the given Juz number.

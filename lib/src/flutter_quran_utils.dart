@@ -38,7 +38,6 @@ class QuranLibrary {
     /// Initialize SurahAudioController
     QuranCtrl.instance;
     await _initTafsir();
-    AudioCtrl.instance;
 
     quranCtrl.state.isDownloadedV2Fonts.value =
         storage.read(storageConstants.isDownloadedCodeV2Fonts) ?? false;
@@ -62,7 +61,11 @@ class QuranLibrary {
         }
       }),
     ];
+
     await Future.wait<void>(futures);
+
+    /// must be initilized after QuranCtrl, because it uses it
+    AudioCtrl.instance;
 
     // Initialize bookmarks
     BookmarksCtrl.instance.initBookmarks(

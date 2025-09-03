@@ -37,7 +37,7 @@ extension TafsirUi on TafsirCtrl {
       box.write(_StorageConstants().isTafsir, false);
       tafseerList.clear(); // شرح: مسح قائمة التفسير عند اختيار الترجمة
     }
-    update(['tafsirs_menu_list', 'change_font_size']);
+    update(['tafsirs_menu_list', 'change_font_size', 'actualTafsirContent']);
     // update(['ActualTafsirWidget']);
   }
 

@@ -1,3 +1,7 @@
+## 2.0.6+4
+
+* **ability to add Custom Tafsirs**
+
 ## 2.0.1
 
 * **Fixed some issues**

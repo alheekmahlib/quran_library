@@ -1,3 +1,110 @@
+## 2.0.6+4
+
+* **ability to add Custom Tafsirs**
+
+## 2.0.1
+
+* **Fixed some issues**
+
+## 2.0.0
+
+* **Add comprehensive audio playback system for Quran recitation**
+* **Implement verse-by-verse audio playback with navigation controls**
+* **Add complete surah audio playback functionality**
+* **Implement background audio playback support for Android and iOS**
+* **Add audio download management for offline playback**
+* **Implement resume functionality to continue from last position**
+* **Add position tracking and time formatting utilities**
+* **Implement seek controls for next/previous ayah and surah navigation**
+* **Add comprehensive audio example with complete UI controls**
+* **Enhance documentation with detailed Arabic and English comments**
+* **Add interactive table of contents to README**
+* **Improve code documentation with extensive function explanations**
+* **Add audio features summary with all capabilities listed**
+* **Implement proper permissions handling for audio playback**
+
+## 1.3.2
+
+*   **Fix Surah serach method**
+*   **Add Surah serach result**
+*   **View two pages instead of one page, for the desktop**
+
+## 1.3.1
+
+*   **Fix page number**
+
+## 1.3.0
+
+*   **Restructure `lib` folder**
+*   **Improvements to `quran.dart`**
+*   **Improvements to GetX usage**
+*   **Improvements to Extensions**
+*   **Improve handling of assets and fonts**
+*   **Apply SOLID principles**
+*   **Add documentation comments**
+*   **Fix Ayah menu dialog**
+
+## 1.2.7
+
+* **Add SurahDisplayScreen widget for displaying individual surahs with custom pagination**
+* **Implement dynamic line height calculation for better text distribution**
+* **Fix Sajda (prostration) display in surah-only mode**
+* **Add enhanced pagination logic for first/last pages in surah display**
+* **Improve error handling for RangeError in page access**
+
+## 1.2.6
+
+* **Fix the problem of showing the Tafsir**
+
+## 1.0.3
+
+* **Fix the problem of showing the Tafsir**
+* **Fix PageView viewport Fraction**
+
+## 1.0.2
+
+* **Remove GlobalKey**
+* **Fix issue #14 RenderFlex overflowed**
+
+## 1.0.1
+
+* **Fix pub points.**
+
+## 1.0.0
+
+* **First major release.**
+* **Fix some UI.**
+
+## 0.1.11
+
+* **Merge AyahFontModel with AyahModel.**
+* **Fix the issue of opening Tafsir database multiple times.**
+* **Fix dark mode.**
+* **Fix some UI.**
+
+## 0.1.9
+
+* **BREAKING FIX: Fix the problem for MaterialApp.**
+* **fix showing tafsir.**
+
+## 0.1.8
+
+* **add showing tafsir.**
+* **fix README.**
+
+## 0.1.7
+
+* **fix Ayah 7 in Surah Ibrahim.**
+* **fix Ayah 12 in Surah Fatir.**
+
+## 0.1.6
+
+* **fix get surah art path.**
+
+## 0.1.5
+
+* **Add get surah art path.**
+
 ## 0.1.4
 
 * **Add Tafsir & Translations.**
@@ -67,5 +174,3 @@
 ## 0.0.1
 
 * **First and early version of the package.**
-
-

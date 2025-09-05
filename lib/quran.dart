@@ -26,9 +26,9 @@ import 'src/tafsir/tafsir.dart';
 part 'src/audio/widgets/slider/bottom_slider.dart';
 part 'src/audio/widgets/slider/controller/slider_controller.dart';
 part 'src/flutter_quran_utils.dart';
+part 'src/quran/core/extensions/context_extensions.dart';
 part 'src/quran/core/extensions/convert_arabic_to_english_numbers_extension.dart';
 part 'src/quran/core/extensions/convert_number_extension.dart';
-part 'src/quran/core/extensions/context_extensions.dart';
 part 'src/quran/core/extensions/font_size_extension.dart';
 part 'src/quran/core/extensions/fonts_download_widget.dart';
 part 'src/quran/core/extensions/fonts_extension.dart';
@@ -80,7 +80,6 @@ part 'src/quran/presentation/widgets/top_bottom_widget/build_bottom_section.dart
 part 'src/quran/presentation/widgets/top_bottom_widget/build_top_section.dart';
 part 'src/quran/presentation/widgets/top_bottom_widget/top_and_bottom_widget.dart';
 
-
 /// A comprehensive library for displaying the Holy Quran in Flutter applications.
 ///
 /// This library provides a set of widgets, controllers, and data models to facilitate
@@ -99,8 +98,3 @@ part 'src/quran/presentation/widgets/top_bottom_widget/top_and_bottom_widget.dar
 ///
 /// To use this library, import `package:quran_library/quran_library.dart` and utilize
 /// the provided classes and functions. Ensure that all required assets (fonts, JSONs, DB) are correctly configured in `pubspec.yaml`.
-
-
-
-
-

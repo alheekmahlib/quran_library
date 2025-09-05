@@ -65,7 +65,7 @@ In the `pubspec.yaml` of your flutter project, add the following dependency:
 ```yaml
 dependencies:
   ...
-  quran_library: ^2.0.0
+  quran_library: ^2.0.7+5
 ```
 
 

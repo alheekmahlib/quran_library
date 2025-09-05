@@ -1,3 +1,9 @@
+## 2.0.7+5
+
+* **Remove deprecated PluginRegistry import and registerWith method**
+* **Update to use only Android embedding v2 (FlutterPlugin)**
+* **Fixes compilation error on newer Flutter versions**
+
 ## 2.0.6+4
 
 * **ability to add Custom Tafsirs**

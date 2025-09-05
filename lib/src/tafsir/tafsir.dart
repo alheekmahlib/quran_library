@@ -5,8 +5,8 @@ import 'dart:io' show File, Directory;
 import 'package:dio/dio.dart';
 import 'package:drift/drift.dart' as drift;
 import 'package:drift/native.dart' show NativeDatabase;
-import 'package:drift/src/runtime/api/runtime_api.dart'
-    show InternalConnectionUserApi;
+// ignore: implementation_imports
+import 'package:drift/src/runtime/api/runtime_api.dart';
 import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'
@@ -15,7 +15,6 @@ import 'package:get/get.dart' hide Response;
 import 'package:get_storage/get_storage.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
-// import 'package:quran_library/quran.dart';
 import 'package:quran_library/quran.dart'
     show
         ToastUtils,

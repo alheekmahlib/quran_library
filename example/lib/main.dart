@@ -37,6 +37,7 @@ class _MyAppState extends State<MyApp> {
       ),
       home: Scaffold(
         // body: SurahDisplayScreen(
+        //   parentContext: context,
         //   surahNumber: 18,
         //   isDark: false,
         //   languageCode: 'ar',

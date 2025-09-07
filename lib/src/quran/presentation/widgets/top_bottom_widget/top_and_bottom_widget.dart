@@ -48,6 +48,8 @@ class TopAndBottomWidget extends StatelessWidget {
               juzName: juzName,
               surahName: surahName,
               pageIndex: pageIndex,
+              topTitleChild: topTitleChild,
+              isSurah: isSurah!,
             ),
           ),
 
@@ -87,6 +89,8 @@ class TopAndBottomWidget extends StatelessWidget {
                   juzName: juzName,
                   surahName: surahName,
                   pageIndex: pageIndex,
+                  topTitleChild: topTitleChild,
+                  isSurah: isSurah!,
                 ),
                 Flexible(
                   child: child,
@@ -107,6 +111,8 @@ class TopAndBottomWidget extends StatelessWidget {
                     juzName: juzName,
                     surahName: surahName,
                     pageIndex: pageIndex,
+                    topTitleChild: topTitleChild,
+                    isSurah: isSurah!,
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 40.0),

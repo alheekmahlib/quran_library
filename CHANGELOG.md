@@ -1,3 +1,7 @@
+## 2.0.8+6
+
+* **add top title child**
+
 ## 2.0.7+5
 
 * **Remove deprecated PluginRegistry import and registerWith method**

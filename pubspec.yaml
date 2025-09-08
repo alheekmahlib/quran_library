@@ -1,7 +1,7 @@
 name: quran_library
 description: "An integrated package for displaying the Holy Qur’an identical to
   the Medina Quran with the narration of Hafs on the authority of Asim."
-version: 2.0.8+6
+version: 2.0.9+7
 homepage: https://github.com/alheekmahlib/quran_library
 documentation: https://alheekmahlib.github.io/quran_library_web/
 

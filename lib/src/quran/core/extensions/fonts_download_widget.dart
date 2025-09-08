@@ -119,21 +119,37 @@ extension FontsDownloadWidgetExtension on QuranCtrl {
                                           Colors.blue,
                                     ),
                                   )
-                                : IconButton(
-                                    onPressed: () async {
-                                      quranCtrl.state.isDownloadedV2Fonts.value
-                                          ? await quranCtrl.deleteFonts()
-                                          : quranCtrl.state.isDownloadingFonts
-                                                      .value ||
-                                                  quranCtrl.state
-                                                      .isPreparingDownload.value
-                                              ? null
-                                              : await quranCtrl
-                                                  .downloadAllFontsZipFile(i);
-                                      log('fontIndex: $i');
-                                    },
-                                    icon:
-                                        downloadFontsDialogStyle?.iconWidget ??
+                                : state.isPreparingDownload.value ||
+                                        state.isDownloadingFonts.value
+                                    ? SizedBox(
+                                        width: 24,
+                                        height: 24,
+                                        child: CircularProgressIndicator(
+                                          color: downloadFontsDialogStyle
+                                                  ?.linearProgressColor ??
+                                              Colors.blue,
+                                        ))
+                                    : IconButton(
+                                        onPressed: () async {
+                                          quranCtrl.state.isDownloadedV2Fonts
+                                                  .value
+                                              ? await quranCtrl.deleteFonts()
+                                              : quranCtrl
+                                                          .state
+                                                          .isDownloadingFonts
+                                                          .value ||
+                                                      quranCtrl
+                                                          .state
+                                                          .isPreparingDownload
+                                                          .value
+                                                  ? null
+                                                  : await quranCtrl
+                                                      .downloadAllFontsZipFile(
+                                                          i);
+                                          log('fontIndex: $i');
+                                        },
+                                        icon: downloadFontsDialogStyle
+                                                ?.iconWidget ??
                                             Icon(
                                               quranCtrl.state
                                                       .isDownloadedV2Fonts.value
@@ -145,7 +161,7 @@ extension FontsDownloadWidgetExtension on QuranCtrl {
                                               size: downloadFontsDialogStyle
                                                   ?.iconSize,
                                             ),
-                                  )),
+                                      )),
                     title: Text(
                       titleList[i],
                       style: downloadFontsDialogStyle?.fontNameStyle ??

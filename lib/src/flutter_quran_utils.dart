@@ -419,7 +419,9 @@ class QuranLibrary {
   /// لمعرفة ما إذا كانت الخطوط قيد التحميل، ما عليك سوى إستدعاء [isPreparingDownloadFonts]
   ///
   /// To find out whether fonts are being downloaded, just call [isPreparingDownloadFonts]
-  bool get isPreparingDownloadFonts => quranCtrl.isPreparingDownloadFonts;
+  bool get isPreparingDownloadFonts =>
+      quranCtrl.state.isPreparingDownload.value ||
+      quranCtrl.state.isDownloadingFonts.value;
 
   /// لتبديل نوع الخط مع تحميله إذا لم يكن محملاً من قبل
   /// هذه الدالة تلقائيًا ستقوم بتحميل الخط إذا كان غير متوفر ثم تعيينه

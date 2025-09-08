@@ -1,3 +1,7 @@
+## 2.0.9+7
+
+* **Fix first two Surahs font size**
+
 ## 2.0.8+6
 
 * **add top title child**

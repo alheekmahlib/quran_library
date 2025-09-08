@@ -64,8 +64,7 @@ class DefaultFirstTwoSurahs extends StatelessWidget {
               MediaQuery.sizeOf(context).width * .16,
               MediaQuery.sizeOf(context).height * .01,
               context),
-          horizontal: UiHelper.currentOrientation(
-              MediaQuery.sizeOf(context).width * .12, 0.0, context)),
+          horizontal: UiHelper.currentOrientation(0.0, 0.0, context)),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [

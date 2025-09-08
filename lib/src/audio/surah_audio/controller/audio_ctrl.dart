@@ -10,7 +10,15 @@ class AudioCtrl extends GetxController {
 
   @override
   Future<void> onInit() async {
-    initializeSurahDownloadStatus();
+    loadSurahReader();
+    loadAyahReader();
+    await initializeSurahDownloadStatus();
+    // التحقق من عدم وجود مشغل صوت نشط آخر / Check if no other audio service is active
+    if (SurahState.isAudioServiceActive) {
+      log('Audio service already active, skipping initialization',
+          name: 'AudioCtrl');
+      return;
+    }
     QuranCtrl.instance;
     state._dir ??= await getApplicationDocumentsDirectory();
     await Future.wait([
@@ -29,8 +37,6 @@ class AudioCtrl extends GetxController {
       );
     });
     state.selectedSurahIndex.value = 0;
-    loadSurahReader();
-    loadAyahReader();
 
     state.audioServiceInitialized.value =
         state.box.read(StorageConstants.audioServiceInitialized) ?? false;
@@ -55,19 +61,29 @@ class AudioCtrl extends GetxController {
     //     .then((_) => jumpToSurah(state.currentAudioListSurahNum.value - 1));
 
     // Listen to player state changes to play the next Surah automatically
-    state.audioPlayer.playerStateStream.listen((playerState) async {
+    // استخدام subscription واحد فقط / Use only one subscription
+    state._playerStateSubscription =
+        state.audioPlayer.playerStateStream.listen((playerState) async {
       if (playerState.processingState == ProcessingState.completed &&
-          state.isPlayingSurahsMode) {
+          !state.isPlayingSurahsMode) {
         await playNextSurah();
       }
     });
+
+    // تسجيل الخدمة كنشطة / Register service as active
+    SurahState.setAudioServiceActive(true);
     sheetState();
   }
 
   @override
   void onClose() {
+    // إيقاف جميع المشغلات والاشتراكات / Stop all players and subscriptions
+    state.cancelAllSubscriptions();
     state.audioPlayer.pause();
     state.audioPlayer.dispose();
+
+    // إلغاء تسجيل الخدمة / Unregister service
+    SurahState.setAudioServiceActive(false);
     super.onClose();
   }
 
@@ -88,6 +104,9 @@ class AudioCtrl extends GetxController {
   /// -------- [DownloadingMethods] ----------
 
   Future<void> downloadSurah({int? surahNum}) async {
+    // إيقاف أي صوت نشط أولاً / Stop any active audio first
+    await state.stopAllAudio();
+
     if (surahNum != null) {
       state.selectedSurahIndex.value = (surahNum - 1);
     }
@@ -132,11 +151,7 @@ class AudioCtrl extends GetxController {
         }
       }
     }
-    state.audioPlayer.playerStateStream.listen((playerState) async {
-      if (playerState.processingState == ProcessingState.completed) {
-        await playNextSurah();
-      }
-    });
+    // إزالة إنشاء listener جديد هنا لتجنب التداخل / Remove creating new listener here to avoid conflicts
   }
 
   Future<String> _downloadFileIfNotExist(String url, String fileName,
@@ -261,7 +276,7 @@ class AudioCtrl extends GetxController {
     }
   }
 
-  void initializeSurahDownloadStatus() async {
+  Future<void> initializeSurahDownloadStatus() async {
     Map<int, bool> initialStatus = await checkAllSurahsDownloaded();
     state.surahDownloadStatus.value = initialStatus;
   }
@@ -297,7 +312,7 @@ class AudioCtrl extends GetxController {
   Future<void> startDownload({int? surahNumber}) async {
     // إزالة BuildContext تماماً وجعل الدالة تستخدم Get.context داخلياً
     // Remove BuildContext completely and let the function use Get.context internally
-    await state.audioPlayer.pause();
+    await state.stopAllAudio();
     await downloadSurah(surahNum: surahNumber);
   }
 
@@ -347,6 +362,50 @@ class AudioCtrl extends GetxController {
   Future<void> pausePlayer() async {
     state.isPlaying.value = false;
     await state.audioPlayer.pause();
+    // إيقاف جميع الاشتراكات عند الإيقاف / Cancel all subscriptions when pausing
+    state.cancelAllSubscriptions();
+  }
+
+  /// إعادة إنشاء الاشتراكات الضرورية / Recreate necessary subscriptions
+  void _recreateSubscriptions() {
+    // إعادة إنشاء listener للسور فقط إذا لم يكن موجوداً / Recreate surah listener only if not exists
+    state._playerStateSubscription ??=
+        state.audioPlayer.playerStateStream.listen((playerState) async {
+      if (playerState.processingState == ProcessingState.completed &&
+          state.isPlayingSurahsMode) {
+        await playNextSurah();
+      }
+    });
+  }
+
+  /// التحقق من الصلاحيات الصوتية / Check audio permissions
+  Future<bool> requestAudioFocus() async {
+    try {
+      // التأكد من عدم وجود مشغل صوت آخر نشط
+      // Make sure no other audio player is active
+      if (SurahState.isAudioServiceActive &&
+          !identical(this, AudioCtrl.instance)) {
+        log('Another audio service is already active', name: 'AudioCtrl');
+        return false;
+      }
+      return true;
+    } catch (e) {
+      log('Error requesting audio focus: $e', name: 'AudioCtrl');
+      return false;
+    }
+  }
+
+  /// التحقق من إمكانية التشغيل / Check if playback is allowed
+  Future<bool> canPlayAudio() async {
+    final hasAudioFocus = await requestAudioFocus();
+    if (!hasAudioFocus) {
+      if (Get.context != null) {
+        UiHelper.showCustomErrorSnackBar(
+            'يتم تشغيل صوت آخر في التطبيق. يرجى إيقافه أولاً.', Get.context!);
+      }
+      return false;
+    }
+    return true;
   }
 
   /// تحديث رابط أيقونة التطبيق / Update app icon URL

@@ -13,9 +13,9 @@ extension AyahCtrlExtension on AudioCtrl {
     bool isSurahDownloaded = state.box.read(surahKey) ?? false;
 
     try {
-      if (state.isPlaying.value || state.audioPlayer.playing) {
-        await state.audioPlayer.stop();
-      }
+      // إيقاف أي تشغيل سابق / Stop any previous playback
+      await state.stopAllAudio();
+
       QuranCtrl.instance.toggleAyahSelection(state.currentAyahUniqueNumber);
       final filePath = isSurahDownloaded
           ? join((await state.dir).path, currentAyahFileName)
@@ -116,7 +116,8 @@ extension AyahCtrlExtension on AudioCtrl {
           name: 'AudioController');
 
       // الاستماع لتغييرات الفهرس / Listen to index changes
-      state.audioPlayer.currentIndexStream.listen((index) async {
+      state._currentIndexSubscription =
+          state.audioPlayer.currentIndexStream.listen((index) async {
         final currentIndex = (state.audioPlayer.currentIndex ?? 0);
         log('index: $index | currentIndex: $currentIndex', name: 'index');
         if (index != null && index < ayahsFilesNames.length) {
@@ -139,7 +140,9 @@ extension AyahCtrlExtension on AudioCtrl {
       state.isPlaying.value = true;
       await state.audioPlayer.play();
 
-      state.audioPlayer.playerStateStream.listen((d) {
+      // استخدام subscription محدود لتجنب إنشاء listeners متعددة / Use limited subscription to avoid creating multiple listeners
+      state._playerStateSubscription ??=
+          state.audioPlayer.playerStateStream.listen((d) {
         if (d.processingState == ProcessingState.completed &&
             !state.playSingleAyahOnly &&
             currentSurahNumber < 114) {
@@ -162,6 +165,11 @@ extension AyahCtrlExtension on AudioCtrl {
 
   Future<void> playAyah(BuildContext context, int currentAyahUniqueNumber,
       {required bool playSingleAyah}) async {
+    // التحقق من إمكانية التشغيل / Check if playback is allowed
+    if (!await canPlayAudio()) {
+      return;
+    }
+
     state.playSingleAyahOnly = playSingleAyah;
     state.currentAyahUniqueNumber = currentAyahUniqueNumber;
     QuranCtrl.instance.isShowControl.value = true;

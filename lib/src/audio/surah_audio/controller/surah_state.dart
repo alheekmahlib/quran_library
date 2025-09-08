@@ -5,6 +5,16 @@ class SurahState {
 
   AudioPlayer audioPlayer = AudioPlayer();
   bool isPlayingSurahsMode = false;
+
+  // إدارة حالة الصوت المركزية / Central audio state management
+  static bool _isAudioServiceActive = false;
+  StreamSubscription<PlayerState>? _playerStateSubscription;
+  StreamSubscription<int?>? _currentIndexSubscription;
+
+  // getter وsetter للحالة النشطة / getter and setter for active state
+  static bool get isAudioServiceActive => _isAudioServiceActive;
+  static void setAudioServiceActive(bool value) =>
+      _isAudioServiceActive = value;
   RxBool isDownloading = false.obs;
   RxBool isPlaying = false.obs;
   RxString progressString = "0".obs;
@@ -62,4 +72,19 @@ class SurahState {
           .obs;
   SlidingPanelController panelController = SlidingPanelController();
   RxBool isSheetOpen = false.obs;
+
+  /// إيقاف جميع الاشتراكات / Cancel all subscriptions
+  void cancelAllSubscriptions() {
+    _playerStateSubscription?.cancel();
+    _currentIndexSubscription?.cancel();
+    _playerStateSubscription = null;
+    _currentIndexSubscription = null;
+  }
+
+  /// إيقاف جميع الأصوات / Stop all audio
+  Future<void> stopAllAudio() async {
+    await audioPlayer.stop();
+    isPlaying.value = false;
+    cancelAllSubscriptions();
+  }
 }

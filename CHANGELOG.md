@@ -1,6 +1,7 @@
 ## 2.0.9+7
 
 * **Fix first two Surahs font size**
+* **Fix Just_audio two streams running at the same time #17**
 
 ## 2.0.8+6
 

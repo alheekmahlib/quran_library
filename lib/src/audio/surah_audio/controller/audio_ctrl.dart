@@ -62,8 +62,7 @@ class AudioCtrl extends GetxController {
 
     // Listen to player state changes to play the next Surah automatically
     // استخدام subscription واحد فقط / Use only one subscription
-    state._playerStateSubscription =
-        state.audioPlayer.playerStateStream.listen((playerState) async {
+    state.audioPlayer.playerStateStream.listen((playerState) async {
       if (playerState.processingState == ProcessingState.completed &&
           !state.isPlayingSurahsMode) {
         await playNextSurah();
@@ -364,18 +363,6 @@ class AudioCtrl extends GetxController {
     await state.audioPlayer.pause();
     // إيقاف جميع الاشتراكات عند الإيقاف / Cancel all subscriptions when pausing
     state.cancelAllSubscriptions();
-  }
-
-  /// إعادة إنشاء الاشتراكات الضرورية / Recreate necessary subscriptions
-  void _recreateSubscriptions() {
-    // إعادة إنشاء listener للسور فقط إذا لم يكن موجوداً / Recreate surah listener only if not exists
-    state._playerStateSubscription ??=
-        state.audioPlayer.playerStateStream.listen((playerState) async {
-      if (playerState.processingState == ProcessingState.completed &&
-          state.isPlayingSurahsMode) {
-        await playNextSurah();
-      }
-    });
   }
 
   /// التحقق من الصلاحيات الصوتية / Check audio permissions

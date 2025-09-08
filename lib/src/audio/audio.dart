@@ -19,8 +19,8 @@ import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:rxdart/rxdart.dart' as r;
 
-import '../quran/core/utils/ui_helper.dart';
 import '/quran.dart';
+import '../quran/core/utils/ui_helper.dart';
 import 'constants/lottie_constants.dart';
 import 'core/custom_paint/custom_slider.dart';
 import 'core/extensions/string_extensions.dart';

@@ -25,9 +25,15 @@ extension TafsirUi on TafsirCtrl {
     if (val < translationsStartIndex) {
       isTafsir.value = true;
       box.write(_StorageConstants().isTafsir, true);
-      await closeAndReinitializeDatabase();
-      await fetchData(
-          pageNumber ?? QuranCtrl.instance.state.currentPageNumber.value);
+      try {
+        await closeAndReinitializeDatabase();
+        await fetchData(
+            pageNumber ?? QuranCtrl.instance.state.currentPageNumber.value);
+      } catch (e) {
+        log('Error changing tafsir: $e', name: 'TafsirUi');
+        // التأكد من أن radioValue تم تحديثه للقيمة الصحيحة
+        box.write(_StorageConstants().radioValue, radioValue.value);
+      }
     } else {
       isTafsir.value = false;
       String langCode = tafsirAndTranslationsItems[val].bookName;
@@ -62,9 +68,13 @@ extension TafsirUi on TafsirCtrl {
       return;
     }
     await closeCurrentDatabase();
-    await initializeDatabase();
-
-    log('Database initialized for: ${tafsirAndTranslationsItems[radioValue.value].databaseName}',
-        name: 'TafsirUi');
+    try {
+      await initializeDatabase();
+      log('Database initialized for: ${tafsirAndTranslationsItems[radioValue.value].databaseName}',
+          name: 'TafsirUi');
+    } catch (e) {
+      log('Failed to initialize database: $e', name: 'TafsirUi');
+      rethrow;
+    }
   }
 }

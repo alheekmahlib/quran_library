@@ -111,7 +111,7 @@ class TafsirCtrl extends GetxController {
   @override
   Future<void> onInit() async {
     // start from defaults
-    _appDir = await getApplicationSupportDirectory();
+    _appDir = await getApplicationDocumentsDirectory();
     if (!_isTafsirInitialized) {
       await initTafsir();
     }
@@ -166,18 +166,42 @@ class TafsirCtrl extends GetxController {
       return;
     }
     String dbName = tafsirAndTranslationsItems[idx].databaseName;
-    if (tafsirDownloadStatus.value[idx] != true) {
-      log('Database $dbName not downloaded yet, skipping DB init.',
+
+    // تحقق مزدوج: حالة التحميل + وجود الملف فعلياً
+    final file = File(join(_appDir.path, dbName));
+    final fileExists = await file.exists();
+
+    if (tafsirDownloadStatus.value[idx] != true || !fileExists) {
+      log('Database $dbName not available (downloaded: ${tafsirDownloadStatus.value[idx]}, exists: $fileExists), using default.',
           name: 'TafsirCtrl');
       radioValue.value = _defaultTafsirIndex;
       dbName = _defaultDownloadedDbName;
+      // تحديث حالة التحميل إذا كان الملف غير موجود
+      if (!fileExists && tafsirDownloadStatus.value[idx] == true) {
+        _updateDownloadStatus(idx, false);
+      }
     }
     if (database.value == null || selectedDBName != dbName) {
       if (database.value?.isOpen ?? false) await database.value?.close();
-      database.value = TafsirDatabase(dbName);
-      selectedDBName = dbName;
-      log('Database object created.', name: 'TafsirCtrl');
-      _isDbInitialized = true;
+      try {
+        database.value = TafsirDatabase(dbName);
+        selectedDBName = dbName;
+        log('Database object created.', name: 'TafsirCtrl');
+        _isDbInitialized = true;
+      } catch (e) {
+        log('Failed to initialize database $dbName: $e', name: 'TafsirCtrl');
+        // العودة للتفسير الافتراضي في حالة الخطأ
+        if (idx != _defaultTafsirIndex) {
+          log('Falling back to default tafsir', name: 'TafsirCtrl');
+          radioValue.value = _defaultTafsirIndex;
+          dbName = _defaultDownloadedDbName;
+          database.value = TafsirDatabase(dbName);
+          selectedDBName = dbName;
+          _isDbInitialized = true;
+        } else {
+          rethrow;
+        }
+      }
     }
     log('Database initialized.', name: 'TafsirCtrl');
   }
@@ -296,28 +320,59 @@ class TafsirCtrl extends GetxController {
           ? 'packages/quran_library/assets/en.json'
           : join(_appDir.path, '$translationLangCode.json');
       isLoading.value = true;
-      final exists = await File(path).exists();
+
       String jsonString;
+      final exists = await File(path).exists();
+
       if (radioValue.value == translationsStartIndex || !exists) {
         jsonString = await rootBundle
             .loadString('packages/quran_library/assets/en.json');
       } else {
-        if (exists) {
-          jsonString = await File(path).readAsString();
-        } else {
-          throw Exception('File not found');
-        }
+        jsonString = await File(path).readAsString();
       }
-      Map<String, dynamic> showData = json.decode(jsonString);
-      translationList.value = (showData['translations'] as List)
-          .map((item) => TranslationModel.fromJson(item))
-          .toList();
+
+      final translationsModel = TranslationsModel.fromJson(jsonString);
+      translationList.value = translationsModel.getTranslationsAsList();
     } catch (e) {
       log('Error loading translation file: $e', name: 'TafsirCtrl');
     } finally {
       isLoading.value = false;
     }
     update(['tafsirs_menu_list']);
+  }
+
+  /// الحصول على ترجمة آية معينة
+  /// Get translation for a specific ayah
+  TranslationModel? getTranslationForAyah(int surah, int ayah) {
+    return translationList.firstWhereOrNull(
+      (translation) =>
+          translation.surahNumber == surah && translation.ayahNumber == ayah,
+    );
+  }
+
+  /// الحصول على النص المترجم لآية معينة
+  /// Get translated text for a specific ayah
+  String getTranslationText(int surah, int ayah) {
+    final translation = getTranslationForAyah(surah, ayah);
+    return translation?.text ?? '';
+  }
+
+  /// الحصول على الحواشي لآية معينة
+  /// Get footnotes for a specific ayah
+  Map<String, String> getFootnotesForAyah(int surah, int ayah) {
+    final translation = getTranslationForAyah(surah, ayah);
+    return translation?.footnotes ?? {};
+  }
+
+  /// الحصول على ترجمات صفحة كاملة
+  /// Get translations for an entire page
+  List<TranslationModel> getTranslationsForPage(int pageNumber) {
+    // يحتاج تنفيذ القران للحصول على قائمة الآيات في الصفحة
+    // This needs Quran implementation to get list of ayahs in the page
+    return translationList.where((translation) {
+      // يمكن إضافة منطق هنا للتحقق من الصفحة حسب الحاجة
+      return true; // مؤقت
+    }).toList();
   }
 
   /// ------------[DownloadMethods]------------
@@ -338,13 +393,14 @@ class TafsirCtrl extends GetxController {
           'https://github.com/alheekmahlib/Islamic_database/raw/refs/heads/main/quran_database/translate/${selected.bookName}.json';
     }
     if (!onDownloading.value) {
-      update(['tafsirs_menu_list']);
       await downloadFile(path, fileUrl).then((_) async {
+        log('Download completed for $path', name: 'TafsirCtrl');
         _onDownloadSuccess(i);
         await _saveTafsirDownloadIndex(i);
         await _loadTafsirDownloadIndices();
         await handleRadioValueChanged(i);
       });
+      update(['tafsirs_menu_list']);
       log('Downloading from URL: $fileUrl', name: 'TafsirCtrl');
     }
     update(['tafsirs_menu_list']);

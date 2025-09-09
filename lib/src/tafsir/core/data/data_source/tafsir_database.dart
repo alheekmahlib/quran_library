@@ -56,18 +56,23 @@ drift.LazyDatabase _openConnection(String dbFileName) {
     final file = File(join(dbFolder.path, dbFileName));
 
     if (!await file.exists()) {
-      log('Database file does not exist, copying from assets');
-      try {
-        ByteData data = selectedDefaultTafsir
-            ? await rootBundle.load('packages/quran_library/assets/$dbFileName')
-            : await rootBundle.load(join(dbFolder.path, dbFileName));
-        List<int> bytes =
-            data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
-        await file.writeAsBytes(bytes, flush: true);
-        log('Tafsir Database copied to ${file.path}');
-      } catch (e) {
-        log('Error copying database: $e');
-        throw Exception('Failed to copy database from assets.');
+      if (selectedDefaultTafsir) {
+        log('Default database file does not exist, copying from assets');
+        try {
+          ByteData data = await rootBundle
+              .load('packages/quran_library/assets/$dbFileName');
+          List<int> bytes =
+              data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
+          await file.writeAsBytes(bytes, flush: true);
+          log('Default Tafsir Database copied to ${file.path}');
+        } catch (e) {
+          log('Error copying default database: $e');
+          throw Exception('Failed to copy default database from assets.');
+        }
+      } else {
+        log('Downloaded database file does not exist: ${file.path}');
+        throw Exception(
+            'Database file $dbFileName not found. Please download it first.');
       }
     } else {
       log('Database file already exists at ${file.path}');

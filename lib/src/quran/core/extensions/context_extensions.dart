@@ -1,5 +1,28 @@
 part of '/quran.dart';
 
+const rtlLang = [
+  'العربية',
+  'עברית',
+  'فارسی',
+  'اردو',
+  'کوردی',
+  'تفسير السعدي',
+  'تفسير ابن كثير',
+  'تفسير الطبري',
+  'تفسير القرطبي',
+  'تفسير البغوي',
+];
+
+extension StringExtension on String {
+  bool isRtlLanguage() {
+    return rtlLang.contains(this);
+  }
+
+  bool isRtlLanguageWPassLang(String language) {
+    return rtlLang.contains(language);
+  }
+}
+
 /// Extension on [BuildContext] to provide additional utility methods.
 extension ContextExtensions on BuildContext {
   /// Creates a vertical divider widget with the specified width, height, and color.
@@ -45,5 +68,13 @@ extension ContextExtensions on BuildContext {
       margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
       color: color ?? Colors.black,
     );
+  }
+
+  alignmentLayoutWPassLang(String language, var rtl, var ltr) {
+    if (language.isRtlLanguageWPassLang(language)) {
+      return rtl;
+    } else {
+      return ltr;
+    }
   }
 }

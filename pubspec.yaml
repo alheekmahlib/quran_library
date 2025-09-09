@@ -83,6 +83,7 @@ flutter:
     - assets/lottie/
     - assets/svg/
     - assets/saadiV4.db
+    - assets/en_old.json
     - assets/en.json
 
   fonts:

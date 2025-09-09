@@ -73,7 +73,10 @@ class TafsirPagesBuild extends StatelessWidget {
                   ayahs: ayahs,
                   isTafsir: tafsirCtrl.isTafsir.value,
                   translationList: tafsirCtrl.translationList,
-                  fontSizeArabic: tafsirCtrl.fontSizeArabic.value),
+                  fontSizeArabic: tafsirCtrl.fontSizeArabic.value,
+                  language: tafsirCtrl
+                      .tafsirAndTranslationsItems[tafsirCtrl.radioValue.value]
+                      .name),
             ),
           ),
         );

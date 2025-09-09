@@ -49,6 +49,12 @@ final List<TafsirNameModel> _defaultTafsirTranslationsList = [
     databaseName: 'tr.json',
     isTranslation: true,
   ),
+  TafsirNameModel(
+    name: 'French',
+    bookName: 'fr',
+    databaseName: 'fr.json',
+    isTranslation: true,
+  ),
 ];
 List<TafsirNameModel> get _defaultTafsirList =>
     [..._defaultTafsirItemsList, ..._defaultTafsirTranslationsList];

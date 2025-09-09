@@ -44,6 +44,7 @@ extension DownloadExtension on TafsirCtrl {
       onDownloading.value = false;
       progressString.value = "100";
       log("Download completed for $path");
+      update(['tafsirs_menu_list']);
       return true;
     } catch (e) {
       log("Error isDownloading: $e");

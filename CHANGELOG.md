@@ -1,3 +1,8 @@
+## 2.0.10+8
+
+* **Fix change Tafsir**
+* **Add some Tafsirs and translation #18**
+
 ## 2.0.9+7
 
 * **Fix first two Surahs font size**

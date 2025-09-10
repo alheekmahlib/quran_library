@@ -4,6 +4,7 @@ enum TafsirFileType { json, sqlite }
 
 class TafsirNameModel {
   final String name;
+  final String fileName;
   final String bookName;
   final String
       databaseName; // for defaults this is filename, for custom this can be filename in app dir
@@ -13,6 +14,7 @@ class TafsirNameModel {
 
   TafsirNameModel({
     required this.name,
+    required this.fileName,
     required this.bookName,
     required this.databaseName,
     this.isCustom = false,
@@ -22,6 +24,7 @@ class TafsirNameModel {
 
   factory TafsirNameModel.fromJson(Map<String, dynamic> j) => TafsirNameModel(
         name: j['name'] as String,
+        fileName: j['fileName'] as String,
         bookName: j['bookName'] as String,
         databaseName: j['databaseName'] as String,
         isCustom: j['isCustom'] == true,
@@ -34,6 +37,7 @@ class TafsirNameModel {
 
   Map<String, dynamic> toJson() => {
         'name': name,
+        'fileName': fileName,
         'bookName': bookName,
         'databaseName': databaseName,
         'isCustom': isCustom,

@@ -22,7 +22,7 @@ extension TafsirUi on TafsirCtrl {
     radioValue.value = val;
     log('start changing Tafsir', name: 'TafsirUi');
     box.write(_StorageConstants().radioValue, val);
-    if (val < translationsStartIndex) {
+    if (!tafsirAndTranslationsItems[val].isTranslation) {
       isTafsir.value = true;
       box.write(_StorageConstants().isTafsir, true);
       try {
@@ -36,7 +36,7 @@ extension TafsirUi on TafsirCtrl {
       }
     } else {
       isTafsir.value = false;
-      String langCode = tafsirAndTranslationsItems[val].bookName;
+      String langCode = tafsirAndTranslationsItems[val].fileName;
       translationLangCode = langCode;
       await fetchTranslate();
       box.write(_StorageConstants().translationLangCode, langCode);

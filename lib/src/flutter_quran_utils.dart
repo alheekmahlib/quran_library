@@ -545,8 +545,10 @@ class QuranLibrary {
 
   /// إظهار قائمة منبثقة لتغيير نوع التفسير.
   /// Show a popup menu to change the tafsir style.
-  Widget changeTafsirPopupMenu(TafsirStyle tafsirStyle, {int? pageNumber}) =>
-      ChangeTafsirPopUp(tafsirStyle: tafsirStyle, pageNumber: pageNumber);
+  Widget changeTafsirPopupMenu(TafsirStyle tafsirStyle,
+          {int? pageNumber, bool? isDark}) =>
+      ChangeTafsirDialog(
+          tafsirStyle: tafsirStyle, pageNumber: pageNumber, isDark: isDark!);
 
   /// التحقق إذا كان التفسير تم تحميله مسبقاً.
   /// Check if the tafsir is already downloaded.

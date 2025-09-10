@@ -1,154 +1,170 @@
 part of '../tafsir.dart';
 
-class ChangeTafsirPopUp extends StatelessWidget {
+class ChangeTafsirDialog extends StatelessWidget {
   final TafsirStyle tafsirStyle;
   final List<TafsirNameModel>? tafsirNameList;
   final int? pageNumber;
-  const ChangeTafsirPopUp(
+  final bool? isDark;
+  ChangeTafsirDialog(
       {super.key,
       required this.tafsirStyle,
       this.tafsirNameList,
-      this.pageNumber});
+      this.pageNumber,
+      this.isDark = false});
+
+  final tafsirCtrl = TafsirCtrl.instance;
 
   @override
   Widget build(BuildContext context) {
     // tafsirCtrl.initializeTafsirDownloadStatus();
+    return Semantics(
+      button: true,
+      enabled: true,
+      label: 'Change Tafsir',
+      child: GestureDetector(
+        onTap: () {
+          showDialog(
+              context: context,
+              builder: (context) {
+                return DailogBuild(
+                  tafsirStyle: tafsirStyle,
+                  pageNumber: pageNumber,
+                  tafsirNameList: tafsirNameList,
+                  isDark: isDark!,
+                );
+              });
+        },
+        child: Container(
+          width: 180,
+          margin: const EdgeInsets.symmetric(horizontal: 16),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(
+              color: tafsirStyle.unSelectedTafsirColor ?? Colors.grey,
+              width: 1.2,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.04),
+                blurRadius: 6,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Expanded(
+                child: Text(
+                  tafsirNameList?[tafsirCtrl.radioValue.value].name ??
+                      tafsirCtrl
+                          .tafsirAndTranslationsItems[
+                              tafsirCtrl.radioValue.value]
+                          .name,
+                  style: QuranLibrary().naskhStyle.copyWith(
+                        color: tafsirStyle.unSelectedTafsirColor ??
+                            const Color(0xffCDAD80),
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              const SizedBox(width: 6),
+              Semantics(
+                button: true,
+                enabled: true,
+                label: 'Change Tafsir',
+                child: Icon(Icons.keyboard_arrow_down_rounded,
+                    size: 24,
+                    color: tafsirStyle.unSelectedTafsirColor ?? Colors.grey),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class DailogBuild extends StatelessWidget {
+  const DailogBuild({
+    super.key,
+    required this.tafsirStyle,
+    required this.pageNumber,
+    required this.tafsirNameList,
+    required this.isDark,
+  });
+
+  final TafsirStyle tafsirStyle;
+  final int? pageNumber;
+  final List<TafsirNameModel>? tafsirNameList;
+  final bool? isDark;
+
+  @override
+  Widget build(BuildContext context) {
     return GetBuilder<TafsirCtrl>(
         id: 'tafsirs_menu_list',
         builder: (tafsirCtrl) {
-          return PopupMenuButton(
-            position: PopupMenuPosition.under,
-            color: Colors.white,
-            elevation: 8,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-            itemBuilder: (context) => List.generate(
-                tafsirCtrl.tafsirAndTranslationsItems.length, (index) {
-              return PopupMenuItem(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 8.0, vertical: 0.0),
-                child: Container(
-                  margin:
-                      const EdgeInsets.symmetric(vertical: 4, horizontal: 0),
-                  padding: const EdgeInsets.symmetric(horizontal: 6),
-                  decoration: BoxDecoration(
-                    color: tafsirCtrl.radioValue.value == index
-                        ? (tafsirStyle.selectedTafsirColor ?? Colors.blue)
-                            .withValues(alpha: 0.08)
-                        : Colors.transparent,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: tafsirCtrl.radioValue.value == index
-                          ? tafsirStyle.selectedTafsirColor ?? Colors.blue
-                          : Colors.transparent,
-                      width: 1.2,
-                    ),
-                  ),
-                  child: Column(
-                    children: [
-                      TafsirItemWidget(
-                        tafsirIndex: index,
-                        pageNumber: pageNumber ??
-                            QuranCtrl.instance.state.currentPageNumber.value,
-                        tafsirNameList: tafsirNameList,
-                        tafsirStyle: tafsirStyle,
-                      ),
-                      index == 4
-                          ? Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(vertical: 8.0),
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                      flex: 1,
-                                      child: Container(
-                                          width: 70,
-                                          height: 2,
-                                          color: tafsirStyle.linesColor ??
-                                              Colors.blue)),
-                                  Expanded(
-                                    flex: 3,
-                                    child: Text(
-                                      tafsirStyle.translateName ?? 'الترجمات',
-                                      style: QuranLibrary()
-                                          .naskhStyle
-                                          .copyWith(fontSize: 20),
-                                      textAlign: TextAlign.center,
-                                    ),
-                                  ),
-                                  Expanded(
-                                      flex: 5,
-                                      child: Container(
-                                          width: 200,
-                                          height: 2,
-                                          color: tafsirStyle.linesColor ??
-                                              Colors.blue))
-                                ],
-                              ),
-                            )
-                          : const SizedBox.shrink(),
-                    ],
-                  ),
-                ),
-              );
-            }),
-            child: Semantics(
-              button: true,
-              enabled: true,
-              label: 'Change Tafsir',
-              child: Container(
-                margin: const EdgeInsets.symmetric(horizontal: 16),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(
-                    color: tafsirStyle.unSelectedTafsirColor ?? Colors.grey,
-                    width: 1.2,
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.04),
-                      blurRadius: 6,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                child: Row(
+          return Dialog(
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            child: Container(
+              constraints: const BoxConstraints(maxHeight: 500),
+              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8.0),
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              child: SingleChildScrollView(
+                child: Column(
                   mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Text(
-                      tafsirNameList?[tafsirCtrl.radioValue.value].name ??
-                          tafsirCtrl
-                              .tafsirAndTranslationsItems[
-                                  tafsirCtrl.radioValue.value]
-                              .name,
-                      style: QuranLibrary().naskhStyle.copyWith(
-                            color: tafsirStyle.unSelectedTafsirColor ??
-                                const Color(0xffCDAD80),
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                    ),
-                    const SizedBox(width: 6),
-                    Semantics(
-                      button: true,
-                      enabled: true,
-                      label: 'Change Tafsir',
-                      child: Icon(Icons.keyboard_arrow_down_rounded,
-                          size: 24,
-                          color:
-                              tafsirStyle.unSelectedTafsirColor ?? Colors.grey),
-                    ),
-                  ],
+                  children: List.generate(
+                      tafsirCtrl.tafsirAndTranslationsItems.length, (index) {
+                    return Column(
+                      children: [
+                        titleBuild(
+                            index, tafsirStyle.tafsirName ?? 'التفاسير', 0),
+                        TafsirItemWidget(
+                          tafsirIndex: index,
+                          pageNumber: pageNumber ??
+                              QuranCtrl.instance.state.currentPageNumber.value,
+                          tafsirNameList: tafsirNameList,
+                          tafsirStyle: tafsirStyle,
+                          isDark: isDark!,
+                        ),
+                        titleBuild(
+                            index, tafsirStyle.translateName ?? 'الترجمات', 27),
+                      ],
+                    );
+                  }),
                 ),
               ),
             ),
           );
         });
+  }
+
+  Widget titleBuild(int index, String? title, int currentIndex) {
+    return index == currentIndex
+        ? Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(vertical: 6.0),
+            margin: const EdgeInsets.symmetric(vertical: 6.0),
+            decoration: BoxDecoration(
+              color: Color(0xffCDAD80),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Text(
+              title ?? (tafsirStyle.translateName ?? 'الترجمات'),
+              style: QuranLibrary().naskhStyle.copyWith(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white),
+              textAlign: TextAlign.center,
+            ),
+          )
+        : const SizedBox.shrink();
   }
 }
 
@@ -159,12 +175,14 @@ class TafsirItemWidget extends StatelessWidget {
     required this.tafsirStyle,
     required this.tafsirIndex,
     this.pageNumber,
+    required this.isDark,
   });
 
   final List<TafsirNameModel>? tafsirNameList;
   final TafsirStyle tafsirStyle;
   final int tafsirIndex;
   final int? pageNumber;
+  final bool isDark;
   final tafsirCtrl = TafsirCtrl.instance;
 
   @override
@@ -174,87 +192,7 @@ class TafsirItemWidget extends StatelessWidget {
         builder: (tafsirCtrl) {
           RxBool isDownloaded =
               tafsirCtrl.tafsirDownloadIndexList.contains(tafsirIndex).obs;
-          return ListTile(
-            title: Text(
-              tafsirNameList?[tafsirIndex].name ??
-                  tafsirCtrl.tafsirAndTranslationsItems[tafsirIndex].name,
-              style: QuranLibrary().naskhStyle.copyWith(
-                    color: tafsirCtrl.radioValue.value == tafsirIndex
-                        ? tafsirStyle.selectedTafsirColor ?? Colors.black
-                        : tafsirStyle.unSelectedTafsirColor ??
-                            const Color(0xffCDAD80),
-                    fontSize: 14,
-                  ),
-            ),
-            subtitle: Text(
-              tafsirIndex >= 5
-                  ? ''
-                  : tafsirNameList?[tafsirIndex].bookName ??
-                      tafsirCtrl
-                          .tafsirAndTranslationsItems[tafsirIndex].bookName,
-              style: QuranLibrary().naskhStyle.copyWith(
-                    color: tafsirCtrl.radioValue.value == tafsirIndex
-                        ? tafsirStyle.selectedTafsirColor ?? Colors.black
-                        : tafsirStyle.unSelectedTafsirColor ??
-                            const Color(0xffCDAD80),
-                    fontSize: 12,
-                  ),
-            ),
-            trailing: Obx(
-              () => isDownloaded.value
-                  ? Container(
-                      height: 20,
-                      width: 20,
-                      margin: const EdgeInsets.symmetric(horizontal: 14),
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                            color: tafsirStyle.unSelectedTafsirColor ??
-                                const Color(0xffCDAD80),
-                            width: 2),
-                        color: Colors.white,
-                      ),
-                      child: tafsirCtrl.radioValue.value == tafsirIndex
-                          ? Icon(
-                              Icons.done,
-                              size: 14,
-                              color: tafsirStyle.selectedTafsirColor ??
-                                  const Color(0xffCDAD80),
-                            )
-                          : null,
-                    )
-                  : Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        Obx(
-                          () => CircularProgressIndicator(
-                            strokeWidth: 2,
-                            backgroundColor: Colors.transparent,
-                            color: tafsirIndex == tafsirCtrl.downloadIndex.value
-                                ? tafsirCtrl.onDownloading.value
-                                    ? tafsirStyle.selectedTafsirColor ??
-                                        const Color(0xffCDAD80)
-                                    : Colors.transparent
-                                : Colors.transparent,
-                            value: tafsirCtrl.progress.value,
-                          ),
-                        ),
-                        IconButton(
-                          icon: Icon(Icons.cloud_download_outlined,
-                              size: 22,
-                              color: tafsirStyle.unSelectedTafsirColor ??
-                                  const Color(0xffCDAD80)),
-                          onPressed: () async {
-                            tafsirIndex >= 5
-                                ? tafsirCtrl.isTafsir.value = false
-                                : tafsirCtrl.isTafsir.value = true;
-                            tafsirCtrl.downloadIndex.value = tafsirIndex;
-                            await tafsirCtrl.tafsirDownload(tafsirIndex);
-                          },
-                        ),
-                      ],
-                    ),
-            ),
+          return InkWell(
             onTap: () async {
               if (!isDownloaded.value) return;
               await tafsirCtrl.handleRadioValueChanged(tafsirIndex,
@@ -264,49 +202,121 @@ class TafsirItemWidget extends StatelessWidget {
               // tafsirCtrl.update(['tafsirs_menu_list']);
               if (context.mounted) Navigator.of(context).pop();
             },
-            leading: Container(
-                height: 85.0,
-                width: 41.0,
-                decoration: BoxDecoration(
-                    shape: BoxShape.rectangle,
-                    borderRadius: const BorderRadius.all(Radius.circular(4.0)),
-                    border: Border.all(
-                        color: tafsirStyle.unSelectedTafsirColor ??
-                            const Color(0xffCDAD80),
-                        width: 2)),
-                child: Opacity(
-                  opacity: tafsirCtrl.radioValue.value == tafsirIndex ? 1 : .4,
-                  child: Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      Container(
-                          height: 90,
-                          width: 40.0,
-                          color: tafsirStyle.linesColor ?? Colors.blue),
-                      Container(
-                        height: 60,
-                        width: 30.0,
-                        alignment: Alignment.center,
-                        child: Text(
-                          tafsirNameList?[tafsirIndex].name ??
-                              tafsirCtrl
-                                  .tafsirAndTranslationsItems[tafsirIndex].name,
-                          style: QuranLibrary().naskhStyle.copyWith(
-                                color:
-                                    tafsirCtrl.radioValue.value == tafsirIndex
-                                        ? tafsirStyle.selectedTafsirColor ??
-                                            Colors.black
-                                        : tafsirStyle.unSelectedTafsirColor ??
-                                            const Color(0xffCDAD80),
-                                fontSize: 7,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 6),
+              margin: const EdgeInsets.symmetric(vertical: 4),
+              decoration: BoxDecoration(
+                color: tafsirCtrl.radioValue.value == tafsirIndex
+                    ? (tafsirStyle.selectedTafsirColor ??
+                            const Color(0xffCDAD80))
+                        .withValues(alpha: 0.2)
+                    : tafsirStyle.unSelectedTafsirColor ??
+                        Color(0xffCDAD80).withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: tafsirCtrl.radioValue.value == tafsirIndex
+                      ? tafsirStyle.selectedTafsirColor ??
+                          const Color(0xffCDAD80)
+                      : tafsirStyle.unSelectedTafsirColor ?? Colors.transparent,
+                  width: 1.2,
+                ),
+              ),
+              child: Row(
+                children: [
+                  Obx(
+                    () => isDownloaded.value
+                        ? Container(
+                            height: 20,
+                            width: 20,
+                            margin: const EdgeInsets.symmetric(horizontal: 14),
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                  color: tafsirStyle.unSelectedTafsirColor ??
+                                      const Color(0xffCDAD80),
+                                  width: 2),
+                              color: Colors.white,
+                            ),
+                            child: tafsirCtrl.radioValue.value == tafsirIndex
+                                ? Icon(
+                                    Icons.done,
+                                    size: 14,
+                                    color: tafsirStyle.selectedTafsirColor ??
+                                        const Color(0xffCDAD80),
+                                  )
+                                : null,
+                          )
+                        : Stack(
+                            alignment: Alignment.center,
+                            children: [
+                              Obx(
+                                () => CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  backgroundColor: Colors.transparent,
+                                  color: tafsirIndex ==
+                                          tafsirCtrl.downloadIndex.value
+                                      ? tafsirCtrl.onDownloading.value
+                                          ? tafsirStyle.selectedTafsirColor ??
+                                              const Color(0xffCDAD80)
+                                          : Colors.transparent
+                                      : Colors.transparent,
+                                  value: tafsirCtrl.progress.value,
+                                ),
                               ),
-                          maxLines: 3,
-                          textAlign: TextAlign.center,
-                        ),
+                              IconButton(
+                                icon: Icon(Icons.cloud_download_outlined,
+                                    size: 22,
+                                    color: tafsirStyle.unSelectedTafsirColor ??
+                                        const Color(0xffCDAD80)),
+                                onPressed: () async {
+                                  tafsirIndex >= 5
+                                      ? tafsirCtrl.isTafsir.value = false
+                                      : tafsirCtrl.isTafsir.value = true;
+                                  tafsirCtrl.downloadIndex.value = tafsirIndex;
+                                  await tafsirCtrl.tafsirDownload(tafsirIndex);
+                                },
+                              ),
+                            ],
+                          ),
+                  ),
+                  SizedBox(width: 8),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        tafsirNameList?[tafsirIndex].name ??
+                            tafsirCtrl
+                                .tafsirAndTranslationsItems[tafsirIndex].name,
+                        style: QuranLibrary().naskhStyle.copyWith(
+                              color: tafsirCtrl.radioValue.value == tafsirIndex
+                                  ? tafsirStyle.selectedTafsirColor ??
+                                      Colors.black
+                                  : tafsirStyle.unSelectedTafsirColor ??
+                                      (isDark ? Colors.white : Colors.black),
+                              fontSize: 16,
+                            ),
+                      ),
+                      Text(
+                        tafsirIndex >= 28
+                            ? ''
+                            : tafsirNameList?[tafsirIndex].bookName ??
+                                tafsirCtrl
+                                    .tafsirAndTranslationsItems[tafsirIndex]
+                                    .bookName,
+                        style: QuranLibrary().naskhStyle.copyWith(
+                              color: tafsirCtrl.radioValue.value == tafsirIndex
+                                  ? tafsirStyle.selectedTafsirColor ??
+                                      Colors.black
+                                  : tafsirStyle.unSelectedTafsirColor ??
+                                      (isDark ? Colors.white : Colors.black),
+                              fontSize: 14,
+                            ),
                       ),
                     ],
                   ),
-                )),
+                ],
+              ),
+            ),
           );
         });
   }

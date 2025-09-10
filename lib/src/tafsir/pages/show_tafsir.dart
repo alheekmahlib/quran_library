@@ -87,7 +87,8 @@ class ShowTafseer extends StatelessWidget {
                           tafsirNameWidget,
                           Row(
                             children: [
-                              ChangeTafsirPopUp(tafsirStyle: tafsirStyle),
+                              ChangeTafsirDialog(
+                                  tafsirStyle: tafsirStyle, isDark: isDark),
                               const SizedBox(width: 8),
                               Container(
                                   width: 1,

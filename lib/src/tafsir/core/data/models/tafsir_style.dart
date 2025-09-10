@@ -4,6 +4,7 @@ class TafsirStyle {
   final Widget? tafsirNameWidget;
   final Widget? fontSizeWidget;
   final String? translateName;
+  final String? tafsirName;
   final Color? linesColor;
   final Color? selectedTafsirColor;
   final Color? unSelectedTafsirColor;
@@ -16,6 +17,7 @@ class TafsirStyle {
     this.fontSizeWidget,
     this.tafsirNameWidget,
     this.translateName,
+    this.tafsirName,
     this.linesColor,
     this.selectedTafsirColor,
     this.unSelectedTafsirColor,

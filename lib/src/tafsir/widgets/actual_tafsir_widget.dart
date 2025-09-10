@@ -83,16 +83,28 @@ class ActualTafsirWidget extends StatelessWidget {
 
   // بناء spans للترجمة مع الحواشي
   List<InlineSpan> _buildTranslationSpans() {
-    if (translationList.isEmpty ||
-        ayahIndex <= 0 ||
-        ayahIndex > translationList.length) {
+    if (translationList.isEmpty || ayahIndex <= 0) {
       return [const TextSpan(text: '')];
     }
 
-    final translation = translationList[ayahIndex - 1];
+    // استخدام دالة helper من TafsirCtrl للحصول على الترجمة
+    final translation =
+        TafsirCtrl.instance.getTranslationForAyahModel(ayahs, ayahIndex);
+
+    if (translation == null) {
+      if (kDebugMode) {
+        print(
+            'No translation found for Surah: ${ayahs.surahNumber}, Ayah: ${ayahs.ayahNumber}, Index: $ayahIndex, Total translations: ${translationList.length}');
+      }
+      return [
+        const TextSpan(
+            text:
+                'لا توجد ترجمة لهذه الآية / No translation available for this verse')
+      ];
+    }
     final spans = <InlineSpan>[
       // النص الأساسي بدون HTML tags
-      TextSpan(text: translation.cleanText),
+      TextSpan(children: translation.cleanText.customTextSpans()),
     ];
 
     // إضافة الحواشي إذا وجدت

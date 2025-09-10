@@ -17,7 +17,7 @@ class TafsirCtrl extends GetxController {
   int get translationsStartIndex =>
       tafsirAndTranslationsItems.indexWhere((el) =>
           el.isTranslation == true &&
-          el.bookName == _defaultDownloadedTranslationLangCode);
+          el.fileName == _defaultDownloadedTranslationLangCode);
   // RxString selectedTableName = MufaserName.saadi.name.obs;
   RxInt radioValue = 4.obs;
   final box = GetStorage();
@@ -331,8 +331,59 @@ class TafsirCtrl extends GetxController {
         jsonString = await File(path).readAsString();
       }
 
-      final translationsModel = TranslationsModel.fromJson(jsonString);
-      translationList.value = translationsModel.getTranslationsAsList();
+      // تحقق من نوع البنية في الملف
+      final Map<String, dynamic> jsonData = json.decode(jsonString);
+
+      // تحقق إذا كانت البنية العادية للترجمات (تحتوي على "t" في القيم)
+      bool isStandardTranslation = false;
+      if (jsonData.isNotEmpty) {
+        final firstEntry = jsonData.entries.first;
+        if (firstEntry.value is Map<String, dynamic> &&
+            (firstEntry.value as Map<String, dynamic>).containsKey('t')) {
+          isStandardTranslation = true;
+        }
+      }
+
+      if (isStandardTranslation) {
+        // البنية العادية للترجمات (en.json وغيرها)
+        log('Loading standard translation format', name: 'TafsirCtrl');
+        final translationsModel = TranslationsModel.fromJson(jsonString);
+        translationList.value = translationsModel.getTranslationsAsList();
+        log('Loaded ${translationList.length} standard translation entries',
+            name: 'TafsirCtrl');
+      } else {
+        // البنية الجديدة للتفاسير الإنجليزية (تفسير ابن كثير مثلاً)
+        final tafsirTranslations = <TranslationModel>[];
+        for (final entry in jsonData.entries) {
+          if (entry.value is Map<String, dynamic> &&
+              entry.value['text'] != null) {
+            tafsirTranslations.add(TranslationModel(
+              surahAyah: entry.key,
+              text: entry.value['text'] as String,
+              footnotes: {},
+            ));
+          } else if (entry.value is String) {
+            // في حالة أن القيمة تشير لآية أخرى (مثل "1:6": "1:7")
+            final referencedValue = jsonData[entry.value];
+            if (referencedValue is Map<String, dynamic> &&
+                referencedValue['text'] != null) {
+              tafsirTranslations.add(TranslationModel(
+                surahAyah: entry.key,
+                text: referencedValue['text'] as String,
+                footnotes: {},
+              ));
+            }
+          }
+        }
+        translationList.value = tafsirTranslations
+          ..sort((a, b) {
+            final surahComparison = a.surahNumber.compareTo(b.surahNumber);
+            if (surahComparison != 0) return surahComparison;
+            return a.ayahNumber.compareTo(b.ayahNumber);
+          });
+        log('Loaded ${tafsirTranslations.length} tafsir translation entries',
+            name: 'TafsirCtrl');
+      }
     } catch (e) {
       log('Error loading translation file: $e', name: 'TafsirCtrl');
     } finally {
@@ -348,6 +399,44 @@ class TafsirCtrl extends GetxController {
       (translation) =>
           translation.surahNumber == surah && translation.ayahNumber == ayah,
     );
+  }
+
+  /// الحصول على ترجمة آية معينة بناءً على AyahModel
+  /// Get translation for a specific ayah based on AyahModel
+  TranslationModel? getTranslationForAyahModel(AyahModel ayah, int ayahIndex) {
+    if (kDebugMode) {
+      print(
+          'Looking for translation: Surah ${ayah.surahNumber}, Ayah ${ayah.ayahNumber}, Index $ayahIndex, Total: ${translationList.length}');
+    }
+
+    // أولوية للبحث بناءً على رقم السورة والآية
+    if (ayah.surahNumber != null) {
+      final translation = translationList.firstWhereOrNull(
+        (t) =>
+            t.surahNumber == ayah.surahNumber &&
+            t.ayahNumber == ayah.ayahNumber,
+      );
+      if (translation != null) {
+        if (kDebugMode) {
+          print('Found translation by surah/ayah: ${translation.surahAyah}');
+        }
+        return translation;
+      }
+    }
+
+    // إذا لم توجد، استخدم المؤشر التقليدي
+    if (ayahIndex > 0 && ayahIndex <= translationList.length) {
+      final translation = translationList[ayahIndex - 1];
+      if (kDebugMode) {
+        print('Found translation by index: ${translation.surahAyah}');
+      }
+      return translation;
+    }
+
+    if (kDebugMode) {
+      print('No translation found');
+    }
+    return null;
   }
 
   /// الحصول على النص المترجم لآية معينة
@@ -388,9 +477,9 @@ class TafsirCtrl extends GetxController {
       fileUrl =
           'https://github.com/alheekmahlib/Islamic_database/raw/refs/heads/main/tafseer_database/${selected.databaseName}';
     } else {
-      path = join(_appDir.path, '${selected.bookName}.json');
+      path = join(_appDir.path, '${selected.fileName}.json');
       fileUrl =
-          'https://github.com/alheekmahlib/Islamic_database/raw/refs/heads/main/quran_database/translate/${selected.bookName}.json';
+          'https://github.com/alheekmahlib/Islamic_database/raw/refs/heads/main/quran_database/translate/${selected.fileName}.json';
     }
     if (!onDownloading.value) {
       await downloadFile(path, fileUrl).then((_) async {

@@ -1,3 +1,7 @@
+## 2.0.11+9
+
+* **Fix TafsirStyle**
+
 ## 2.0.10+8
 
 * **Fix change Tafsir**

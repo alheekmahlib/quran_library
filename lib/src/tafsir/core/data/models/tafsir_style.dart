@@ -5,9 +5,15 @@ class TafsirStyle {
   final Widget? fontSizeWidget;
   final String? translateName;
   final String? tafsirName;
-  final Color? linesColor;
+  final Color? currentTafsirColor;
+  final Color? textTitleColor;
+  final Color? backgroundTitleColor;
   final Color? selectedTafsirColor;
   final Color? unSelectedTafsirColor;
+  final Color? selectedTafsirTextColor;
+  final Color? unSelectedTafsirTextColor;
+  final Color? selectedTafsirBorderColor;
+  final Color? unSelectedTafsirBorderColor;
   final Color? backgroundColor;
   final Color? textColor;
 
@@ -18,8 +24,14 @@ class TafsirStyle {
     this.tafsirNameWidget,
     this.translateName,
     this.tafsirName,
-    this.linesColor,
+    this.textTitleColor,
+    this.currentTafsirColor,
+    this.backgroundTitleColor,
     this.selectedTafsirColor,
     this.unSelectedTafsirColor,
+    this.selectedTafsirBorderColor,
+    this.unSelectedTafsirBorderColor,
+    this.selectedTafsirTextColor,
+    this.unSelectedTafsirTextColor,
   });
 }

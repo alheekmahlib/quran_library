@@ -97,8 +97,9 @@ class ShowTafseer extends StatelessWidget {
                               const SizedBox(width: 8),
                               Transform.translate(
                                 offset: const Offset(0, 2),
-                                child: fontSizeDropDown(
-                                    height: 30.0, tafsirStyle: tafsirStyle),
+                                child: tafsirStyle.fontSizeWidget ??
+                                    fontSizeDropDown(
+                                        height: 30.0, tafsirStyle: tafsirStyle),
                               ),
                             ],
                           ),

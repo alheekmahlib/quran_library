@@ -84,6 +84,7 @@ extension ShowTafsirExtension on void {
     required int ayahUQNum,
     required int ayahNumber,
     bool? isDark,
+    TafsirStyle? tafsirStyle,
   }) async {
     // شرح: هذا السطر لطباعة رسالة عند استدعاء الدالة للتأكد من تنفيذها
     // Explanation: This line logs when the function is called for debugging
@@ -166,25 +167,27 @@ extension ShowTafsirExtension on void {
                           ayahNumber: ayahNumber,
                           pageIndex: pageIndex,
                           isDark: isDarkMode,
-                          tafsirStyle: TafsirStyle(
-                            backgroundColor: isDarkMode
-                                ? const Color(0xff1E1E1E)
-                                : const Color(0xfffaf7f3),
-                            tafsirNameWidget: Text(
-                              'التفسير',
-                              style: QuranLibrary().naskhStyle.copyWith(
-                                    fontSize: 24,
-                                    color: isDarkMode
-                                        ? Colors.white
-                                        : Colors.black,
-                                  ),
-                            ),
-                            fontSizeWidget: Icon(
-                              Icons.text_format_outlined,
-                              size: 34,
-                              color: isDarkMode ? Colors.white : Colors.black,
-                            ),
-                          ),
+                          tafsirStyle: tafsirStyle ??
+                              TafsirStyle(
+                                backgroundColor: isDarkMode
+                                    ? const Color(0xff1E1E1E)
+                                    : const Color(0xfffaf7f3),
+                                tafsirNameWidget: Text(
+                                  'التفسير',
+                                  style: QuranLibrary().naskhStyle.copyWith(
+                                        fontSize: 24,
+                                        color: isDarkMode
+                                            ? Colors.white
+                                            : Colors.black,
+                                      ),
+                                ),
+                                fontSizeWidget: Icon(
+                                  Icons.text_format_outlined,
+                                  size: 34,
+                                  color:
+                                      isDarkMode ? Colors.white : Colors.black,
+                                ),
+                              ),
                         ),
                       ],
                     ),

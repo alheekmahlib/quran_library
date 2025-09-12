@@ -1,5 +1,5 @@
 // import 'package:device_preview/device_preview.dart';
-import 'dart:developer' show log;
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:quran_library/quran_library.dart';
@@ -36,6 +36,14 @@ class _MyAppState extends State<MyApp> {
         useMaterial3: false,
       ),
       home: Scaffold(
+        // body: Center(
+        //   child: GetSingleAyah(
+        //     surahNumber: 114,
+        //     ayahNumber: 4,
+        //     fontSize: 30,
+        //     isBold: false,
+        //   ),
+        // ),
         // body: SurahDisplayScreen(
         //   parentContext: context,
         //   surahNumber: 18,

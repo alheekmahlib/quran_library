@@ -37,6 +37,8 @@ class TafsirPagesBuild extends StatelessWidget {
           orElse: () => const TafsirTableData(
               id: 0, tafsirText: '', ayahNum: 0, pageNum: 0, surahNum: 0),
         );
+        final surahs =
+            QuranCtrl.instance.getCurrentSurahByPageNumber(ayahs.page);
         return Container(
           width: width,
           margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
@@ -71,6 +73,7 @@ class TafsirPagesBuild extends StatelessWidget {
                   ayahIndex: ayahIndex,
                   tafsir: tafsir,
                   ayahs: ayahs,
+                  surahs: surahs,
                   isTafsir: tafsirCtrl.isTafsir.value,
                   translationList: tafsirCtrl.translationList,
                   fontSizeArabic: tafsirCtrl.fontSizeArabic.value,

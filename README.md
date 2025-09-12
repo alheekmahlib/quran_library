@@ -65,7 +65,7 @@ In the `pubspec.yaml` of your flutter project, add the following dependency:
 ```yaml
 dependencies:
   ...
-  quran_library: ^2.0.11+9
+  quran_library: ^2.0.12
 ```
 
 
@@ -171,6 +171,99 @@ SurahDisplayScreen(
 ),
 ```
 
+### Single Ayah Display - عرض آية واحدة
+
+```dart
+/// For displaying a single ayah from any surah
+/// لعرض آية واحدة من أي سورة
+GetSingleAyah(
+    /// رقم السورة [surahNumber] - يجب أن يكون بين 1 و 114
+    /// [surahNumber] - must be between 1 and 114
+    surahNumber: 1, // رقم السورة
+    
+    /// رقم الآية [ayahNumber] - رقم الآية داخل السورة
+    /// [ayahNumber] - ayah number within the surah
+    ayahNumber: 2, // رقم الآية
+    
+    /// لون النص [textColor] - اختياري
+    /// [textColor] - optional text color
+    textColor: Colors.black,
+    
+    /// النمط المظلم [isDark] - اختياري، افتراضي false
+    /// [isDark] - optional, default is false
+    isDark: false,
+    
+    /// حجم الخط [fontSize] - اختياري، افتراضي 22
+    /// [fontSize] - optional, default is 22
+    fontSize: 24.0,
+    
+    /// تفعيل النص العريض [isBold] - اختياري، افتراضي true
+    /// [isBold] - optional, default is true
+    isBold: true,
+),
+```
+
+#### استخدام GetSingleAyah في قائمة - Using GetSingleAyah in a list:
+
+```dart
+class SingleAyahExample extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text('عرض الآيات المنفردة')),
+      body: ListView(
+        padding: EdgeInsets.all(16),
+        children: [
+          // آية الكرسي
+          Card(
+            child: Padding(
+              padding: EdgeInsets.all(16),
+              child: Column(
+                children: [
+                  Text('آية الكرسي', style: TextStyle(fontWeight: FontWeight.bold)),
+                  SizedBox(height: 10),
+                  GetSingleAyah(
+                    surahNumber: 2, // البقرة
+                    ayahNumber: 255, // آية الكرسي
+                    fontSize: 20,
+                    textColor: Colors.brown,
+                  ),
+                ],
+              ),
+            ),
+          ),
+          
+          SizedBox(height: 16),
+          
+          // الفاتحة كاملة
+          Card(
+            child: Padding(
+              padding: EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text('سورة الفاتحة', style: TextStyle(fontWeight: FontWeight.bold)),
+                  SizedBox(height: 10),
+                  // عرض جميع آيات الفاتحة
+                  ...List.generate(7, (index) => Padding(
+                    padding: EdgeInsets.symmetric(vertical: 4),
+                    child: GetSingleAyah(
+                      surahNumber: 1,
+                      ayahNumber: index + 1,
+                      fontSize: 18,
+                      isDark: false,
+                    ),
+                  )),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+```
 
 ## Utils - الأدوات
 

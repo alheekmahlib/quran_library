@@ -232,6 +232,23 @@ class AyahLongClickDialog extends StatelessWidget {
                             QuranCtrl.instance.state.scaleFactor.value > 1.3)
                         ? ayah!.ayahNumber
                         : ayah!.ayahNumber,
+                    tafsirStyle: TafsirStyle(
+                      backgroundColor: isDark
+                          ? const Color(0xff1E1E1E)
+                          : const Color(0xfffaf7f3),
+                      tafsirNameWidget: Text(
+                        'التفسير',
+                        style: QuranLibrary().naskhStyle.copyWith(
+                              fontSize: 24,
+                              color: isDark ? Colors.white : Colors.black,
+                            ),
+                      ),
+                      fontSizeWidget: Icon(
+                        Icons.text_format_outlined,
+                        size: 34,
+                        color: isDark ? Colors.white : Colors.black,
+                      ),
+                    ),
                   );
                   QuranCtrl.instance.state.overlayEntry?.remove();
                   QuranCtrl.instance.state.overlayEntry = null;

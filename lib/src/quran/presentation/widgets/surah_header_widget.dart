@@ -52,7 +52,7 @@ class SurahHeaderWidget extends StatelessWidget {
             style: TextStyle(
               color: surahNameStyle?.surahNameColor ?? Colors.black,
               fontFamily: "surahName",
-              fontSize: 42,
+              fontSize: surahNameStyle?.surahNameSize,
               package: "quran_library",
             ),
             textAlign: TextAlign.center,
@@ -83,19 +83,27 @@ class SurahHeaderWidget extends StatelessWidget {
                       (isDark
                           ? AssetsPath.assets.surahSvgBannerDark
                           : AssetsPath.assets.surahSvgBanner),
-                  width: bannerStyle?.bannerSvgWidth ?? 150.0,
-                  height: bannerStyle?.bannerSvgHeight ?? 40.0,
+                  width: bannerStyle?.bannerSvgWidth ?? 190.0,
+                  height: bannerStyle?.bannerSvgHeight ?? 60.0,
                 ),
-                Text(
-                  surahNumber.toString(),
-                  style: TextStyle(
-                    color: surahNameStyle?.surahNameColor ??
-                        (isDark ? Colors.white : Colors.black),
-                    fontFamily: "surahName",
-                    fontSize: 32,
-                    package: "quran_library",
+                SizedBox(
+                  width: bannerStyle?.bannerSvgWidth ?? 190.0,
+                  height: bannerStyle?.bannerSvgHeight ?? 70.0,
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Text(
+                      surahNumber.toString(),
+                      style: TextStyle(
+                        color: surahNameStyle?.surahNameColor ??
+                            (isDark ? Colors.white : Colors.black),
+                        fontFamily: "surahName",
+                        fontSize: surahNameStyle?.surahNameSize,
+                        height: 1.5,
+                        package: "quran_library",
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
                   ),
-                  textAlign: TextAlign.center,
                 ),
               ],
             ),

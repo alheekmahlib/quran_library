@@ -91,8 +91,7 @@ class DefaultFontsPageBuild extends StatelessWidget {
                                 ),
                             surahNameStyle: surahNameStyle ??
                                 SurahNameStyle(
-                                  surahNameWidth: 70,
-                                  surahNameHeight: 37,
+                                  surahNameSize: 50,
                                   surahNameColor:
                                       isDark ? Colors.white : Colors.black,
                                 ),

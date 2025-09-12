@@ -88,16 +88,15 @@ class PageBuild extends StatelessWidget {
                                 bannerSvgPath: isDark
                                     ? AssetsPath.assets.surahSvgBannerDark
                                     : AssetsPath.assets.surahSvgBanner,
-                                bannerSvgHeight: 100.0,
-                                bannerSvgWidth: 150.0,
+                                bannerSvgHeight: 140.0,
+                                bannerSvgWidth: 190.0,
                                 bannerImagePath: '',
                                 bannerImageHeight: 100.0,
                                 bannerImageWidth: double.infinity,
                               ),
                           surahNameStyle: surahNameStyle ??
                               SurahNameStyle(
-                                surahNameWidth: 70,
-                                surahNameHeight: 80,
+                                surahNameSize: 190,
                                 surahNameColor:
                                     isDark ? Colors.white : Colors.black,
                               ),
@@ -201,8 +200,7 @@ class PageBuild extends StatelessWidget {
                               ),
                           surahNameStyle: surahNameStyle ??
                               SurahNameStyle(
-                                surahNameWidth: 70,
-                                surahNameHeight: 100,
+                                surahNameSize: 190,
                                 surahNameColor:
                                     isDark ? Colors.white : Colors.black,
                               ),

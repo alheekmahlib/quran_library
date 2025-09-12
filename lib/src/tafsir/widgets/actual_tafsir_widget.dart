@@ -13,6 +13,7 @@ class ActualTafsirWidget extends StatelessWidget {
     required this.translationList,
     required this.fontSizeArabic,
     required this.language,
+    required this.surahs,
   });
 
   final bool isDark;
@@ -25,23 +26,25 @@ class ActualTafsirWidget extends StatelessWidget {
   final List<TranslationModel> translationList;
   final double fontSizeArabic;
   final String language;
+  final SurahModel surahs;
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
+        GetSingleAyah(
+          surahNumber: surahs.surahNumber,
+          ayahNumber: ayahs.ayahNumber,
+          fontSize: 24,
+          isBold: false,
+          ayahs: ayahs,
+          isSingleAyah: false,
+          textColor:
+              tafsirStyle.textColor ?? (isDark ? Colors.white : Colors.black),
+        ),
         Text.rich(
           TextSpan(
             children: <InlineSpan>[
-              TextSpan(
-                text: '﴿${ayahs.text}﴾\n',
-                style: TextStyle(
-                  fontFamily: 'uthmanic2',
-                  fontSize: 24,
-                  height: 1.9,
-                  color: (isDark ? Colors.white : Colors.black),
-                ),
-              ),
               WidgetSpan(
                   child: context.horizontalDivider(
                 color:
@@ -62,14 +65,14 @@ class ActualTafsirWidget extends StatelessWidget {
                       style: TextStyle(
                           color: isDark ? Colors.white : Colors.black,
                           height: 1.5,
-                          fontSize: fontSizeArabic),
+                          fontSize: tafsirStyle.fontSize ?? fontSizeArabic),
                     )
                   : TextSpan(
                       children: _buildTranslationSpans(),
                       style: TextStyle(
                           color: isDark ? Colors.white : Colors.black,
                           height: 1.5,
-                          fontSize: fontSizeArabic),
+                          fontSize: tafsirStyle.fontSize ?? fontSizeArabic),
                     ),
             ],
           ),

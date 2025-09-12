@@ -498,8 +498,7 @@ class SurahDisplayScreen extends StatelessWidget {
           ),
       surahNameStyle: surahNameStyle ??
           SurahNameStyle(
-            surahNameWidth: 70,
-            surahNameHeight: 30,
+            surahNameSize: 70,
             surahNameColor: isDark ? Colors.white : Colors.black,
           ),
       surahInfoStyle: surahInfoStyle ??

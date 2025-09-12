@@ -211,6 +211,35 @@ extension QuranGetters on QuranCtrl {
               (p) => p.any((a) => a.ayahUQNumber == ayahUnequeNumber))) +
           1;
 
+  /// get page number by ayah number
+
+  int getPageNumberByAyahNumber(int ayahNumber) => state.pages
+          .firstWhere(
+              (p) =>
+                  p.isEmpty == false &&
+                  p.any((a) => a.ayahNumber == ayahNumber),
+              orElse: () => [])
+          .isEmpty
+      ? 1
+      : state.pages.indexOf(state.pages
+              .firstWhere((p) => p.any((a) => a.ayahNumber == ayahNumber))) +
+          1;
+
+  int getPageNumberByAyahAndSurahNumber(int ayahNumber, int surahNumber) {
+    // التحقق من صحة المدخلات
+    if (surahNumber < 1 || surahNumber > 114) return 1;
+
+    try {
+      final ayah = state.surahs[surahNumber].ayahs.firstWhere(
+        (p) => p.ayahNumber == ayahNumber,
+      );
+
+      return ayah.page > 0 ? ayah.page : 1;
+    } catch (e) {
+      return 1; // إرجاع الصفحة الأولى في حالة حدوث خطأ
+    }
+  }
+
   /// will return the surah number of the first ayahs..
   /// even if the page contains another surah.
   int getSurahNumberFromPage(int pageNumber) => state.surahs
@@ -307,6 +336,13 @@ extension QuranGetters on QuranCtrl {
     );
   }
 
+  AyahModel getSingleAyahByAyahAndSurahNumber(int ayahNumber, int surahNumber) {
+    return state.surahs[surahNumber].ayahs.firstWhere(
+      (ayah) => ayah.ayahNumber == ayahNumber,
+      orElse: () => AyahModel.empty(),
+    );
+  }
+
   /// Retrieves the display string for the Hizb quarter of the given page number.
   ///
   /// This method returns a string indicating the Hizb quarter of the given page number.
@@ -387,7 +423,7 @@ extension QuranGetters on QuranCtrl {
   /// Returns:
   ///   `List<AyahModel>`: The list of Ayahs on the current page.
   List<AyahModel> get currentPageAyahs =>
-      state.pages[state.currentPageNumber.value - 1];
+      state.pages[state.currentPageNumber.value];
 
   /// Retrieves the Ayah with a Sajda (prostration) on the given page.
   ///

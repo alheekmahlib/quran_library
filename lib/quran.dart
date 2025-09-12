@@ -56,6 +56,7 @@ part 'src/quran/presentation/controllers/quran/quran_ctrl.dart';
 part 'src/quran/presentation/controllers/quran/quran_getters.dart';
 part 'src/quran/presentation/controllers/quran/quran_state.dart';
 part 'src/quran/presentation/controllers/surah/surah_ctrl.dart';
+part 'src/quran/presentation/pages/get_single_ayah.dart';
 part 'src/quran/presentation/pages/quran_library_screen.dart';
 part 'src/quran/presentation/pages/surah_display_screen.dart';
 part 'src/quran/presentation/widgets/ayah_long_click_dialog.dart';

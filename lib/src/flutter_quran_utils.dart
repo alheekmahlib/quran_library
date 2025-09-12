@@ -612,16 +612,19 @@ class QuranLibrary {
     required String ayahTextN,
     required int ayahUQNum,
     required int ayahNumber,
+    TafsirStyle? tafsirStyle,
   }) async =>
       await TafsirCtrl.instance.showTafsirOnTap(
-          context: context,
-          ayahNum: ayahNum,
-          ayahText: ayahText,
-          pageIndex: pageIndex,
-          ayahTextN: ayahTextN,
-          ayahUQNum: ayahUQNum,
-          ayahNumber: ayahNumber,
-          surahNum: surahNum);
+        context: context,
+        ayahNum: ayahNum,
+        ayahText: ayahText,
+        pageIndex: pageIndex,
+        ayahTextN: ayahTextN,
+        ayahUQNum: ayahUQNum,
+        ayahNumber: ayahNumber,
+        surahNum: surahNum,
+        tafsirStyle: tafsirStyle,
+      );
 
   /// إغلاق قاعدة البيانات وإعادة تهيئتها (عادة عند تغيير التفسير).
   /// Close and re-initialize the database (usually when changing the tafsir).

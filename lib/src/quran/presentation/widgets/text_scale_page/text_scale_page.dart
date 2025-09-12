@@ -115,8 +115,7 @@ class _QuranTextScale extends StatelessWidget {
                                         ),
                                     surahNameStyle: surahNameStyle ??
                                         SurahNameStyle(
-                                          surahNameWidth: 70,
-                                          surahNameHeight: 37,
+                                          surahNameSize: 70,
                                           surahNameColor: isDark
                                               ? Colors.white
                                               : Colors.black,
@@ -224,8 +223,7 @@ class _QuranTextScale extends StatelessWidget {
                                         ),
                                     surahNameStyle: surahNameStyle ??
                                         SurahNameStyle(
-                                          surahNameWidth: 70,
-                                          surahNameHeight: 37,
+                                          surahNameSize: 70,
                                           surahNameColor: isDark
                                               ? Colors.white
                                               : Colors.black,

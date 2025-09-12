@@ -16,6 +16,7 @@ class TafsirStyle {
   final Color? unSelectedTafsirBorderColor;
   final Color? backgroundColor;
   final Color? textColor;
+  final double? fontSize;
 
   TafsirStyle({
     this.backgroundColor,
@@ -33,5 +34,6 @@ class TafsirStyle {
     this.unSelectedTafsirBorderColor,
     this.selectedTafsirTextColor,
     this.unSelectedTafsirTextColor,
+    this.fontSize,
   });
 }

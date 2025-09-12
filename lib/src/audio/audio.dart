@@ -1,8 +1,7 @@
 import 'dart:async';
 import 'dart:developer' show log;
-import 'dart:io' show File, Directory, HttpHeaders, Platform;
+import 'dart:io' show Directory, File, HttpHeaders, Platform;
 
-import 'package:audio_service/audio_service.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 // import 'package:dio/dio.dart' as d;
 import 'package:dio/dio.dart';
@@ -13,10 +12,10 @@ import 'package:flutter_sliding_panel/flutter_sliding_panel.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart' hide Response;
 import 'package:get_storage/get_storage.dart';
-import 'package:just_audio/just_audio.dart';
 import 'package:lottie/lottie.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:quran_library/src/audio/audio.dart';
 import 'package:rxdart/rxdart.dart' as r;
 
 import '/quran.dart';
@@ -24,6 +23,10 @@ import '../quran/core/utils/ui_helper.dart';
 import 'constants/lottie_constants.dart';
 import 'core/custom_paint/custom_slider.dart';
 import 'core/extensions/string_extensions.dart';
+
+// Export audio dependencies for main app usage
+export 'package:audio_service/audio_service.dart';
+export 'package:just_audio/just_audio.dart';
 
 part 'constants/readers_constants.dart';
 part 'constants/storage_constants.dart';

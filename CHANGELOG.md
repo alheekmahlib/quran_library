@@ -1,3 +1,8 @@
+## 2.0.12
+
+* **Fix TafsirStyle**
+* **Add GetSingleAyah**
+
 ## 2.0.11+9
 
 * **Fix TafsirStyle**

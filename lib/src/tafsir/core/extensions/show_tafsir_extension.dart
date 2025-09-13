@@ -85,6 +85,8 @@ extension ShowTafsirExtension on void {
     required int ayahNumber,
     bool? isDark,
     TafsirStyle? tafsirStyle,
+    bool? islocalFont,
+    String? fontsName,
   }) async {
     // شرح: هذا السطر لطباعة رسالة عند استدعاء الدالة للتأكد من تنفيذها
     // Explanation: This line logs when the function is called for debugging
@@ -167,6 +169,8 @@ extension ShowTafsirExtension on void {
                           ayahNumber: ayahNumber,
                           pageIndex: pageIndex,
                           isDark: isDarkMode,
+                          islocalFont: islocalFont,
+                          fontsName: fontsName,
                           tafsirStyle: tafsirStyle ??
                               TafsirStyle(
                                 backgroundColor: isDarkMode

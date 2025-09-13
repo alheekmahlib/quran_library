@@ -9,6 +9,8 @@ class GetSingleAyah extends StatelessWidget {
   final double? fontSize;
   final AyahModel? ayahs;
   final bool? isSingleAyah;
+  final bool? islocalFont;
+  final String? fontsName;
 
   const GetSingleAyah({
     super.key,
@@ -20,6 +22,8 @@ class GetSingleAyah extends StatelessWidget {
     this.isBold = true,
     this.ayahs,
     this.isSingleAyah = true,
+    this.islocalFont = false,
+    this.fontsName,
   });
 
   @override
@@ -57,8 +61,11 @@ class GetSingleAyah extends StatelessWidget {
       maxLines: null,
       text: TextSpan(
         style: TextStyle(
-          fontFamily:
-              currentFontsSelected ? 'p${((pageNumber - 1) + 2001)}' : 'hafs',
+          fontFamily: islocalFont!
+              ? fontsName
+              : (currentFontsSelected
+                  ? 'p${((pageNumber - 1) + 2001)}'
+                  : 'hafs'),
           package: currentFontsSelected ? null : 'quran_library',
           fontSize: fontSize ?? 22,
           height: 1.7,
@@ -80,9 +87,11 @@ class GetSingleAyah extends StatelessWidget {
                 ? '${ayah.codeV2!.replaceAll('\n', '')} '
                 : '${ayah.text} ',
             style: TextStyle(
-              fontFamily: currentFontsSelected
-                  ? 'p${((pageNumber - 1) + 2001)}'
-                  : 'hafs',
+              fontFamily: islocalFont!
+                  ? fontsName
+                  : (currentFontsSelected
+                      ? 'p${((pageNumber - 1) + 2001)}'
+                      : 'hafs'),
               package: currentFontsSelected ? null : 'quran_library',
               fontSize: fontSize ?? 22,
               height: 1.7,

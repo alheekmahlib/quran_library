@@ -16,15 +16,20 @@ class ShowTafseer extends StatelessWidget {
   final BuildContext context;
   final int ayahNumber;
   final bool isDark;
+  final bool? islocalFont;
+  final String? fontsName;
 
-  ShowTafseer(
-      {super.key,
-      required this.ayahUQNumber,
-      required this.tafsirStyle,
-      required this.ayahNumber,
-      required this.pageIndex,
-      required this.context,
-      required this.isDark});
+  ShowTafseer({
+    super.key,
+    required this.ayahUQNumber,
+    required this.tafsirStyle,
+    required this.ayahNumber,
+    required this.pageIndex,
+    required this.context,
+    required this.isDark,
+    this.islocalFont,
+    this.fontsName,
+  });
 
   final tafsirCtrl = TafsirCtrl.instance;
   final quranCtrl = QuranCtrl.instance;
@@ -122,6 +127,8 @@ class ShowTafseer extends StatelessWidget {
                           ayahUQNumber: ayahUQNumber,
                           tafsirStyle: tafsirStyle,
                           isDark: isDark,
+                          islocalFont: islocalFont,
+                          fontsName: fontsName,
                         ),
                       ),
                     ),

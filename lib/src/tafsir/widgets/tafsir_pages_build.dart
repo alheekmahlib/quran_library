@@ -5,13 +5,18 @@ class TafsirPagesBuild extends StatelessWidget {
   final int ayahUQNumber;
   final TafsirStyle tafsirStyle;
   final bool isDark;
+  final bool? islocalFont;
+  final String? fontsName;
 
-  TafsirPagesBuild(
-      {super.key,
-      required this.pageIndex,
-      required this.ayahUQNumber,
-      required this.tafsirStyle,
-      required this.isDark});
+  TafsirPagesBuild({
+    super.key,
+    required this.pageIndex,
+    required this.ayahUQNumber,
+    required this.tafsirStyle,
+    required this.isDark,
+    this.islocalFont,
+    this.fontsName,
+  });
 
   final quranCtrl = QuranCtrl.instance;
   final tafsirCtrl = TafsirCtrl.instance;
@@ -74,6 +79,8 @@ class TafsirPagesBuild extends StatelessWidget {
                   tafsir: tafsir,
                   ayahs: ayahs,
                   surahs: surahs,
+                  islocalFont: islocalFont,
+                  fontsName: fontsName,
                   isTafsir: tafsirCtrl.isTafsir.value,
                   translationList: tafsirCtrl.translationList,
                   fontSizeArabic: tafsirCtrl.fontSizeArabic.value,

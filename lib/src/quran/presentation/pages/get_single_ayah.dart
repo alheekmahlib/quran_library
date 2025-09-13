@@ -52,7 +52,8 @@ class GetSingleAyah extends StatelessWidget {
         ),
       );
     }
-    QuranLibrary().getFontsPrepareMethod(pageIndex: pageNumber - 1);
+    QuranLibrary().getFontsPrepareMethod(
+        pageIndex: pageNumber - 1, isFontsLocal: islocalFont!);
     return RichText(
       textDirection: TextDirection.rtl,
       textAlign: TextAlign.justify,

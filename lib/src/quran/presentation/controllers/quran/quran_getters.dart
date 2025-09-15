@@ -230,7 +230,7 @@ extension QuranGetters on QuranCtrl {
     if (surahNumber < 1 || surahNumber > 114) return 1;
 
     try {
-      final ayah = state.surahs[surahNumber].ayahs.firstWhere(
+      final ayah = state.surahs[surahNumber - 1].ayahs.firstWhere(
         (p) => p.ayahNumber == ayahNumber,
       );
 
@@ -337,7 +337,7 @@ extension QuranGetters on QuranCtrl {
   }
 
   AyahModel getSingleAyahByAyahAndSurahNumber(int ayahNumber, int surahNumber) {
-    return state.surahs[surahNumber].ayahs.firstWhere(
+    return state.surahs[surahNumber - 1].ayahs.firstWhere(
       (ayah) => ayah.ayahNumber == ayahNumber,
       orElse: () => AyahModel.empty(),
     );

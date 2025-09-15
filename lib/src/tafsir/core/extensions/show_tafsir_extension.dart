@@ -53,12 +53,12 @@ extension ShowTafsirExtension on void {
       tafsirCtrl.surahNumber.value = surahNum;
       tafsirCtrl.ayahTextNormal.value = ayahTextN;
       tafsirCtrl.ayahUQNumber.value = ayahUQNum;
-      QuranCtrl.instance.state.currentPageNumber.value = pageIndex + 1;
+      // QuranCtrl.instance.state.currentPageNumber.value = pageIndex + 1;
 
       // تحقق من أن التفسير أو الترجمة جاهزة
       // Check if tafsir or translation is ready
       if (tafsirCtrl.isTafsir.value) {
-        tafsirCtrl.closeAndReinitializeDatabase();
+        // tafsirCtrl.closeAndReinitializeDatabase();
         await tafsirCtrl.fetchData(pageIndex + 1);
       } else {
         await tafsirCtrl.fetchTranslate();

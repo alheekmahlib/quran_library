@@ -21,16 +21,17 @@
 
 ## Table of Contents - جدول المحتويات
 
-- [Getting started - بدء الاستخدام](#getting-started---بدء-الاستخدام)
-- [Usage Example - مثال الاستخدام](#usage-example---مثال-الاستخدام)
+- [Getting started - بدء الإستخدام](#getting-started---بدء-الإستخدام)
+- [Usage Example - مثال الإستخدام](#usage-example---مثال-الإستخدام)
   - [Basic Quran Screen](#basic-quran-screen)
   - [Individual Surah Display - عرض السورة المنفصلة](#individual-surah-display---عرض-السورة-المنفصلة)
+  - [Single Ayah Display - عرض آية واحدة](#single-ayah-display---عرض-آية-واحدة)
 - [Utils - الأدوات](#utils---الأدوات)
   - [الحصول على جميع أجزاء القرآن والأحزاب والسور](#الحصول-على-جميع-أجزاء-القرآن-والأحزاب-والسور)
   - [للتنقل بين الصفحات أو السور أو الأجزاء](#للتنقل-بين-الصفحات-أو-السور-أو-الأجزاء-يمكنك-استخدام)
   - [إضافة الإشارات المرجعية وإعدادها وإزالتها](#إضافة-الإشارات-المرجعية-وإعدادها-وإزالتها-والحصول-عليها-والانتقال-إليها)
   - [للبحث عن أي آية](#للبحث-عن-أي-آية)
-- [Fonts Download - تحميل الخطوط](#لتحميل-خطوط-المصحف-لديك-خيارين)
+- [Fonts Download - تحميل الخطوط](#fonts-download---تحميل-الخطوط)
 - [Tafsir - التفسير](#tafsir---التفسير)
 - [Audio Playback - التشغيل الصوتي](#audio-playback---التشغيل-الصوتي)
 
@@ -65,7 +66,7 @@ In the `pubspec.yaml` of your flutter project, add the following dependency:
 ```yaml
 dependencies:
   ...
-  quran_library: ^2.0.12
+  quran_library: ^2.0.13
 ```
 
 

@@ -1,3 +1,8 @@
+## 2.0.13
+
+* **Fix get single Ayah**
+* **Fix Page View viewport fraction**
+
 ## 2.0.12
 
 * **Fix TafsirStyle**

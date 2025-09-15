@@ -70,14 +70,16 @@ class ActualTafsirWidget extends StatelessWidget {
                   ? TextSpan(
                       children: tafsir.tafsirText.customTextSpans(),
                       style: TextStyle(
-                          color: isDark ? Colors.white : Colors.black,
+                          color: tafsirStyle.textColor ??
+                              (isDark ? Colors.white : Colors.black),
                           height: 1.5,
                           fontSize: tafsirStyle.fontSize ?? fontSizeArabic),
                     )
                   : TextSpan(
                       children: _buildTranslationSpans(),
                       style: TextStyle(
-                          color: isDark ? Colors.white : Colors.black,
+                          color: tafsirStyle.textColor ??
+                              (isDark ? Colors.white : Colors.black),
                           height: 1.5,
                           fontSize: tafsirStyle.fontSize ?? fontSizeArabic),
                     ),
@@ -127,17 +129,19 @@ class ActualTafsirWidget extends StatelessWidget {
         child: Container(
           margin: const EdgeInsets.symmetric(vertical: 8),
           height: 1,
-          color: (isDark ? Colors.white30 : Colors.black26),
+          color: tafsirStyle.dividerColor ??
+              (isDark ? Colors.white30 : Colors.black26),
         ),
       ));
       spans.add(const TextSpan(text: '\n'));
 
       spans.add(TextSpan(
-        text: 'الحواشي:\n',
+        text: '${tafsirStyle.footnotesName ?? 'الحواشي:'}\n',
         style: TextStyle(
           fontWeight: FontWeight.bold,
           fontSize: fontSizeArabic * 0.95,
-          color: isDark ? Colors.white70 : Colors.black87,
+          color: tafsirStyle.textColor ??
+              (isDark ? Colors.white70 : Colors.black87),
         ),
       ));
 
@@ -152,14 +156,16 @@ class ActualTafsirWidget extends StatelessWidget {
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: fontSizeArabic * 0.9,
-                color: isDark ? Colors.white70 : Colors.black87,
+                color: tafsirStyle.textColor ??
+                    (isDark ? Colors.white70 : Colors.black87),
               ),
             ),
             TextSpan(
               text: '${footnoteData.value}\n\n',
               style: TextStyle(
                 fontSize: fontSizeArabic * 0.85,
-                color: isDark ? Colors.white60 : Colors.black54,
+                color: tafsirStyle.textColor ??
+                    (isDark ? Colors.white60 : Colors.black54),
                 height: 1.4,
               ),
             ),

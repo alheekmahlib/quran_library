@@ -38,10 +38,11 @@ class GetSingleAyah extends StatelessWidget {
       );
     }
     final ayah = ayahs ??
-        QuranCtrl.instance.getSingleAyahByAyahAndSurahNumber(
-            ayahNumber, isSingleAyah! ? surahNumber - 1 : surahNumber + 1);
-    final pageNumber = QuranCtrl.instance.getPageNumberByAyahAndSurahNumber(
-        ayahNumber, isSingleAyah! ? surahNumber - 1 : surahNumber + 1);
+        QuranCtrl.instance
+            .getSingleAyahByAyahAndSurahNumber(ayahNumber, surahNumber);
+    final pageNumber = QuranCtrl.instance
+        .getPageNumberByAyahAndSurahNumber(ayahNumber, surahNumber);
+    log('surahNumber: $surahNumber, ayahNumber: $ayahNumber, pageNumber: $pageNumber');
     final bool currentFontsSelected = QuranLibrary().currentFontsSelected == 1;
     if (ayah.text.isEmpty) {
       return Text(
@@ -52,8 +53,10 @@ class GetSingleAyah extends StatelessWidget {
         ),
       );
     }
+    // if (islocalFont == false) {
     QuranLibrary().getFontsPrepareMethod(
-        pageIndex: pageNumber - 1, isFontsLocal: islocalFont!);
+        pageIndex: pageNumber - 1, isFontsLocal: islocalFont ?? false);
+    // }
     return RichText(
       textDirection: TextDirection.rtl,
       textAlign: TextAlign.justify,
@@ -62,7 +65,7 @@ class GetSingleAyah extends StatelessWidget {
       maxLines: null,
       text: TextSpan(
         style: TextStyle(
-          fontFamily: islocalFont!
+          fontFamily: islocalFont == true
               ? fontsName
               : (currentFontsSelected
                   ? 'p${((pageNumber - 1) + 2001)}'
@@ -88,7 +91,7 @@ class GetSingleAyah extends StatelessWidget {
                 ? '${ayah.codeV2!.replaceAll('\n', '')} '
                 : '${ayah.text} ',
             style: TextStyle(
-              fontFamily: islocalFont!
+              fontFamily: islocalFont == true
                   ? fontsName
                   : (currentFontsSelected
                       ? 'p${((pageNumber - 1) + 2001)}'

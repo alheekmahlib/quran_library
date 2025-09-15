@@ -9,8 +9,7 @@ import 'package:drift/native.dart' show NativeDatabase;
 import 'package:drift/src/runtime/api/runtime_api.dart';
 import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart'
-    show rootBundle, Clipboard, ClipboardData, ByteData;
+import 'package:flutter/services.dart' show rootBundle, ByteData;
 import 'package:get/get.dart' hide Response;
 import 'package:get_storage/get_storage.dart';
 import 'package:path/path.dart';

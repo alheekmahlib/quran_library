@@ -11,6 +11,7 @@ class GetSingleAyah extends StatelessWidget {
   final bool? isSingleAyah;
   final bool? islocalFont;
   final String? fontsName;
+  final int? pageIndex;
 
   const GetSingleAyah({
     super.key,
@@ -24,6 +25,7 @@ class GetSingleAyah extends StatelessWidget {
     this.isSingleAyah = true,
     this.islocalFont = false,
     this.fontsName,
+    this.pageIndex,
   });
 
   @override
@@ -40,8 +42,9 @@ class GetSingleAyah extends StatelessWidget {
     final ayah = ayahs ??
         QuranCtrl.instance
             .getSingleAyahByAyahAndSurahNumber(ayahNumber, surahNumber);
-    final pageNumber = QuranCtrl.instance
-        .getPageNumberByAyahAndSurahNumber(ayahNumber, surahNumber);
+    final pageNumber = pageIndex ??
+        QuranCtrl.instance
+            .getPageNumberByAyahAndSurahNumber(ayahNumber, surahNumber);
     log('surahNumber: $surahNumber, ayahNumber: $ayahNumber, pageNumber: $pageNumber');
     final bool currentFontsSelected = QuranLibrary().currentFontsSelected == 1;
     if (ayah.text.isEmpty) {
@@ -53,10 +56,10 @@ class GetSingleAyah extends StatelessWidget {
         ),
       );
     }
-    // if (islocalFont == false) {
-    QuranLibrary().getFontsPrepareMethod(
-        pageIndex: pageNumber - 1, isFontsLocal: islocalFont ?? false);
-    // }
+    if (currentFontsSelected) {
+      QuranLibrary().getFontsPrepareMethod(
+          pageIndex: pageNumber - 1, isFontsLocal: islocalFont ?? false);
+    }
     return RichText(
       textDirection: TextDirection.rtl,
       textAlign: TextAlign.justify,

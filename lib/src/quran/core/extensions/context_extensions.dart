@@ -121,7 +121,7 @@ extension ContextExtensions on BuildContext {
     );
   }
 
-  alignmentLayoutWPassLang(String language, var rtl, var ltr) {
+  dynamic alignmentLayoutWPassLang(String language, var rtl, var ltr) {
     if (language.isRtlLanguageWPassLang(language)) {
       return rtl;
     } else {

@@ -1,3 +1,9 @@
+## 2.0.13+1
+
+* **Fix README**
+* **Fix TafsirStyle**
+* **Fix get single Ayah**
+
 ## 2.0.13
 
 * **Fix get single Ayah**

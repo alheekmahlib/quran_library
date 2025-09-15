@@ -17,7 +17,7 @@ extension SajdaExtension on Widget {
   ///   - sajdaName: The name of the Sajda to be displayed.
   ///
   /// - Returns: A widget that displays the Sajda.
-  Widget showSajda(context, int pageIndex, String sajdaName) {
+  Widget showSajda(BuildContext context, int pageIndex, String sajdaName) {
     // log('checking sajda posision');
     final hasSajda = QuranCtrl.instance.isThereAnySajdaInPage(pageIndex);
     return hasSajda

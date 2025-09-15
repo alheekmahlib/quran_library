@@ -21,11 +21,6 @@ class TafsirCtrl extends GetxController {
   // RxString selectedTableName = MufaserName.saadi.name.obs;
   RxInt radioValue = 4.obs;
   final box = GetStorage();
-  RxString ayahTextNormal = ''.obs;
-  RxInt ayahUQNumber = (-1).obs;
-  RxInt surahNumber = 1.obs;
-  String tafseerAyah = '';
-  RxInt ayahNumber = (-1).obs;
   RxBool isDownloading = false.obs;
   RxBool onDownloading = false.obs;
   RxString progressString = "0".obs;

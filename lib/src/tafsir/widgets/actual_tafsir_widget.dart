@@ -16,6 +16,7 @@ class ActualTafsirWidget extends StatelessWidget {
     required this.surahs,
     this.islocalFont,
     this.fontsName,
+    this.pageIndex,
   });
 
   final bool isDark;
@@ -31,6 +32,7 @@ class ActualTafsirWidget extends StatelessWidget {
   final SurahModel surahs;
   final bool? islocalFont;
   final String? fontsName;
+  final int? pageIndex;
 
   @override
   Widget build(BuildContext context) {
@@ -46,6 +48,7 @@ class ActualTafsirWidget extends StatelessWidget {
           islocalFont: islocalFont,
           fontsName: fontsName,
           isDark: isDark,
+          pageIndex: pageIndex! + 1,
           textColor:
               tafsirStyle.textColor ?? (isDark ? Colors.white : Colors.black),
         ),

@@ -605,9 +605,7 @@ class QuranLibrary {
   /// To show the tafsir, you can use [showTafsir].
   Future<void> showTafsir({
     required BuildContext context,
-    required int surahNum,
     required int ayahNum,
-    required String ayahText,
     required int pageIndex,
     required String ayahTextN,
     required int ayahUQNum,
@@ -617,12 +615,9 @@ class QuranLibrary {
       await TafsirCtrl.instance.showTafsirOnTap(
         context: context,
         ayahNum: ayahNum,
-        ayahText: ayahText,
         pageIndex: pageIndex,
-        ayahTextN: ayahTextN,
         ayahUQNum: ayahUQNum,
         ayahNumber: ayahNumber,
-        surahNum: surahNum,
         tafsirStyle: tafsirStyle,
       );
 

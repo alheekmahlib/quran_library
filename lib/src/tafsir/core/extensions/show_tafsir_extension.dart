@@ -39,9 +39,6 @@ extension ShowTafsirExtension on void {
   /// دالة مساعدة لتهيئة بيانات التفسير
   /// Helper function to initialize tafsir data
   Future<void> _initializeTafsirData({
-    required String ayahText,
-    required int surahNum,
-    required String ayahTextN,
     required int ayahUQNum,
     required int pageIndex,
   }) async {
@@ -49,10 +46,6 @@ extension ShowTafsirExtension on void {
       log('بدء تهيئة بيانات التفسير', name: 'TafsirUi');
 
       TafsirCtrl tafsirCtrl = TafsirCtrl.instance;
-      tafsirCtrl.tafseerAyah = ayahText;
-      tafsirCtrl.surahNumber.value = surahNum;
-      tafsirCtrl.ayahTextNormal.value = ayahTextN;
-      tafsirCtrl.ayahUQNumber.value = ayahUQNum;
       // QuranCtrl.instance.state.currentPageNumber.value = pageIndex + 1;
 
       // تحقق من أن التفسير أو الترجمة جاهزة
@@ -76,11 +69,8 @@ extension ShowTafsirExtension on void {
   /// Shows Tafsir when an ayah is tapped
   Future<void> showTafsirOnTap({
     required BuildContext context,
-    required int surahNum,
     required int ayahNum,
-    required String ayahText,
     required int pageIndex,
-    required String ayahTextN,
     required int ayahUQNum,
     required int ayahNumber,
     bool? isDark,
@@ -124,81 +114,35 @@ extension ShowTafsirExtension on void {
         builder: (BuildContext modalContext) {
           // تهيئة بيانات التفسير داخل النافذة المنبثقة
           // Initialize tafsir data inside the bottom sheet
-          return FutureBuilder<void>(
-            future: _initializeTafsirData(
-              ayahText: ayahText,
-              surahNum: surahNum,
-              ayahTextN: ayahTextN,
-              ayahUQNum: ayahUQNum,
-              pageIndex: pageIndex,
-            ),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                // عرض مؤشر التحميل أثناء تحميل البيانات
-                // Show loading indicator while data is loading
-                return SafeArea(
-                  child: Container(
-                    height: MediaQuery.of(modalContext).size.height * 0.9,
-                    decoration: BoxDecoration(
-                      color: isDarkMode
-                          ? const Color(0xff1E1E1E)
-                          : const Color(0xfffaf7f3),
-                      borderRadius: const BorderRadius.vertical(
-                        top: Radius.circular(16),
-                      ),
-                    ),
-                    child: const Center(
-                      child: CircularProgressIndicator(),
-                    ),
-                  ),
-                );
-              }
 
-              // عرض واجهة التفسير بعد تحميل البيانات
-              // Show tafsir interface after data loading
-              return SafeArea(
-                child: SizedBox(
-                  height: MediaQuery.of(modalContext).size.height * 0.9,
-                  child: Scaffold(
-                    backgroundColor: Colors.transparent,
-                    body: Column(
-                      children: [
-                        ShowTafseer(
-                          context: modalContext,
-                          ayahUQNumber: ayahUQNum,
-                          ayahNumber: ayahNumber,
-                          pageIndex: pageIndex,
-                          isDark: isDarkMode,
-                          islocalFont: islocalFont,
-                          fontsName: fontsName,
-                          tafsirStyle: tafsirStyle ??
-                              TafsirStyle(
-                                backgroundColor: isDarkMode
-                                    ? const Color(0xff1E1E1E)
-                                    : const Color(0xfffaf7f3),
-                                tafsirNameWidget: Text(
-                                  'التفسير',
-                                  style: QuranLibrary().naskhStyle.copyWith(
-                                        fontSize: 24,
-                                        color: isDarkMode
-                                            ? Colors.white
-                                            : Colors.black,
-                                      ),
-                                ),
-                                fontSizeWidget: Icon(
-                                  Icons.text_format_outlined,
-                                  size: 34,
-                                  color:
-                                      isDarkMode ? Colors.white : Colors.black,
-                                ),
-                              ),
+          // عرض واجهة التفسير بعد تحميل البيانات
+          // Show tafsir interface after data loading
+          return ShowTafseer(
+            context: modalContext,
+            ayahUQNumber: ayahUQNum,
+            ayahNumber: ayahNumber,
+            pageIndex: pageIndex,
+            isDark: isDarkMode,
+            islocalFont: islocalFont,
+            fontsName: fontsName,
+            tafsirStyle: tafsirStyle ??
+                TafsirStyle(
+                  backgroundColor: isDarkMode
+                      ? const Color(0xff1E1E1E)
+                      : const Color(0xfffaf7f3),
+                  tafsirNameWidget: Text(
+                    'التفسير',
+                    style: QuranLibrary().naskhStyle.copyWith(
+                          fontSize: 24,
+                          color: isDarkMode ? Colors.white : Colors.black,
                         ),
-                      ],
-                    ),
+                  ),
+                  fontSizeWidget: Icon(
+                    Icons.text_format_outlined,
+                    size: 34,
+                    color: isDarkMode ? Colors.white : Colors.black,
                   ),
                 ),
-              );
-            },
           );
         },
       );

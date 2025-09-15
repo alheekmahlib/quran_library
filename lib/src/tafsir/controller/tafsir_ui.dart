@@ -5,13 +5,13 @@ extension TafsirUi on TafsirCtrl {
 
   /// شرح: نسخ نص التفسير مع الآية
   /// Explanation: Copy tafsir text with ayah
-  Future<void> copyOnTap(int ayahUQNumber) async {
-    await Clipboard.setData(ClipboardData(
-            text:
-                '﴿${ayahTextNormal.value}﴾\n\n${tafseerList[ayahUQNumber].tafsirText.customTextSpans()}'))
-        .then(
-            (value) => ToastUtils().showToast(Get.context!, 'copyTafseer'.tr));
-  }
+  // Future<void> copyOnTap(int ayahUQNumber) async {
+  //   await Clipboard.setData(ClipboardData(
+  //           text:
+  //               '﴿${ayahTextNormal.value}﴾\n\n${tafseerList[ayahUQNumber].tafsirText.customTextSpans()}'))
+  //       .then(
+  //           (value) => ToastUtils().showToast(Get.context!, 'copyTafseer'.tr));
+  // }
 
   /// شرح: تغيير التفسير أو الترجمة عند تغيير الاختيار
   /// Explanation: Change tafsir/translation when selection changes

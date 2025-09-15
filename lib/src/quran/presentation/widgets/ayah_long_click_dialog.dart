@@ -193,33 +193,13 @@ class AyahLongClickDialog extends StatelessWidget {
                   showTafsirOnTap(
                     context: context,
                     isDark: isDark,
-                    surahNum: (QuranCtrl.instance.state.fontsSelected.value ==
-                                1 ||
-                            QuranCtrl.instance.state.fontsSelected.value == 2 ||
-                            QuranCtrl.instance.state.scaleFactor.value > 1.3)
-                        ? QuranCtrl.instance
-                            .getSurahDataByAyah(ayah!)
-                            .surahNumber
-                        : ayah!.surahNumber!,
                     ayahNum: (QuranCtrl.instance.state.fontsSelected.value ==
                                 1 ||
                             QuranCtrl.instance.state.fontsSelected.value == 2 ||
                             QuranCtrl.instance.state.scaleFactor.value > 1.3)
                         ? ayah!.ayahNumber
                         : ayah!.ayahNumber,
-                    ayahText: (QuranCtrl.instance.state.fontsSelected.value ==
-                                1 ||
-                            QuranCtrl.instance.state.fontsSelected.value == 2 ||
-                            QuranCtrl.instance.state.scaleFactor.value > 1.3)
-                        ? ayah!.text
-                        : ayah!.text,
                     pageIndex: pageIndex,
-                    ayahTextN: (QuranCtrl.instance.state.fontsSelected.value ==
-                                1 ||
-                            QuranCtrl.instance.state.fontsSelected.value == 2 ||
-                            QuranCtrl.instance.state.scaleFactor.value > 1.3)
-                        ? ayah!.ayaTextEmlaey
-                        : ayah!.ayaTextEmlaey,
                     ayahUQNum: (QuranCtrl.instance.state.fontsSelected.value ==
                                 1 ||
                             QuranCtrl.instance.state.fontsSelected.value == 2 ||

@@ -16,9 +16,12 @@ class TafsirStyle {
   final Color? unSelectedTafsirBorderColor;
   final Color? backgroundColor;
   final Color? textColor;
+  final Color? tafsirBackgroundColor;
   final Color? dividerColor;
   final double? fontSize;
   final String? footnotesName;
+  final double? horizontalMargin;
+  final double? verticalMargin;
 
   TafsirStyle({
     this.backgroundColor,
@@ -39,5 +42,8 @@ class TafsirStyle {
     this.fontSize,
     this.footnotesName,
     this.dividerColor,
+    this.horizontalMargin,
+    this.verticalMargin,
+    this.tafsirBackgroundColor,
   });
 }

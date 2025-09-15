@@ -227,7 +227,8 @@ extension QuranGetters on QuranCtrl {
 
   int getPageNumberByAyahAndSurahNumber(int ayahNumber, int surahNumber) {
     // التحقق من صحة المدخلات
-    if (surahNumber < 1 || surahNumber > 114) return 1;
+    if (surahNumber < 1) return 1;
+    if (surahNumber > 114) return 114;
 
     try {
       final ayah = state.surahs[surahNumber - 1].ayahs.firstWhere(

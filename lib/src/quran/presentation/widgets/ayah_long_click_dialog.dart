@@ -223,10 +223,9 @@ class AyahLongClickDialog extends StatelessWidget {
                               color: isDark ? Colors.white : Colors.black,
                             ),
                       ),
-                      fontSizeWidget: Icon(
-                        Icons.text_format_outlined,
-                        size: 34,
-                        color: isDark ? Colors.white : Colors.black,
+                      fontSizeWidget: fontSizeDropDown(
+                        height: 30.0,
+                        isDark: isDark,
                       ),
                     ),
                   );

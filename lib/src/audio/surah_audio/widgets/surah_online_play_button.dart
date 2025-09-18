@@ -17,10 +17,12 @@ class SurahOnlinePlayButton extends StatelessWidget {
             final playerState = snapshot.data;
             final processingState = playerState?.processingState;
             if (processingState == ProcessingState.buffering) {
-              return CustomWidgets.customLottie(
-                  LottieConstants.get(LottieConstants.assetsLottiePlayButton),
-                  width: style?.playIconHeight ?? 20.0,
-                  height: style?.playIconHeight ?? 20.0);
+              return SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                  ));
             } else if (playerState != null && !playerState.playing) {
               return IconButton(
                 icon: CustomWidgets.customSvgWithColor(

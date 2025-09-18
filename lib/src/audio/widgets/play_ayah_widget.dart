@@ -19,10 +19,12 @@ class PlayAyahWidget extends StatelessWidget {
               processingState == ProcessingState.buffering ||
               (audioCtrl.state.isDownloading.value &&
                   audioCtrl.state.progress.value == 0)) {
-            return CustomWidgets.customLottie(
-                LottieConstants.get(LottieConstants.assetsLottiePlayButton),
-                width: 20.0,
-                height: 20.0);
+            return SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                ));
           } else if (playerState != null && !playerState.playing) {
             return GestureDetector(
               child: CustomWidgets.customSvgWithColor(

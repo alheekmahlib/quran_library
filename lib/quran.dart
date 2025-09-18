@@ -3,9 +3,6 @@ import 'dart:developer' show log;
 import 'dart:io' show File, Platform, Directory, InternetAddress;
 import 'dart:math' as math show max;
 
-import 'package:another_xlider/another_xlider.dart';
-import 'package:another_xlider/models/handler_animation.dart';
-import 'package:another_xlider/models/trackbar.dart';
 import 'package:archive/archive.dart' show ZipDecoder;
 import 'package:dio/dio.dart';
 import 'package:drift/drift.dart' as drift;

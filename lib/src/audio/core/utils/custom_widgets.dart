@@ -36,36 +36,9 @@ class CustomWidgets {
     );
   }
 
-  static Widget customSvg(String path, {double? height, double? width}) {
-    return SvgPicture.asset(
-      path,
-      width: width,
-      height: height,
-    );
-  }
-
-  static Widget customLottie(String path,
-      {double? width, double? height, bool? isRepeat}) {
-    return Lottie.asset(path,
-        width: width, height: height, repeat: isRepeat ?? true);
-  }
-
-  static Widget customLottieWithColor(String path,
-      {double? width,
-      double? height,
-      bool? isRepeat,
-      Color? color,
-      BuildContext? ctx}) {
-    assert(ctx != null || color != null);
-    return ColorFiltered(
-      colorFilter: ColorFilter.mode(
-          color ?? Theme.of(ctx!).colorScheme.surface, BlendMode.modulate),
-      child: Lottie.asset(
-        path,
-        width: width,
-        height: height,
-        repeat: isRepeat ?? true,
-      ),
-    );
-  }
+  // static Widget customLottie(
+  //     {double? width, double? height, bool? isRepeat}) {
+  //   return CircularProgressIndicator(
+  //       width: width, height: height);
+  // }
 }

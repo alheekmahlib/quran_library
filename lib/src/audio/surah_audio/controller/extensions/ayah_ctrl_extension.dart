@@ -157,8 +157,7 @@ extension AyahCtrlExtension on AudioCtrl {
 
       // إظهار رسالة خطأ للمستخدم / Show error message to user
       if (context != null) {
-        UiHelper.showCustomErrorSnackBar(
-            'خطأ في تشغيل الآيات: ${e.toString()}', context);
+        ToastUtils().showToast(context, 'خطأ في تشغيل الآيات: ${e.toString()}');
       }
     }
   }

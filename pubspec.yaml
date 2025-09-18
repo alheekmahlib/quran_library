@@ -1,7 +1,7 @@
 name: quran_library
 description: "An integrated package for displaying the Holy Qur’an identical to
   the Medina Quran with the narration of Hafs on the authority of Asim."
-version: 2.0.13+1
+version: 2.0.14
 homepage: https://github.com/alheekmahlib/quran_library
 documentation: https://alheekmahlib.github.io/quran_library_web/
 
@@ -10,10 +10,8 @@ environment:
   flutter: ">=1.20.0"
 
 dependencies:
-  another_xlider: ^3.0.2
   archive: ^4.0.7
   audio_service: ^0.18.18
-  toastification: ^3.0.3
   connectivity_plus: ^6.1.4
   dio: ^5.8.0+1
   drift: ^2.27.0
@@ -25,11 +23,9 @@ dependencies:
   get: ^4.7.2
   get_storage: ^2.1.1
   just_audio: ^0.10.4
-  lottie: ^3.3.1
   path: ^1.9.0
   path_provider: ^2.1.5
   rxdart: ^0.28.0
-  scrollable_positioned_list: ^0.3.8
   flutter_sliding_panel: ^0.0.5
 
 # This package supports all platforms listed below.
@@ -80,7 +76,6 @@ flutter:
     - assets/fonts/NotoNaskhArabic-VariableFont_wght.ttf
     - assets/fonts/UthmanicHafs_V20.ttf
     - assets/jsons/
-    - assets/lottie/
     - assets/svg/
     - assets/saadiV4.db
     - assets/en.json

@@ -6,9 +6,15 @@ class ToastUtils {
       content: Text(
         msg,
         style: QuranLibrary().naskhStyle,
+        textAlign: TextAlign.center,
       ),
       backgroundColor: const Color(0xffe8decb),
       duration: const Duration(seconds: 3),
+      behavior: SnackBarBehavior.floating,
+      margin: EdgeInsets.only(
+          bottom: MediaQuery.of(context).size.height - 100,
+          right: 16,
+          left: 16),
     );
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }

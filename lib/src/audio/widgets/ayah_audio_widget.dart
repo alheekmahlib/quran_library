@@ -45,7 +45,7 @@ class AyahsAudioWidget extends StatelessWidget {
                         final targetHeight = availableHeight.clamp(80.0, 175.0);
 
                         return SizedBox(
-                            height: targetHeight,
+                            height: targetHeight.h,
                             width: MediaQuery.sizeOf(context).width,
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,

@@ -1,3 +1,9 @@
+## 2.0.14
+
+* **Fix README**
+* **Fix TafsirStyle**
+* **Fix some UI**
+
 ## 2.0.13+1
 
 * **Fix README**

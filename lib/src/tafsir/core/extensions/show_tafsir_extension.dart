@@ -125,24 +125,7 @@ extension ShowTafsirExtension on void {
             isDark: isDarkMode,
             islocalFont: islocalFont,
             fontsName: fontsName,
-            tafsirStyle: tafsirStyle ??
-                TafsirStyle(
-                  backgroundColor: isDarkMode
-                      ? const Color(0xff1E1E1E)
-                      : const Color(0xfffaf7f3),
-                  tafsirNameWidget: Text(
-                    'التفسير',
-                    style: QuranLibrary().naskhStyle.copyWith(
-                          fontSize: 24,
-                          color: isDarkMode ? Colors.white : Colors.black,
-                        ),
-                  ),
-                  fontSizeWidget: Icon(
-                    Icons.text_format_outlined,
-                    size: 34,
-                    color: isDarkMode ? Colors.white : Colors.black,
-                  ),
-                ),
+            tafsirStyle: tafsirStyle!,
           );
         },
       );

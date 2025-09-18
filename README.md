@@ -1,6 +1,20 @@
-## Quran Library - مكتبة القرآن
+## Quran Library
 <p align="center">
 <img src="https://raw.githubusercontent.com/alheekmahlib/thegarlanded/refs/heads/master/Photos/quran_library.svg" width="150"/>
+</p>
+
+<p align="center"><strong>Choose your language for the documentation:</strong></p>
+
+<p align="center">
+  <a href="https://alheekmahlib.github.io/quran_library_web/#/ar" style="display: inline-block; padding: 6px 24px; margin: 4px; background: linear-gradient(135deg, #FCFBF8, #E0CCB0); color: black; text-decoration: none; border-radius: 8px; box-shadow: 0 4px 15px rgba(238, 186, 32, 0.11); font-weight: bold; font-size: 14px; transition: all 0.3s ease; text-transform: uppercase;">العربية</a>
+  <a href="https://alheekmahlib.github.io/quran_library_web/#/en" style="display: inline-block; padding: 6px 24px; margin: 4px; background: linear-gradient(135deg, #FCFBF8, #E0CCB0); color: black; text-decoration: none; border-radius: 8px; box-shadow: 0 4px 15px rgba(238, 186, 32, 0.11); font-weight: bold; font-size: 14px; transition: all 0.3s ease; text-transform: uppercase;">English</a>
+  <a href="https://alheekmahlib.github.io/quran_library_web/#/bn" style="display: inline-block; padding: 6px 24px; margin: 4px; background: linear-gradient(135deg, #FCFBF8, #E0CCB0); color: black; text-decoration: none; border-radius: 8px; box-shadow: 0 4px 15px rgba(238, 186, 32, 0.11); font-weight: bold; font-size: 14px; transition: all 0.3s ease; text-transform: uppercase;">বাংলা</a>
+  <a href="https://alheekmahlib.github.io/quran_library_web/#/id" style="display: inline-block; padding: 6px 24px; margin: 4px; background: linear-gradient(135deg, #FCFBF8, #E0CCB0); color: black; text-decoration: none; border-radius: 8px; box-shadow: 0 4px 15px rgba(238, 186, 32, 0.11); font-weight: bold; font-size: 14px; transition: all 0.3s ease; text-transform: uppercase;">Bahasa Indonesia</a>
+  <a href="https://alheekmahlib.github.io/quran_library_web/#/ur" style="display: inline-block; padding: 6px 24px; margin: 4px; background: linear-gradient(135deg, #FCFBF8, #E0CCB0); color: black; text-decoration: none; border-radius: 8px; box-shadow: 0 4px 15px rgba(238, 186, 32, 0.11); font-weight: bold; font-size: 14px; transition: all 0.3s ease; text-transform: uppercase;">اردو</a>
+  <a href="https://alheekmahlib.github.io/quran_library_web/#/tr" style="display: inline-block; padding: 6px 24px; margin: 4px; background: linear-gradient(135deg, #FCFBF8, #E0CCB0); color: black; text-decoration: none; border-radius: 8px; box-shadow: 0 4px 15px rgba(238, 186, 32, 0.11); font-weight: bold; font-size: 14px; transition: all 0.3s ease; text-transform: uppercase;">Türkçe</a>
+  <a href="https://alheekmahlib.github.io/quran_library_web/#/ku" style="display: inline-block; padding: 6px 24px; margin: 4px; background: linear-gradient(135deg, #FCFBF8, #E0CCB0); color: black; text-decoration: none; border-radius: 8px; box-shadow: 0 4px 15px rgba(238, 186, 32, 0.11); font-weight: bold; font-size: 14px; transition: all 0.3s ease; text-transform: uppercase;">کوردی</a>
+  <a href="https://alheekmahlib.github.io/quran_library_web/#/ms" style="display: inline-block; padding: 6px 24px; margin: 4px; background: linear-gradient(135deg, #FCFBF8, #E0CCB0); color: black; text-decoration: none; border-radius: 8px; box-shadow: 0 4px 15px rgba(238, 186, 32, 0.11); font-weight: bold; font-size: 14px; transition: all 0.3s ease; text-transform: uppercase;">Bahasa Malaysia</a>
+  <a href="https://alheekmahlib.github.io/quran_library_web/#/es" style="display: inline-block; padding: 6px 24px; margin: 4px; background: linear-gradient(135deg, #FCFBF8, #E0CCB0); color: black; text-decoration: none; border-radius: 8px; box-shadow: 0 4px 15px rgba(238, 186, 32, 0.11); font-weight: bold; font-size: 14px; transition: all 0.3s ease; text-transform: uppercase;">Español</a>
 </p>
 
 ### This package is a continuation of [flutter_quran](https://pub.dev/packages/flutter_quran) by [Hesham Erfan](https://www.linkedin.com/in/hesham-erfan-876b83105/) with many new features.
@@ -9,47 +23,40 @@
 <img src="https://github.com/alheekmahlib/thegarlanded/blob/master/Photos/quran_package_banner.png?raw=true" width="500"/>
 </p>
 
-### :ملاحظة مهمة قبل البدء بالإستخدام: يرجى جعل:
 ### Important note before starting to use: Please make:
 ```dart
   useMaterial3: false,
 ```
-### لكي لا تسبب أي مشاكل في التشكيل 
 ### In order not to cause any formation problems
 
 #
 
-## Table of Contents - جدول المحتويات
+## Table of Contents
 
-- [Getting started - بدء الإستخدام](#getting-started---بدء-الإستخدام)
-- [Usage Example - مثال الإستخدام](#usage-example---مثال-الإستخدام)
+- [Getting started](#getting-started)
+- [Usage Example](#usage-example)
   - [Basic Quran Screen](#basic-quran-screen)
-  - [Individual Surah Display - عرض السورة المنفصلة](#individual-surah-display---عرض-السورة-المنفصلة)
-  - [Single Ayah Display - عرض آية واحدة](#single-ayah-display---عرض-آية-واحدة)
-- [Utils - الأدوات](#utils---الأدوات)
-  - [الحصول على جميع أجزاء القرآن والأحزاب والسور](#الحصول-على-جميع-أجزاء-القرآن-والأحزاب-والسور)
-  - [للتنقل بين الصفحات أو السور أو الأجزاء](#للتنقل-بين-الصفحات-أو-السور-أو-الأجزاء-يمكنك-استخدام)
-  - [إضافة الإشارات المرجعية وإعدادها وإزالتها](#إضافة-الإشارات-المرجعية-وإعدادها-وإزالتها-والحصول-عليها-والانتقال-إليها)
-  - [للبحث عن أي آية](#للبحث-عن-أي-آية)
-- [Fonts Download - تحميل الخطوط](#fonts-download---تحميل-الخطوط)
-- [Tafsir - التفسير](#tafsir---التفسير)
-- [Audio Playback - التشغيل الصوتي](#audio-playback---التشغيل-الصوتي)
+  - [Individual Surah Display](#individual-surah-display)
+  - [Single Ayah Display](#single-ayah-display)
+- [Utils](#utils)
+  - [Getting all Quran's Jozzs, Hizbs, and Surahs](#getting-all-qurans-jozzs-hizbs-and-surahs)
+  - [to jump between pages, Surahs or Hizbs you can use](#to-jump-between-pages-surahs-or-hizbs-you-can-use)
+  - [Adding, setting, removing, getting and navigating to bookmarks](#adding-setting-removing-getting-and-navigating-to-bookmarks)
+  - [searching for any Ayah](#searching-for-any-ayah)
+- [Fonts Download](#fonts-download)
+- [Tafsir](#tafsir)
+- [Audio Playback](#audio-playback)
 
 #
 
-## Getting started - بدء الإستخدام
+## Getting started
 
-### Permissions - الصلاحيات
-
-#### Android - أندرويد
+#### Android
 The required permissions for audio playback (`WAKE_LOCK`, `FOREGROUND_SERVICE`, and `FOREGROUND_SERVICE_MEDIA_PLAYBACK`) are automatically added by the package. You don't need to manually edit your AndroidManifest.xml.
 
-الصلاحيات المطلوبة للتشغيل الصوتي (`WAKE_LOCK`, `FOREGROUND_SERVICE`, و `FOREGROUND_SERVICE_MEDIA_PLAYBACK`) يتم إضافتها تلقائياً بواسطة المكتبة. لا تحتاج لتعديل ملف AndroidManifest.xml يدوياً.
-
-#### iOS - آي أو إس
+#### iOS
 For background audio playback, you must add the following to your app's `Info.plist`:
 
-للتشغيل الصوتي في الخلفية، يجب إضافة التالي إلى ملف `Info.plist` الخاص بتطبيقك:
 ```xml
 <key>UIBackgroundModes</key>
 <array>
@@ -59,8 +66,6 @@ For background audio playback, you must add the following to your app's `Info.pl
 
 This allows audio playback to continue when the app is in the background.
 
-هذا يسمح باستمرار التشغيل الصوتي عندما يكون التطبيق في الخلفية.
-
 In the `pubspec.yaml` of your flutter project, add the following dependency:
 
 ```yaml
@@ -69,32 +74,30 @@ dependencies:
   quran_library: ^2.0.13+1
 ```
 
-
 Import it:
 
 ```dart
 import 'package:quran_library/quran_library.dart';
 ```
 
-Initialize it - تهيئة المكتبة:
+Initialize it:
 
 ```dart
 QuranLibrary.init();
 ```
 
-## Usage Example - مثال الإستخدام
+## Usage Example
 
 ### Basic Quran Screen
 
 ```dart
 /// You can just add it to your code like this:
-/// يمكنك فقط إضافته إلى الكود الخاص بك هكذا:
 class MyQuranPage extends StatelessWidget {
   
   @override
   Widget build(BuildContext context) {
     return QuranLibraryScreen(
-      parentContext: context, // مطلوب - Required
+      parentContext: context, // Required
     );
   }
 }
@@ -102,36 +105,26 @@ class MyQuranPage extends StatelessWidget {
 
 
 #### or give it some options:
-#### أو يمكنك تمرير بعض الخيارات:
 
 ```dart
 QuranLibraryScreen(
-    /// **مطلوب** - تمرير السياق من الويدجت الأب [parentContext]
     /// **Required** - Pass context from parent widget [parentContext]
     parentContext: context,
     
-    /// إذا قمت بإضافة شريط التطبيقات هنا فإنه سيحل محل شريط التطبيقات الافتراضية [appBar]
-    /// [appBar] if if provided it will replace the default app bar
+    /// [appBar] if provided it will replace the default app bar
     appBar: ...,
-    /// متغير لتعطيل أو تمكين شريط التطبيقات الافتراضية [useDefaultAppBar]
     /// [useDefaultAppBar] is a bool to disable or enable the default app bar widget
     useDefaultAppBar: // true or false,
-    /// إذا تم توفيره فسيتم استدعاؤه عند تغيير صفحة القرآن [onPageChanged]
     /// [onPageChanged] if provided it will be called when a quran page changed
     onPageChanged: (int pageIndex) => print("Page changed: $pageIndex"),
-    /// تغيير نمط البسملة بواسطة هذه الفئة [BasmalaStyle]
     /// [BasmalaStyle] Change the style of Basmala by BasmalaStyle class
     basmalaStyle: // BasmalaStyle(),
-    /// تغيير نمط الشعار من خلال هذه الفئة [BannerStyle]
     /// [BannerStyle] Change the style of banner by BannerStyle class
     bannerStyle: // BannerStyle(),
-    /// تغيير نمط اسم السورة بهذه الفئة [SurahNameStyle]
     /// [SurahNameStyle] Change the style of surah name by SurahNameStyle class
     surahNameStyle: // SurahNameStyle(),
-    /// تغيير نمط معلومات السورة بواسطة هذه الفئة [SurahInfoStyle]
     /// [SurahInfoStyle] Change the style of surah information by SurahInfoStyle class
     surahInfoStyle: // SurahInfoStyle(),
-    /// تغيير نمط نافذة تحميل الخطوط بواسطة هذه الفئة [DownloadFontsDialogStyle]
     /// [DownloadFontsDialogStyle] Change the style of Download fonts dialog by DownloadFontsDialogStyle class
     downloadFontsDialogStyle: // DownloadFontsDialogStyle(),
     
@@ -139,29 +132,23 @@ QuranLibraryScreen(
 ),
 ```
 
-### Individual Surah Display - عرض السورة المنفصلة
+### Individual Surah Display
 
 ```dart
 /// For displaying a single surah with custom pagination
-/// لعرض سورة واحدة مع تقسيم مخصص للصفحات
 SurahDisplayScreen(
-    /// رقم السورة المراد عرضها [surahNumber]
     /// [surahNumber] The surah number to display
-    surahNumber: 1, // For Al-Fatihah - للفاتحة
-    /// إذا تم توفيره فسيتم استدعاؤه عند تغيير صفحة السورة [onPageChanged]
+    surahNumber: 1, // For Al-Fatihah
     /// [onPageChanged] if provided it will be called when a surah page changed
     onPageChanged: (int pageIndex) => print("Surah page changed: $pageIndex"),
-    /// تمكين أو تعطيل النمط المظلم [isDark]
     /// [isDark] enable or disable dark mode
     isDark: false,
-    /// تغيير نمط البسملة [basmalaStyle]
     /// [basmalaStyle] Change the style of Basmala
     basmalaStyle: BasmalaStyle(
         basmalaColor: Colors.black,
         basmalaWidth: 160.0,
         basmalaHeight: 30.0,
     ),
-    /// تغيير نمط الشعار [bannerStyle]
     /// [bannerStyle] Change the style of banner
     bannerStyle: BannerStyle(
         isImage: false,
@@ -172,60 +159,53 @@ SurahDisplayScreen(
 ),
 ```
 
-### Single Ayah Display - عرض آية واحدة
+### Single Ayah Display
 
 ```dart
 /// For displaying a single ayah from any surah
-/// لعرض آية واحدة من أي سورة
 GetSingleAyah(
-    /// رقم السورة [surahNumber] - يجب أن يكون بين 1 و 114
     /// [surahNumber] - must be between 1 and 114
-    surahNumber: 1, // رقم السورة
+    surahNumber: 1, // Surah number
     
-    /// رقم الآية [ayahNumber] - رقم الآية داخل السورة
     /// [ayahNumber] - ayah number within the surah
-    ayahNumber: 2, // رقم الآية
+    ayahNumber: 2, // Ayah number
     
-    /// لون النص [textColor] - اختياري
     /// [textColor] - optional text color
     textColor: Colors.black,
     
-    /// النمط المظلم [isDark] - اختياري، افتراضي false
     /// [isDark] - optional, default is false
     isDark: false,
     
-    /// حجم الخط [fontSize] - اختياري، افتراضي 22
     /// [fontSize] - optional, default is 22
     fontSize: 24.0,
     
-    /// تفعيل النص العريض [isBold] - اختياري، افتراضي true
     /// [isBold] - optional, default is true
     isBold: true,
 ),
 ```
 
-#### استخدام GetSingleAyah في قائمة - Using GetSingleAyah in a list:
+#### Using GetSingleAyah in a list:
 
 ```dart
 class SingleAyahExample extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('عرض الآيات المنفردة')),
+      appBar: AppBar(title: Text('Display Single Ayahs')),
       body: ListView(
         padding: EdgeInsets.all(16),
         children: [
-          // آية الكرسي
+          // Ayat al-Kursi
           Card(
             child: Padding(
               padding: EdgeInsets.all(16),
               child: Column(
                 children: [
-                  Text('آية الكرسي', style: TextStyle(fontWeight: FontWeight.bold)),
+                  Text('Ayat al-Kursi', style: TextStyle(fontWeight: FontWeight.bold)),
                   SizedBox(height: 10),
                   GetSingleAyah(
-                    surahNumber: 2, // البقرة
-                    ayahNumber: 255, // آية الكرسي
+                    surahNumber: 2, // Al-Baqarah
+                    ayahNumber: 255, // Ayat al-Kursi
                     fontSize: 20,
                     textColor: Colors.brown,
                   ),
@@ -236,16 +216,16 @@ class SingleAyahExample extends StatelessWidget {
           
           SizedBox(height: 16),
           
-          // الفاتحة كاملة
+          // Complete Al-Fatihah
           Card(
             child: Padding(
               padding: EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Text('سورة الفاتحة', style: TextStyle(fontWeight: FontWeight.bold)),
+                  Text('Surah Al-Fatihah', style: TextStyle(fontWeight: FontWeight.bold)),
                   SizedBox(height: 10),
-                  // عرض جميع آيات الفاتحة
+                  // Display all ayahs of Al-Fatihah
                   ...List.generate(7, (index) => Padding(
                     padding: EdgeInsets.symmetric(vertical: 4),
                     child: GetSingleAyah(
@@ -266,12 +246,10 @@ class SingleAyahExample extends StatelessWidget {
 }
 ```
 
-## Utils - الأدوات
+## Utils
 
-### توفر الحزمة الكثير من الأدوات مثل:
 ### The package provides a lot of utils like:
 
-* ### الحصول على جميع أجزاء القرآن والأحزاب والسور
 * ### Getting all Quran's Jozzs, Hizbs, and Surahs
 
 ```dart
@@ -280,47 +258,36 @@ final hizbs = QuranLibrary.allHizb;
 final surahs = QuranLibrary.getAllSurahs();
 final ayahsOnPage = QuranLibrary().getAyahsByPage();
 
-/// [getSurahInfo] تتيح لك الحصول على سورة مع جميع بياناتها عند تمرير رقم السورة لها.
-///
 /// [getSurahInfo] let's you get a Surah with all its data when you pass Surah number
 final surah = QuranLibrary().getSurahInfo(1);
 ```
 
-* ### للتنقل بين الصفحات أو السور أو الأجزاء يمكنك استخدام:
 * ### to jump between pages, Surahs or Hizbs you can use:
 ```dart
-/// [navigateToAyah] يتيح لك التنقل إلى أي آية.
-/// من الأفضل استدعاء هذه الطريقة أثناء عرض شاشة القرآن،
-/// وإذا تم استدعاؤها ولم تكن شاشة القرآن معروضة،
-/// فسيتم بدء العرض من صفحة هذه الآية عند فتح شاشة القرآن في المرة التالية.
-///
 /// [jumpToAyah] let's you navigate to any ayah..
 /// It's better to call this method while Quran screen is displayed
 /// and if it's called and the Quran screen is not displayed, the next time you
 /// open quran screen it will start from this ayah's page
 QuranLibrary().jumpToAyah(AyahModel ayah);
-/// أو يمكنك استخدام:
 /// or you can use:
 /// jumpToPage, jumpToJoz, jumpToHizb, jumpToBookmark and jumpToSurah.
 ```
 
 <img src="https://github.com/alheekmahlib/thegarlanded/blob/master/Photos/Quran_package_jumpTo.png?raw=true" width="320"/>
 
-* ### إضافة الإشارات المرجعية وإعدادها وإزالتها والحصول عليها والانتقال إليها:
 * ### Adding, setting, removing, getting and navigating to bookmarks:
 
 ```dart
 // In init function
 QuranLibrary().init(userBookmarks: [Bookmark(id: 0, colorCode: Colors.red.value, name: "Red Bookmark")]);
 final usedBookmarks = QuranLibrary().getUsedBookmarks();
-QuranLibrary().setBookmark(surahName: 'الفاتحة', ayahNumber: 5, ayahId: 5, page: 1, bookmarkId: 0);
+QuranLibrary().setBookmark(surahName: 'Al-Fatihah', ayahNumber: 5, ayahId: 5, page: 1, bookmarkId: 0);
 QuranLibrary().removeBookmark(bookmarkId: 0);
 QuranLibrary().jumpToBookmark(BookmarkModel bookmark);
 ```
 
 <img src="https://github.com/alheekmahlib/thegarlanded/blob/master/Photos/Quran_package_bookmark.png?raw=true" width="320"/> <img src="https://github.com/alheekmahlib/thegarlanded/blob/master/Photos/Quran_package_bookmark2.png?raw=true" width="320"/>
 
-* ### للبحث عن أي آية
 * ### searching for any Ayah
 ```dart
 TextField(
@@ -332,23 +299,18 @@ TextField(
   },
   decoration: InputDecoration(
     border:  OutlineInputBorder(borderSide: BorderSide(color: Colors.black),),
-    hintText: 'بحث',
+    hintText: 'Search',
   ),
 ),
 ```
 <img src="https://github.com/alheekmahlib/thegarlanded/blob/master/Photos/Quran_package_search.png?raw=true" width="320"/>
 
-## Fonts Download - تحميل الخطوط
+## Fonts Download
 
-## لتحميل خطوط المصحف لديك خيارين:
-* ### أما استخدام نافذة الحوار الافتراضية ويمكنك تعديل الخصائص التي فيها.
-* ### أو يمكنك عمل تصميم خاص بك مع استخدام جميع الدوال الخاصة بتحميل الخطوط.
 ## To download Quran fonts, you have two options:
 * ### As for using the default dialog, you can modify the style in it.
 * ### Or you can create your own design using all the functions for downloading fonts.
 
-## تحتاج MACOS إلى طلب استحقاق محدد للوصول إلى الشبكة.
-### للقيام بذلك: افتح MacOS/Runner/DebugProfile.Entitlements وأضف زوج القيمة والمفتاح التالي.
 ## macOS needs you to request a specific entitlement in order to access the network. 
 ### To do that: open macos/Runner/DebugProfile.entitlements and add the following key-value pair.
 
@@ -364,63 +326,43 @@ TextField(
 /// and pass the language code to translate the number if you want,
 /// the default language code is 'ar' [languageCode]
 /// and style [DownloadFontsDialogStyle] is optional.
-/// للحصول على نافذة حوار خاصة بتحميل الخطوط، قم فقط باستدعاء: [getFontsDownloadDialog].
-///
-/// قم بتمرير رمز اللغة ليتم عرض الأرقام على حسب اللغة،
-/// رمز اللغة الإفتراضي هو: 'ar' [languageCode].
-/// كما أن التمرير الاختياري لنمط [DownloadFontsDialogStyle] ممكن.
 QuranLibrary().getFontsDownloadDialog(downloadFontsDialogStyle, languageCode);
 
-/// للحصول على الويدجت الخاصة بتنزيل الخطوط فقط قم بإستدعاء [getFontsDownloadWidget]
-///
 /// to get the fonts download widget just call [getFontsDownloadWidget]
 Widget getFontsDownloadWidget(context, {downloadFontsDialogStyle, languageCode});
 
-/// للحصول على طريقة تنزيل الخطوط فقط قم بإستدعاء [fontsDownloadMethod]
-///
 /// to get the fonts download method just call [fontsDownloadMethod]
 QuranLibrary().fontsDownloadMethod;
 
-/// للحصول على طريقة تنزيل الخطوط فقط قم بإستدعاء [getFontsPrepareMethod]
-/// مطلوب تمرير رقم الصفحة [pageIndex]
-///
 /// to prepare the fonts was downloaded before just call [getFontsPrepareMethod]
 /// required to pass [pageIndex]
 QuranLibrary().getFontsPrepareMethod(pageIndex);
 
-/// لحذف الخطوط فقط قم بإستدعاء [deleteFontsMethod]
-///
 /// to delete the fonts just call [deleteFontsMethod]
 QuranLibrary().deleteFontsMethod;
 
-/// للحصول على تقدم تنزيل الخطوط، ما عليك سوى إستدعاء [fontsDownloadProgress]
-///
 /// to get fonts download progress just call [fontsDownloadProgress]
 QuranLibrary().fontsDownloadProgress;
 
-/// لمعرفة ما إذا كانت الخطوط محملة او لا، ما عليك سوى إستدعاء [isFontsDownloaded]
-///
 /// To find out whether fonts are downloaded or not, just call [isFontsDownloaded]
 QuranLibrary().isFontsDownloaded;
 ```
 
 <img src="https://github.com/alheekmahlib/thegarlanded/blob/master/Photos/Quran_package_fontes.png?raw=true" width="320"/>
 
-## Tafsir - التفسير
+## Tafsir
 
-### :ملاحظة مهمة قبل البدء بالإستخدام التفسير: يرجى إضافة هذه المكتبة إلى ملف pubspec.yaml الخاص بك للاندرويد فقط:
-# Important note before starting to use: Please add this library to your pubspec.yaml file only for Android:
+### Important note before starting to use: Please add this library to your pubspec.yaml file only for Android:
 ```yaml
  dependencies:
  ...
   drift_flutter: ^0.2.4
  ...
 ```
-# لكي لا تسبب أي مشاكل عند عرض التفسير 
 # to avoid any problems when showing the tafsir
 
 
-* ### Usage Example - مثال الإستخدام
+* ### Usage Example
 
 ```dart
 // get current list
@@ -442,70 +384,56 @@ final added = await TafsirController.instance.addCustomFromFile(
 
 );
 /// Show a popup menu to change the tafsir style.
-/// إظهار قائمة منبثقة لتغيير نوع التفسير.
 QuranLibrary().changeTafsirPopupMenu(TafsirStyle tafsirStyle, {int? pageNumber});
 
-/// إغلاق قاعدة البيانات وإعادة تهيئتها (عادة عند تغيير التفسير).
 /// Close and re-initialize the database (usually when changing the tafsir).
 QuranLibrary().closeAndInitializeDatabase({int? pageNumber});
 
-/// جلب التفسير الخاص بصفحة معينة من خلال رقم الصفحة.
 /// Fetch tafsir for a specific page by its page number.
 QuranLibrary().fetchTafsir({required int pageNumber});
 
-/// التحقق إذا كان التفسير تم تحميله مسبقاً.
 /// Check if the tafsir is already downloaded.
 QuranLibrary().getTafsirDownloaded(int index);
 
-/// الحصول على قائمة أسماء التفاسير والترجمات.
 /// Get the list of tafsir and translation names.
 QuranLibrary().tafsirAndTraslationCollection;
 
-/// تغيير التفسير المختار عند الضغط على زر التبديل.
 /// Change the selected tafsir when the switch button is pressed.
 QuranLibrary().changeTafsirSwitch(int index, {int? pageNumber});
 
-/// الحصول على قائمة بيانات التفاسير المتوفرة.
 /// Get the list of available tafsir data.
 QuranLibrary().tafsirList;
 
-/// الحصول على قائمة الترجمات المتوفرة.
 /// Get the list of available translations.
 QuranLibrary().translationList;
 
-/// جلب الترجمات من المصدر.
 /// Fetch translations from the source.
 QuranLibrary().fetchTranslation();
 
-/// تحميل التفسير المحدد حسب الفهرس.
 /// Download the tafsir by the given index.
 QuranLibrary().tafsirDownload(int i);
 ```
 
-## Audio Playback - التشغيل الصوتي
+## Audio Playback
 
-### يوفر هذا القسم إمكانيات شاملة لتشغيل القرآن الكريم صوتياً مع دعم التشغيل في الخلفية وإدارة متقدمة للملفات الصوتية.
 ### This section provides comprehensive capabilities for audio playback of the Holy Quran with background playback support and advanced audio file management.
 
-* ### Verse Audio Playback - تشغيل الآيات صوتياً
+* ### Verse Audio Playback
 
 ```dart
-/// تشغيل آية أو مجموعة من الآيات بدءًا من آية محددة
 /// Play a verse or group of verses starting from a specific verse
 await QuranLibrary().playAyah(
   context: context,
-  currentAyahUniqueNumber: 1, // رقم الآية الفريد
-  playSingleAyah: true, // true لآية واحدة، false للاستمرار
+  currentAyahUniqueNumber: 1, // Unique ayah number
+  playSingleAyah: true, // true for single ayah, false to continue
 );
 
-/// الانتقال للآية التالية وتشغيلها
 /// Move to next verse and play it
 await QuranLibrary().seekNextAyah(
   context: context,
   currentAyahUniqueNumber: 5,
 );
 
-/// الانتقال للآية السابقة وتشغيلها
 /// Move to previous verse and play it
 await QuranLibrary().seekPreviousAyah(
   context: context,
@@ -513,56 +441,47 @@ await QuranLibrary().seekPreviousAyah(
 );
 ```
 
-* ### Surah Audio Playback - تشغيل السور صوتياً
+* ### Surah Audio Playback
 
 ```dart
-/// تشغيل سورة كاملة من البداية حتى النهاية
 /// Play a complete surah from beginning to end
-await QuranLibrary().playSurah(surahNumber: 1); // الفاتحة
-await QuranLibrary().playSurah(surahNumber: 2); // البقرة
+await QuranLibrary().playSurah(surahNumber: 1); // Al-Fatihah
+await QuranLibrary().playSurah(surahNumber: 2); // Al-Baqarah
 
-/// الانتقال للسورة التالية وتشغيلها
 /// Move to next surah and play it
 await QuranLibrary().seekToNextSurah();
 
-/// الانتقال للسورة السابقة وتشغيلها
 /// Move to previous surah and play it
 await QuranLibrary().seekToPreviousSurah();
 ```
 
-* ### Download Management - إدارة التحميل
+* ### Download Management
 
 ```dart
-/// بدء تحميل سورة للتشغيل دون اتصال
 /// Start downloading a surah for offline playback
 await QuranLibrary().startDownloadSurah(surahNumber: 1);
 
-/// إلغاء التحميل الجاري
 /// Cancel ongoing download
 QuranLibrary().cancelDownloadSurah();
 ```
 
-* ### Position Control & Resume - التحكم في الموضع والاستئناف
+* ### Position Control & Resume
 
 ```dart
-/// الحصول على رقم السورة الحالية/الأخيرة
 /// Get current/last surah number
 int currentSurah = QuranLibrary().currentAndLastSurahNumber;
 
-/// الحصول على الموضع الأخير كنص منسق (مثل "05:23")
 /// Get last position as formatted text (like "05:23")
 String lastTimeText = QuranLibrary().formatLastPositionToTime;
 
-/// الحصول على الموضع الأخير كمدة زمنية للعمليات البرمجية
 /// Get last position as Duration object for programming operations
 Duration lastDuration = QuranLibrary().formatLastPositionToDuration;
 
-/// تشغيل من الموضع الأخير الذي توقف عنده المستخدم
 /// Play from the last position where user stopped
 await QuranLibrary().playLastPosition();
 ```
 
-* ### Complete Audio Example - مثال شامل للتشغيل الصوتي
+* ### Complete Audio Example
 
 ```dart
 class AudioControlExample extends StatefulWidget {
@@ -574,29 +493,29 @@ class _AudioControlExampleState extends State<AudioControlExample> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('مشغل القرآن الصوتي')),
+      appBar: AppBar(title: Text('Quran Audio Player')),
       body: Column(
         children: [
-          // عرض السورة الحالية
-          Text('السورة الحالية: ${QuranLibrary().currentAndLastSurahNumber}'),
+          // Display current surah
+          Text('Current Surah: ${QuranLibrary().currentAndLastSurahNumber}'),
           
-          // عرض الموضع الأخير
-          Text('الموضع الأخير: ${QuranLibrary().formatLastPositionToTime}'),
+          // Display last position
+          Text('Last Position: ${QuranLibrary().formatLastPositionToTime}'),
           
-          // أزرار التحكم
+          // Control buttons
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              // تشغيل من الموضع الأخير
+              // Play from last position
               ElevatedButton(
                 onPressed: () => QuranLibrary().playLastPosition(),
-                child: Text('متابعة من حيث توقفت'),
+                child: Text('Resume from where you left'),
               ),
               
-              // تشغيل سورة الفاتحة
+              // Play Al-Fatihah
               ElevatedButton(
                 onPressed: () => QuranLibrary().playSurah(surahNumber: 1),
-                child: Text('سورة الفاتحة'),
+                child: Text('Surah Al-Fatihah'),
               ),
             ],
           ),
@@ -604,13 +523,13 @@ class _AudioControlExampleState extends State<AudioControlExample> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              // السورة السابقة
+              // Previous surah
               IconButton(
                 onPressed: () => QuranLibrary().seekToPreviousSurah(),
                 icon: Icon(Icons.skip_previous),
               ),
               
-              // الآية السابقة
+              // Previous ayah
               IconButton(
                 onPressed: () => QuranLibrary().seekPreviousAyah(
                   context: context,
@@ -619,7 +538,7 @@ class _AudioControlExampleState extends State<AudioControlExample> {
                 icon: Icon(Icons.fast_rewind),
               ),
               
-              // الآية التالية
+              // Next ayah
               IconButton(
                 onPressed: () => QuranLibrary().seekNextAyah(
                   context: context,
@@ -628,7 +547,7 @@ class _AudioControlExampleState extends State<AudioControlExample> {
                 icon: Icon(Icons.fast_forward),
               ),
               
-              // السورة التالية
+              // Next surah
               IconButton(
                 onPressed: () => QuranLibrary().seekToNextSurah(),
                 icon: Icon(Icons.skip_next),
@@ -636,18 +555,18 @@ class _AudioControlExampleState extends State<AudioControlExample> {
             ],
           ),
           
-          // أزرار التحميل
+          // Download buttons
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               ElevatedButton(
                 onPressed: () => QuranLibrary().startDownloadSurah(surahNumber: 2),
-                child: Text('تحميل سورة البقرة'),
+                child: Text('Download Surah Al-Baqarah'),
               ),
               
               ElevatedButton(
                 onPressed: () => QuranLibrary().cancelDownloadSurah(),
-                child: Text('إلغاء التحميل'),
+                child: Text('Cancel Download'),
               ),
             ],
           ),
@@ -658,28 +577,21 @@ class _AudioControlExampleState extends State<AudioControlExample> {
 }
 ```
 
-### Audio Features Summary - ملخص الميزات الصوتية:
-- ✅ **Verse Playback** - تشغيل الآيات المنفردة أو المتسلسلة
-- ✅ **Complete Surah Playback** - تشغيل السور كاملة
-- ✅ **Navigation Controls** - أدوات التنقل بين الآيات والسور
-- ✅ **Offline Download** - تحميل للتشغيل دون اتصال
-- ✅ **Resume Functionality** - استئناف التشغيل من آخر موضع
-- ✅ **Background Playback** - التشغيل في الخلفية
-- ✅ **Position Tracking** - تتبع موضع التشغيل
-- ✅ **Download Management** - إدارة شاملة للتحميل والإلغاء
+### Audio Features Summary:
+- ✅ **Verse Playback** - Play individual or sequential verses
+- ✅ **Complete Surah Playback** - Play complete surahs
+- ✅ **Navigation Controls** - Navigation tools between verses and surahs
+- ✅ **Offline Download** - Download for offline playback
+- ✅ **Resume Functionality** - Resume playback from last position
+- ✅ **Background Playback** - Playback in the background
+- ✅ **Position Tracking** - Track playback position
+- ✅ **Download Management** - Comprehensive download and cancel management
 
-* ### كما يمكنك إستخدام الخط الإفتراضي للمصحف أو خط النسخ
+* ### You can also use the default Quran font or Naskh font
 ```dart
-/// [hafsStyle] هو النمط الافتراضي للقرآن، مما يضمن عرض جميع الأحرف الخاصة بشكل صحيح.
-///
 /// [hafsStyle] is the default style for Quran so all special characters will be rendered correctly
 QuranLibrary().hafsStyle;
 
-/// [naskhStyle] هو النمط الافتراضي للنصوص الآخرى.
-///
 /// [naskhStyle] is the default style for other text.
 QuranLibrary().naskhStyle;
 ```
-
-
-## لا تنسونا من صالح الدعاء

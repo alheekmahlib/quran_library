@@ -127,8 +127,7 @@ class AudioCtrl extends GetxController {
         // عدم استخدام BuildContext عبر async gap - استخدام Get.snackbar بدلاً من ذلك
         // Show no internet connection error without using BuildContext
         if (Get.context != null) {
-          UiHelper.showCustomErrorSnackBar(
-              'لا يوجد اتصال بالإنترنت', Get.context!);
+          ToastUtils().showToast(Get.context!, 'لا يوجد اتصال بالإنترنت');
         }
       } else {
         state.isPlaying.value = true;
@@ -195,7 +194,7 @@ class AudioCtrl extends GetxController {
         // إزالة استخدام BuildContext عبر async gap - استخدام Get.context بدلاً من ذلك
         // Avoid using BuildContext across async gap - use Get.context instead
         if (context != null && context.mounted) {
-          UiHelper.showCustomErrorSnackBar('لا يوجد اتصال بالإنترنت', context);
+          ToastUtils().showToast(context, 'لا يوجد اتصال بالإنترنت');
         }
       }
     }
@@ -387,8 +386,8 @@ class AudioCtrl extends GetxController {
     final hasAudioFocus = await requestAudioFocus();
     if (!hasAudioFocus) {
       if (Get.context != null) {
-        UiHelper.showCustomErrorSnackBar(
-            'يتم تشغيل صوت آخر في التطبيق. يرجى إيقافه أولاً.', Get.context!);
+        ToastUtils().showToast(
+            Get.context!, 'يتم تشغيل صوت آخر في التطبيق. يرجى إيقافه أولاً.');
       }
       return false;
     }

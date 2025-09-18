@@ -12,7 +12,6 @@ import 'package:flutter_sliding_panel/flutter_sliding_panel.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart' hide Response;
 import 'package:get_storage/get_storage.dart';
-import 'package:lottie/lottie.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:quran_library/src/audio/audio.dart';
@@ -20,7 +19,6 @@ import 'package:rxdart/rxdart.dart' as r;
 
 import '/quran.dart';
 import '../quran/core/utils/ui_helper.dart';
-import 'constants/lottie_constants.dart';
 import 'core/custom_paint/custom_slider.dart';
 import 'core/extensions/string_extensions.dart';
 
@@ -49,7 +47,6 @@ part 'surah_audio/widgets/surah_collapsed_play_widget.dart';
 part 'surah_audio/widgets/surah_download_play_button.dart';
 part 'surah_audio/widgets/surah_last_listen.dart';
 part 'surah_audio/widgets/surah_online_play_button.dart';
-part 'surah_audio/widgets/surah_play_banner.dart';
 part 'surah_audio/widgets/surah_play_widget.dart';
 part 'surah_audio/widgets/surah_repeat_widget.dart';
 part 'surah_audio/widgets/surah_seek_bar.dart';

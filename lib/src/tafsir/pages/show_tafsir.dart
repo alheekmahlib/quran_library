@@ -101,12 +101,12 @@ class ShowTafseer extends StatelessWidget {
                                 height: 24,
                                 color: Colors.grey.shade300),
                             const SizedBox(width: 8),
-                            Transform.translate(
-                              offset: const Offset(0, 2),
-                              child: tafsirStyle.fontSizeWidget ??
-                                  fontSizeDropDown(
-                                      height: 30.0, tafsirStyle: tafsirStyle),
-                            ),
+                            tafsirStyle.fontSizeWidget ??
+                                fontSizeDropDown(
+                                  height: 30.0,
+                                  tafsirStyle: tafsirStyle,
+                                  isDark: isDark,
+                                ),
                           ],
                         ),
                       ],
@@ -116,8 +116,6 @@ class ShowTafseer extends StatelessWidget {
                   Expanded(
                     child: Container(
                       decoration: BoxDecoration(
-                        color: tafsirStyle.tafsirBackgroundColor ??
-                            (isDark ? const Color(0xff1E1E1E) : Colors.white),
                         borderRadius: const BorderRadius.only(
                           topLeft: Radius.circular(18),
                           topRight: Radius.circular(18),

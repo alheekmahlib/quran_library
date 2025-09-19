@@ -15,7 +15,7 @@ class UiHelper {
   ///
   /// - Returns: The current orientation based on the provided parameters.
   static dynamic currentOrientation(
-      var portrait, var landscape, BuildContext context) {
+      dynamic portrait, dynamic landscape, BuildContext context) {
     Orientation orientation = MediaQuery.orientationOf(context);
     return orientation == Orientation.portrait ? portrait : landscape;
   }

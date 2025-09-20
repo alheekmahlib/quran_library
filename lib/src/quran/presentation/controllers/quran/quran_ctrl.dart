@@ -104,7 +104,8 @@ class QuranCtrl extends GetxController {
     return filteredAyahs;
   }
 
-  Future<void> loadQuran({quranPages = QuranRepository.hafsPagesNumber}) async {
+  Future<void> loadQuran(
+      {int quranPages = QuranRepository.hafsPagesNumber}) async {
     // حفظ آخر صفحة
     lastPage = _quranRepository.getLastPage() ?? 1;
     if (lastPage != 0) {

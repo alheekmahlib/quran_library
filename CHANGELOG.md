@@ -1,3 +1,8 @@
+## 2.0.16
+
+* **Fix README**
+* **Fix SliderWidget rendering exception**
+
 ## 2.0.15
 
 * **Fix README**

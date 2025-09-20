@@ -68,7 +68,7 @@ class QuranRepository {
   /// number read by the user and saves it for future reference.
   ///
   /// [lastPage]: The page number to be saved.
-  saveLastPage(int lastPage) =>
+  void saveLastPage(int lastPage) =>
       GetStorage().write(_StorageConstants().lastPage, lastPage);
 
   /// Retrieves the last page number from the storage.
@@ -88,7 +88,7 @@ class QuranRepository {
   /// using the appropriate read method from `GetStorage`.
   ///
   /// [bookmarks] - A list of [BookmarkModel] instances to be saved.
-  saveBookmarks(List<BookmarkModel> bookmarks) => GetStorage().write(
+  void saveBookmarks(List<BookmarkModel> bookmarks) => GetStorage().write(
         _StorageConstants().bookmarks,
         bookmarks.map((bookmark) => jsonEncode(bookmark._toJson())).toList(),
       );

@@ -12,19 +12,19 @@ environment:
 dependencies:
   archive: ^4.0.7
   audio_service: ^0.18.18
-  connectivity_plus: ^6.1.4
-  dio: ^5.8.0+1
-  drift: ^2.27.0
+  connectivity_plus: ^7.0.0
+  dio: ^5.9.0
+  drift: ^2.28.1
   flutter:
     sdk: flutter
   flutter_cache_manager: ^3.4.1
   flutter_screenutil: ^5.9.3
   flutter_sliding_panel: ^0.0.5
-  flutter_svg: ^2.1.0
+  flutter_svg: ^2.2.1
   get: ^4.7.2
   get_storage: ^2.1.1
-  just_audio: ^0.10.4
-  path: ^1.9.0
+  just_audio: ^0.10.5
+  path: ^1.9.1
   path_provider: ^2.1.5
   rxdart: ^0.28.0
 

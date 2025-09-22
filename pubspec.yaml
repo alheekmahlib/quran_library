@@ -23,13 +23,15 @@ dependencies:
   get: ^4.7.2
   get_storage: ^2.1.1
   just_audio: ^0.10.5
+  path: ^1.9.1
+  path_provider: ^2.1.5
   rxdart: ^0.28.0
 
 # This package supports all platforms listed below.
 # But note that it works and fits on mobile size devices
 # Additional Screen Sizes will be supported later
 platforms:
-  #  web:
+  ? web
   ? android
   ? ios
   ? linux

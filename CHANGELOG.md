@@ -1,7 +1,7 @@
 ## 2.1.0
 
 * **BREAKING CHANGE: The Tafsir (interpretation) is now loaded from JSON files only, replacing the previous SQL-based implementation.**
-* **Removed dependencies: The drift, path, and path_provider libraries have been removed.**
+* **Removed dependencies: The drift library has been removed.**
 * **Android setup simplified: Users no longer need to add the drift_flutter library to their Android project.**
 * **Upgrade Flutter to latest stable version #19**
 * **Updated all packages to their latest compatible versions**

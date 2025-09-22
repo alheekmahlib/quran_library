@@ -1,5 +1,3 @@
-import 'package:drift/drift.dart';
-
 // enum MufaserName {
 //   ibnkatheer,
 //   baghawy,
@@ -23,14 +21,6 @@ import 'package:drift/drift.dart';
 //   'saadiV4.db',
 //   'tabariV3.db',
 // ];
-
-class TafsirTable extends Table {
-  IntColumn get id => integer().named('index').autoIncrement()();
-  IntColumn get surahNum => integer().named('sura')();
-  IntColumn get ayahNum => integer().named('aya')();
-  TextColumn get tafsirText => text().named('Text')();
-  IntColumn get pageNum => integer().named('PageNum')();
-}
 
 class TafsirTableData {
   final int id;

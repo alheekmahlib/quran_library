@@ -116,8 +116,6 @@ class TafsirCtrl extends GetxController {
     super.onInit();
   }
 
-  bool _isDbInitialized = false;
-
   /// شرح: تهيئة التفسير مع التأكد من عدم تكرار إنشاء قاعدة البيانات
   /// Explanation: Initialize tafsir and avoid redundant DB creation
   Future<void> initTafsir() async {

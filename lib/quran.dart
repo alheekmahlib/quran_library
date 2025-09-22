@@ -5,7 +5,6 @@ import 'dart:math' as math show max;
 
 import 'package:archive/archive.dart' show ZipDecoder;
 import 'package:dio/dio.dart';
-import 'package:drift/drift.dart' as drift;
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';

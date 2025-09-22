@@ -539,7 +539,6 @@ class QuranLibrary {
   /// تهيئة بيانات التفسير عند بدء التطبيق.
   /// Initialize tafsir data when the app starts.
   static Future<void> _initTafsir() async {
-    drift.driftRuntimeOptions.dontWarnAboutMultipleDatabases = true;
     return TafsirCtrl.instance.onInit();
   }
 

@@ -50,7 +50,7 @@ extension ShowTafsirExtension on void {
 
       // تحقق من أن التفسير أو الترجمة جاهزة
       // Check if tafsir or translation is ready
-      if (tafsirCtrl.isTafsir.value) {
+      if (tafsirCtrl.selectedTafsir.isTafsir) {
         // tafsirCtrl.closeAndReinitializeDatabase();
         await tafsirCtrl.fetchData(pageIndex + 1);
       } else {

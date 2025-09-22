@@ -9,6 +9,7 @@ class TafsirCtrl extends GetxController {
   RxList<TafsirTableData> tafseerList = <TafsirTableData>[].obs;
 
   static const _defaultDownloadedDbName = 'saadiV4.db';
+  static const _defaultDownloadedTafsirName = 'saadi';
   static const _defaultDownloadedTranslationLangCode = 'en';
 
   String? selectedDBName = _defaultDownloadedDbName;
@@ -33,7 +34,6 @@ class TafsirCtrl extends GetxController {
       .indexWhere((el) => el.databaseName == _defaultDownloadedDbName);
   RxInt downloadIndex = 0.obs;
   // var isSelected = (-1.0).obs;
-  RxBool isTafsir = true.obs;
   RxList<TranslationModel> translationList = <TranslationModel>[].obs;
   final List<TafsirNameModel> tafsirAndTranslationsItems = [];
   var isLoading = false.obs;
@@ -41,6 +41,9 @@ class TafsirCtrl extends GetxController {
   late Directory _appDir;
 
   static const String _customTafsirsKey = 'custom_tafsirs_v3';
+
+  TafsirNameModel get selectedTafsir =>
+      tafsirAndTranslationsItems[radioValue.value];
 
   List<TafsirNameModel> get tafsirWithoutTranslationItems =>
       tafsirAndTranslationsItems.where((t) => !t.isTranslation).toList();
@@ -133,7 +136,6 @@ class TafsirCtrl extends GetxController {
   }
 
   Future<void> _loadSelectedDefaultTafseer() async {
-    isTafsir.value = box.read(_StorageConstants().isTafsir) ?? true;
     radioValue.value =
         box.read(_StorageConstants().radioValue) ?? _defaultTafsirIndex;
     translationLangCode =
@@ -214,7 +216,7 @@ class TafsirCtrl extends GetxController {
   /// Explanation: Fetch tafsir data for the requested page
   Future<void> fetchData(int pageNum) async {
     // await initializeDatabase();
-
+    isLoading.value = true;
     try {
       if (isCurrentAcustomTafsir) {
         final customEntry = customTafsirEntries.firstWhereOrNull((e) =>
@@ -223,7 +225,7 @@ class TafsirCtrl extends GetxController {
             e.model.name == tafsirAndTranslationsItems[radioValue.value].name);
         if (customEntry != null) {
           final items = customEntry.items
-              .where((e) => e.pageNum == pageNum)
+              // .where((e) => e.pageNum == pageNum)
               .toList(growable: false);
           tafseerList.assignAll(items);
           log('Fetched tafsir: [31m${items.length} entries from custom tafsir.',
@@ -233,6 +235,36 @@ class TafsirCtrl extends GetxController {
         }
         return;
       }
+      if (selectedTafsir.type == TafsirFileType.json) {
+        String jsonString;
+        if (selectedTafsir.fileName == _defaultDownloadedTafsirName) {
+          jsonString = await rootBundle.loadString(
+              'packages/quran_library/assets/$_defaultDownloadedTafsirName.json');
+        } else {
+          String filePath = join(_appDir.path, selectedTafsir.databaseName);
+          final exists = await File(filePath).exists();
+          if (!exists) {
+            log('NotExists');
+            await tafsirDownload(radioValue.value);
+            return;
+          } else {
+            jsonString = await File(filePath).readAsString();
+          }
+        }
+        final jsonData =
+            List<Map<String, dynamic>>.from(json.decode(jsonString));
+        final fetchedTafsirsList = jsonData.map((e) => TafsirTableData(
+              id: e['index'],
+              surahNum: e['sura'],
+              ayahNum: e['aya'],
+              tafsirText: e['text'],
+              pageNum: e['PageNum'],
+            ));
+        final items = fetchedTafsirsList; //.where((e) => e.pageNum == pageNum);
+        tafseerList.assignAll(items);
+        return;
+      }
+      await closeAndReinitializeDatabase();
 
       if (!_isDbInitialized) {
         await initializeDatabase();
@@ -248,6 +280,8 @@ class TafsirCtrl extends GetxController {
       }
     } catch (e) {
       log('Error fetching data: $e', name: 'TafsirCtrl');
+    } finally {
+      isLoading.value = false;
     }
   }
 
@@ -255,56 +289,20 @@ class TafsirCtrl extends GetxController {
   /// Explanation: Fetch tafsir by page number
   Future<List<TafsirTableData>> fetchTafsirPage(int pageNum,
       {String? databaseName}) async {
-    if (isCurrentAcustomTafsir) {
-      final customEntry = customTafsirEntries.firstWhereOrNull((e) =>
-          e.model.databaseName ==
-              tafsirAndTranslationsItems[radioValue.value].databaseName &&
-          e.model.name == tafsirAndTranslationsItems[radioValue.value].name);
-      if (customEntry != null) {
-        final items = customEntry.items
-            .where((e) => e.pageNum == pageNum)
-            .toList(growable: false);
-        log('Loaded ${items.length} entries from custom tafsir.',
-            name: 'TafsirCtrl');
-        return items;
-      } else {
-        log('Custom tafsir entry not found.', name: 'TafsirCtrl');
-        return [];
-      }
-    }
-    await initializeDatabase();
-    if (database.value == null) {
-      throw Exception('Database not initialized');
-    }
-    return await database.value!
-        .getTafsirByPage(pageNum, databaseName: databaseName);
+    await fetchData(pageNum);
+    return tafseerList.where((e) => e.pageNum == pageNum).toList();
   }
 
   /// شرح: جلب التفسير حسب رقم الآية
   /// Explanation: Fetch tafsir by ayah number
   Future<List<TafsirTableData>> fetchTafsirAyah(int ayahUQNumber,
       {String? databaseName}) async {
-    if (isCurrentAcustomTafsir) {
-      final customEntry = customTafsirEntries.firstWhereOrNull((e) =>
-          e.model.databaseName ==
-              tafsirAndTranslationsItems[radioValue.value].databaseName &&
-          e.model.name == tafsirAndTranslationsItems[radioValue.value].name);
-      if (customEntry != null) {
-        final items = customEntry.items
-            .where((e) => customEntry.ayahUnqNum(e.ayahNum) == ayahUQNumber)
-            .toList(growable: false);
-        log('Loaded ${items.length} entries from custom tafsir.',
-            name: 'TafsirCtrl');
-        return items;
-      }
-    }
-    await initializeDatabase();
-    if (database.value == null) {
-      throw Exception('Database not initialized');
-    }
-
-    return await database.value!
-        .getTafsirByAyah(ayahUQNumber, databaseName: databaseName);
+    return tafseerList
+        .where((e) =>
+            QuranCtrl.instance
+                .getAyahUnqNumberBySurahAndAyahNumber(e.surahNum, e.ayahNum) ==
+            ayahUQNumber)
+        .toList();
   }
 
   /// شرح: جلب الترجمة
@@ -467,7 +465,7 @@ class TafsirCtrl extends GetxController {
     String fileUrl;
     final idx = (i >= 0 && i < tafsirAndTranslationsItems.length) ? i : 0;
     final selected = tafsirAndTranslationsItems[idx];
-    if (isTafsir.value) {
+    if (!selected.isTranslation) {
       path = join(_appDir.path, selected.databaseName);
       fileUrl =
           'https://github.com/alheekmahlib/Islamic_database/raw/refs/heads/main/tafseer_database/${selected.databaseName}';
@@ -477,6 +475,7 @@ class TafsirCtrl extends GetxController {
           'https://github.com/alheekmahlib/Islamic_database/raw/refs/heads/main/quran_database/translate/${selected.fileName}.json';
     }
     if (!onDownloading.value) {
+      onDownloading.value = true;
       await downloadFile(path, fileUrl).then((_) async {
         log('Download completed for $path', name: 'TafsirCtrl');
         _onDownloadSuccess(i);
@@ -484,6 +483,7 @@ class TafsirCtrl extends GetxController {
         await _loadTafsirDownloadIndices();
         await handleRadioValueChanged(i);
       });
+      onDownloading.value = false;
       update(['tafsirs_menu_list']);
       log('Downloading from URL: $fileUrl', name: 'TafsirCtrl');
     }

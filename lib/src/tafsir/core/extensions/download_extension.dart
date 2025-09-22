@@ -41,6 +41,8 @@ extension DownloadExtension on TafsirCtrl {
           log('Error: $e');
         }
       }
+      progress.value = 1;
+      await Future.delayed(Durations.medium1);
       onDownloading.value = false;
       progressString.value = "100";
       log("Download completed for $path");

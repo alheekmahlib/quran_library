@@ -12,6 +12,8 @@ class TafsirNameModel {
   final bool isTranslation;
   final TafsirFileType? type;
 
+  bool get isTafsir => !isTranslation;
+
   TafsirNameModel({
     required this.name,
     required this.fileName,

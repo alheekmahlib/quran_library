@@ -103,8 +103,7 @@ class DailogBuild extends StatelessWidget {
                       tafsirCtrl.tafsirAndTranslationsItems.length, (index) {
                     return Column(
                       children: [
-                        titleBuild(
-                            index, tafsirStyle.tafsirName ?? 'التفاسير', 0),
+                        tafsirOrTranslateTitle(index),
                         TafsirItemWidget(
                           tafsirIndex: index,
                           pageNumber: pageNumber ??
@@ -113,8 +112,6 @@ class DailogBuild extends StatelessWidget {
                           tafsirStyle: tafsirStyle,
                           isDark: isDark!,
                         ),
-                        titleBuild(
-                            index, tafsirStyle.translateName ?? 'الترجمات', 27),
                       ],
                     );
                   }),
@@ -125,26 +122,30 @@ class DailogBuild extends StatelessWidget {
         });
   }
 
-  Widget titleBuild(int index, String? title, int currentIndex) {
-    return index == currentIndex
-        ? Container(
-            width: double.infinity,
-            padding: const EdgeInsets.symmetric(vertical: 6.0),
-            margin: const EdgeInsets.symmetric(vertical: 6.0),
-            decoration: BoxDecoration(
-              color: tafsirStyle.backgroundTitleColor ?? Color(0xffCDAD80),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Text(
-              title ?? (tafsirStyle.translateName ?? 'الترجمات'),
-              style: QuranLibrary().naskhStyle.copyWith(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: tafsirStyle.textTitleColor ?? Colors.white),
-              textAlign: TextAlign.center,
-            ),
-          )
-        : const SizedBox.shrink();
+  Widget tafsirOrTranslateTitle(int index, {String? title}) {
+    if (index == 0 || index == TafsirCtrl.instance.translationsStartIndex) {
+      title ??= index == 0
+          ? tafsirStyle.tafsirName ?? 'التفاسير'
+          : tafsirStyle.translateName ?? 'الترجمات';
+      return Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(vertical: 6.0),
+        margin: const EdgeInsets.symmetric(vertical: 6.0),
+        decoration: BoxDecoration(
+          color: tafsirStyle.backgroundTitleColor ?? Color(0xffCDAD80),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Text(
+          title,
+          style: QuranLibrary().naskhStyle.copyWith(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: tafsirStyle.textTitleColor ?? Colors.white),
+          textAlign: TextAlign.center,
+        ),
+      );
+    }
+    return const SizedBox.shrink();
   }
 }
 
@@ -250,9 +251,6 @@ class TafsirItemWidget extends StatelessWidget {
                                   color: tafsirStyle.unSelectedTafsirColor ??
                                       const Color(0xffCDAD80)),
                               onPressed: () async {
-                                tafsirIndex >= 5
-                                    ? tafsirCtrl.isTafsir.value = false
-                                    : tafsirCtrl.isTafsir.value = true;
                                 tafsirCtrl.downloadIndex.value = tafsirIndex;
                                 await tafsirCtrl.tafsirDownload(tafsirIndex);
                               },

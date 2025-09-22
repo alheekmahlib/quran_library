@@ -576,7 +576,8 @@ class QuranLibrary {
 
   /// التحقق إذا كان الوضع الحالي هو التفسير أو الترجمة.
   /// Check if the current mode is tafsir or translation.
-  bool get isTafsir => TafsirCtrl.instance.isTafsir.value;
+  bool get isTafsir => TafsirCtrl.instance.selectedTafsir.isTafsir;
+  bool get isTtranslation => TafsirCtrl.instance.selectedTafsir.isTranslation;
 
   /// الحصول على رقم التفسير المختار حالياً.
   /// Get the currently selected tafsir index.

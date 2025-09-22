@@ -23,10 +23,8 @@ extension TafsirUi on TafsirCtrl {
     log('start changing Tafsir', name: 'TafsirUi');
     box.write(_StorageConstants().radioValue, val);
     if (!tafsirAndTranslationsItems[val].isTranslation) {
-      isTafsir.value = true;
       box.write(_StorageConstants().isTafsir, true);
       try {
-        await closeAndReinitializeDatabase();
         await fetchData(
             pageNumber ?? QuranCtrl.instance.state.currentPageNumber.value);
       } catch (e) {
@@ -35,7 +33,6 @@ extension TafsirUi on TafsirCtrl {
         box.write(_StorageConstants().radioValue, radioValue.value);
       }
     } else {
-      isTafsir.value = false;
       String langCode = tafsirAndTranslationsItems[val].fileName;
       translationLangCode = langCode;
       await fetchTranslate();

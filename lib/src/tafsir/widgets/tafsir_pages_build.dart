@@ -98,7 +98,7 @@ class TafsirPagesBuild extends StatelessWidget {
                       islocalFont: islocalFont,
                       fontsName: fontsName,
                       pageIndex: pageIndex,
-                      isTafsir: tafsirCtrl.isTafsir.value,
+                      isTafsir: tafsirCtrl.selectedTafsir.isTafsir,
                       translationList: tafsirCtrl.translationList,
                       fontSizeArabic: tafsirCtrl.fontSizeArabic.value,
                       language: tafsirCtrl

@@ -157,6 +157,14 @@ final List<TafsirNameModel> _defaultTafsirItemsList = [
     type: TafsirFileType.sqlite,
   ),
   TafsirNameModel(
+    name: 'json تفسير البغوي',
+    bookName: 'معالم التنزيل في تفسير القرآن',
+    fileName: 'baghawy',
+    databaseName: 'baghawy.json',
+    isTranslation: false,
+    type: TafsirFileType.json,
+  ),
+  TafsirNameModel(
     name: 'تفسير القرطبي',
     bookName: 'الجامع لأحكام القرآن',
     fileName: 'qurtubiV3',
@@ -165,12 +173,28 @@ final List<TafsirNameModel> _defaultTafsirItemsList = [
     type: TafsirFileType.sqlite,
   ),
   TafsirNameModel(
+    name: 'تفسير القرطبي json',
+    bookName: 'الجامع لأحكام القرآن',
+    fileName: 'qurtubi',
+    databaseName: 'qurtubi.json',
+    isTranslation: false,
+    type: TafsirFileType.json,
+  ),
+  TafsirNameModel(
     name: 'تفسير السعدي',
     bookName: 'تيسير الكريم الرحمن',
     fileName: 'saadiV4',
     databaseName: 'saadiV4.db',
     isTranslation: false,
     type: TafsirFileType.sqlite,
+  ),
+  TafsirNameModel(
+    name: 'json تفسير السعدي',
+    bookName: 'تيسير الكريم الرحمن',
+    fileName: 'saadi',
+    databaseName: 'saadi.json',
+    isTranslation: false,
+    type: TafsirFileType.json,
   ),
   TafsirNameModel(
     name: 'تفسير الطبري',

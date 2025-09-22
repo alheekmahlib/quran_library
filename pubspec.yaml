@@ -14,7 +14,6 @@ dependencies:
   audio_service: ^0.18.18
   connectivity_plus: ^7.0.0
   dio: ^5.9.0
-  drift: ^2.28.1
   flutter:
     sdk: flutter
   flutter_cache_manager: ^3.4.1
@@ -24,8 +23,6 @@ dependencies:
   get: ^4.7.2
   get_storage: ^2.1.1
   just_audio: ^0.10.5
-  path: ^1.9.1
-  path_provider: ^2.1.5
   rxdart: ^0.28.0
 
 # This package supports all platforms listed below.

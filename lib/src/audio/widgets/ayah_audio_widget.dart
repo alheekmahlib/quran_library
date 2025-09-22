@@ -47,28 +47,24 @@ class AyahsAudioWidget extends StatelessWidget {
                         return SizedBox(
                             height: targetHeight.h,
                             width: MediaQuery.sizeOf(context).width,
-                            child: SingleChildScrollView(
-                              physics: targetHeight < 120
-                                  ? const NeverScrollableScrollPhysics()
-                                  : null,
-                              child: Column(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  // تقليل المسافات عند المساحة المحدودة
-                                  // Reduce spacing when space is limited
-                                  SizedBox(height: targetHeight > 120 ? 4 : 2),
-                                  AyahChangeReader(style: style!),
-                                  // SizedBox(height: 4),
-                                  // جعل الـ Slider مرن ليأخذ المساحة المتبقية
-                                  // Make slider flexible to take remaining space
-                                  Flexible(
-                                    child: Directionality(
-                                      textDirection: TextDirection.rtl,
-                                      child: SizedBox(
-                                        height: 65.h,
-                                        width: double.infinity,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                // تقليل المسافات عند المساحة المحدودة
+                                // Reduce spacing when space is limited
+                                SizedBox(height: targetHeight > 120 ? 4 : 2),
+                                AyahChangeReader(style: style!),
+                                // SizedBox(height: 4),
+                                // جعل الـ Slider مرن ليأخذ المساحة المتبقية
+                                // Make slider flexible to take remaining space
+                                Flexible(
+                                  child: Directionality(
+                                    textDirection: TextDirection.rtl,
+                                    child: SizedBox(
+                                      height: 61.h,
+                                      width: double.infinity,
+                                      child: SingleChildScrollView(
                                         child: c.state.isDownloading.value
                                             ? GetX<AudioCtrl>(builder: (c) {
                                                 final data = c.state
@@ -133,24 +129,24 @@ class AyahsAudioWidget extends StatelessWidget {
                                       ),
                                     ),
                                   ),
-                                  // إضافة أزرار التحكم فقط إذا كان هناك مساحة كافية
-                                  // Add control buttons only if there's enough space
-                                  if (targetHeight > 120)
-                                    Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 16.0),
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceEvenly,
-                                        children: [
-                                          AyahSkipToPrevious(style: style),
-                                          PlayAyahWidget(style: style),
-                                          AyahSkipToNext(style: style),
-                                        ],
-                                      ),
+                                ),
+                                // إضافة أزرار التحكم فقط إذا كان هناك مساحة كافية
+                                // Add control buttons only if there's enough space
+                                if (targetHeight > 120)
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 16.0),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceEvenly,
+                                      children: [
+                                        AyahSkipToPrevious(style: style),
+                                        PlayAyahWidget(style: style),
+                                        AyahSkipToNext(style: style),
+                                      ],
                                     ),
-                                ],
-                              ),
+                                  ),
+                              ],
                             ));
                       });
                     }),

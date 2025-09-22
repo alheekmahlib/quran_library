@@ -1,3 +1,8 @@
+## 2.1.0
+
+* **Upgrade Flutter to latest stable version #19**
+* **upgrade packages**
+
 ## 2.0.16
 
 * **Fix README**

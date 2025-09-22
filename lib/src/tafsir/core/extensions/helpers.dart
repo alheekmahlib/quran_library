@@ -8,7 +8,7 @@ extension Helpers on TafsirCtrl {
   bool get isCurrentNotAsqlTafsir =>
       !isCurrentATranslation &&
       (tafsirAndTranslationsItems[radioValue.value].type !=
-          TafsirFileType.sqlite);
+          TafsirFileType.json);
 
   bool get isCurrentAcustomTafsir =>
       !isCurrentATranslation &&

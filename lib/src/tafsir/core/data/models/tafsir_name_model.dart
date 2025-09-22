@@ -1,6 +1,6 @@
 part of '../../../tafsir.dart';
 
-enum TafsirFileType { json, sqlite }
+enum TafsirFileType { json }
 
 class TafsirNameModel {
   final String name;
@@ -30,11 +30,7 @@ class TafsirNameModel {
         bookName: j['bookName'] as String,
         databaseName: j['databaseName'] as String,
         isCustom: j['isCustom'] == true,
-        type: j['type'] == null
-            ? null
-            : (j['type'] == 'sqlite'
-                ? TafsirFileType.sqlite
-                : TafsirFileType.json),
+        type: j['type'] == null ? null : TafsirFileType.json,
       );
 
   Map<String, dynamic> toJson() => {
@@ -43,8 +39,6 @@ class TafsirNameModel {
         'bookName': bookName,
         'databaseName': databaseName,
         'isCustom': isCustom,
-        'type': type == null
-            ? null
-            : (type == TafsirFileType.sqlite ? 'sqlite' : 'json'),
+        'type': type == null ? null : 'json',
       };
 }

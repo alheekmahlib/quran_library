@@ -43,35 +43,4 @@ extension TafsirUi on TafsirCtrl {
     update(['tafsirs_menu_list', 'change_font_size', 'actualTafsirContent']);
     // update(['ActualTafsirWidget']);
   }
-
-  /// شرح: إغلاق القاعدة وتهيئتها من جديد عند تغيير التفسير
-  /// Explanation: Close and reinitialize DB when tafsir changes
-  Future<void> closeAndReinitializeDatabase() async {
-    _isDbInitialized = false;
-    tafseerList.clear();
-    if (isCurrentATranslation) {
-      log('Selected item is traanslation item, skipping DB init.',
-          name: 'TafsirCtrl');
-      return;
-    }
-    if (isCurrentNotAsqlTafsir) {
-      log('Selected item is not a SQLite DB, skipping DB init.',
-          name: 'TafsirCtrl');
-      return;
-    }
-    if (isCurrentAcustomTafsir) {
-      log('Selected item is CustomTafsir item, skipping DB init.',
-          name: 'TafsirCtrl');
-      return;
-    }
-    await closeCurrentDatabase();
-    try {
-      await initializeDatabase();
-      log('Database initialized for: ${tafsirAndTranslationsItems[radioValue.value].databaseName}',
-          name: 'TafsirUi');
-    } catch (e) {
-      log('Failed to initialize database: $e', name: 'TafsirUi');
-      rethrow;
-    }
-  }
 }

@@ -21,8 +21,6 @@ import 'core/data/models/tafsir.dart';
 
 part 'controller/tafsir_ctrl.dart';
 part 'controller/tafsir_ui.dart';
-part 'core/data/data_source/tafsir_database.dart';
-part 'core/data/data_source/tafsir_database.g.dart';
 part 'core/data/models/tafsir_and_translate_names.dart';
 part 'core/data/models/tafsir_name_model.dart';
 part 'core/data/models/tafsir_style.dart';

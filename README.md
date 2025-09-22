@@ -352,16 +352,6 @@ QuranLibrary().isFontsDownloaded;
 
 ## Tafsir
 
-### Important note before starting to use: Please add this library to your pubspec.yaml file only for Android:
-```yaml
- dependencies:
- ...
-  drift_flutter: ^0.2.4
- ...
-```
-# to avoid any problems when showing the tafsir
-
-
 * ### Usage Example
 
 ```dart
@@ -380,7 +370,7 @@ final added = await TafsirController.instance.addCustomFromFile(
 
   bookName: 'My Book',
 
-  type: TafsirFileType.sqlite,
+  type: TafsirFileType.json,
 
 );
 /// Show a popup menu to change the tafsir style.

@@ -5,10 +5,10 @@ class TafsirCtrl extends GetxController {
   static TafsirCtrl get instance =>
       GetInstance().putOrFind(() => TafsirCtrl._privateConstructor());
 
-  Rx<TafsirDatabase?> database = Rx<TafsirDatabase?>(null);
+  // Rx<TafsirDatabase?> database = Rx<TafsirDatabase?>(null);
   RxList<TafsirTableData> tafseerList = <TafsirTableData>[].obs;
 
-  static const _defaultDownloadedDbName = 'saadiV4.db';
+  static const _defaultDownloadedDbName = 'saadi.json';
   static const _defaultDownloadedTafsirName = 'saadi';
   static const _defaultDownloadedTranslationLangCode = 'en';
 
@@ -82,7 +82,7 @@ class TafsirCtrl extends GetxController {
 
   Future<void> removeCustomTafsir(TafsirNameModel model) async {
     if (!model.isCustom) return;
-    if (model.type == TafsirFileType.sqlite && model.databaseName.isNotEmpty) {
+    if (model.type == TafsirFileType.json && model.databaseName.isNotEmpty) {
       // try by databaseName inside app dir
 
       final f = File(join(_appDir.path, model.databaseName));
@@ -129,7 +129,7 @@ class TafsirCtrl extends GetxController {
     await _loadPersistedCustoms().then((_) async {
       await _initializeTafsirDownloadStatus();
       await _loadSelectedDefaultTafseer();
-      await initializeDatabase();
+      // await initializeDatabase();
     });
     _isTafsirInitialized = true;
     log('TafsirCtrl initialized.', name: 'TafsirCtrl');
@@ -144,72 +144,13 @@ class TafsirCtrl extends GetxController {
         box.read(_StorageConstants().fontSize) ?? 20.0;
   }
 
-  /// شرح: تهيئة قاعدة البيانات فقط إذا تغير الاسم
-  /// Explanation: Only initialize DB if name changed
-  Future<void> initializeDatabase() async {
-    // guard index
-    final idx = (radioValue.value >= 0 &&
-            radioValue.value < tafsirAndTranslationsItems.length)
-        ? radioValue.value
-        : _defaultTafsirIndex;
-    if (isCurrentATranslation) {
-      log('Selected item is a translation, skipping DB init.',
-          name: 'TafsirCtrl');
-      return;
-    }
-    if (isCurrentNotAsqlTafsir) {
-      log('Selected item is not a SQLite DB, skipping DB init.',
-          name: 'TafsirCtrl');
-      return;
-    }
-    String dbName = tafsirAndTranslationsItems[idx].databaseName;
-
-    // تحقق مزدوج: حالة التحميل + وجود الملف فعلياً
-    final file = File(join(_appDir.path, dbName));
-    final fileExists = await file.exists();
-
-    if (tafsirDownloadStatus.value[idx] != true || !fileExists) {
-      log('Database $dbName not available (downloaded: ${tafsirDownloadStatus.value[idx]}, exists: $fileExists), using default.',
-          name: 'TafsirCtrl');
-      radioValue.value = _defaultTafsirIndex;
-      dbName = _defaultDownloadedDbName;
-      // تحديث حالة التحميل إذا كان الملف غير موجود
-      if (!fileExists && tafsirDownloadStatus.value[idx] == true) {
-        _updateDownloadStatus(idx, false);
-      }
-    }
-    if (database.value == null || selectedDBName != dbName) {
-      if (database.value?.isOpen ?? false) await database.value?.close();
-      try {
-        database.value = TafsirDatabase(dbName);
-        selectedDBName = dbName;
-        log('Database object created.', name: 'TafsirCtrl');
-        _isDbInitialized = true;
-      } catch (e) {
-        log('Failed to initialize database $dbName: $e', name: 'TafsirCtrl');
-        // العودة للتفسير الافتراضي في حالة الخطأ
-        if (idx != _defaultTafsirIndex) {
-          log('Falling back to default tafsir', name: 'TafsirCtrl');
-          radioValue.value = _defaultTafsirIndex;
-          dbName = _defaultDownloadedDbName;
-          database.value = TafsirDatabase(dbName);
-          selectedDBName = dbName;
-          _isDbInitialized = true;
-        } else {
-          rethrow;
-        }
-      }
-    }
-    log('Database initialized.', name: 'TafsirCtrl');
-  }
-
-  Future<void> closeCurrentDatabase() async {
-    if (database.value != null) {
-      if (database.value?.isOpen ?? false) await database.value?.close();
-      database.value = null; // شرح: إعادة تعيين الكائن بعد الإغلاق
-      log('Closed current database!', name: 'TafsirCtrl');
-    }
-  }
+  // Future<void> closeCurrentDatabase() async {
+  //   if (database.value != null) {
+  //     if (database.value?.isOpen ?? false) await database.value?.close();
+  //     database.value = null; // شرح: إعادة تعيين الكائن بعد الإغلاق
+  //     log('Closed current database!', name: 'TafsirCtrl');
+  //   }
+  // }
 
   /// ------------[FetchingMethod]------------
   /// شرح: جلب بيانات التفسير للصفحة المطلوبة
@@ -263,20 +204,6 @@ class TafsirCtrl extends GetxController {
         final items = fetchedTafsirsList; //.where((e) => e.pageNum == pageNum);
         tafseerList.assignAll(items);
         return;
-      }
-      await closeAndReinitializeDatabase();
-
-      if (!_isDbInitialized) {
-        await initializeDatabase();
-      }
-      final List<TafsirTableData> tafsirs =
-          await database.value!.getTafsirByPage(pageNum);
-      log('Fetched tafsir: [32m${tafsirs.length} entries', name: 'TafsirCtrl');
-      if (tafsirs.isNotEmpty) {
-        tafseerList.assignAll(tafsirs);
-      } else {
-        log('No data found for this page.', name: 'TafsirCtrl');
-        tafseerList.clear();
       }
     } catch (e) {
       log('Error fetching data: $e', name: 'TafsirCtrl');

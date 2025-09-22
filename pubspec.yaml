@@ -77,7 +77,6 @@ flutter:
     - assets/jsons/
     - assets/svg/
     - assets/saadi.json
-    - assets/saadiV4.db
     - assets/en.json
 
   fonts:

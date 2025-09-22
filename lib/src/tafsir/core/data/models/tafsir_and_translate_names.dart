@@ -143,21 +143,13 @@ final List<TafsirNameModel> _defaultTafsirItemsList = [
   TafsirNameModel(
     name: 'تفسير ابن كثير',
     bookName: 'تفسير القرآن العظيم',
-    fileName: 'ibnkatheerV3',
-    databaseName: 'ibnkatheerV3.sqlite',
+    fileName: 'ibnkatheer',
+    databaseName: 'ibnkatheer.json',
     isTranslation: false,
-    type: TafsirFileType.sqlite,
+    type: TafsirFileType.json,
   ),
   TafsirNameModel(
     name: 'تفسير البغوي',
-    bookName: 'معالم التنزيل في تفسير القرآن',
-    fileName: 'baghawyV3',
-    databaseName: 'baghawyV3.db',
-    isTranslation: false,
-    type: TafsirFileType.sqlite,
-  ),
-  TafsirNameModel(
-    name: 'json تفسير البغوي',
     bookName: 'معالم التنزيل في تفسير القرآن',
     fileName: 'baghawy',
     databaseName: 'baghawy.json',
@@ -167,14 +159,6 @@ final List<TafsirNameModel> _defaultTafsirItemsList = [
   TafsirNameModel(
     name: 'تفسير القرطبي',
     bookName: 'الجامع لأحكام القرآن',
-    fileName: 'qurtubiV3',
-    databaseName: 'qurtubiV3.db',
-    isTranslation: false,
-    type: TafsirFileType.sqlite,
-  ),
-  TafsirNameModel(
-    name: 'تفسير القرطبي json',
-    bookName: 'الجامع لأحكام القرآن',
     fileName: 'qurtubi',
     databaseName: 'qurtubi.json',
     isTranslation: false,
@@ -182,14 +166,6 @@ final List<TafsirNameModel> _defaultTafsirItemsList = [
   ),
   TafsirNameModel(
     name: 'تفسير السعدي',
-    bookName: 'تيسير الكريم الرحمن',
-    fileName: 'saadiV4',
-    databaseName: 'saadiV4.db',
-    isTranslation: false,
-    type: TafsirFileType.sqlite,
-  ),
-  TafsirNameModel(
-    name: 'json تفسير السعدي',
     bookName: 'تيسير الكريم الرحمن',
     fileName: 'saadi',
     databaseName: 'saadi.json',
@@ -199,10 +175,10 @@ final List<TafsirNameModel> _defaultTafsirItemsList = [
   TafsirNameModel(
     name: 'تفسير الطبري',
     bookName: 'جامع البيان عن تأويل آي القرآن',
-    fileName: 'tabariV3',
-    databaseName: 'tabariV3.db',
+    fileName: 'tabari',
+    databaseName: 'tabari.json',
     isTranslation: false,
-    type: TafsirFileType.sqlite,
+    type: TafsirFileType.json,
   ),
   TafsirNameModel(
     name: 'تفسير ابن جُزَيّ',

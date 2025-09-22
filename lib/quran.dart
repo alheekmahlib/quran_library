@@ -14,6 +14,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart' hide Response;
 import 'package:get_storage/get_storage.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:quran_library/src/tafsir/core/data/models/tafsir.dart';
 
 import 'src/audio/audio.dart';
 import 'src/quran/core/helpers/responsive.dart';

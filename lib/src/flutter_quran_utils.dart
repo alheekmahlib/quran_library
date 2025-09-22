@@ -622,11 +622,6 @@ class QuranLibrary {
         tafsirStyle: tafsirStyle,
       );
 
-  /// إغلاق قاعدة البيانات وإعادة تهيئتها (عادة عند تغيير التفسير).
-  /// Close and re-initialize the database (usually when changing the tafsir).
-  Future<void> closeAndInitializeDatabase() async =>
-      await TafsirCtrl.instance.closeAndReinitializeDatabase();
-
   /// للحصول على التفسير الخاص بالآية،
   ///  فقط قم بتمرير رقم الآية لـ [getTafsirOfAyah].
   ///

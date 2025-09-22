@@ -31,12 +31,12 @@ dependencies:
 # But note that it works and fits on mobile size devices
 # Additional Screen Sizes will be supported later
 platforms:
-  ? web
+  # web
+  # linux
+  # windows
   ? android
   ? ios
-  ? linux
   ? macos
-  ? windows
 
 dev_dependencies:
   build_runner: ^2.4.15

@@ -13,10 +13,10 @@ import 'package:path_provider/path_provider.dart';
 import 'package:quran_library/quran_library.dart';
 
 import '/src/tafsir/core/extensions/helpers.dart';
-import 'core/data/models/tafsir.dart';
 
 part 'controller/tafsir_ctrl.dart';
 part 'controller/tafsir_ui.dart';
+part 'core/data/models/tafsir.dart';
 part 'core/data/models/tafsir_and_translate_names.dart';
 part 'core/data/models/tafsir_name_model.dart';
 part 'core/data/models/tafsir_style.dart';

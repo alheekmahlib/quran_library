@@ -1,3 +1,5 @@
+part of '../../../tafsir.dart';
+
 // enum MufaserName {
 //   ibnkatheer,
 //   baghawy,

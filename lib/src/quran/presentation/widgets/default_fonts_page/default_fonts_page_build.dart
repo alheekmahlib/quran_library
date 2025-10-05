@@ -100,9 +100,8 @@ class DefaultFontsPageBuild extends StatelessWidget {
                                   ayahCount: 'عدد الآيات',
                                   secondTabText: 'عن السورة',
                                   firstTabText: 'أسماء السورة',
-                                  backgroundColor: isDark
-                                      ? const Color(0xff1E1E1E)
-                                      : const Color(0xfffaf7f3),
+                                  backgroundColor:
+                                      AppColors.getBackgroundColor(isDark),
                                   closeIconColor:
                                       isDark ? Colors.white : Colors.black,
                                   indicatorColor:
@@ -146,7 +145,7 @@ class DefaultFontsPageBuild extends StatelessWidget {
                                       (line.ayahs[0].surahNumber != 9
                                           ? 110
                                           : 80))) *
-                              0.97 /
+                              0.98 /
                               quranCtrl.staticPages[pageIndex].lines.length,
                           child: DefaultFontsBuild(
                             context,

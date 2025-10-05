@@ -17,7 +17,7 @@ extension FontSizeExtension on Widget {
         child: Icon(
           Icons.text_format_outlined,
           size: 34,
-          color: isDark ? Colors.white : Colors.black,
+          color: AppColors.getTextColor(isDark),
         ),
       ),
       color: Colors.blue.withValues(alpha: .8),
@@ -34,7 +34,7 @@ extension FontSizeExtension on Widget {
                   sliderTheme: SliderThemeData(
                     thumbColor: Colors.white,
                     activeTrackColor: Colors.white,
-                    inactiveTrackColor: Colors.blueGrey,
+                    inactiveTrackColor: Colors.cyanAccent,
                     overlayColor: Colors.white.withValues(alpha: 0.2),
                     valueIndicatorColor: Colors.white,
                     inactiveTickMarkColor: Colors.transparent,

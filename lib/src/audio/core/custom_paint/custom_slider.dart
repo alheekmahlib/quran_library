@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 
 class CustomSliderThumbRect extends SliderComponentShape {
   final double thumbRadius;
@@ -40,7 +39,7 @@ class CustomSliderThumbRect extends SliderComponentShape {
     );
 
     final paint = Paint()
-      ..color = Get.theme.colorScheme.primary //Thumb Background Color
+      ..color = Colors.cyan //Thumb Background Color
       ..style = PaintingStyle.fill;
 
     canvas.drawRRect(rRect, paint);

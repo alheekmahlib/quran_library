@@ -12,11 +12,13 @@ class SurahAudioScreen extends StatelessWidget {
     surahCtrl.sheetState();
     surahCtrl.loadLastSurahListen;
     return Scaffold(
-      backgroundColor: const Color(0xfffaf7f3),
+      backgroundColor: AppColors.getBackgroundColor(isDark!),
       appBar: AppBar(
         title: Text('الإستماع للسور',
-            style: TextStyle(color: style?.textColor ?? Colors.black)),
-        backgroundColor: style?.backgroundColor ?? const Color(0xfffaf7f3),
+            style: TextStyle(
+                color: style?.textColor ?? AppColors.getTextColor(isDark!))),
+        backgroundColor:
+            style?.backgroundColor ?? AppColors.getBackgroundColor(isDark!),
         centerTitle: true,
         elevation: 0,
       ),
@@ -29,8 +31,8 @@ class SurahAudioScreen extends StatelessWidget {
           ),
           pageContent: SurahBackDropWidget(style: style, isDark: isDark),
           panelContent: Obx(() => !surahCtrl.state.isSheetOpen.value
-              ? SurahCollapsedPlayWidget(style: style)
-              : PlaySurahsWidget(style: style)),
+              ? SurahCollapsedPlayWidget(style: style, isDark: isDark!)
+              : PlaySurahsWidget(style: style, isDark: isDark!)),
         ),
       ),
     );

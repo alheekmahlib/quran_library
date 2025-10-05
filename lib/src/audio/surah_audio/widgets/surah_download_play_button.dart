@@ -38,7 +38,7 @@ class SurahDownloadPlayButton extends StatelessWidget {
                         label: 'download'.tr,
                         child: const Icon(Icons.cloud_download_outlined)),
                     iconSize: 24.0,
-                    color: style?.iconColor ?? Colors.blue,
+                    color: style?.iconColor ?? Colors.cyan,
                     onPressed: () async {
                       surahAudioCtrl.state.isPlayingSurahsMode = true;
                       if (surahAudioCtrl.state.isDownloading.value) {

@@ -2,7 +2,9 @@ part of '../../audio.dart';
 
 class PlaySurahsWidget extends StatelessWidget {
   final SurahAudioStyle? style;
-  PlaySurahsWidget({super.key, this.style});
+  final bool isDark;
+
+  PlaySurahsWidget({super.key, this.style, this.isDark = false});
 
   final surahCtrl = AudioCtrl.instance;
 
@@ -46,7 +48,8 @@ class PlaySurahsWidget extends StatelessWidget {
                     AudioCtrl.instance.state.currentAudioListSurahNum.value
                         .toString(),
                     style: TextStyle(
-                      color: style?.surahNameColor ?? Colors.black,
+                      color: style?.surahNameColor ??
+                          AppColors.getTextColor(isDark),
                       fontFamily: "surahName",
                       fontSize: 120.sp,
                       package: "quran_library",
@@ -58,7 +61,8 @@ class PlaySurahsWidget extends StatelessWidget {
                   AudioCtrl.instance.state.currentAudioListSurahNum.value
                       .toString(),
                   style: TextStyle(
-                    color: style?.surahNameColor ?? Colors.black,
+                    color:
+                        style?.surahNameColor ?? AppColors.getTextColor(isDark),
                     fontFamily: "surahName",
                     fontSize: 72.sp,
                     package: "quran_library",
@@ -68,7 +72,7 @@ class PlaySurahsWidget extends StatelessWidget {
               ],
             ),
           ),
-          SurahChangeSurahReader(style: style),
+          SurahChangeSurahReader(style: style, isDark: isDark),
           const SizedBox(height: 16),
           const SurahSeekBar(),
           const SizedBox(height: 16),
@@ -102,7 +106,7 @@ class PlaySurahsWidget extends StatelessWidget {
                       child: SvgPicture.asset(
                         AssetsPath.assets.rewind,
                         colorFilter: ColorFilter.mode(
-                            style!.playIconColor ?? Colors.blue,
+                            style!.playIconColor ?? Colors.cyan,
                             BlendMode.srcIn),
                         height: 30,
                         width: 30,
@@ -122,7 +126,7 @@ class PlaySurahsWidget extends StatelessWidget {
                       child: SvgPicture.asset(
                         AssetsPath.assets.backward,
                         colorFilter: ColorFilter.mode(
-                            style!.playIconColor ?? Colors.blue,
+                            style!.playIconColor ?? Colors.cyan,
                             BlendMode.srcIn),
                         height: 30,
                         width: 30,

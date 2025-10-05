@@ -2,7 +2,9 @@ part of '../../audio.dart';
 
 class SurahCollapsedPlayWidget extends StatelessWidget {
   final SurahAudioStyle? style;
-  const SurahCollapsedPlayWidget({super.key, this.style});
+  final bool isDark;
+
+  const SurahCollapsedPlayWidget({super.key, this.style, this.isDark = false});
 
   @override
   Widget build(BuildContext context) {
@@ -57,7 +59,8 @@ class SurahCollapsedPlayWidget extends StatelessWidget {
                       AudioCtrl.instance.state.currentAudioListSurahNum.value
                           .toString(),
                       style: TextStyle(
-                        color: style?.surahNameColor ?? Colors.black,
+                        color: style?.surahNameColor ??
+                            AppColors.getTextColor(isDark),
                         fontFamily: "surahName",
                         fontSize: 42,
                         package: "quran_library",

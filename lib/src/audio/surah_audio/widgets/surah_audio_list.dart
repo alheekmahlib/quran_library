@@ -27,9 +27,9 @@ class SurahAudioList extends StatelessWidget {
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              (style?.backgroundColor ?? const Color(0xfffaf7f3))
+              (style?.backgroundColor ?? AppColors.getBackgroundColor(isDark))
                   .withValues(alpha: 0.05),
-              (style?.backgroundColor ?? const Color(0xfffaf7f3))
+              (style?.backgroundColor ?? AppColors.getBackgroundColor(isDark))
                   .withValues(alpha: 0.02),
             ],
           ),
@@ -38,12 +38,14 @@ class SurahAudioList extends StatelessWidget {
           ),
           border: Border.all(
             width: 1.5,
-            color: (style?.backgroundColor ?? const Color(0xfffaf7f3))
-                .withValues(alpha: 0.2),
+            color:
+                (style?.backgroundColor ?? AppColors.getBackgroundColor(isDark))
+                    .withValues(alpha: 0.2),
           ),
           boxShadow: [
             BoxShadow(
-              color: (style?.backgroundColor ?? const Color(0xfffaf7f3))
+              color: (style?.backgroundColor ??
+                      AppColors.getBackgroundColor(isDark))
                   .withValues(alpha: 0.1),
               blurRadius: 8.0,
               spreadRadius: 1.0,
@@ -108,9 +110,9 @@ class SurahAudioList extends StatelessWidget {
           gradient: isSelected
               ? LinearGradient(
                   colors: [
-                    (style?.primaryColor ?? Colors.blue)
+                    (style?.primaryColor ?? Colors.cyan)
                         .withValues(alpha: 0.15),
-                    (style?.primaryColor ?? Colors.blue)
+                    (style?.primaryColor ?? Colors.cyan)
                         .withValues(alpha: 0.08),
                   ],
                   begin: Alignment.centerLeft,
@@ -125,14 +127,14 @@ class SurahAudioList extends StatelessWidget {
           borderRadius: BorderRadius.circular(12.0),
           border: Border.all(
             color: isSelected
-                ? (style?.primaryColor ?? Colors.blue).withValues(alpha: 0.4)
+                ? (style?.primaryColor ?? Colors.cyan).withValues(alpha: 0.4)
                 : Colors.transparent,
             width: 1.5,
           ),
           boxShadow: isSelected
               ? [
                   BoxShadow(
-                    color: (style?.primaryColor ?? Colors.blue)
+                    color: (style?.primaryColor ?? Colors.cyan)
                         .withValues(alpha: 0.2),
                     blurRadius: 8.0,
                     spreadRadius: 1.0,
@@ -151,9 +153,9 @@ class SurahAudioList extends StatelessWidget {
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
-                    (style?.primaryColor ?? Colors.blue)
+                    (style?.primaryColor ?? Colors.cyan)
                         .withValues(alpha: isSelected ? 0.8 : 0.6),
-                    (style?.primaryColor ?? Colors.blue)
+                    (style?.primaryColor ?? Colors.cyan)
                         .withValues(alpha: isSelected ? 0.6 : 0.4),
                   ],
                   begin: Alignment.topLeft,
@@ -162,7 +164,7 @@ class SurahAudioList extends StatelessWidget {
                 borderRadius: BorderRadius.circular(20.0),
                 boxShadow: [
                   BoxShadow(
-                    color: (style?.primaryColor ?? Colors.blue)
+                    color: (style?.primaryColor ?? Colors.cyan)
                         .withValues(alpha: 0.3),
                     blurRadius: 4.0,
                     offset: const Offset(0, 2),
@@ -195,7 +197,7 @@ class SurahAudioList extends StatelessWidget {
                       fontSize: 16.0,
                       fontWeight: FontWeight.bold,
                       color: isSelected
-                          ? (style?.primaryColor ?? Colors.blue)
+                          ? (style?.primaryColor ?? Colors.cyan)
                           : (style?.textColor ??
                               Theme.of(context).textTheme.titleMedium?.color),
                       fontFamily: "kufi",
@@ -218,7 +220,7 @@ class SurahAudioList extends StatelessWidget {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 6.0, vertical: 2.0),
                         decoration: BoxDecoration(
-                          color: (style?.primaryColor ?? Colors.blue)
+                          color: (style?.primaryColor ?? Colors.cyan)
                               .withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(8.0),
                         ),
@@ -226,7 +228,7 @@ class SurahAudioList extends StatelessWidget {
                           '${surah.ayahs.length} آية',
                           style: TextStyle(
                             fontSize: 10.0,
-                            color: style?.primaryColor ?? Colors.blue,
+                            color: style?.primaryColor ?? Colors.cyan,
                             fontWeight: FontWeight.w600,
                             fontFamily: "kufi",
                           ),
@@ -247,8 +249,8 @@ class SurahAudioList extends StatelessWidget {
                   height: 36.0,
                   decoration: BoxDecoration(
                     color: isSelected
-                        ? (style?.primaryColor ?? Colors.blue)
-                        : (style?.primaryColor ?? Colors.blue)
+                        ? (style?.primaryColor ?? Colors.cyan)
+                        : (style?.primaryColor ?? Colors.cyan)
                             .withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(18.0),
                   ),
@@ -262,7 +264,7 @@ class SurahAudioList extends StatelessWidget {
                             : Icons.cloud_download_outlined,
                         color: isSelected
                             ? Colors.white
-                            : (style?.primaryColor ?? Colors.blue),
+                            : (style?.primaryColor ?? Colors.cyan),
                         size: 20.0,
                       ),
                     ),

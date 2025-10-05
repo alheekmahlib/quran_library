@@ -67,8 +67,7 @@ class _DefaultFontsPage extends StatelessWidget {
     return Container(
       height: MediaQuery.sizeOf(context).height,
       padding: EdgeInsets.symmetric(
-          horizontal: UiHelper.currentOrientation(16.0, 64.0, context),
-          vertical: 16.0),
+          horizontal: UiHelper.currentOrientation(16.0, 64.0, context)),
       child: pageIndex == 0 || pageIndex == 1
 
           /// This is for first 2 pages of Quran: Al-Fatihah and Al-Baqarah

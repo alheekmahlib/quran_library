@@ -213,9 +213,7 @@ class AyahLongClickDialog extends StatelessWidget {
                         ? ayah!.ayahNumber
                         : ayah!.ayahNumber,
                     tafsirStyle: TafsirStyle(
-                      backgroundColor: isDark
-                          ? const Color(0xff1E1E1E)
-                          : const Color(0xfffaf7f3),
+                      backgroundColor: AppColors.getBackgroundColor(isDark),
                       tafsirNameWidget: Text(
                         'التفسير',
                         style: QuranLibrary().naskhStyle.copyWith(

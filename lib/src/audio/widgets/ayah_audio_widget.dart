@@ -3,7 +3,7 @@ part of '../audio.dart';
 class AyahsAudioWidget extends StatelessWidget {
   final AyahAudioStyle? style;
   final bool? isDark;
-  AyahsAudioWidget({super.key, this.style, this.isDark});
+  AyahsAudioWidget({super.key, this.style, this.isDark = false});
   final quranCtrl = QuranCtrl.instance;
   final audioCtrl = AudioCtrl.instance;
 
@@ -14,6 +14,7 @@ class AyahsAudioWidget extends StatelessWidget {
       child: Container(
           margin: const EdgeInsets.symmetric(vertical: 8.0),
           decoration: BoxDecoration(
+            color: AppColors.getBackgroundColor(isDark!),
             borderRadius: const BorderRadius.all(Radius.circular(8)),
           ),
           child: Obx(() => AnimatedCrossFade(
@@ -77,13 +78,13 @@ class AyahsAudioWidget extends StatelessWidget {
                                                         .length,
                                                     activeTrackColor: style!
                                                             .seekBarActiveTrackColor ??
-                                                        Colors.blue,
+                                                        Colors.cyan,
                                                     inactiveTrackColor: style!
                                                             .seekBarInactiveTrackColor ??
                                                         Colors.grey,
                                                     thumbColor: style!
                                                             .seekBarThumbColor ??
-                                                        Colors.blue,
+                                                        Colors.cyan,
                                                     horizontalPadding: style!
                                                             .seekBarHorizontalPadding ??
                                                         0);
@@ -109,13 +110,13 @@ class AyahsAudioWidget extends StatelessWidget {
                                                           Duration.zero,
                                                       activeTrackColor: style!
                                                               .seekBarActiveTrackColor ??
-                                                          Colors.blue,
+                                                          Colors.cyan,
                                                       inactiveTrackColor: style!
                                                               .seekBarInactiveTrackColor ??
                                                           Colors.grey,
                                                       thumbColor: style!
                                                               .seekBarThumbColor ??
-                                                          Colors.blue,
+                                                          Colors.cyan,
                                                       onChangeEnd: audioCtrl
                                                           .state
                                                           .audioPlayer

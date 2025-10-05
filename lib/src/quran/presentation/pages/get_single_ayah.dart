@@ -35,7 +35,7 @@ class GetSingleAyah extends StatelessWidget {
         'رقم السورة غير صحيح',
         style: TextStyle(
           fontSize: fontSize ?? 22,
-          color: textColor ?? (isDark! ? Colors.white : Colors.black),
+          color: textColor ?? AppColors.getTextColor(isDark!),
         ),
       );
     }
@@ -52,7 +52,7 @@ class GetSingleAyah extends StatelessWidget {
         'الآية غير موجودة',
         style: TextStyle(
           fontSize: fontSize ?? 22,
-          color: textColor ?? (isDark! ? Colors.white : Colors.black),
+          color: textColor ?? AppColors.getTextColor(isDark!),
         ),
       );
     }
@@ -77,12 +77,12 @@ class GetSingleAyah extends StatelessWidget {
           fontSize: fontSize ?? 22,
           height: 1.7,
           letterSpacing: currentFontsSelected ? 3 : null,
-          color: textColor ?? (isDark! ? Colors.white : Colors.black),
+          color: textColor ?? AppColors.getTextColor(isDark!),
           shadows: [
             Shadow(
               blurRadius: 0.5,
               color: isBold!
-                  ? textColor ?? (isDark! ? Colors.white : Colors.black)
+                  ? textColor ?? AppColors.getTextColor(isDark!)
                   : Colors.transparent,
               offset: const Offset(0.5, 0.5),
             ),
@@ -103,12 +103,12 @@ class GetSingleAyah extends StatelessWidget {
               fontSize: fontSize ?? 22,
               height: 1.7,
               letterSpacing: currentFontsSelected ? 3 : null,
-              color: textColor ?? (isDark! ? Colors.white : Colors.black),
+              color: textColor ?? AppColors.getTextColor(isDark!),
               shadows: [
                 Shadow(
                   blurRadius: 0.5,
                   color: isBold!
-                      ? textColor ?? (isDark! ? Colors.white : Colors.black)
+                      ? textColor ?? AppColors.getTextColor(isDark!)
                       : Colors.transparent,
                   offset: const Offset(0.5, 0.5),
                 ),
@@ -125,13 +125,12 @@ class GetSingleAyah extends StatelessWidget {
                     package: 'quran_library',
                     fontSize: fontSize ?? 22,
                     height: 1.7,
-                    color: textColor ?? (isDark! ? Colors.white : Colors.black),
+                    color: textColor ?? AppColors.getTextColor(isDark!),
                     shadows: [
                       Shadow(
                         blurRadius: 0.5,
                         color: isBold!
-                            ? textColor ??
-                                (isDark! ? Colors.white : Colors.black)
+                            ? textColor ?? AppColors.getTextColor(isDark!)
                             : Colors.transparent,
                         offset: const Offset(0.5, 0.5),
                       ),

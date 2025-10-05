@@ -1,4 +1,4 @@
-part of '../../../audio.dart';
+part of '../../audio.dart';
 
 extension SurahUi on AudioCtrl {
   void changeAudioSource() {
@@ -21,7 +21,7 @@ extension SurahUi on AudioCtrl {
     Navigator.of(context).pop();
   }
 
-  void changeAyahReadersOnTap(BuildContext context, int index) {
+  Future<void> changeAyahReadersOnTap(BuildContext context, int index) async {
     state.ayahReaderNameValue.value =
         ReadersConstants.ayahReaderInfo[index]['readerD'];
     state.ayahReaderValue.value =
@@ -34,8 +34,13 @@ extension SurahUi on AudioCtrl {
     state.ayahReaderIndex.value = index;
     Navigator.of(context).pop();
     update(['audio_seekBar_id']);
-    playAyah(context, state.currentAyahUniqueNumber,
-        playSingleAyah: state.playSingleAyahOnly);
+    await _updateDownloadedAyahsMap();
+    if (context.mounted) {
+      state.isPlaying.value
+          ? playAyah(context, state.currentAyahUniqueNumber,
+              playSingleAyah: state.playSingleAyahOnly)
+          : null;
+    }
   }
 
   void sheetState() {

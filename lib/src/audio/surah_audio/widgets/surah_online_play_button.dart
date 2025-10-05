@@ -29,7 +29,7 @@ class SurahOnlinePlayButton extends StatelessWidget {
                   style?.playIconPath ?? AssetsPath.assets.playArrow,
                   height: style?.playIconHeight ?? 30,
                   ctx: context,
-                  color: style?.playIconColor ?? Colors.blue,
+                  color: style?.playIconColor ?? Colors.cyan,
                 ),
                 onPressed: () async {
                   surahAudioCtrl.cancelDownload();
@@ -50,7 +50,7 @@ class SurahOnlinePlayButton extends StatelessWidget {
                   style?.pauseIconPath ?? AssetsPath.assets.pauseArrow,
                   height: style?.pauseIconHeight ?? 30,
                   ctx: context,
-                  color: style?.playIconColor ?? Colors.blue,
+                  color: style?.playIconColor ?? Colors.cyan,
                 ),
                 onPressed: () {
                   surahAudioCtrl.state.isPlaying.value = false;
@@ -65,7 +65,7 @@ class SurahOnlinePlayButton extends StatelessWidget {
                     label: 'replaySurah'.tr,
                     child: Icon(
                       Icons.replay,
-                      color: style?.playIconColor ?? Colors.blue,
+                      color: style?.playIconColor ?? Colors.cyan,
                     )),
                 iconSize: style?.playIconHeight ?? 24.0,
                 onPressed: () => surahAudioCtrl.state.audioPlayer.seek(

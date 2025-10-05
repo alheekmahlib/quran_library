@@ -972,6 +972,16 @@ class QuranLibrary {
     package: "quran_library",
   );
 
+  /// [cairoStyle] هو النمط الافتراضي للنصوص الآخرى.
+  ///
+  /// [cairoStyle] is the default style for other text.
+  final cairoStyle = const TextStyle(
+    color: Colors.black,
+    fontSize: 18,
+    fontFamily: "cairo",
+    package: "quran_library",
+  );
+
   /// مسح ذاكرة التخزين المؤقت لمفتاح معين أو ذاكرة التخزين المؤقت بالكامل
   /// Clear cache for specific key or entire cache
   void clearCache([String? key]) {

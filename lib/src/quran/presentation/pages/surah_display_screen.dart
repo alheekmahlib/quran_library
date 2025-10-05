@@ -247,17 +247,13 @@ class SurahDisplayScreen extends StatelessWidget {
             return Directionality(
               textDirection: TextDirection.rtl,
               child: Scaffold(
-                backgroundColor: backgroundColor ??
-                    (isDark
-                        ? const Color(0xff1E1E1E)
-                        : const Color(0xfffaf7f3)),
+                backgroundColor:
+                    backgroundColor ?? AppColors.getBackgroundColor(isDark),
                 appBar: appBar ??
                     (useDefaultAppBar
                         ? AppBar(
                             backgroundColor: backgroundColor ??
-                                (isDark
-                                    ? const Color(0xff1E1E1E)
-                                    : const Color(0xfffaf7f3)),
+                                AppColors.getBackgroundColor(isDark),
                             elevation: 0,
                             centerTitle: true,
                             title: Text(
@@ -273,7 +269,13 @@ class SurahDisplayScreen extends StatelessWidget {
                           )
                         : null),
                 drawer: appBar == null && useDefaultAppBar
-                    ? _DefaultDrawer(languageCode ?? 'ar', isDark)
+                    ? _QuranTopBar(
+                        languageCode ?? 'ar',
+                        isDark,
+                        backgroundColor: backgroundColor,
+                        topBarStyle:
+                            QuranTopBarStyle.defaults(isDark: isDark),
+                      )
                     : null,
                 body: SafeArea(
                     child: Stack(
@@ -506,8 +508,7 @@ class SurahDisplayScreen extends StatelessWidget {
             ayahCount: 'عدد الآيات',
             secondTabText: 'عن السورة',
             firstTabText: 'أسماء السورة',
-            backgroundColor:
-                isDark ? const Color(0xff1E1E1E) : const Color(0xfffaf7f3),
+            backgroundColor: AppColors.getBackgroundColor(isDark),
             closeIconColor: isDark ? Colors.white : Colors.black,
             indicatorColor: Colors.amber.withValues(alpha: .2),
             primaryColor: Colors.amber.withValues(alpha: .2),

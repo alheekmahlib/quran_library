@@ -59,6 +59,7 @@ class QuranLibraryScreen extends StatelessWidget {
     this.surahStyle,
     this.isShowAudioSlider = true,
     this.appIconUrlForPlayAudioInBackground,
+    this.topBarStyle,
     required this.parentContext,
   });
 
@@ -269,6 +270,11 @@ class QuranLibraryScreen extends StatelessWidget {
   /// [appIconUrlForPlayAudioInBackground] You can pass a custom URL for the app icon in the audio player
   final String? appIconUrlForPlayAudioInBackground;
 
+  /// تخصيص نمط شريط الأعلى الخاص بالمصحف
+  ///
+  /// Customize the style of the Quran top bar
+  final QuranTopBarStyle? topBarStyle;
+
   /// السياق المطلوب من المستخدم لإدارة العمليات الداخلية للمكتبة [parentContext]
   /// مثل الوصول إلى MediaQuery، Theme، والتنقل بين الصفحات
   ///
@@ -317,60 +323,8 @@ class QuranLibraryScreen extends StatelessWidget {
         builder: (quranCtrl) => Directionality(
           textDirection: TextDirection.rtl,
           child: Scaffold(
-            backgroundColor: backgroundColor ??
-                (isDark ? const Color(0xff1E1E1E) : const Color(0xfffaf7f3)),
-            appBar: appBar ??
-                (useDefaultAppBar
-                    ? AppBar(
-                        backgroundColor: backgroundColor ??
-                            (isDark
-                                ? const Color(0xff1E1E1E)
-                                : const Color(0xfffaf7f3)),
-                        leading: Builder(
-                          builder: (buildContext) => IconButton(
-                            icon: Icon(
-                              Icons.menu,
-                              color: isDark ? Colors.white : Colors.black,
-                            ),
-                            onPressed: () {
-                              Scaffold.of(buildContext).openDrawer();
-                            },
-                          ),
-                        ),
-                        elevation: 0,
-                        actions: [
-                          FontsDownloadDialog(
-                            downloadFontsDialogStyle:
-                                downloadFontsDialogStyle ??
-                                    DownloadFontsDialogStyle(
-                                      title: 'الخطوط',
-                                      titleColor:
-                                          isDark ? Colors.white : Colors.black,
-                                      notes:
-                                          'لجعل مظهر المصحف مشابه لمصحف المدينة يمكنك تحميل خطوط المصحف',
-                                      notesColor:
-                                          isDark ? Colors.white : Colors.black,
-                                      linearProgressBackgroundColor:
-                                          Colors.blue.shade100,
-                                      linearProgressColor: Colors.blue,
-                                      downloadButtonBackgroundColor:
-                                          Colors.blue,
-                                      downloadingText: 'جارِ التحميل',
-                                      backgroundColor: isDark
-                                          ? Color(0xff1E1E1E)
-                                          : const Color(0xFFF7EFE0),
-                                    ),
-                            languageCode: languageCode,
-                            isFontsLocal: isFontsLocal,
-                            isDark: isDark,
-                          )
-                        ],
-                      )
-                    : null),
-            drawer: appBar == null && useDefaultAppBar
-                ? _DefaultDrawer(languageCode ?? 'ar', isDark,
-                    style: surahStyle ?? SurahAudioStyle())
-                : null,
+            backgroundColor:
+                backgroundColor ?? AppColors.getBackgroundColor(isDark),
             body: SafeArea(
               child: Stack(
                 alignment: Alignment.center,
@@ -484,13 +438,15 @@ class QuranLibraryScreen extends StatelessWidget {
                           pageIndex: pageIndex,
                           quranCtrl: quranCtrl,
                           isFontsLocal: isFontsLocal!),
-
-                  // السلايدر السفلي - يظهر من الأسفل للأعلى
-                  // Bottom slider - appears from bottom to top
-                  isShowAudioSlider!
-                      ? Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                          child: Obx(() => BottomSlider(
+                  GetBuilder<QuranCtrl>(
+                    id: 'isShowControl',
+                    builder: (quranCtrl) => Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        // السلايدر السفلي - يظهر من الأسفل للأعلى
+                        // Bottom slider - appears from bottom to top
+                        isShowAudioSlider!
+                            ? BottomSlider(
                                 isVisible:
                                     QuranCtrl.instance.isShowControl.value,
                                 onClose: () {
@@ -498,15 +454,33 @@ class QuranLibraryScreen extends StatelessWidget {
                                       false;
                                   SliderController.instance.hideBottomContent();
                                 },
+                                isDark: isDark,
                                 style: ayahStyle ?? AyahAudioStyle(),
                                 contentChild: SizedBox.shrink(),
                                 child: Flexible(
                                   child: AyahsAudioWidget(
                                       style: ayahStyle ?? AyahAudioStyle()),
                                 ),
-                              )),
-                        )
-                      : SizedBox.shrink(),
+                              )
+                            : SizedBox.shrink(),
+                        appBar == null &&
+                                useDefaultAppBar &&
+                                quranCtrl.isShowControl.value
+                            ? _QuranTopBar(
+                                languageCode ?? 'ar',
+                                isDark,
+                                style: surahStyle ?? SurahAudioStyle(),
+                                backgroundColor: backgroundColor,
+                                downloadFontsDialogStyle:
+                                    downloadFontsDialogStyle,
+                                isFontsLocal: isFontsLocal,
+                                topBarStyle: topBarStyle ??
+                                    QuranTopBarStyle.defaults(isDark: isDark),
+                              )
+                            : SizedBox.shrink(),
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),

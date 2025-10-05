@@ -1,4 +1,4 @@
-part of '../../audio.dart';
+part of '../audio.dart';
 
 class SurahState {
   /// -------- [Variables] ----------
@@ -51,6 +51,10 @@ class SurahState {
   RxInt downloadProgress = 0.obs;
   RxBool audioServiceInitialized = false.obs;
   RxBool isDirectPlaying = false.obs;
+  // إشارة لإلغاء التحميل الجاري (دفعة آيات السورة)
+  RxBool cancelRequested = false.obs;
+  // رقم السورة الجاري تحميل آياتها حاليًا (-1 إذا لا يوجد)
+  RxInt currentDownloadingAyahSurahNumber = (-1).obs;
   Directory? _dir;
   Future<Directory> get dir async =>
       _dir ??= await getApplicationDocumentsDirectory();
@@ -87,4 +91,6 @@ class SurahState {
     isPlaying.value = false;
     cancelAllSubscriptions();
   }
+
+  RxDouble ayahDownloadProgress = 0.0.obs;
 }

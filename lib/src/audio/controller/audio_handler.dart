@@ -1,4 +1,4 @@
-part of '../../audio.dart';
+part of '../audio.dart';
 
 class AudioHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
   static final AudioHandler _instance = AudioHandler._internal();

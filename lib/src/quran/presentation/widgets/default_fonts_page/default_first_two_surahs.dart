@@ -93,9 +93,7 @@ class DefaultFirstTwoSurahs extends StatelessWidget {
                   ayahCount: 'عدد الآيات',
                   secondTabText: 'عن السورة',
                   firstTabText: 'أسماء السورة',
-                  backgroundColor: isDark
-                      ? const Color(0xff1E1E1E)
-                      : const Color(0xfffaf7f3),
+                  backgroundColor: AppColors.getBackgroundColor(isDark),
                   closeIconColor: isDark ? Colors.white : Colors.black,
                   indicatorColor: Colors.amber.withValues(alpha: .2),
                   primaryColor: Colors.amber.withValues(alpha: .2),

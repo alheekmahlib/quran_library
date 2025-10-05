@@ -67,7 +67,8 @@ class _QuranTextScale extends StatelessWidget {
           if (onPagePress != null) {
             onPagePress!();
           }
-          quranCtrl.isShowControl.toggle();
+
+          quranCtrl.showControlToggle();
           quranCtrl.clearSelection();
           quranCtrl.state.overlayEntry?.remove();
           quranCtrl.state.overlayEntry = null;
@@ -125,9 +126,9 @@ class _QuranTextScale extends StatelessWidget {
                                           ayahCount: 'عدد الآيات',
                                           secondTabText: 'عن السورة',
                                           firstTabText: 'أسماء السورة',
-                                          backgroundColor: isDark
-                                              ? const Color(0xff1E1E1E)
-                                              : const Color(0xfffaf7f3),
+                                          backgroundColor:
+                                              AppColors.getBackgroundColor(
+                                                  isDark),
                                           closeIconColor: isDark
                                               ? Colors.white
                                               : Colors.black,
@@ -233,9 +234,9 @@ class _QuranTextScale extends StatelessWidget {
                                           ayahCount: 'عدد الآيات',
                                           secondTabText: 'عن السورة',
                                           firstTabText: 'أسماء السورة',
-                                          backgroundColor: isDark
-                                              ? const Color(0xff1E1E1E)
-                                              : const Color(0xfffaf7f3),
+                                          backgroundColor:
+                                              AppColors.getBackgroundColor(
+                                                  isDark),
                                           closeIconColor: isDark
                                               ? Colors.white
                                               : Colors.black,

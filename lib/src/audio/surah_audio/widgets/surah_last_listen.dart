@@ -4,8 +4,9 @@ part of '../../audio.dart';
 /// Last listen widget with color and style passing support
 class SurahLastListen extends StatelessWidget {
   final SurahAudioStyle? style;
+  final bool isDark;
 
-  SurahLastListen({super.key, this.style});
+  SurahLastListen({super.key, this.style, this.isDark = false});
 
   final surahAudioCtrl = AudioCtrl.instance;
 
@@ -29,12 +30,12 @@ class SurahLastListen extends StatelessWidget {
               // شرح: استخدام لون الخلفية من الستايل أو الافتراضي
               // Explanation: Use background color from style or default
               color: style?.backgroundColor?.withValues(alpha: 0.1) ??
-                  const Color(0xfffaf7f3).withValues(alpha: .1),
+                  AppColors.getBackgroundColor(isDark).withValues(alpha: .1),
               borderRadius:
                   BorderRadius.all(Radius.circular(style?.borderRadius ?? 8.0)),
               border: Border.all(
                   color: style?.backgroundColor?.withValues(alpha: 0.2) ??
-                      Colors.blue.withValues(alpha: .2),
+                      Colors.cyan.withValues(alpha: .2),
                   width: 1)),
           margin: const EdgeInsets.symmetric(vertical: 8.0),
           child: Row(
@@ -46,7 +47,7 @@ class SurahLastListen extends StatelessWidget {
                 decoration: BoxDecoration(
                   // شرح: استخدام لون الخلفية الأساسي من الستايل
                   // Explanation: Use primary background color from style
-                  color: style?.backgroundColor ?? Colors.blue,
+                  color: style?.backgroundColor ?? Colors.cyan,
                   borderRadius: BorderRadiusDirectional.only(
                     topStart: Radius.circular(style?.borderRadius ?? 8.0),
                     bottomStart: Radius.circular(style?.borderRadius ?? 8.0),
@@ -83,7 +84,8 @@ class SurahLastListen extends StatelessWidget {
                               .instance.state.currentAudioListSurahNum.value
                               .toString(),
                           style: TextStyle(
-                            color: style?.surahNameColor ?? Colors.black,
+                            color: style?.surahNameColor ??
+                                AppColors.getTextColor(isDark),
                             fontFamily: "surahName",
                             fontSize: 48.sp,
                             package: "quran_library",
@@ -101,8 +103,8 @@ class SurahLastListen extends StatelessWidget {
                           style: QuranLibrary().naskhStyle.copyWith(
                                 fontSize: 26,
                                 // شرح: استخدام لون النص من الستايل أو الأزرق
-                                // Explanation: Use text color from style or blue
-                                color: style?.textColor ?? Colors.blue,
+                                // Explanation: Use text color from style or cyan
+                                color: style?.textColor ?? Colors.cyan,
                               ),
                         ),
                       ),

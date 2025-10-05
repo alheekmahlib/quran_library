@@ -71,7 +71,7 @@ class DefaultFontsBuild extends StatelessWidget {
                     if (onPagePress != null) {
                       onPagePress!();
                     }
-                    quranCtrl.isShowControl.toggle();
+                    quranCtrl.showControlToggle();
                     quranCtrl.clearSelection();
                     quranCtrl.state.overlayEntry?.remove();
                     quranCtrl.state.overlayEntry = null;

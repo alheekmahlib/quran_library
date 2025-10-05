@@ -17,206 +17,245 @@ extension FontsDownloadWidgetExtension on QuranCtrl {
       String? languageCode,
       bool isDark = false,
       bool? isFontsLocal = false}) {
-    final quranCtrl = QuranCtrl.instance;
+    final ctrl = QuranCtrl.instance;
+    final fontsLocal = isFontsLocal ?? false;
 
-    List<String> titleList = [
+    final List<String> titleList = [
       downloadFontsDialogStyle?.defaultFontText ?? 'الخط الأساسي',
       downloadFontsDialogStyle?.downloadedFontsText ?? 'خط المصحف',
     ];
-    // List<String> tajweedList = [
-    //   downloadFontsDialogStyle?.withTajweedText ?? 'مع التجويد',
-    //   downloadFontsDialogStyle?.withoutTajweedText ?? 'بدون تجويد',
-    // ];
+
+    // Theming fallbacks
+    final Color accent =
+        downloadFontsDialogStyle?.linearProgressColor ?? Colors.cyan;
+    final Color background = downloadFontsDialogStyle?.linearProgressColor ??
+        AppColors.getBackgroundColor(isDark);
+    final Color textColor =
+        downloadFontsDialogStyle?.titleColor ?? AppColors.getTextColor(isDark);
+    final Color notesColor =
+        downloadFontsDialogStyle?.notesColor ?? AppColors.getTextColor(isDark);
+    final Color dividerColor = downloadFontsDialogStyle?.dividerColor ?? accent;
+    final Color outlineColor =
+        (downloadFontsDialogStyle?.downloadButtonBackgroundColor != null)
+            ? downloadFontsDialogStyle!.downloadButtonBackgroundColor!
+                .withValues(alpha: .2)
+            : isDark
+                ? accent.withValues(alpha: .35)
+                : accent.withValues(alpha: .2);
+
+    Widget buildTile({
+      required int index,
+    }) {
+      final bool isSelected = ctrl.state.fontsSelected.value == index;
+      final bool isDownloadOption = index == 1;
+
+      Widget trailingForDownload() {
+        if (!isDownloadOption) return const SizedBox.shrink();
+        if (fontsLocal) return const SizedBox.shrink();
+        return Obx(() {
+          final preparing = ctrl.state.isPreparingDownload.value;
+          final downloading = ctrl.state.isDownloadingFonts.value;
+          final downloaded = ctrl.state.isDownloadedV2Fonts.value;
+          // Keep a consistent button area size
+          const double buttonHeight = 55;
+
+          return SizedBox(
+            width: 40,
+            height: isSelected ? 65 : buttonHeight,
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                if (preparing || downloading)
+                  SizedBox(
+                    width: 22,
+                    height: 22,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2.2,
+                      color: accent,
+                    ),
+                  )
+                else
+                  IconButton(
+                    tooltip: downloaded ? 'حذف الخطوط' : 'تحميل الخطوط',
+                    onPressed: () async {
+                      if (downloaded) {
+                        await ctrl.deleteFonts();
+                      } else if (!ctrl.state.isDownloadingFonts.value &&
+                          !ctrl.state.isPreparingDownload.value) {
+                        await ctrl.downloadAllFontsZipFile(index);
+                      }
+                      log('fontIndex: $index');
+                    },
+                    icon: downloadFontsDialogStyle?.iconWidget ??
+                        Icon(
+                          downloaded
+                              ? Icons.delete_forever
+                              : Icons.download_outlined,
+                          color: downloadFontsDialogStyle?.iconColor ?? accent,
+                          size: downloadFontsDialogStyle?.iconSize,
+                        ),
+                  ),
+              ],
+            ),
+          );
+        });
+      }
+
+      Widget progressIndicatorForDownload() {
+        if (!isDownloadOption) return const SizedBox.shrink();
+        if (fontsLocal) return const SizedBox.shrink();
+        return Obx(() {
+          final preparing = ctrl.state.isPreparingDownload.value;
+          final downloading = ctrl.state.isDownloadingFonts.value;
+          final progress = ctrl.state.fontsDownloadProgress.value;
+
+          // Keep a consistent button area size
+          const double buttonHeight = 55;
+          const double radius = 8;
+
+          final Widget backgroundProgress = ClipRRect(
+            borderRadius: BorderRadius.circular(radius),
+            child: SizedBox(
+              width: double.infinity,
+              height: buttonHeight,
+              child: TweenAnimationBuilder(
+                  tween: Tween<double>(
+                    begin: 0.0,
+                    end: progress,
+                  ),
+                  duration: const Duration(milliseconds: 1000),
+                  curve: Curves.fastEaseInToSlowEaseOut,
+                  builder: (context, value, child) => LinearProgressIndicator(
+                        minHeight: buttonHeight,
+                        value: downloading
+                            ? (progress / 100).clamp(0.0, 1.0)
+                            : null,
+                        backgroundColor: (downloadFontsDialogStyle
+                                    ?.linearProgressBackgroundColor ??
+                                background)
+                            .withValues(alpha: .05),
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                          (downloadFontsDialogStyle?.linearProgressColor ??
+                                  accent)
+                              .withValues(alpha: .25),
+                        ),
+                      )),
+            ),
+          );
+
+          return SizedBox(
+            width: double.infinity,
+            height: buttonHeight,
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                if (preparing || downloading) backgroundProgress,
+              ],
+            ),
+          );
+        });
+      }
+
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(12.0),
+        child: AnimatedContainer(
+          height: isSelected ? 65 : 55,
+          alignment: Alignment.center,
+          duration: const Duration(milliseconds: 200),
+          curve: Curves.easeInOut,
+          margin: const EdgeInsets.symmetric(vertical: 6.0),
+          decoration: BoxDecoration(
+            color:
+                isSelected ? accent.withValues(alpha: .05) : Colors.transparent,
+            border: Border.all(color: outlineColor, width: 1),
+            borderRadius: BorderRadius.circular(12.0),
+          ),
+          child: Obx(() {
+            final downloading = ctrl.state.isDownloadingFonts.value;
+            final progress = ctrl.state.fontsDownloadProgress.value;
+            return Stack(
+              alignment: Alignment.center,
+              children: [
+                progressIndicatorForDownload(),
+                ListTile(
+                  minTileHeight: isSelected ? 65 : 55,
+                  contentPadding: const EdgeInsetsDirectional.symmetric(
+                      horizontal: 12, vertical: 0),
+                  onTap: (fontsLocal || ctrl.state.isDownloadedV2Fonts.value)
+                      ? () {
+                          ctrl.state.fontsSelected.value = index;
+                          GetStorage()
+                              .write(_StorageConstants().fontsSelected, index);
+                          log('fontsSelected: ');
+                          Get.forceAppUpdate();
+                        }
+                      : null,
+                  leading: trailingForDownload(),
+                  title: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        downloading && isDownloadOption
+                            ? '${downloadFontsDialogStyle?.downloadingText ?? 'جاري التحميل'} ${progress.toStringAsFixed(1)}%'
+                                .convertNumbersAccordingToLang(
+                                    languageCode: languageCode ?? 'ar')
+                            : titleList[index],
+                        style: downloadFontsDialogStyle?.fontNameStyle ??
+                            TextStyle(
+                              fontSize: 16,
+                              fontFamily: 'cairo',
+                              color: textColor,
+                              package: 'quran_library',
+                            ),
+                      ),
+                      Icon(
+                        isSelected
+                            ? Icons.radio_button_checked
+                            : Icons.radio_button_unchecked,
+                        color: accent,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            );
+          }),
+        ),
+      );
+    }
+
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
+      padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(
-            downloadFontsDialogStyle?.title ?? 'الخطوط',
-            style: downloadFontsDialogStyle?.titleStyle ??
-                TextStyle(
-                  fontSize: 16.0,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'kufi',
-                  color: downloadFontsDialogStyle?.titleColor ??
-                      (isDark ? Colors.white : Colors.black),
-                  package: 'quran_library',
-                ),
-            textAlign: TextAlign.center,
-          ),
+          // Header
+          HeaderDialogWidget(
+              title: downloadFontsDialogStyle?.title ?? 'الخطوط'),
           const SizedBox(height: 8.0),
           context.horizontalDivider(
             width: MediaQuery.sizeOf(context).width * .5,
-            color: downloadFontsDialogStyle?.dividerColor ?? Colors.blue,
+            color: dividerColor,
           ),
-          const SizedBox(height: 8.0),
+          const SizedBox(height: 10.0),
           Text(
             downloadFontsDialogStyle?.notes ??
                 'لجعل مظهر المصحف مشابه لمصحف المدينة يمكنك تحميل خطوط المصحف',
             style: downloadFontsDialogStyle?.notesStyle ??
                 TextStyle(
-                    fontSize: 16.0,
-                    fontFamily: 'naskh',
-                    color: downloadFontsDialogStyle?.notesColor ??
-                        (isDark ? Colors.white : Colors.black),
+                    fontSize: 14.0,
+                    fontFamily: 'cairo',
+                    color: notesColor,
+                    height: 1.5,
                     package: 'quran_library'),
+            textAlign: TextAlign.center,
           ),
-          const SizedBox(
-            height: 100,
-          ),
-          Column(
-            mainAxisSize: MainAxisSize.min,
-            children: List.generate(
-              titleList.length,
-              (i) => Container(
-                margin: EdgeInsets.symmetric(vertical: 2.0),
-                decoration: BoxDecoration(
-                  border: Border.all(
-                    color: downloadFontsDialogStyle
-                                ?.downloadButtonBackgroundColor !=
-                            null
-                        ? downloadFontsDialogStyle!
-                            .downloadButtonBackgroundColor!
-                            .withValues(alpha: .2)
-                        : isDark
-                            ? Colors.blue.withValues(alpha: .4)
-                            : Colors.blue.withValues(alpha: .2),
-                    width: 1.0,
-                  ),
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-                child: Container(
-                  height: 50,
-                  margin: EdgeInsets.symmetric(vertical: 4.0),
-                  color: quranCtrl.state.fontsSelected.value == i
-                      ? downloadFontsDialogStyle?.linearProgressColor != null
-                          ? downloadFontsDialogStyle?.linearProgressColor!
-                              .withValues(alpha: .05)
-                          : Colors.blue.withValues(alpha: .05)
-                      : null,
-                  child: CheckboxListTile(
-                    value: (quranCtrl.state.fontsSelected.value == i)
-                        ? true
-                        : false,
-                    activeColor:
-                        downloadFontsDialogStyle?.linearProgressColor ??
-                            Colors.blue,
-                    secondary: i == 0
-                        ? const SizedBox.shrink()
-                        : isFontsLocal!
-                            ? const SizedBox.shrink()
-                            : Obx(() => quranCtrl
-                                    .state.isPreparingDownload.value
-                                ? SizedBox(
-                                    width: 24,
-                                    height: 24,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2.0,
-                                      color: downloadFontsDialogStyle
-                                              ?.linearProgressColor ??
-                                          Colors.blue,
-                                    ),
-                                  )
-                                : state.isPreparingDownload.value ||
-                                        state.isDownloadingFonts.value
-                                    ? SizedBox(
-                                        width: 24,
-                                        height: 24,
-                                        child: CircularProgressIndicator(
-                                          color: downloadFontsDialogStyle
-                                                  ?.linearProgressColor ??
-                                              Colors.blue,
-                                        ))
-                                    : IconButton(
-                                        onPressed: () async {
-                                          quranCtrl.state.isDownloadedV2Fonts
-                                                  .value
-                                              ? await quranCtrl.deleteFonts()
-                                              : quranCtrl
-                                                          .state
-                                                          .isDownloadingFonts
-                                                          .value ||
-                                                      quranCtrl
-                                                          .state
-                                                          .isPreparingDownload
-                                                          .value
-                                                  ? null
-                                                  : await quranCtrl
-                                                      .downloadAllFontsZipFile(
-                                                          i);
-                                          log('fontIndex: $i');
-                                        },
-                                        icon: downloadFontsDialogStyle
-                                                ?.iconWidget ??
-                                            Icon(
-                                              quranCtrl.state
-                                                      .isDownloadedV2Fonts.value
-                                                  ? Icons.delete_forever
-                                                  : Icons.downloading_outlined,
-                                              color: downloadFontsDialogStyle
-                                                      ?.iconColor ??
-                                                  Colors.blue,
-                                              size: downloadFontsDialogStyle
-                                                  ?.iconSize,
-                                            ),
-                                      )),
-                    title: Text(
-                      titleList[i],
-                      style: downloadFontsDialogStyle?.fontNameStyle ??
-                          TextStyle(
-                            fontSize: 16,
-                            fontFamily: 'naskh',
-                            color: downloadFontsDialogStyle?.titleColor ??
-                                (isDark ? Colors.white : Colors.black),
-                            package: 'quran_library',
-                          ),
-                    ),
-                    onChanged: isFontsLocal! ||
-                            quranCtrl.state.isDownloadedV2Fonts.value
-                        ? (_) {
-                            quranCtrl.state.fontsSelected.value = i;
-                            GetStorage()
-                                .write(_StorageConstants().fontsSelected, i);
-                            log('fontsSelected: $i');
-                            Get.forceAppUpdate();
-                          }
-                        : null,
-                  ),
-                ),
-              ),
-            ),
-          ),
-          Obx(
-            () => quranCtrl.state.isDownloadingFonts.value
-                ? Text(
-                    '${downloadFontsDialogStyle?.downloadingText ?? 'جاري التحميل'} ${quranCtrl.state.fontsDownloadProgress.value.toStringAsFixed(1)}%'
-                        .convertNumbersAccordingToLang(
-                            languageCode: languageCode ?? 'ar'),
-                    style: downloadFontsDialogStyle?.downloadingStyle ??
-                        TextStyle(
-                          color: downloadFontsDialogStyle?.notesColor ??
-                              (isDark ? Colors.white : Colors.black),
-                          fontSize: 16,
-                          fontFamily: 'naskh',
-                          package: 'quran_library',
-                        ),
-                  )
-                : const SizedBox.shrink(),
-          ),
-          Obx(
-            () => quranCtrl.state.isDownloadedV2Fonts.value
-                ? const SizedBox.shrink()
-                : LinearProgressIndicator(
-                    backgroundColor: downloadFontsDialogStyle
-                            ?.linearProgressBackgroundColor ??
-                        Colors.blue.shade100,
-                    value: (quranCtrl.state.fontsDownloadProgress.value / 100),
-                    color: downloadFontsDialogStyle?.linearProgressColor ??
-                        Colors.blue,
-                  ),
-          ),
+          const SizedBox(height: 20),
+
+          // Options
+          buildTile(index: 0),
+          buildTile(index: 1),
         ],
       ),
     );

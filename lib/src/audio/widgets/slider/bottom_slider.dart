@@ -9,6 +9,7 @@ class BottomSlider extends StatelessWidget {
   final Widget contentChild;
   final double? sliderHeight;
   final AyahAudioStyle? style;
+  final bool isDark;
 
   BottomSlider({
     super.key,
@@ -18,6 +19,7 @@ class BottomSlider extends StatelessWidget {
     required this.contentChild,
     this.sliderHeight = 0.0,
     this.style,
+    this.isDark = false,
   });
 
   // الحصول على الكونترولر الخاص بالسلايدر
@@ -45,29 +47,25 @@ class BottomSlider extends StatelessWidget {
                       sliderCtrl.bottomSliderHeight.value +
                   sliderHeight!,
               decoration: BoxDecoration(
-                color: style!.backgroundColor ?? Colors.white,
+                color: style!.backgroundColor ??
+                    AppColors.getBackgroundColor(isDark),
                 borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(style!.borderRadius ?? 16),
                   topRight: Radius.circular(style!.borderRadius ?? 16),
                 ),
-                boxShadow: const [
+                boxShadow: [
                   BoxShadow(
-                    color: Color(0x1A000000),
-                    blurRadius: 32,
-                    offset: Offset(0, -12),
-                  ),
-                  BoxShadow(
-                    color: Color(0x26000000),
-                    blurRadius: 20,
-                    offset: Offset(0, -8),
-                    spreadRadius: 2,
+                    color: Colors.black.withValues(alpha: .2),
+                    spreadRadius: 1,
+                    blurRadius: 5,
+                    offset: const Offset(0, -5), // changes position of shadow
                   ),
                 ],
               ),
               child: LayoutBuilder(builder: (context, constraints) {
                 // تحديد ما إذا كان السلايدر في الحالة الصغيرة أم الكبيرة
                 // Determine if slider is in small or large state
-                final isSmallState = constraints.maxHeight < 150;
+                // final isSmallState = constraints.maxHeight < 150;
 
                 return Column(
                   mainAxisSize: MainAxisSize.min, // تغيير لـ min لتجنب overflow
@@ -112,7 +110,7 @@ class BottomSlider extends StatelessWidget {
                     child,
                     // تقليل المساحة في الحالة الصغيرة
                     // Reduce space in small state
-                    SizedBox(height: isSmallState ? 4 : 8),
+                    // SizedBox(height: isSmallState ? 4 : 8),
                   ],
                 );
               }),

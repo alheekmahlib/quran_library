@@ -31,17 +31,19 @@ class PlayAyahWidget extends StatelessWidget {
                 style?.playIconPath ?? AssetsPath.assets.playArrow,
                 height: style?.playIconHeight ?? 25,
                 ctx: context,
-                color: style?.playIconColor ?? (Colors.blue),
+                color: style?.playIconColor ?? (Colors.cyan),
               ),
               onTap: () async {
-                QuranCtrl.instance.selectedAyahsByUnequeNumber.isNotEmpty
-                    ? audioCtrl.state.isDirectPlaying.value = false
-                    : audioCtrl.state.isDirectPlaying.value = true;
-                QuranCtrl.instance.state.isPlayExpanded.value = true;
+                // اضبط وضع التشغيل للآيات فقط
                 audioCtrl.state.isPlayingSurahsMode = false;
-                audioCtrl.playAyah(
-                    context, audioCtrl.state.currentAyahUniqueNumber,
-                    playSingleAyah: audioCtrl.state.playSingleAyahOnly);
+                // تجنّب استدعاءات مزدوجة
+                if (!audioCtrl.state.audioPlayer.playing) {
+                  await audioCtrl.playAyah(
+                    context,
+                    audioCtrl.state.currentAyahUniqueNumber,
+                    playSingleAyah: audioCtrl.state.playSingleAyahOnly,
+                  );
+                }
               },
             );
           }
@@ -50,11 +52,11 @@ class PlayAyahWidget extends StatelessWidget {
               style?.pauseIconPath ?? AssetsPath.assets.pauseArrow,
               height: style?.pauseIconHeight ?? 25,
               ctx: context,
-              color: style?.playIconColor ?? (Colors.blue),
+              color: style?.playIconColor ?? (Colors.cyan),
             ),
             onTap: () async {
+              // Pause only, don't auto-toggle play again
               await audioCtrl.pausePlayer();
-              QuranCtrl.instance.state.isPlayExpanded.value = true;
             },
           );
         },

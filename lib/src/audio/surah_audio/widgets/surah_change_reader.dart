@@ -2,7 +2,8 @@ part of '../../audio.dart';
 
 class SurahChangeSurahReader extends StatelessWidget {
   final SurahAudioStyle? style;
-  SurahChangeSurahReader({super.key, this.style});
+  final bool isDark;
+  SurahChangeSurahReader({super.key, this.style, this.isDark = false});
   final surahAudioCtrl = AudioCtrl.instance;
 
   @override
@@ -28,7 +29,8 @@ class SurahChangeSurahReader extends StatelessWidget {
                 '${ReadersConstants.surahReaderInfo[surahAudioCtrl.state.surahReaderIndex.value]['name']}'
                     .tr,
                 style: QuranLibrary().naskhStyle.copyWith(
-                      color: style?.readerNameInItemColor ?? Colors.black,
+                      color: style?.readerNameInItemColor ??
+                          AppColors.getTextColor(isDark),
                       fontSize: 20,
                     ),
               )),
@@ -53,13 +55,14 @@ class SurahChangeSurahReader extends StatelessWidget {
           ReadersConstants.surahReaderInfo.length,
           (index) => ListTile(
             minTileHeight: 40,
-            selectedColor: Colors.blue,
+            selectedColor: Colors.cyan,
             title: Text(
               '${ReadersConstants.surahReaderInfo[index]['name']}'.tr,
               style: QuranLibrary().naskhStyle.copyWith(
                   color: surahAudioCtrl.state.surahReaderNameValue ==
                           ReadersConstants.surahReaderInfo[index]['readerN']
-                      ? style?.readerNameInItemColor ?? Colors.black
+                      ? style?.readerNameInItemColor ??
+                          AppColors.getTextColor(isDark)
                       : const Color(0xffcdba72),
                   fontSize: 14,
                   fontFamily: "kufi"),
@@ -72,7 +75,7 @@ class SurahChangeSurahReader extends StatelessWidget {
                 border: Border.all(
                     color: surahAudioCtrl.state.surahReaderNameValue ==
                             ReadersConstants.surahReaderInfo[index]['readerN']
-                        ? Colors.black
+                        ? AppColors.getTextColor(isDark)
                         : const Color(0xffcdba72),
                     width: 2),
               ),

@@ -1,4 +1,4 @@
-part of '../../audio.dart';
+part of '../audio.dart';
 
 class AudioCtrl extends GetxController {
   AudioCtrl._();
@@ -13,6 +13,8 @@ class AudioCtrl extends GetxController {
     loadSurahReader();
     loadAyahReader();
     await initializeSurahDownloadStatus();
+    // تأكد من مزامنة حالة آيات السور مع الملفات الفعلية عند التشغيل/Hot reload
+    // await _updateDownloadedAyahsMap();
     // التحقق من عدم وجود مشغل صوت نشط آخر / Check if no other audio service is active
     if (SurahState.isAudioServiceActive) {
       log('Audio service already active, skipping initialization',
@@ -185,7 +187,9 @@ class AudioCtrl extends GetxController {
       // Proceed with the download
       if (!connectivity.contains(ConnectivityResult.none)) {
         try {
-          await _downloadFile(path, url, ayahUqNumber: ayahUqNumber);
+          await _downloadFile(path, url,
+              ayahUqNumber: ayahUqNumber,
+              updateGlobalDownloading: setDownloadingStatus);
           // if (await _downloadFile(path, url)) return path;
         } catch (e) {
           log('Error downloading file: $e', name: 'AudioCtrl');
@@ -208,7 +212,7 @@ class AudioCtrl extends GetxController {
   }
 
   Future<bool> _downloadFile(String path, String url,
-      {int? ayahUqNumber}) async {
+      {int? ayahUqNumber, bool updateGlobalDownloading = true}) async {
     Dio dio = Dio();
     state.cancelToken = CancelToken();
 
@@ -229,7 +233,9 @@ class AudioCtrl extends GetxController {
       }
 
       await Directory(dirname(path)).create(recursive: true);
-      state.isDownloading.value = true;
+      if (updateGlobalDownloading) {
+        state.isDownloading.value = true;
+      }
       state.progressString.value = "0";
       state.progress.value = 0;
       update(['seekBar_id']);
@@ -241,11 +247,15 @@ class AudioCtrl extends GetxController {
         update(['seekBar_id']);
       }, cancelToken: state.cancelToken);
 
-      state.isDownloading.value = false;
+      if (updateGlobalDownloading) {
+        state.isDownloading.value = false;
+      }
       state.progressString.value = "100";
       log("Download completed for $path", name: 'AudioCtrl');
       if (ayahUqNumber != null) {
         state.ayahsDownloadStatus[ayahUqNumber] = true;
+        // تحديث واجهة مدير تنزيل الآيات لعرض التقدم
+        update(['ayahDownloadManager']);
       }
       return true;
     } catch (e) {
@@ -256,7 +266,9 @@ class AudioCtrl extends GetxController {
           final file = File(path);
           if (await file.exists()) {
             await file.delete();
-            state.isDownloading.value = false;
+            if (updateGlobalDownloading) {
+              state.isDownloading.value = false;
+            }
             log('Partially downloaded file deleted', name: 'AudioCtrl');
           }
         } catch (e) {
@@ -267,7 +279,9 @@ class AudioCtrl extends GetxController {
       } else {
         log('$e', name: 'AudioCtrl');
       }
-      state.isDownloading.value = false;
+      if (updateGlobalDownloading) {
+        state.isDownloading.value = false;
+      }
       state.progressString.value = "0";
       update(['seekBar_id']);
       return false;
@@ -304,7 +318,17 @@ class AudioCtrl extends GetxController {
 
   void cancelDownload() {
     state.isPlaying.value = false;
-    state.cancelToken.cancel('Request cancelled');
+    // علّم التحميل كمتوقف فورًا لتنعكس الحالة في الواجهة
+    state.isDownloading.value = false;
+    // إعادة ضبط مؤشر السورة الجاري تحميل آياتها
+    state.currentDownloadingAyahSurahNumber.value = -1;
+    try {
+      if (!(state.cancelToken.isCancelled)) {
+        state.cancelToken.cancel('Request cancelled');
+      }
+    } catch (_) {}
+    // جهّز CancelToken جديدًا لعمليات التحميل القادمة
+    state.cancelToken = CancelToken();
   }
 
   Future<void> startDownload({int? surahNumber}) async {

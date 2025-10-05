@@ -133,9 +133,9 @@ class _PackageSliderWidgetState extends State<PackageSliderWidget> {
             padding: EdgeInsets.symmetric(horizontal: widget.horizontalPadding),
             child: SliderTheme(
               data: SliderTheme.of(context).copyWith(
-                activeTrackColor: widget.activeTrackColor ?? Colors.blue,
+                activeTrackColor: widget.activeTrackColor ?? Colors.cyan,
                 inactiveTrackColor: widget.inactiveTrackColor ?? Colors.grey,
-                thumbColor: widget.thumbColor ?? Colors.blue,
+                thumbColor: widget.thumbColor ?? Colors.cyan,
                 thumbShape: CustomSliderThumbRect(
                   thumbRadius: 20,
                   min: widget.min,
@@ -172,7 +172,7 @@ class _PackageSliderWidgetState extends State<PackageSliderWidget> {
                     padding: const EdgeInsets.symmetric(
                         horizontal: 8.0, vertical: 2.0),
                     decoration: BoxDecoration(
-                      color: Colors.blue,
+                      color: Colors.cyan,
                       borderRadius: const BorderRadius.all(
                         Radius.circular(4),
                       ),
@@ -192,7 +192,7 @@ class _PackageSliderWidgetState extends State<PackageSliderWidget> {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 8.0, vertical: 2.0),
                         decoration: BoxDecoration(
-                          color: Colors.blue,
+                          color: Colors.cyan,
                           borderRadius: const BorderRadius.only(
                             topLeft: Radius.circular(4),
                             bottomLeft: Radius.circular(4),
@@ -214,7 +214,7 @@ class _PackageSliderWidgetState extends State<PackageSliderWidget> {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 8.0, vertical: 2.0),
                         decoration: BoxDecoration(
-                          color: Colors.blue,
+                          color: Colors.cyan,
                           borderRadius: const BorderRadius.only(
                             topRight: Radius.circular(4),
                             bottomRight: Radius.circular(4),

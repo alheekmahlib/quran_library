@@ -149,7 +149,7 @@ extension SurahInfoExtension on void {
                                 width: 40,
                                 colorFilter: ColorFilter.mode(
                                     surahStyle?.surahNameColor ??
-                                        (isDark ? Colors.white : Colors.black),
+                                        AppColors.getTextColor(isDark),
                                     BlendMode.srcIn),
                               ),
                               Transform.translate(
@@ -160,9 +160,7 @@ extension SurahInfoExtension on void {
                                           languageCode: languageCode ?? 'ar'),
                                   style: TextStyle(
                                       color: surahStyle?.surahNumberColor ??
-                                          (isDark
-                                              ? Colors.white
-                                              : Colors.black),
+                                          AppColors.getTextColor(isDark),
                                       fontFamily: "kufi",
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold,
@@ -186,7 +184,7 @@ extension SurahInfoExtension on void {
                               surah.number.toString(),
                               style: TextStyle(
                                 color: surahStyle?.surahNameColor ??
-                                    (isDark ? Colors.white : Colors.black),
+                                    AppColors.getTextColor(isDark),
                                 fontFamily: "surahName",
                                 fontSize: 38,
                                 package: "quran_library",
@@ -222,9 +220,7 @@ extension SurahInfoExtension on void {
                                   surah.revelationType.tr,
                                   style: TextStyle(
                                       color: surahStyle?.titleColor ??
-                                          (isDark
-                                              ? Colors.white
-                                              : Colors.black),
+                                          AppColors.getTextColor(isDark),
                                       fontFamily: "kufi",
                                       fontSize: 14,
                                       height: 2,
@@ -234,7 +230,7 @@ extension SurahInfoExtension on void {
                             ),
                             modalContext.verticalDivider(
                                 height: 30,
-                                color: isDark ? Colors.white : Colors.black),
+                                color: AppColors.getTextColor(isDark)),
                             Expanded(
                               flex: 4,
                               child: FittedBox(
@@ -246,9 +242,7 @@ extension SurahInfoExtension on void {
                                             languageCode: languageCode ?? 'ar'),
                                     style: TextStyle(
                                         color: surahStyle?.titleColor ??
-                                            (isDark
-                                                ? Colors.white
-                                                : Colors.black),
+                                            AppColors.getTextColor(isDark),
                                         fontFamily: "kufi",
                                         fontSize: 14,
                                         height: 2,
@@ -291,14 +285,14 @@ extension SurahInfoExtension on void {
                                   indicatorWeight: 3,
                                   labelStyle: TextStyle(
                                     color: surahStyle?.titleColor ??
-                                        (isDark ? Colors.white : Colors.black),
+                                        AppColors.getTextColor(isDark),
                                     fontFamily: 'kufi',
                                     fontSize: 12,
                                     package: "quran_library",
                                   ),
                                   unselectedLabelStyle: TextStyle(
                                     color: surahStyle?.titleColor ??
-                                        (isDark ? Colors.white : Colors.black),
+                                        AppColors.getTextColor(isDark),
                                     fontFamily: 'kufi',
                                     fontSize: 12,
                                     package: "quran_library",
@@ -359,11 +353,10 @@ extension SurahInfoExtension on void {
                                                 children: surah.surahNames
                                                     .customTextSpans(),
                                                 style: TextStyle(
-                                                  color:
-                                                      surahStyle?.textColor ??
-                                                          (isDark
-                                                              ? Colors.white
-                                                              : Colors.black),
+                                                  color: surahStyle
+                                                          ?.textColor ??
+                                                      AppColors.getTextColor(
+                                                          isDark),
                                                   fontFamily: "naskh",
                                                   fontSize: 22,
                                                   height: 2,
@@ -375,11 +368,10 @@ extension SurahInfoExtension on void {
                                                     .surahNamesFromBook
                                                     .customTextSpans(),
                                                 style: TextStyle(
-                                                  color:
-                                                      surahStyle?.textColor ??
-                                                          (isDark
-                                                              ? Colors.white
-                                                              : Colors.black),
+                                                  color: surahStyle
+                                                          ?.textColor ??
+                                                      AppColors.getTextColor(
+                                                          isDark),
                                                   fontFamily: "naskh",
                                                   fontSize: 18,
                                                   height: 2,
@@ -429,11 +421,10 @@ extension SurahInfoExtension on void {
                                                 children: surah.surahInfo
                                                     .customTextSpans(),
                                                 style: TextStyle(
-                                                  color:
-                                                      surahStyle?.textColor ??
-                                                          (isDark
-                                                              ? Colors.white
-                                                              : Colors.black),
+                                                  color: surahStyle
+                                                          ?.textColor ??
+                                                      AppColors.getTextColor(
+                                                          isDark),
                                                   fontFamily: "naskh",
                                                   fontSize: 22,
                                                   height: 2,
@@ -445,11 +436,10 @@ extension SurahInfoExtension on void {
                                                     .surahInfoFromBook
                                                     .customTextSpans(),
                                                 style: TextStyle(
-                                                  color:
-                                                      surahStyle?.textColor ??
-                                                          (isDark
-                                                              ? Colors.white
-                                                              : Colors.black),
+                                                  color: surahStyle
+                                                          ?.textColor ??
+                                                      AppColors.getTextColor(
+                                                          isDark),
                                                   fontFamily: "naskh",
                                                   fontSize: 18,
                                                   height: 2,

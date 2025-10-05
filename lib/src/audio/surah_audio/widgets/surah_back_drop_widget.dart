@@ -20,9 +20,9 @@ class SurahBackDropWidget extends StatelessWidget {
           end: Alignment.bottomRight,
           colors: [
             style?.backgroundColor?.withValues(alpha: 0.8) ??
-                (isDark! ? Colors.grey[800]! : const Color(0xfffaf7f3)),
+                AppColors.getBackgroundColor(isDark!),
             style?.backgroundColor?.withValues(alpha: 0.4) ??
-                (isDark! ? Colors.grey[900]! : const Color(0xfffaf7f3)),
+                AppColors.getBackgroundColor(isDark!),
           ],
         ),
         borderRadius: BorderRadius.circular(
@@ -30,7 +30,8 @@ class SurahBackDropWidget extends StatelessWidget {
         ),
         boxShadow: [
           BoxShadow(
-            color: (style?.backgroundColor ?? const Color(0xfffaf7f3))
+            color: (style?.backgroundColor ??
+                    AppColors.getBackgroundColor(isDark!))
                 .withValues(alpha: 0.3),
             blurRadius: 20.0,
             spreadRadius: 2.0,
@@ -53,7 +54,7 @@ class SurahBackDropWidget extends StatelessWidget {
           decoration: BoxDecoration(
             color: Colors.white.withValues(alpha: isDark! ? 0.05 : 0.15),
             border: Border.all(
-              color: (style?.backgroundColor ?? Colors.blue)
+              color: (style?.backgroundColor ?? Colors.cyan)
                   .withValues(alpha: 0.3),
               width: 1.5,
             ),
@@ -83,7 +84,10 @@ class SurahBackDropWidget extends StatelessWidget {
           // شرح: كارد آخر استماع مع تصميم محسن
           // Explanation: Last listen card with enhanced design
           _buildEnhancedCard(
-            child: SurahLastListen(style: style),
+            child: SurahLastListen(
+              style: style,
+              isDark: isDark,
+            ),
             context: context,
             elevation: 8.0,
             isDark: isDark,
@@ -147,7 +151,10 @@ class SurahBackDropWidget extends StatelessWidget {
                 // شرح: كارد آخر استماع
                 // Explanation: Last listen card
                 _buildEnhancedCard(
-                  child: SurahLastListen(style: style),
+                  child: SurahLastListen(
+                    style: style,
+                    isDark: isDark,
+                  ),
                   context: context,
                   elevation: 8.0,
                   isDark: isDark,
@@ -348,7 +355,7 @@ class SurahBackDropWidget extends StatelessWidget {
         boxShadow: [
           BoxShadow(
             color:
-                (style?.backgroundColor ?? Colors.blue).withValues(alpha: 0.01),
+                (style?.backgroundColor ?? Colors.cyan).withValues(alpha: 0.01),
             blurRadius: elevation,
             spreadRadius: 2.0,
             offset: const Offset(0, 4),
@@ -369,12 +376,12 @@ class SurahBackDropWidget extends StatelessWidget {
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
-                (style?.backgroundColor ?? Colors.blue).withValues(alpha: 0.05),
-                (style?.backgroundColor ?? Colors.blue).withValues(alpha: 0.02),
+                (style?.backgroundColor ?? Colors.cyan).withValues(alpha: 0.05),
+                (style?.backgroundColor ?? Colors.cyan).withValues(alpha: 0.02),
               ],
             ),
             border: Border.all(
-              color: (style?.backgroundColor ?? Colors.blue)
+              color: (style?.backgroundColor ?? Colors.cyan)
                   .withValues(alpha: 0.2),
               width: 1.0,
             ),

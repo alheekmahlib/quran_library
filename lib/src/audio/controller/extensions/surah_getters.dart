@@ -1,4 +1,4 @@
-part of '../../../audio.dart';
+part of '../../audio.dart';
 
 extension SurahGetters on AudioCtrl {
   /// -------- [Getters] ----------

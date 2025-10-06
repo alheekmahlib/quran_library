@@ -15,7 +15,7 @@ class AyahSkipToPrevious extends StatelessWidget {
           label: 'skipToPrevious'.tr,
           child: Icon(
             Icons.skip_next,
-            color: style?.textColor ?? Colors.cyan,
+            color: style?.textColor ?? Colors.teal,
             size: style?.previousIconHeight ?? 38,
           ),
         ),

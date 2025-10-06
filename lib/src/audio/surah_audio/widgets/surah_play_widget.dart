@@ -3,25 +3,36 @@ part of '../../audio.dart';
 class PlaySurahsWidget extends StatelessWidget {
   final SurahAudioStyle? style;
   final bool isDark;
+  final String? languageCode;
 
-  PlaySurahsWidget({super.key, this.style, this.isDark = false});
+  PlaySurahsWidget(
+      {super.key, this.style, this.isDark = false, this.languageCode});
 
   final surahCtrl = AudioCtrl.instance;
 
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.sizeOf(context);
+    final bg = style?.audioSliderBackgroundColor ??
+        AppColors.getBackgroundColor(isDark);
+    final borderColor =
+        (style?.backgroundColor ?? AppColors.getBackgroundColor(isDark))
+            .withValues(alpha: 0.15);
+    final handleColor = Colors.grey.withValues(alpha: .6);
+    final numberColor = style?.surahNameColor ?? AppColors.getTextColor(isDark);
+    final accent = style?.playIconColor ?? Colors.teal;
     return Container(
       width: UiHelper.currentOrientation(size.width, size.width * .5, context),
-      margin: const EdgeInsets.symmetric(horizontal: 16),
+      margin: const EdgeInsets.only(left: 16, right: 16, top: 16),
       decoration: BoxDecoration(
-        color: style?.audioSliderBackgroundColor ?? const Color(0xfffaf7f3),
+        color: bg,
         borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: borderColor, width: 1),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withValues(alpha: .3),
-            blurRadius: 5,
-            spreadRadius: 0,
+            color: Colors.grey.withValues(alpha: .2),
+            spreadRadius: 1,
+            blurRadius: 9,
             offset: const Offset(0, -10),
           ),
         ],
@@ -29,15 +40,8 @@ class PlaySurahsWidget extends StatelessWidget {
       child: Column(
         children: [
           const SizedBox(height: 8.0),
-          Container(
-            width: 70,
-            height: 10,
-            decoration: BoxDecoration(
-              color: Colors.grey,
-              borderRadius: BorderRadius.circular(8),
-            ),
-          ),
-          const SizedBox(height: 32),
+          _PanelHandle(color: handleColor),
+          const SizedBox(height: 24),
           Obx(
             () => Stack(
               alignment: Alignment.center,
@@ -48,8 +52,7 @@ class PlaySurahsWidget extends StatelessWidget {
                     AudioCtrl.instance.state.currentAudioListSurahNum.value
                         .toString(),
                     style: TextStyle(
-                      color: style?.surahNameColor ??
-                          AppColors.getTextColor(isDark),
+                      color: numberColor,
                       fontFamily: "surahName",
                       fontSize: 120.sp,
                       package: "quran_library",
@@ -61,8 +64,7 @@ class PlaySurahsWidget extends StatelessWidget {
                   AudioCtrl.instance.state.currentAudioListSurahNum.value
                       .toString(),
                   style: TextStyle(
-                    color:
-                        style?.surahNameColor ?? AppColors.getTextColor(isDark),
+                    color: numberColor,
                     fontFamily: "surahName",
                     fontSize: 72.sp,
                     package: "quran_library",
@@ -87,6 +89,7 @@ class PlaySurahsWidget extends StatelessWidget {
                     ? const SizedBox.shrink()
                     : SurahDownloadPlayButton(style: style),
               ),
+              const SizedBox(width: 8),
               SurahRepeatWidget()
             ],
           ),
@@ -99,22 +102,20 @@ class PlaySurahsWidget extends StatelessWidget {
                 Row(
                   children: [
                     SurahSkipToNext(style: style),
-                    SizedBox(width: 8),
+                    const SizedBox(width: 8),
                     GestureDetector(
                       onTap: () => surahCtrl.state.audioPlayer.seek(Duration(
                           seconds: surahCtrl.state.seekNextSeconds.value += 5)),
                       child: SvgPicture.asset(
                         AssetsPath.assets.rewind,
-                        colorFilter: ColorFilter.mode(
-                            style!.playIconColor ?? Colors.cyan,
-                            BlendMode.srcIn),
+                        colorFilter: ColorFilter.mode(accent, BlendMode.srcIn),
                         height: 30,
                         width: 30,
                       ),
                     ),
                   ],
                 ),
-                SurahOnlinePlayButton(),
+                SurahOnlinePlayButton(style: style),
                 Row(
                   children: [
                     GestureDetector(
@@ -125,14 +126,12 @@ class PlaySurahsWidget extends StatelessWidget {
                       },
                       child: SvgPicture.asset(
                         AssetsPath.assets.backward,
-                        colorFilter: ColorFilter.mode(
-                            style!.playIconColor ?? Colors.cyan,
-                            BlendMode.srcIn),
+                        colorFilter: ColorFilter.mode(accent, BlendMode.srcIn),
                         height: 30,
                         width: 30,
                       ),
                     ),
-                    SizedBox(width: 8),
+                    const SizedBox(width: 8),
                     SurahSkipToPrevious(style: style),
                   ],
                 ),

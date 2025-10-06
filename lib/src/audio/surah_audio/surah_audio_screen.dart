@@ -3,24 +3,35 @@ part of '../audio.dart';
 class SurahAudioScreen extends StatelessWidget {
   final SurahAudioStyle? style;
   final bool? isDark;
+  final String? languageCode;
 
-  const SurahAudioScreen({super.key, this.style, this.isDark});
+  const SurahAudioScreen(
+      {super.key, this.style, this.isDark, this.languageCode = 'ar'});
 
   @override
   Widget build(BuildContext context) {
     final surahCtrl = AudioCtrl.instance;
-    surahCtrl.sheetState();
-    surahCtrl.loadLastSurahListen;
+    final bool dark = isDark ?? Theme.of(context).brightness == Brightness.dark;
+
+    final background =
+        style?.backgroundColor ?? AppColors.getBackgroundColor(dark);
+    final textColor = style?.textColor ?? AppColors.getTextColor(dark);
+
     return Scaffold(
-      backgroundColor: AppColors.getBackgroundColor(isDark!),
+      backgroundColor: background,
       appBar: AppBar(
-        title: Text('الإستماع للسور',
-            style: TextStyle(
-                color: style?.textColor ?? AppColors.getTextColor(isDark!))),
-        backgroundColor:
-            style?.backgroundColor ?? AppColors.getBackgroundColor(isDark!),
+        title: Text(
+          'الإستماع للسور',
+          style: QuranLibrary().cairoStyle.copyWith(
+                fontSize: 20,
+                fontWeight: FontWeight.w600,
+                color: textColor,
+              ),
+        ),
+        backgroundColor: background,
         centerTitle: true,
         elevation: 0,
+        iconTheme: IconThemeData(color: textColor, size: 22),
       ),
       body: SafeArea(
         child: SlidingPanel(
@@ -29,15 +40,17 @@ class SurahAudioScreen extends StatelessWidget {
             anchorPosition: 100,
             expandPosition: MediaQuery.sizeOf(context).height * .6,
           ),
-          pageContent: SurahBackDropWidget(style: style, isDark: isDark),
-          panelContent: Obx(() => !surahCtrl.state.isSheetOpen.value
-              ? SurahCollapsedPlayWidget(style: style, isDark: isDark!)
-              : PlaySurahsWidget(style: style, isDark: isDark!)),
+          pageContent: SurahBackDropWidget(
+              style: style, isDark: dark, languageCode: languageCode),
+          panelContent: Obx(
+            () => !surahCtrl.state.isSheetOpen.value
+                ? SurahCollapsedPlayWidget(
+                    style: style, isDark: dark, languageCode: languageCode)
+                : PlaySurahsWidget(
+                    style: style, isDark: dark, languageCode: languageCode),
+          ),
         ),
       ),
     );
   }
-
-  // @override
-  bool get wantKeepAlive => true;
 }

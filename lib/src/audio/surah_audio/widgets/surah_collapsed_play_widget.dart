@@ -3,41 +3,43 @@ part of '../../audio.dart';
 class SurahCollapsedPlayWidget extends StatelessWidget {
   final SurahAudioStyle? style;
   final bool isDark;
+  final String? languageCode;
 
-  const SurahCollapsedPlayWidget({super.key, this.style, this.isDark = false});
+  const SurahCollapsedPlayWidget(
+      {super.key, this.style, this.isDark = false, this.languageCode});
 
   @override
   Widget build(BuildContext context) {
+    final bg = style?.audioSliderBackgroundColor ?? const Color(0xfffaf7f3);
+    final handleColor = Colors.grey.withValues(alpha: .6);
+    final borderColor =
+        (style?.backgroundColor ?? AppColors.getBackgroundColor(isDark))
+            .withValues(alpha: 0.15);
+    final textColor = style?.surahNameColor ?? AppColors.getTextColor(isDark);
     return Align(
       alignment: Alignment.centerLeft,
       child: Container(
         height: MediaQuery.sizeOf(context).height,
         width: UiHelper.currentOrientation(MediaQuery.sizeOf(context).width,
             MediaQuery.sizeOf(context).width * .5, context),
-        margin: const EdgeInsets.symmetric(horizontal: 16),
+        margin: const EdgeInsets.only(left: 16, right: 16, top: 16),
         decoration: BoxDecoration(
-          color: style?.audioSliderBackgroundColor ?? const Color(0xfffaf7f3),
+          color: bg,
           borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: borderColor, width: 1),
           boxShadow: [
             BoxShadow(
-              color: Colors.grey.withValues(alpha: .3),
-              blurRadius: 5,
-              spreadRadius: 0,
+              color: Colors.grey.withValues(alpha: .2),
+              spreadRadius: 1,
+              blurRadius: 9,
               offset: const Offset(0, -10),
             ),
           ],
         ),
         child: Column(
           children: [
-            SizedBox(height: 8.0),
-            Container(
-              width: 70,
-              height: 10,
-              decoration: BoxDecoration(
-                color: Colors.grey,
-                borderRadius: BorderRadius.circular(8),
-              ),
-            ),
+            const SizedBox(height: 8.0),
+            _PanelHandle(color: handleColor),
             Padding(
               padding:
                   const EdgeInsets.symmetric(horizontal: 32.0, vertical: 16),
@@ -59,8 +61,7 @@ class SurahCollapsedPlayWidget extends StatelessWidget {
                       AudioCtrl.instance.state.currentAudioListSurahNum.value
                           .toString(),
                       style: TextStyle(
-                        color: style?.surahNameColor ??
-                            AppColors.getTextColor(isDark),
+                        color: textColor,
                         fontFamily: "surahName",
                         fontSize: 42,
                         package: "quran_library",
@@ -73,6 +74,22 @@ class SurahCollapsedPlayWidget extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _PanelHandle extends StatelessWidget {
+  final Color color;
+  const _PanelHandle({required this.color});
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 72,
+      height: 8,
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: BorderRadius.circular(8),
       ),
     );
   }

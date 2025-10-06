@@ -31,7 +31,7 @@ class PlayAyahWidget extends StatelessWidget {
                 style?.playIconPath ?? AssetsPath.assets.playArrow,
                 height: style?.playIconHeight ?? 25,
                 ctx: context,
-                color: style?.playIconColor ?? (Colors.cyan),
+                color: style?.playIconColor ?? (Colors.teal),
               ),
               onTap: () async {
                 // اضبط وضع التشغيل للآيات فقط
@@ -52,7 +52,7 @@ class PlayAyahWidget extends StatelessWidget {
               style?.pauseIconPath ?? AssetsPath.assets.pauseArrow,
               height: style?.pauseIconHeight ?? 25,
               ctx: context,
-              color: style?.playIconColor ?? (Colors.cyan),
+              color: style?.playIconColor ?? (Colors.teal),
             ),
             onTap: () async {
               // Pause only, don't auto-toggle play again

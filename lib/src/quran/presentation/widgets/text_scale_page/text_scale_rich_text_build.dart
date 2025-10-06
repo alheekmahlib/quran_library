@@ -72,12 +72,15 @@ class TextScaleRichTextBuild extends StatelessWidget {
           children: List.generate(ayahs.length, (ayahIndex) {
             final allBookmarks =
                 bookmarks.values.expand((list) => list).toList();
+            final isSelectedCombined = quranCtrl.selectedAyahsByUnequeNumber
+                    .contains(ayahs[ayahIndex].ayahUQNumber) ||
+                quranCtrl.externallyHighlightedAyahs
+                    .contains(ayahs[ayahIndex].ayahUQNumber);
             return _customSpan(
               text: ayahs[ayahIndex].text,
               isDark: isDark,
               pageIndex: pageIndex,
-              isSelected: quranCtrl.selectedAyahsByUnequeNumber
-                  .contains(ayahs[ayahIndex].ayahUQNumber),
+              isSelected: isSelectedCombined,
               fontSize: 20 * quranCtrl.state.scaleFactor.value,
               surahNum: quranCtrl
                   .getCurrentSurahByPageNumber(pageIndex + 1)
@@ -88,7 +91,13 @@ class TextScaleRichTextBuild extends StatelessWidget {
               onLongPressStart: (details) {
                 if (onAyahLongPress != null) {
                   onAyahLongPress!(details, ayahs[ayahIndex]);
-                  quranCtrl.toggleAyahSelection(ayahs[ayahIndex].ayahUQNumber);
+                  if (quranCtrl.isMultiSelectMode.value) {
+                    quranCtrl.toggleAyahSelectionMulti(
+                        ayahs[ayahIndex].ayahUQNumber);
+                  } else {
+                    quranCtrl
+                        .toggleAyahSelection(ayahs[ayahIndex].ayahUQNumber);
+                  }
                   quranCtrl.state.overlayEntry?.remove();
                   quranCtrl.state.overlayEntry = null;
                 } else {
@@ -102,8 +111,13 @@ class TextScaleRichTextBuild extends StatelessWidget {
                   if (bookmarkId != null) {
                     BookmarksCtrl.instance.removeBookmark(bookmarkId);
                   } else {
-                    quranCtrl
-                        .toggleAyahSelection(ayahs[ayahIndex].ayahUQNumber);
+                    if (quranCtrl.isMultiSelectMode.value) {
+                      quranCtrl.toggleAyahSelectionMulti(
+                          ayahs[ayahIndex].ayahUQNumber);
+                    } else {
+                      quranCtrl
+                          .toggleAyahSelection(ayahs[ayahIndex].ayahUQNumber);
+                    }
                     quranCtrl.state.overlayEntry?.remove();
                     quranCtrl.state.overlayEntry = null;
 

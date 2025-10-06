@@ -105,7 +105,7 @@ class AyahLongClickDialog extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
             borderRadius: const BorderRadius.all(Radius.circular(8.0)),
-            color: const Color(0xfffff5ee),
+            color: AppColors.getBackgroundColor(isDark),
             boxShadow: [
               BoxShadow(
                 color: Colors.grey.withValues(alpha: 0.3),
@@ -119,7 +119,7 @@ class AyahLongClickDialog extends StatelessWidget {
           margin: const EdgeInsets.all(4.0),
           decoration: BoxDecoration(
               borderRadius: const BorderRadius.all(Radius.circular(6.0)),
-              border: Border.all(width: 2, color: const Color(0xffe8decb))),
+              border: Border.all(width: 2, color: Colors.teal.shade100)),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -162,8 +162,7 @@ class AyahLongClickDialog extends StatelessWidget {
                       ),
                     ),
                   )),
-              context.verticalDivider(
-                  height: 30, color: const Color(0xffe8decb)),
+              context.verticalDivider(height: 30, color: Colors.teal.shade100),
               GestureDetector(
                 onTap: () {
                   if (QuranCtrl.instance.state.fontsSelected.value == 1) {
@@ -183,11 +182,10 @@ class AyahLongClickDialog extends StatelessWidget {
                 },
                 child: const Icon(
                   Icons.copy_rounded,
-                  color: Colors.grey,
+                  color: Colors.teal,
                 ),
               ),
-              context.verticalDivider(
-                  height: 30, color: const Color(0xffe8decb)),
+              context.verticalDivider(height: 30, color: Colors.teal.shade100),
               GestureDetector(
                 onTap: () {
                   showTafsirOnTap(
@@ -216,8 +214,9 @@ class AyahLongClickDialog extends StatelessWidget {
                       backgroundColor: AppColors.getBackgroundColor(isDark),
                       tafsirNameWidget: Text(
                         'التفسير',
-                        style: QuranLibrary().naskhStyle.copyWith(
-                              fontSize: 24,
+                        style: QuranLibrary().cairoStyle.copyWith(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
                               color: isDark ? Colors.white : Colors.black,
                             ),
                       ),
@@ -232,12 +231,12 @@ class AyahLongClickDialog extends StatelessWidget {
                 },
                 child: const Icon(
                   Icons.text_snippet_rounded,
-                  color: Colors.grey,
+                  color: Colors.teal,
                 ),
               ),
               anotherMenuChild != null
                   ? context.verticalDivider(
-                      height: 30, color: const Color(0xffe8decb))
+                      height: 30, color: Colors.teal.shade100)
                   : const SizedBox(),
               anotherMenuChild != null
                   ? GestureDetector(
@@ -253,7 +252,7 @@ class AyahLongClickDialog extends StatelessWidget {
                   : const SizedBox(),
               secondMenuChild != null
                   ? context.verticalDivider(
-                      height: 30, color: const Color(0xffe8decb))
+                      height: 30, color: Colors.teal.shade100)
                   : const SizedBox(),
               secondMenuChild != null
                   ? GestureDetector(

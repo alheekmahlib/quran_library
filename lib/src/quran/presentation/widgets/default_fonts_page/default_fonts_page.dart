@@ -16,7 +16,6 @@ class _DefaultFontsPage extends StatelessWidget {
   final Color? textColor;
   final List? bookmarkList;
   final Color? ayahSelectedBackgroundColor;
-  final VoidCallback? onPagePress;
   final List<String> newSurahs;
   final String? languageCode;
   final String? juzName;
@@ -44,7 +43,6 @@ class _DefaultFontsPage extends StatelessWidget {
     this.textColor,
     this.bookmarkList,
     this.ayahSelectedBackgroundColor,
-    this.onPagePress,
     required this.newSurahs,
     this.languageCode,
     this.juzName,
@@ -98,7 +96,6 @@ class _DefaultFontsPage extends StatelessWidget {
                               bookmarkList: bookmarkList,
                               ayahSelectedBackgroundColor:
                                   ayahSelectedBackgroundColor,
-                              onPagePress: onPagePress,
                               ayahBookmarked: ayahBookmarked,
                               anotherMenuChild: anotherMenuChild,
                               anotherMenuChildOnTap: anotherMenuChildOnTap,
@@ -122,7 +119,6 @@ class _DefaultFontsPage extends StatelessWidget {
                           bookmarkList: bookmarkList,
                           ayahSelectedBackgroundColor:
                               ayahSelectedBackgroundColor,
-                          onPagePress: onPagePress,
                           ayahBookmarked: ayahBookmarked,
                           anotherMenuChild: anotherMenuChild,
                           anotherMenuChildOnTap: anotherMenuChildOnTap,
@@ -145,7 +141,6 @@ class _DefaultFontsPage extends StatelessWidget {
                       textColor: textColor,
                       bookmarkList: bookmarkList,
                       ayahSelectedBackgroundColor: ayahSelectedBackgroundColor,
-                      onPagePress: onPagePress,
                       ayahBookmarked: ayahBookmarked,
                       anotherMenuChild: anotherMenuChild,
                       anotherMenuChildOnTap: anotherMenuChildOnTap,
@@ -175,7 +170,6 @@ class _DefaultFontsPage extends StatelessWidget {
               textColor: textColor,
               bookmarkList: bookmarkList,
               ayahSelectedBackgroundColor: ayahSelectedBackgroundColor,
-              onPagePress: onPagePress,
               ayahBookmarked: ayahBookmarked,
               anotherMenuChild: anotherMenuChild,
               anotherMenuChildOnTap: anotherMenuChildOnTap,

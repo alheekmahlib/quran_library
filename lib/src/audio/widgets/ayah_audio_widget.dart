@@ -78,13 +78,13 @@ class AyahsAudioWidget extends StatelessWidget {
                                                         .length,
                                                     activeTrackColor: style!
                                                             .seekBarActiveTrackColor ??
-                                                        Colors.cyan,
+                                                        Colors.teal,
                                                     inactiveTrackColor: style!
                                                             .seekBarInactiveTrackColor ??
                                                         Colors.grey,
                                                     thumbColor: style!
                                                             .seekBarThumbColor ??
-                                                        Colors.cyan,
+                                                        Colors.teal,
                                                     horizontalPadding: style!
                                                             .seekBarHorizontalPadding ??
                                                         0);
@@ -110,13 +110,13 @@ class AyahsAudioWidget extends StatelessWidget {
                                                           Duration.zero,
                                                       activeTrackColor: style!
                                                               .seekBarActiveTrackColor ??
-                                                          Colors.cyan,
+                                                          Colors.teal,
                                                       inactiveTrackColor: style!
                                                               .seekBarInactiveTrackColor ??
                                                           Colors.grey,
                                                       thumbColor: style!
                                                               .seekBarThumbColor ??
-                                                          Colors.cyan,
+                                                          Colors.teal,
                                                       onChangeEnd: audioCtrl
                                                           .state
                                                           .audioPlayer

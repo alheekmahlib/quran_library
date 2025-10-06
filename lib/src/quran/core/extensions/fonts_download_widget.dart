@@ -27,7 +27,7 @@ extension FontsDownloadWidgetExtension on QuranCtrl {
 
     // Theming fallbacks
     final Color accent =
-        downloadFontsDialogStyle?.linearProgressColor ?? Colors.cyan;
+        downloadFontsDialogStyle?.linearProgressColor ?? Colors.teal;
     final Color background = downloadFontsDialogStyle?.linearProgressColor ??
         AppColors.getBackgroundColor(isDark);
     final Color textColor =

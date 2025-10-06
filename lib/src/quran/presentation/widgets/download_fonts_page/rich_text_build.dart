@@ -67,16 +67,21 @@ class RichTextBuild extends StatelessWidget {
             fontFamily: isFontsLocal ? fontsName : 'p${(pageIndex + 2001)}',
             fontSize: 100,
             height: 1.7,
-            letterSpacing: 2,
-            shadows: [
-              Shadow(
-                blurRadius: 0.5,
-                color: quranCtrl.state.isBold.value == 0
-                    ? textColor ?? (isDark ? Colors.white : Colors.black)
-                    : Colors.transparent,
-                offset: const Offset(0.5, 0.5),
-              ),
-            ],
+            // إزالة letterSpacing لتقليل كلفة التخطيط
+            // Remove letterSpacing to reduce layout cost
+            // letterSpacing: null,
+            // إضافة الظل فقط عند الحاجة لتقليل كلفة الرسم
+            // Add shadow only when needed to reduce paint cost
+            shadows: quranCtrl.state.isBold.value == 0
+                ? [
+                    Shadow(
+                      blurRadius: 0.5,
+                      color:
+                          textColor ?? (isDark ? Colors.white : Colors.black),
+                      offset: const Offset(0.5, 0.5),
+                    ),
+                  ]
+                : const [],
           ),
           children: List.generate(ayahs.length, (ayahIndex) {
             quranCtrl.selectedAyahsByUnequeNumber
@@ -91,13 +96,16 @@ class RichTextBuild extends StatelessWidget {
             String text = isFirstAyah
                 ? '${ayahs[ayahIndex].codeV2![0]}${ayahs[ayahIndex].codeV2!.substring(1)}'
                 : ayahs[ayahIndex].codeV2!;
+            final isSelectedCombined = quranCtrl.selectedAyahsByUnequeNumber
+                    .contains(ayahs[ayahIndex].ayahUQNumber) ||
+                quranCtrl.externallyHighlightedAyahs
+                    .contains(ayahs[ayahIndex].ayahUQNumber);
             return _span(
               isFirstAyah: isFirstAyah,
               text: text,
               isDark: isDark,
               pageIndex: pageIndex,
-              isSelected: quranCtrl.selectedAyahsByUnequeNumber
-                  .contains(ayahs[ayahIndex].ayahUQNumber),
+              isSelected: isSelectedCombined,
               fontSize: 100,
               surahNum: quranCtrl
                   .getCurrentSurahByPageNumber(pageIndex + 1)
@@ -108,7 +116,13 @@ class RichTextBuild extends StatelessWidget {
               onLongPressStart: (details) {
                 if (onAyahLongPress != null) {
                   onAyahLongPress!(details, ayahs[ayahIndex]);
-                  quranCtrl.toggleAyahSelection(ayahs[ayahIndex].ayahUQNumber);
+                  if (quranCtrl.isMultiSelectMode.value) {
+                    quranCtrl.toggleAyahSelectionMulti(
+                        ayahs[ayahIndex].ayahUQNumber);
+                  } else {
+                    quranCtrl
+                        .toggleAyahSelection(ayahs[ayahIndex].ayahUQNumber);
+                  }
                   quranCtrl.state.overlayEntry?.remove();
                   quranCtrl.state.overlayEntry = null;
                 } else {
@@ -122,8 +136,13 @@ class RichTextBuild extends StatelessWidget {
                   if (bookmarkId != null) {
                     BookmarksCtrl.instance.removeBookmark(bookmarkId);
                   } else {
-                    quranCtrl
-                        .toggleAyahSelection(ayahs[ayahIndex].ayahUQNumber);
+                    if (quranCtrl.isMultiSelectMode.value) {
+                      quranCtrl.toggleAyahSelectionMulti(
+                          ayahs[ayahIndex].ayahUQNumber);
+                    } else {
+                      quranCtrl
+                          .toggleAyahSelection(ayahs[ayahIndex].ayahUQNumber);
+                    }
                     quranCtrl.state.overlayEntry?.remove();
                     quranCtrl.state.overlayEntry = null;
 

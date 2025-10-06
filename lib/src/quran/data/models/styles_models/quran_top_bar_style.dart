@@ -19,8 +19,9 @@ class QuranTopBarStyle {
   final double? height;
 
   // Icons
-  final IconData? menuIcon;
-  final IconData? audioIcon;
+  final String? menuIconPath;
+  final String? audioIconPath;
+  final String? optionsIconPath;
   final double? iconSize;
   final Color? iconColor; // overrides textColor for icons if provided
 
@@ -51,8 +52,8 @@ class QuranTopBarStyle {
     this.borderRadius,
     this.padding,
     this.height,
-    this.menuIcon,
-    this.audioIcon,
+    this.menuIconPath,
+    this.audioIconPath,
     this.iconSize,
     this.iconColor,
     this.fontsDialogTitle,
@@ -66,6 +67,7 @@ class QuranTopBarStyle {
     this.showMenuButton,
     this.showAudioButton,
     this.showFontsButton,
+    this.optionsIconPath,
   });
 
   QuranTopBarStyle copyWith({
@@ -79,7 +81,7 @@ class QuranTopBarStyle {
     EdgeInsetsGeometry? padding,
     double? height,
     IconData? menuIcon,
-    IconData? audioIcon,
+    String? audioIconPath,
     double? iconSize,
     Color? iconColor,
     String? fontsDialogTitle,
@@ -93,6 +95,7 @@ class QuranTopBarStyle {
     bool? showMenuButton,
     bool? showAudioButton,
     bool? showFontsButton,
+    String? optionsIconPath,
   }) =>
       QuranTopBarStyle(
         backgroundColor: backgroundColor ?? this.backgroundColor,
@@ -104,8 +107,8 @@ class QuranTopBarStyle {
         borderRadius: borderRadius ?? this.borderRadius,
         padding: padding ?? this.padding,
         height: height ?? this.height,
-        menuIcon: menuIcon ?? this.menuIcon,
-        audioIcon: audioIcon ?? this.audioIcon,
+        menuIconPath: menuIconPath ?? menuIconPath,
+        audioIconPath: audioIconPath ?? this.audioIconPath,
         iconSize: iconSize ?? this.iconSize,
         iconColor: iconColor ?? this.iconColor,
         fontsDialogTitle: fontsDialogTitle ?? this.fontsDialogTitle,
@@ -120,6 +123,7 @@ class QuranTopBarStyle {
         showMenuButton: showMenuButton ?? this.showMenuButton,
         showAudioButton: showAudioButton ?? this.showAudioButton,
         showFontsButton: showFontsButton ?? this.showFontsButton,
+        optionsIconPath: optionsIconPath ?? this.optionsIconPath,
       );
 
   /// Provide sensible defaults based on theme (isDark)
@@ -127,16 +131,16 @@ class QuranTopBarStyle {
     return QuranTopBarStyle(
       backgroundColor: AppColors.getBackgroundColor(isDark),
       textColor: AppColors.getTextColor(isDark),
-      accentColor: Colors.cyan,
+      accentColor: Colors.teal,
       shadowColor: Colors.black.withValues(alpha: .2),
       handleColor: AppColors.getTextColor(isDark).withValues(alpha: 0.25),
       elevation: 5,
       borderRadius: 12,
       padding: const EdgeInsets.symmetric(horizontal: 8.0),
       height: 55,
-      menuIcon: Icons.menu,
-      audioIcon: Icons.speaker_rounded,
-      iconSize: 24,
+      menuIconPath: AssetsPath.assets.buttomSheet,
+      audioIconPath: AssetsPath.assets.surahsAudio,
+      iconSize: 22,
       iconColor: null, // will fallback to textColor
       fontsDialogTitle: 'الخطوط',
       fontsDialogNotes:
@@ -150,6 +154,7 @@ class QuranTopBarStyle {
       showMenuButton: true,
       showAudioButton: true,
       showFontsButton: true,
+      optionsIconPath: AssetsPath.assets.options,
     );
   }
 }

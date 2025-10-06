@@ -18,11 +18,10 @@ import 'package:quran_library/src/audio/audio.dart';
 import 'package:rxdart/rxdart.dart' as r;
 
 import '/quran.dart';
-import '../core/header_dialog_widget.dart';
 import '../core/utils/app_colors.dart';
 import '../core/utils/ui_helper.dart';
+import '../core/widgets/header_dialog_widget.dart';
 import 'core/custom_paint/custom_slider.dart';
-import 'core/extensions/string_extensions.dart';
 
 // Export audio dependencies for main app usage
 export 'package:audio_service/audio_service.dart';

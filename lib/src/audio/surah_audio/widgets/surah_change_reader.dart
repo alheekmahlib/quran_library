@@ -28,7 +28,7 @@ class SurahChangeSurahReader extends StatelessWidget {
           Obx(() => Text(
                 '${ReadersConstants.surahReaderInfo[surahAudioCtrl.state.surahReaderIndex.value]['name']}'
                     .tr,
-                style: QuranLibrary().naskhStyle.copyWith(
+                style: QuranLibrary().cairoStyle.copyWith(
                       color: style?.readerNameInItemColor ??
                           AppColors.getTextColor(isDark),
                       fontSize: 20,
@@ -55,10 +55,10 @@ class SurahChangeSurahReader extends StatelessWidget {
           ReadersConstants.surahReaderInfo.length,
           (index) => ListTile(
             minTileHeight: 40,
-            selectedColor: Colors.cyan,
+            selectedColor: Colors.teal,
             title: Text(
               '${ReadersConstants.surahReaderInfo[index]['name']}'.tr,
-              style: QuranLibrary().naskhStyle.copyWith(
+              style: QuranLibrary().cairoStyle.copyWith(
                   color: surahAudioCtrl.state.surahReaderNameValue ==
                           ReadersConstants.surahReaderInfo[index]['readerN']
                       ? style?.readerNameInItemColor ??

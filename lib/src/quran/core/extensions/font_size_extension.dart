@@ -34,7 +34,7 @@ extension FontSizeExtension on Widget {
                   sliderTheme: SliderThemeData(
                     thumbColor: Colors.white,
                     activeTrackColor: Colors.white,
-                    inactiveTrackColor: Colors.cyanAccent,
+                    inactiveTrackColor: Colors.tealAccent,
                     overlayColor: Colors.white.withValues(alpha: 0.2),
                     valueIndicatorColor: Colors.white,
                     inactiveTickMarkColor: Colors.transparent,

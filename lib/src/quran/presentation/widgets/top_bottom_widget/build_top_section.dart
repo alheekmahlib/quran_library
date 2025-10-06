@@ -31,7 +31,9 @@ class BuildTopSection extends StatelessWidget {
           ? Row(
               children: [
                 topTitleChild ?? const SizedBox.shrink(),
-                const SizedBox(width: 16),
+                topTitleChild != null
+                    ? const SizedBox(width: 16)
+                    : const SizedBox.shrink(),
                 Text(
                   '${juzName ?? 'الجزء'}: ${quranCtrl.getJuzByPage(pageIndex).juz}'
                       .convertNumbersAccordingToLang(
@@ -94,7 +96,9 @@ class BuildTopSection extends StatelessWidget {
                           languageCode: languageCode),
                   style: _getTextStyle(context),
                 ),
-                const SizedBox(width: 16),
+                topTitleChild != null
+                    ? const SizedBox(width: 16)
+                    : const SizedBox.shrink(),
                 topTitleChild ?? const SizedBox.shrink(),
               ],
             ),

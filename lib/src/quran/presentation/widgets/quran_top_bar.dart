@@ -16,7 +16,6 @@ class _QuranTopBar extends StatelessWidget {
     this.isFontsLocal,
     this.downloadFontsDialogStyle,
     this.backgroundColor,
-    // ignore: avoid_unused_constructor_parameters
     this.topBarStyle,
   });
 
@@ -29,7 +28,7 @@ class _QuranTopBar extends StatelessWidget {
         (defaults.textColor ?? AppColors.getTextColor(isDark));
     final Color bgColor = backgroundColor ??
         (defaults.backgroundColor ?? AppColors.getBackgroundColor(isDark));
-    final Color accentColor = defaults.accentColor ?? Colors.cyan;
+    final Color accentColor = defaults.accentColor ?? Colors.teal;
     final Color linearBg = accentColor is MaterialColor
         ? accentColor.shade100
         : accentColor.withValues(alpha: 0.15);
@@ -57,32 +56,37 @@ class _QuranTopBar extends StatelessWidget {
           children: [
             if (defaults.showMenuButton ?? true)
               IconButton(
-                icon: Icon(
-                  defaults.menuIcon ?? Icons.menu,
-                  color: defaults.iconColor ?? textColor,
-                  size: defaults.iconSize,
-                ),
+                icon: SvgPicture.asset(
+                    defaults.menuIconPath ?? AssetsPath.assets.buttomSheet,
+                    height: defaults.iconSize,
+                    colorFilter: ColorFilter.mode(
+                        defaults.iconColor ?? Colors.teal, BlendMode.srcIn)),
                 onPressed: () {
                   _showMenuBottomSheet(context, defaults);
                 },
               ),
             if (defaults.showAudioButton ?? true)
               IconButton(
-                icon: Icon(
-                  defaults.audioIcon ?? Icons.speaker_rounded,
-                  color: defaults.iconColor ?? textColor,
-                  size: defaults.iconSize,
-                ),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => SurahAudioScreen(
-                        isDark: isDark,
-                        style: style,
+                icon: SvgPicture.asset(
+                    defaults.audioIconPath ?? AssetsPath.assets.surahsAudio,
+                    height: defaults.iconSize,
+                    colorFilter: ColorFilter.mode(
+                        defaults.iconColor ?? Colors.teal, BlendMode.srcIn)),
+                onPressed: () async {
+                  await AudioCtrl.instance.state.audioPlayer.stop();
+                  await AudioCtrl.instance.lastAudioSource();
+                  if (context.mounted) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => SurahAudioScreen(
+                          isDark: isDark,
+                          style: style,
+                          languageCode: languageCode,
+                        ),
                       ),
-                    ),
-                  );
+                    );
+                  }
                 },
               ),
             const Spacer(),
@@ -152,7 +156,7 @@ class _MenuBottomSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final Color textColor = style.textColor ?? AppColors.getTextColor(isDark);
-    final Color accentColor = style.accentColor ?? Colors.cyan;
+    final Color accentColor = style.accentColor ?? Colors.teal;
 
     return DefaultTabController(
       length: 3,
@@ -181,23 +185,22 @@ class _MenuBottomSheet extends StatelessWidget {
               Container(
                 height: 40,
                 decoration: BoxDecoration(
-                  color: textColor.withValues(alpha: 0.06),
+                  color: accentColor.withValues(alpha: 0.06),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: TabBar(
                   indicator: BoxDecoration(
-                    color: accentColor.withValues(alpha: 0.18),
+                    color: accentColor,
                     borderRadius: BorderRadius.circular(10),
                   ),
                   indicatorPadding: const EdgeInsets.all(4),
                   padding: EdgeInsets.zero,
-                  labelColor: textColor,
+                  labelColor: Colors.white,
                   unselectedLabelColor: textColor.withValues(alpha: 0.6),
                   indicatorColor: accentColor,
                   indicatorWeight: .5,
-                  labelStyle: QuranLibrary()
-                      .cairoStyle
-                      .copyWith(fontSize: 15, fontWeight: FontWeight.w700),
+                  labelStyle: QuranLibrary().cairoStyle.copyWith(
+                      fontSize: 15, fontWeight: FontWeight.w700, height: 1.3),
                   unselectedLabelStyle:
                       QuranLibrary().cairoStyle.copyWith(fontSize: 15),
                   tabs: [
@@ -242,7 +245,7 @@ class _IndexTab extends StatelessWidget {
     final surahs = QuranLibrary.getAllSurahs(isArabic: false);
 
     final Color textColor = style.textColor ?? AppColors.getTextColor(isDark);
-    final Color accentColor = style.accentColor ?? Colors.cyan;
+    final Color accentColor = style.accentColor ?? Colors.teal;
 
     return DefaultTabController(
       length: 2,
@@ -251,23 +254,22 @@ class _IndexTab extends StatelessWidget {
           Container(
             height: 35,
             decoration: BoxDecoration(
-              color: textColor.withValues(alpha: 0.06),
+              color: accentColor.withValues(alpha: 0.06),
               borderRadius: BorderRadius.circular(12),
             ),
             child: TabBar(
               indicator: BoxDecoration(
-                color: accentColor.withValues(alpha: 0.18),
+                color: accentColor,
                 borderRadius: BorderRadius.circular(10),
               ),
               indicatorPadding: const EdgeInsets.all(4),
               padding: EdgeInsets.zero,
-              labelColor: textColor,
+              labelColor: Colors.white,
               unselectedLabelColor: textColor.withValues(alpha: 0.6),
               indicatorColor: accentColor,
               indicatorWeight: .5,
-              labelStyle: QuranLibrary()
-                  .cairoStyle
-                  .copyWith(fontSize: 13, fontWeight: FontWeight.w700),
+              labelStyle: QuranLibrary().cairoStyle.copyWith(
+                  fontSize: 13, fontWeight: FontWeight.w700, height: 1.3),
               unselectedLabelStyle:
                   QuranLibrary().cairoStyle.copyWith(fontSize: 13),
               tabs: [
@@ -301,7 +303,7 @@ class _SearchTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final Color textColor = AppColors.getTextColor(isDark);
-    final Color accentColor = Colors.cyan;
+    final Color accentColor = Colors.teal;
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Padding(
@@ -682,7 +684,7 @@ class _SurahsList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final Color textColor = AppColors.getTextColor(isDark);
-    final Color accentColor = Colors.cyan;
+    final Color accentColor = Colors.teal;
     return ListView.builder(
       itemCount: surahs.length,
       itemBuilder: (context, index) => Material(
@@ -764,7 +766,7 @@ class _JozzList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final Color textColor = AppColors.getTextColor(isDark);
-    final Color accentColor = Colors.cyan;
+    final Color accentColor = Colors.teal;
     return ListView.builder(
       itemCount: jozzList.length,
       itemBuilder: (context, jozzIndex) => Container(

@@ -22,6 +22,7 @@ class TafsirStyle {
   final String? footnotesName;
   final double? horizontalMargin;
   final double? verticalMargin;
+  final String? tafsirIsEmptyNote;
 
   TafsirStyle({
     this.backgroundColor,
@@ -45,5 +46,6 @@ class TafsirStyle {
     this.horizontalMargin,
     this.verticalMargin,
     this.tafsirBackgroundColor,
+    this.tafsirIsEmptyNote,
   });
 }

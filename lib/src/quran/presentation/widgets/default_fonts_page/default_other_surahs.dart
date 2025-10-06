@@ -23,7 +23,6 @@ class DefaultOtherSurahs extends StatelessWidget {
     required this.textColor,
     required this.bookmarkList,
     required this.ayahSelectedBackgroundColor,
-    required this.onPagePress,
     required this.ayahBookmarked,
     required this.anotherMenuChild,
     required this.anotherMenuChildOnTap,
@@ -53,7 +52,6 @@ class DefaultOtherSurahs extends StatelessWidget {
   final Color? textColor;
   final List? bookmarkList;
   final Color? ayahSelectedBackgroundColor;
-  final VoidCallback? onPagePress;
   final List<int> ayahBookmarked;
   final Widget? anotherMenuChild;
   final void Function(AyahModel ayah)? anotherMenuChildOnTap;
@@ -95,7 +93,6 @@ class DefaultOtherSurahs extends StatelessWidget {
                       textColor: textColor,
                       bookmarkList: bookmarkList,
                       ayahSelectedBackgroundColor: ayahSelectedBackgroundColor,
-                      onPagePress: onPagePress,
                       ayahBookmarked: ayahBookmarked,
                       anotherMenuChild: anotherMenuChild,
                       anotherMenuChildOnTap: anotherMenuChildOnTap,
@@ -120,7 +117,6 @@ class DefaultOtherSurahs extends StatelessWidget {
                   textColor: textColor,
                   bookmarkList: bookmarkList,
                   ayahSelectedBackgroundColor: ayahSelectedBackgroundColor,
-                  onPagePress: onPagePress,
                   ayahBookmarked: ayahBookmarked,
                   anotherMenuChild: anotherMenuChild,
                   anotherMenuChildOnTap: anotherMenuChildOnTap,

@@ -5,11 +5,17 @@ part of '../../audio.dart';
 class SurahBackDropWidget extends StatelessWidget {
   final SurahAudioStyle? style;
   final bool? isDark;
-  const SurahBackDropWidget({super.key, this.style, this.isDark});
+  final String? languageCode;
+
+  const SurahBackDropWidget(
+      {super.key, this.style, this.isDark, this.languageCode});
 
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
+    final bool dark = isDark ?? Theme.of(context).brightness == Brightness.dark;
+    final background =
+        style?.backgroundColor ?? AppColors.getBackgroundColor(dark);
 
     return Container(
       // شرح: تطبيق خلفية متدرجة جميلة مع ظلال
@@ -19,10 +25,8 @@ class SurahBackDropWidget extends StatelessWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            style?.backgroundColor?.withValues(alpha: 0.8) ??
-                AppColors.getBackgroundColor(isDark!),
-            style?.backgroundColor?.withValues(alpha: 0.4) ??
-                AppColors.getBackgroundColor(isDark!),
+            background.withValues(alpha: 0.85),
+            background.withValues(alpha: 0.45),
           ],
         ),
         borderRadius: BorderRadius.circular(
@@ -30,16 +34,14 @@ class SurahBackDropWidget extends StatelessWidget {
         ),
         boxShadow: [
           BoxShadow(
-            color: (style?.backgroundColor ??
-                    AppColors.getBackgroundColor(isDark!))
-                .withValues(alpha: 0.3),
+            color: background.withValues(alpha: 0.25),
             blurRadius: 20.0,
             spreadRadius: 2.0,
             offset: const Offset(0, 8),
           ),
           BoxShadow(
             color:
-                const Color(0xfffaf7f3).withValues(alpha: isDark! ? 0.4 : 0.1),
+                const Color(0xfffaf7f3).withValues(alpha: dark ? 0.35 : 0.12),
             blurRadius: 15.0,
             spreadRadius: 1.0,
             offset: const Offset(0, 4),
@@ -52,18 +54,17 @@ class SurahBackDropWidget extends StatelessWidget {
         ),
         child: Container(
           decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: isDark! ? 0.05 : 0.15),
+            color: Colors.white.withValues(alpha: dark ? 0.05 : 0.12),
             border: Border.all(
-              color: (style?.backgroundColor ?? Colors.cyan)
-                  .withValues(alpha: 0.3),
+              color: background.withValues(alpha: 0.22),
               width: 1.5,
             ),
           ),
           child: UiHelper.currentOrientation(
             // الوضع العمودي - Portrait Mode
-            _buildPortraitLayout(context, size, isDark!),
+            _buildPortraitLayout(context, size, dark),
             // الوضع الأفقي - Landscape Mode
-            _buildLandscapeLayout(context, size, isDark!),
+            _buildLandscapeLayout(context, size, dark),
             context,
           ),
         ),
@@ -75,21 +76,20 @@ class SurahBackDropWidget extends StatelessWidget {
   /// Build layout for portrait mode
   Widget _buildPortraitLayout(BuildContext context, Size size, bool isDark) {
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(20.0),
+      padding: const EdgeInsets.all(16.0),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const SizedBox(height: 16.0),
-
           // شرح: كارد آخر استماع مع تصميم محسن
           // Explanation: Last listen card with enhanced design
           _buildEnhancedCard(
             child: SurahLastListen(
               style: style,
               isDark: isDark,
+              languageCode: languageCode,
             ),
             context: context,
-            elevation: 8.0,
+            elevation: 10.0,
             isDark: isDark,
           ),
 
@@ -100,10 +100,14 @@ class SurahBackDropWidget extends StatelessWidget {
           _buildEnhancedCard(
             child: SizedBox(
               height: size.height * 0.68,
-              child: SurahAudioList(style: style, isDark: isDark),
+              child: SurahAudioList(
+                style: style,
+                isDark: isDark,
+                languageCode: languageCode,
+              ),
             ),
             context: context,
-            elevation: 12.0,
+            elevation: 14.0,
             isDark: isDark,
           ),
         ],
@@ -128,9 +132,13 @@ class SurahBackDropWidget extends StatelessWidget {
                 const SizedBox(height: 16.0),
                 Expanded(
                   child: _buildEnhancedCard(
-                    child: SurahAudioList(style: style, isDark: isDark),
+                    child: SurahAudioList(
+                      style: style,
+                      isDark: isDark,
+                      languageCode: languageCode,
+                    ),
                     context: context,
-                    elevation: 10.0,
+                    elevation: 12.0,
                     isDark: isDark,
                   ),
                 ),
@@ -154,9 +162,10 @@ class SurahBackDropWidget extends StatelessWidget {
                   child: SurahLastListen(
                     style: style,
                     isDark: isDark,
+                    languageCode: languageCode,
                   ),
                   context: context,
-                  elevation: 8.0,
+                  elevation: 10.0,
                   isDark: isDark,
                 ),
 
@@ -167,7 +176,7 @@ class SurahBackDropWidget extends StatelessWidget {
                 _buildEnhancedCard(
                   child: _buildAudioControlsInfo(context, isDark),
                   context: context,
-                  elevation: 6.0,
+                  elevation: 8.0,
                   isDark: isDark,
                 ),
               ],
@@ -194,9 +203,9 @@ class SurahBackDropWidget extends StatelessWidget {
               gradient: LinearGradient(
                 colors: [
                   (style?.primaryColor ?? Theme.of(context).primaryColor)
-                      .withValues(alpha: 0.2),
+                      .withValues(alpha: 0.20),
                   (style?.primaryColor ?? Theme.of(context).primaryColor)
-                      .withValues(alpha: 0.05),
+                      .withValues(alpha: 0.06),
                 ],
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
@@ -205,7 +214,7 @@ class SurahBackDropWidget extends StatelessWidget {
               boxShadow: [
                 BoxShadow(
                   color: (style?.primaryColor ?? Theme.of(context).primaryColor)
-                      .withValues(alpha: 0.3),
+                      .withValues(alpha: 0.28),
                   blurRadius: 15.0,
                   offset: const Offset(0, 5),
                 ),
@@ -349,19 +358,20 @@ class SurahBackDropWidget extends StatelessWidget {
     double elevation = 8.0,
     required bool isDark,
   }) {
+    final bool dark = isDark;
+    final bg = style?.backgroundColor ?? AppColors.getBackgroundColor(dark);
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16.0),
         boxShadow: [
           BoxShadow(
-            color:
-                (style?.backgroundColor ?? Colors.cyan).withValues(alpha: 0.01),
+            color: bg.withValues(alpha: 0.06),
             blurRadius: elevation,
             spreadRadius: 2.0,
             offset: const Offset(0, 4),
           ),
           BoxShadow(
-            color: Colors.black.withValues(alpha: isDark ? 0.03 : 0.01),
+            color: Colors.black.withValues(alpha: dark ? 0.04 : 0.02),
             blurRadius: elevation / 2,
             spreadRadius: 1.0,
             offset: const Offset(0, 2),
@@ -376,13 +386,12 @@ class SurahBackDropWidget extends StatelessWidget {
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
-                (style?.backgroundColor ?? Colors.cyan).withValues(alpha: 0.05),
-                (style?.backgroundColor ?? Colors.cyan).withValues(alpha: 0.02),
+                bg.withValues(alpha: 0.06),
+                bg.withValues(alpha: 0.03),
               ],
             ),
             border: Border.all(
-              color: (style?.backgroundColor ?? Colors.cyan)
-                  .withValues(alpha: 0.2),
+              color: bg.withValues(alpha: 0.18),
               width: 1.0,
             ),
           ),

@@ -74,9 +74,6 @@ class PageViewBuild extends StatelessWidget {
     final deviceSize = MediaQuery.of(userContext)
         .size; // استخدام سياق المستخدم / Using user context
     List<String> newSurahs = [];
-    quranCtrl.isDownloadFonts
-        ? quranCtrl.prepareFonts(pageIndex, isFontsLocal: isFontsLocal)
-        : null;
     final bookmarkCtrl = BookmarksCtrl.instance;
     return GetBuilder<QuranCtrl>(
       id: '_pageViewBuild',
@@ -122,7 +119,6 @@ class PageViewBuild extends StatelessWidget {
                           bookmarksAyahs: bookmarkCtrl.bookmarksAyahs,
                           ayahSelectedBackgroundColor:
                               ayahSelectedBackgroundColor,
-                          onPagePress: onPagePress,
                           isDark: isDark,
                           circularProgressWidget: circularProgressWidget,
                           isFontsLocal: isFontsLocal,
@@ -154,7 +150,6 @@ class PageViewBuild extends StatelessWidget {
                       surahNumber: surahNumber,
                       newSurahs: newSurahs,
                       ayahSelectedBackgroundColor: ayahSelectedBackgroundColor,
-                      onPagePress: onPagePress,
                       deviceSize: deviceSize,
                       juzName: juzName,
                       sajdaName: sajdaName,

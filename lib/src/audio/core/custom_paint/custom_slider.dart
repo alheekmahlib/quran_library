@@ -39,7 +39,7 @@ class CustomSliderThumbRect extends SliderComponentShape {
     );
 
     final paint = Paint()
-      ..color = Colors.cyan //Thumb Background Color
+      ..color = Colors.teal //Thumb Background Color
       ..style = PaintingStyle.fill;
 
     canvas.drawRRect(rRect, paint);

@@ -35,7 +35,7 @@ class ChangeTafsirDialog extends StatelessWidget {
               });
         },
         child: Container(
-          width: 180,
+          width: 160.w,
           margin: const EdgeInsets.symmetric(horizontal: 16),
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
           child: Row(
@@ -49,10 +49,10 @@ class ChangeTafsirDialog extends StatelessWidget {
                           .tafsirAndTranslationsItems[
                               tafsirCtrl.radioValue.value]
                           .name,
-                  style: QuranLibrary().naskhStyle.copyWith(
+                  style: QuranLibrary().cairoStyle.copyWith(
                         color: tafsirStyle.currentTafsirColor ??
                             const Color(0xffCDAD80),
-                        fontSize: 18,
+                        fontSize: 14,
                         fontWeight: FontWeight.bold,
                       ),
                   overflow: TextOverflow.ellipsis,
@@ -137,8 +137,8 @@ class DailogBuild extends StatelessWidget {
         ),
         child: Text(
           title,
-          style: QuranLibrary().naskhStyle.copyWith(
-              fontSize: 20,
+          style: QuranLibrary().cairoStyle.copyWith(
+              fontSize: 16,
               fontWeight: FontWeight.bold,
               color: tafsirStyle.textTitleColor ?? Colors.white),
           textAlign: TextAlign.center,
@@ -259,38 +259,54 @@ class TafsirItemWidget extends StatelessWidget {
                         ),
                 ),
                 SizedBox(width: 8),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      tafsirNameList?[tafsirIndex].name ??
-                          tafsirCtrl
-                              .tafsirAndTranslationsItems[tafsirIndex].name,
-                      style: QuranLibrary().naskhStyle.copyWith(
-                            color: tafsirCtrl.radioValue.value == tafsirIndex
-                                ? tafsirStyle.selectedTafsirTextColor ??
-                                    (isDark ? Colors.white : Colors.black)
-                                : tafsirStyle.unSelectedTafsirTextColor ??
-                                    (isDark ? Colors.white : Colors.black),
-                            fontSize: 16,
+                Expanded(
+                  child: Align(
+                    alignment: AlignmentDirectional.centerStart,
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            tafsirNameList?[tafsirIndex].name ??
+                                tafsirCtrl
+                                    .tafsirAndTranslationsItems[tafsirIndex]
+                                    .name,
+                            style: QuranLibrary().cairoStyle.copyWith(
+                                  color: tafsirCtrl.radioValue.value ==
+                                          tafsirIndex
+                                      ? tafsirStyle.selectedTafsirTextColor ??
+                                          (isDark ? Colors.white : Colors.black)
+                                      : tafsirStyle.unSelectedTafsirTextColor ??
+                                          (isDark
+                                              ? Colors.white
+                                              : Colors.black),
+                                  fontSize: 14,
+                                ),
                           ),
-                    ),
-                    Text(
-                      tafsirIndex >= 28
-                          ? ''
-                          : tafsirNameList?[tafsirIndex].bookName ??
-                              tafsirCtrl.tafsirAndTranslationsItems[tafsirIndex]
-                                  .bookName,
-                      style: QuranLibrary().naskhStyle.copyWith(
-                            color: tafsirCtrl.radioValue.value == tafsirIndex
-                                ? tafsirStyle.selectedTafsirTextColor ??
-                                    (isDark ? Colors.white : Colors.black)
-                                : tafsirStyle.unSelectedTafsirTextColor ??
-                                    (isDark ? Colors.white : Colors.black),
-                            fontSize: 14,
+                          Text(
+                            tafsirIndex >= 28
+                                ? ''
+                                : tafsirNameList?[tafsirIndex].bookName ??
+                                    tafsirCtrl
+                                        .tafsirAndTranslationsItems[tafsirIndex]
+                                        .bookName,
+                            style: QuranLibrary().cairoStyle.copyWith(
+                                  color: tafsirCtrl.radioValue.value ==
+                                          tafsirIndex
+                                      ? tafsirStyle.selectedTafsirTextColor ??
+                                          (isDark ? Colors.white : Colors.black)
+                                      : tafsirStyle.unSelectedTafsirTextColor ??
+                                          (isDark
+                                              ? Colors.white
+                                              : Colors.black),
+                                  fontSize: 12,
+                                ),
                           ),
+                        ],
+                      ),
                     ),
-                  ],
+                  ),
                 ),
               ],
             ),

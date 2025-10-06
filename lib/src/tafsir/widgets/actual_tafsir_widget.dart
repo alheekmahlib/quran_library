@@ -41,7 +41,7 @@ class ActualTafsirWidget extends StatelessWidget {
         GetSingleAyah(
           surahNumber: surahs.surahNumber,
           ayahNumber: ayahs.ayahNumber,
-          fontSize: 24,
+          fontSize: 19.sp,
           isBold: false,
           ayahs: ayahs,
           isSingleAyah: false,
@@ -106,15 +106,16 @@ class ActualTafsirWidget extends StatelessWidget {
     final translation =
         TafsirCtrl.instance.getTranslationForAyahModel(ayahs, ayahIndex);
 
-    if (translation == null) {
+    if (translation!.cleanText.isEmpty) {
       if (kDebugMode) {
         print(
             'No translation found for Surah: ${ayahs.surahNumber}, Ayah: ${ayahs.ayahNumber}, Index: $ayahIndex, Total translations: ${translationList.length}');
       }
       return [
-        const TextSpan(
-            text:
-                'لا توجد ترجمة لهذه الآية / No translation available for this verse')
+        TextSpan(
+            text: tafsirStyle.tafsirIsEmptyNote ??
+                '\n\nتفسير هذه الآية في الأيات السابقة',
+            style: QuranLibrary().cairoStyle)
       ];
     }
     final spans = <InlineSpan>[

@@ -15,9 +15,9 @@ import 'package:get_storage/get_storage.dart';
 import 'package:path_provider/path_provider.dart';
 
 import 'src/audio/audio.dart';
-import 'src/core/header_dialog_widget.dart';
 import 'src/core/utils/app_colors.dart';
 import 'src/core/utils/ui_helper.dart';
+import 'src/core/widgets/header_dialog_widget.dart';
 import 'src/quran/core/helpers/responsive.dart';
 import 'src/tafsir/tafsir.dart';
 
@@ -57,6 +57,7 @@ part 'src/quran/presentation/controllers/quran/quran_state.dart';
 part 'src/quran/presentation/controllers/surah/surah_ctrl.dart';
 part 'src/quran/presentation/pages/get_single_ayah.dart';
 part 'src/quran/presentation/pages/quran_library_screen.dart';
+part 'src/quran/presentation/pages/quran_pages_screen.dart';
 part 'src/quran/presentation/pages/surah_display_screen.dart';
 part 'src/quran/presentation/widgets/ayah_long_click_dialog.dart';
 part 'src/quran/presentation/widgets/bsmallah_widget.dart';
@@ -71,7 +72,6 @@ part 'src/quran/presentation/widgets/download_fonts_page/quran_fonts_page.dart';
 part 'src/quran/presentation/widgets/download_fonts_page/rich_text_build.dart';
 part 'src/quran/presentation/widgets/fonts_download_dialog.dart';
 part 'src/quran/presentation/widgets/page_view_build.dart';
-part 'src/quran/presentation/widgets/quran_library_search_screen.dart';
 part 'src/quran/presentation/widgets/quran_top_bar.dart';
 part 'src/quran/presentation/widgets/surah_header_widget.dart';
 part 'src/quran/presentation/widgets/text_scale_page/text_scale_page.dart';

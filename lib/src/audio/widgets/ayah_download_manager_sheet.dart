@@ -127,9 +127,9 @@ class AyahDownloadManagerSheet extends StatelessWidget {
                                 radius: 22,
                                 backgroundColor: fullyDownloaded
                                     ? (style?.avatarDownloadedColor ??
-                                        Colors.cyan)
+                                        Colors.teal)
                                     : (style?.avatarUndownloadedColor ??
-                                            Colors.cyan)
+                                            Colors.teal)
                                         .withValues(alpha: .4),
                                 child: Text(
                                   s.surahNumber
@@ -241,7 +241,7 @@ class DownloadedAndDeleteWidget extends StatelessWidget {
                 },
                 style: ButtonStyle(
                   backgroundColor: WidgetStatePropertyAll(
-                      style?.stopButtonBackground ?? Colors.cyan),
+                      style?.stopButtonBackground ?? Colors.teal),
                   foregroundColor: WidgetStatePropertyAll(
                       style?.stopButtonForeground ?? Colors.white),
                 ),
@@ -256,9 +256,9 @@ class DownloadedAndDeleteWidget extends StatelessWidget {
                   isDownloading ? null : () => onRequestDownload(s.surahNumber),
               style: ButtonStyle(
                 backgroundColor: WidgetStatePropertyAll(
-                    style?.downloadBackground ?? Colors.cyan),
+                    style?.downloadBackground ?? Colors.teal),
                 foregroundColor: WidgetStatePropertyAll(
-                    style?.downloadForeground ?? Colors.cyan),
+                    style?.downloadForeground ?? Colors.teal),
               ),
               icon: Icon(
                 fullyDownloaded
@@ -345,7 +345,7 @@ class ProgressIndicatorWidget extends StatelessWidget {
                 backgroundColor:
                     style?.progressBackgroundColor ?? Colors.grey.shade200,
                 valueColor: AlwaysStoppedAnimation<Color>(
-                    (style?.progressColor ?? Colors.cyan)
+                    (style?.progressColor ?? Colors.teal)
                         .withValues(alpha: .25)),
               )),
     );

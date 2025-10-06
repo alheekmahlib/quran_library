@@ -38,7 +38,8 @@ class _MyAppState extends State<MyApp> {
       home: Scaffold(
         // body: SingleAyah(),
         // body: SingleSurah(),
-        body: FullQuran(),
+        body: QuranPages(),
+        // body: FullQuran(),
       ),
     );
   }
@@ -60,7 +61,7 @@ class FullQuran extends StatelessWidget {
       // textColor: Colors.black,
       isFontsLocal: false,
       anotherMenuChild:
-          Icon(Icons.play_arrow_outlined, size: 28, color: Colors.grey),
+          Icon(Icons.play_arrow_outlined, size: 28, color: Colors.teal),
       anotherMenuChildOnTap: (ayah) {
         // SurahAudioController.instance.state.currentAyahUnequeNumber =
         //     ayah.ayahUQNumber;
@@ -68,7 +69,7 @@ class FullQuran extends StatelessWidget {
             .playAyah(context, ayah.ayahUQNumber, playSingleAyah: true);
         log('Another Menu Child Tapped: ${ayah.ayahUQNumber}');
       },
-      secondMenuChild: Icon(Icons.playlist_play, size: 28, color: Colors.grey),
+      secondMenuChild: Icon(Icons.playlist_play, size: 28, color: Colors.teal),
       secondMenuChildOnTap: (ayah) {
         // SurahAudioController.instance.state.currentAyahUnequeNumber =
         //     ayah.ayahUQNumber;
@@ -127,6 +128,57 @@ class SingleAyah extends StatelessWidget {
         ayahNumber: 4,
         fontSize: 30,
         isBold: false,
+      ),
+    );
+  }
+}
+
+class QuranPages extends StatelessWidget {
+  const QuranPages({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: QuranPagesScreen(
+        parentContext: context,
+        enableMultiSelect: true,
+        // highlightedAyahNumbersBySurah: {
+        //   2: [7, 8, 9, 10, 11, 12],
+        // },
+        // page: 6,
+        startPage: 6,
+        endPage: 11, // النطاق شامل
+        // highlightedAyahNumbersInPages: [
+        //   (
+        //     start: 3,
+        //     end: 5,
+        //     ayahs: [7, 8, 9, 10, 11, 12],
+        //   )
+        // ],
+        highlightedRanges: [
+          (startSurah: 2, startAyah: 30, endSurah: 2, endAyah: 35)
+        ],
+        withPageView: true, // تمكين/تعطيل السحب بين الصفحات
+        anotherMenuChild:
+            Icon(Icons.play_arrow_outlined, size: 28, color: Colors.teal),
+        anotherMenuChildOnTap: (ayah) {
+          // SurahAudioController.instance.state.currentAyahUnequeNumber =
+          //     ayah.ayahUQNumber;
+          AudioCtrl.instance
+              .playAyah(context, ayah.ayahUQNumber, playSingleAyah: true);
+          log('Another Menu Child Tapped: ${ayah.ayahUQNumber}');
+        },
+        secondMenuChild:
+            Icon(Icons.playlist_play, size: 28, color: Colors.teal),
+        secondMenuChildOnTap: (ayah) {
+          // SurahAudioController.instance.state.currentAyahUnequeNumber =
+          //     ayah.ayahUQNumber;
+          AudioCtrl.instance
+              .playAyah(context, ayah.ayahUQNumber, playSingleAyah: false);
+          log('Second Menu Child Tapped: ${ayah.ayahUQNumber}');
+        },
       ),
     );
   }

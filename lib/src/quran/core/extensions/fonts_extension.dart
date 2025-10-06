@@ -178,15 +178,20 @@ extension FontsExtension on QuranCtrl {
   /// Returns a [Future] that completes when all specified fonts have been
   /// successfully loaded.
   Future<void> prepareFonts(int pageIndex, {bool isFontsLocal = false}) async {
+    // الصفحة الحالية
     await loadFont(pageIndex, isFontsLocal: isFontsLocal);
-    if (pageIndex < 600) {
-      for (int i = pageIndex + 1; i < pageIndex + 1; i++) {
+
+    // الصفحات المجاورة: ±2 كتحضير مسبق أوسع لتقليل أي نتش متبقٍ
+    final neighbors = [-2, -1, 1, 2];
+    final candidates = neighbors
+        .map((o) => pageIndex + o)
+        .where((i) => i >= 0 && i < 604)
+        .toList();
+    for (final i in candidates) {
+      try {
         await loadFont(i, isFontsLocal: isFontsLocal);
-      }
-    }
-    if (pageIndex >= 4) {
-      for (int i = pageIndex - 1; i > pageIndex - 1; i--) {
-        await loadFont(i, isFontsLocal: isFontsLocal);
+      } catch (_) {
+        // تجاهل أخطاء التحميل المسبق
       }
     }
   }
@@ -460,6 +465,11 @@ extension FontsExtension on QuranCtrl {
       return;
     } else {
       try {
+        // إذا كان الخط لهذه الصفحة محملًا، لا تعِد التحميل
+        // If font for this page is already loaded, skip
+        if (state.loadedFontPages.contains(pageIndex)) {
+          return;
+        }
         // تعديل المسار ليشمل المجلد الإضافي
         final fontFile = File(
             '${_dir.path}/quran_fonts/quran_fonts/p${(pageIndex + 2001)}.ttf');
@@ -469,8 +479,9 @@ extension FontsExtension on QuranCtrl {
         final fontLoader = FontLoader('p${(pageIndex + 2001)}');
         fontLoader.addFont(_getFontLoaderBytes(fontFile));
         await fontLoader.load();
+        state.loadedFontPages.add(pageIndex);
       } catch (e) {
-        throw Exception("Failed to load font: $e");
+        throw Exception("Failed to load font for page ${pageIndex + 1}: $e");
       }
     }
   }

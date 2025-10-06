@@ -25,6 +25,14 @@ class QuranState {
   RxBool isPreparingDownload = false.obs;
   OverlayEntry? overlayEntry;
 
+  // صفحات الخطوط التي تم تحميلها لتجنب إعادة التحميل
+  // Loaded fonts pages cache to avoid reloading
+  final Set<int> loadedFontPages = <int>{};
+
+  // حارس لتحضير الخط للصفحة الأولى مرة واحدة
+  // Guard to prepare initial page fonts once
+  bool didPrepareInitialFonts = false;
+
   // ملاحظة: تم إزالة GlobalKey<ScaffoldState> لتجنب التعارض مع التطبيقات الأخرى
   // Note: GlobalKey<ScaffoldState> has been removed to avoid conflicts with other applications
 

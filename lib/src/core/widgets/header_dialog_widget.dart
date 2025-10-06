@@ -24,8 +24,8 @@ class HeaderDialogWidget extends StatelessWidget {
               begin: AlignmentDirectional.centerStart,
               end: AlignmentDirectional.centerEnd,
               colors: [
-                Colors.cyan.withValues(alpha: .12),
-                Colors.cyan.withValues(alpha: .04),
+                Colors.teal.withValues(alpha: .12),
+                Colors.teal.withValues(alpha: .04),
               ],
             ),
           ),
@@ -33,7 +33,7 @@ class HeaderDialogWidget extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Icon(Icons.font_download_rounded, color: Colors.cyan),
+              Icon(Icons.font_download_rounded, color: Colors.teal),
               const SizedBox(width: 8),
               Text(
                 title,

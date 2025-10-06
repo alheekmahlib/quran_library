@@ -1,3 +1,15 @@
+## 2.1.1
+
+* **Add `QuranPagesScreen` to display a single page or a range of pages.**
+* **Add programmatic ayah highlighting by:**
+	* Surah + Ayah numbers (`highlightedAyahNumbersBySurah`)
+	* Page range + ayah numbers (`highlightedAyahNumbersInPages`)
+	* Direct UQ list (`highlightedAyahs`) for advanced users
+* **Optional multi-select mode for ayah selection (long-press to add/remove without clearing).**
+* **Update README with usage examples for partial pages and highlighting.**
+* **Library UI redesign**
+* **Performance improvements**
+
 ## 2.1.0
 
 * **BREAKING CHANGE: The Tafsir (interpretation) is now loaded from JSON files only, replacing the previous SQL-based implementation.**

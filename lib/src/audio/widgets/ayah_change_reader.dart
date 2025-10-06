@@ -34,7 +34,7 @@ class AyahChangeReader extends StatelessWidget {
       BuildContext context, AyahAudioStyle effectiveStyle, bool dark) {
     final Color activeColor =
         effectiveStyle.readerNameInItemColor ?? AppColors.getTextColor(dark);
-    final Color inactiveColor = Colors.cyan.withValues(alpha: 0.05);
+    final Color inactiveColor = Colors.teal.withValues(alpha: 0.05);
     final double itemFontSize = effectiveStyle.readerNameInItemFontSize ?? 14;
     final Color textColor =
         effectiveStyle.textColor ?? AppColors.getTextColor(dark);

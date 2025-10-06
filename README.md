@@ -38,6 +38,7 @@
   - [Basic Quran Screen](#basic-quran-screen)
   - [Individual Surah Display](#individual-surah-display)
   - [Single Ayah Display](#single-ayah-display)
+  - [Partial Pages (single or range) + Highlighting](#partial-pages-single-or-range--highlighting)
 - [Utils](#utils)
   - [Getting all Quran's Jozzs, Hizbs, and Surahs](#getting-all-qurans-jozzs-hizbs-and-surahs)
   - [to jump between pages, Surahs or Hizbs you can use](#to-jump-between-pages-surahs-or-hizbs-you-can-use)
@@ -71,7 +72,7 @@ In the `pubspec.yaml` of your flutter project, add the following dependency:
 ```yaml
 dependencies:
   ...
-  quran_library: ^2.1.0
+  quran_library: ^2.1.1
 ```
 
 Import it:
@@ -183,6 +184,85 @@ GetSingleAyah(
     isBold: true,
 ),
 ```
+
+### Partial Pages (single or range) + Highlighting
+
+You can display just one specific page or a range of pages using `QuranPagesScreen`.
+
+Requirements:
+- Pass the parent widget context via `parentContext`.
+- Choose either a single `page` or a range using `startPage` and `endPage`.
+
+Basic examples:
+
+```dart
+// Single page
+QuranPagesScreen(
+  parentContext: context,
+  page: 6,
+)
+
+// Range of pages (inclusive)
+QuranPagesScreen(
+  parentContext: context,
+  startPage: 6,
+  endPage: 11,
+)
+
+// Optional: disable page view if you want a static view
+QuranPagesScreen(
+  parentContext: context,
+  startPage: 6,
+  endPage: 7,
+  withPageView: false,
+)
+```
+
+Programmatic highlighting (by surah/ayah numbers):
+
+```dart
+// Highlight by Surah and Ayah numbers
+QuranPagesScreen(
+  parentContext: context,
+  page: 6,
+  highlightedAyahNumbersBySurah: {
+    18: [1, 5, 10], // Surah Al-Kahf: ayahs 1,5,10
+    36: [3],        // Surah Ya-Sin: ayah 3
+  },
+)
+
+// Highlight by page range + ayah numbers (within those pages)
+QuranPagesScreen(
+  parentContext: context,
+  startPage: 6,
+  endPage: 11,
+  highlightedAyahNumbersInPages: [
+    (start: 6, end: 11, ayahs: [1, 3, 5]),
+  ],
+)
+
+// If you already have unique ayah numbers (UQ), you can still pass them directly
+QuranPagesScreen(
+  parentContext: context,
+  page: 6,
+  highlightedAyahs: [1023, 1024, 1025],
+)
+```
+
+Optional multi-select mode (keeps multiple ayahs selected on long-press):
+
+```dart
+QuranPagesScreen(
+  parentContext: context,
+  page: 6,
+  enableMultiSelect: true,
+)
+```
+
+Notes:
+- `QuranPagesScreen` is a StatelessWidget.
+- Highlighting is applied programmatically and does not replace manual selection.
+- You can combine multiple highlighting inputs; they’ll be merged internally.
 
 #### Using GetSingleAyah in a list:
 

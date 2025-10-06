@@ -91,7 +91,7 @@ class GetSingleAyah extends StatelessWidget {
         children: [
           TextSpan(
             text: currentFontsSelected
-                ? '${ayah.codeV2!.replaceAll('\n', '')} '
+                ? '${ayah.codeV2!.replaceAll('\n', '').split(' ').join(' ')} '
                 : '${ayah.text} ',
             style: TextStyle(
               fontFamily: islocalFont == true

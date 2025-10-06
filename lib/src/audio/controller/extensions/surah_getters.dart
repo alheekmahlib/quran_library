@@ -51,24 +51,27 @@ extension SurahGetters on AudioCtrl {
       );
 
   Future<void> lastAudioSource() async {
-    await updateMediaItemAndPlay().then((_) async => await state.audioPlayer
-        .seek(Duration(seconds: state.lastPosition.value)));
+    await loadLastSurahAndPosition();
+    await updateMediaItemAndPlay();
   }
 
   Future<void> updateMediaItemAndPlay() async {
     final newMediaItem = mediaItem;
     AudioHandler.instance.mediaItem.add(newMediaItem);
-    await state.audioPlayer.setAudioSource(state
-            .isSurahDownloadedByNumber(state.currentAudioListSurahNum.value)
-            .value
-        ? AudioSource.file(
-            localSurahFilePath,
-            tag: newMediaItem,
-          )
-        : AudioSource.uri(
-            Uri.parse(urlSurahFilePath),
-            tag: newMediaItem,
-          ));
+    await state.audioPlayer
+        .setAudioSource(state
+                .isSurahDownloadedByNumber(state.currentAudioListSurahNum.value)
+                .value
+            ? AudioSource.file(
+                localSurahFilePath,
+                tag: newMediaItem,
+              )
+            : AudioSource.uri(
+                Uri.parse(urlSurahFilePath),
+                tag: newMediaItem,
+              ))
+        .then((_) async => await state.audioPlayer
+            .seek(Duration(seconds: state.lastPosition.value.toInt())));
   }
 
   Stream<PackagePositionData> get positionDataStream =>
@@ -204,4 +207,11 @@ extension SurahGetters on AudioCtrl {
 
   bool get isFirstAyahInPageButNotInSurah =>
       isFirstAyahInPage && !isFirstAyahInSurah;
+
+  String get textDurationFormatted =>
+      formatDuration(Duration(seconds: state.lastPosition.value));
+
+  String getAyahOrAyat(int ayahCount) {
+    return ayahCount > 10 ? 'آية' : 'آيات';
+  }
 }

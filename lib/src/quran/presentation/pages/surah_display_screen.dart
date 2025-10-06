@@ -5,7 +5,7 @@ part of '/quran.dart';
 class SurahDisplayScreen extends StatelessWidget {
   /// إنشاء مثيل جديد من SurahDisplayScreen
   /// Creates a new instance of SurahDisplayScreen
-  const SurahDisplayScreen({
+  SurahDisplayScreen({
     super.key,
     required this.surahNumber,
     this.appBar,
@@ -209,6 +209,8 @@ class SurahDisplayScreen extends StatelessWidget {
   /// ```
   final BuildContext parentContext;
 
+  final quranCtrl = QuranCtrl.instance;
+
   @override
   Widget build(BuildContext context) {
     AudioCtrl.instance;
@@ -273,41 +275,55 @@ class SurahDisplayScreen extends StatelessWidget {
                         languageCode ?? 'ar',
                         isDark,
                         backgroundColor: backgroundColor,
-                        topBarStyle:
-                            QuranTopBarStyle.defaults(isDark: isDark),
+                        topBarStyle: QuranTopBarStyle.defaults(isDark: isDark),
                       )
                     : null,
                 body: SafeArea(
-                    child: Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    _buildSurahBody(parentContext, surahCtrl),
+                    child: InkWell(
+                  onTap: () {
+                    if (onPagePress != null) {
+                      onPagePress!();
+                    } else {
+                      quranCtrl.showControlToggle();
+                      quranCtrl.clearSelection();
+                      quranCtrl.state.overlayEntry?.remove();
+                      quranCtrl.state.overlayEntry = null;
+                    }
+                  },
+                  focusColor: Colors.transparent,
+                  splashColor: Colors.transparent,
+                  highlightColor: Colors.transparent,
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      _buildSurahBody(parentContext, surahCtrl),
 
-                    // السلايدر السفلي - يظهر من الأسفل للأعلى
-                    // Bottom slider - appears from bottom to top
-                    isShowAudioSlider!
-                        ? Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 16.0),
-                            child: Obx(() => BottomSlider(
-                                  isVisible:
-                                      QuranCtrl.instance.isShowControl.value,
-                                  onClose: () {
-                                    QuranCtrl.instance.isShowControl.value =
-                                        false;
-                                    SliderController.instance
-                                        .hideBottomContent();
-                                  },
-                                  style: ayahStyle ?? AyahAudioStyle(),
-                                  contentChild: SizedBox.shrink(),
-                                  child: Flexible(
-                                    child: AyahsAudioWidget(
-                                        style: ayahStyle ?? AyahAudioStyle()),
-                                  ),
-                                )),
-                          )
-                        : SizedBox.shrink(),
-                  ],
+                      // السلايدر السفلي - يظهر من الأسفل للأعلى
+                      // Bottom slider - appears from bottom to top
+                      isShowAudioSlider!
+                          ? Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 16.0),
+                              child: Obx(() => BottomSlider(
+                                    isVisible:
+                                        QuranCtrl.instance.isShowControl.value,
+                                    onClose: () {
+                                      QuranCtrl.instance.isShowControl.value =
+                                          false;
+                                      SliderController.instance
+                                          .hideBottomContent();
+                                    },
+                                    style: ayahStyle ?? AyahAudioStyle(),
+                                    contentChild: SizedBox.shrink(),
+                                    child: Flexible(
+                                      child: AyahsAudioWidget(
+                                          style: ayahStyle ?? AyahAudioStyle()),
+                                    ),
+                                  )),
+                            )
+                          : SizedBox.shrink(),
+                    ],
+                  ),
                 )),
               ),
             );
@@ -460,7 +476,6 @@ class SurahDisplayScreen extends StatelessWidget {
                                 surahCtrl.getRealQuranPageNumber(pageIndex),
                             ayahSelectedBackgroundColor:
                                 ayahSelectedBackgroundColor,
-                            onPagePress: onPagePress,
                             ayahBookmarked: ayahBookmarked,
                             anotherMenuChildOnTap: anotherMenuChildOnTap,
                             anotherMenuChild: anotherMenuChild,
@@ -652,7 +667,6 @@ class SurahDisplayScreen extends StatelessWidget {
                               pageIndex: currentPage,
                               ayahSelectedBackgroundColor:
                                   ayahSelectedBackgroundColor,
-                              onPagePress: onPagePress,
                               ayahBookmarked: ayahBookmarked,
                               anotherMenuChild: anotherMenuChild,
                               anotherMenuChildOnTap: anotherMenuChildOnTap,

@@ -27,6 +27,10 @@ class QuranCtrl extends GetxController {
   final isLoading = true.obs;
   RxList<SurahNamesModel> surahsList = <SurahNamesModel>[].obs;
   RxBool isShowControl = false.obs;
+  // وضع تحديد متعدد للآيات
+  final RxBool isMultiSelectMode = false.obs;
+  // آيات مظللة برمجياً (لا تعتمد على اختيار المستخدم)
+  final RxList<int> externallyHighlightedAyahs = <int>[].obs;
 
   late Directory _dir;
   // late QuranSearch quranSearch;
@@ -358,6 +362,135 @@ class QuranCtrl extends GetxController {
     selectedAyahsByUnequeNumber.refresh();
 
     log('selectedAyahs: ${selectedAyahsByUnequeNumber.join(', ')}');
+  }
+
+  /// إضافة/إزالة آية من التحديد بدون مسح بقية التحديد (للوضع المتعدد)
+  void toggleAyahSelectionMulti(int ayahUniqueNumber) {
+    if (selectedAyahsByUnequeNumber.contains(ayahUniqueNumber)) {
+      selectedAyahsByUnequeNumber.remove(ayahUniqueNumber);
+    } else {
+      selectedAyahsByUnequeNumber.add(ayahUniqueNumber);
+    }
+    selectedAyahsByUnequeNumber.refresh();
+  }
+
+  void setMultiSelectMode(bool enabled) {
+    isMultiSelectMode.value = enabled;
+  }
+
+  // إدارة التظليل البرمجي
+  void setExternalHighlights(List<int> ayahUQNumbers) {
+    externallyHighlightedAyahs
+        .assignAll(ayahUQNumbers.toSet().toList()..sort());
+  }
+
+  void addExternalHighlight(int ayahUQNumber) {
+    if (!externallyHighlightedAyahs.contains(ayahUQNumber)) {
+      externallyHighlightedAyahs.add(ayahUQNumber);
+    }
+  }
+
+  void removeExternalHighlight(int ayahUQNumber) {
+    externallyHighlightedAyahs.remove(ayahUQNumber);
+  }
+
+  void clearExternalHighlights() {
+    externallyHighlightedAyahs.clear();
+  }
+
+  /// تحويل (رقم السورة، رقم الآية) إلى الرقم الفريد للآية
+  int? getAyahUQBySurahAndAyah(int surahNumber, int ayahNumber) {
+    try {
+      final surah = surahs.firstWhere((s) => s.surahNumber == surahNumber);
+      final ayah = surah.ayahs.firstWhere((a) => a.ayahNumber == ayahNumber);
+      return ayah.ayahUQNumber;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  /// إرجاع أرقام UQ لكل الآيات ذات أرقام ayahNumber المحددة داخل نطاق صفحات
+  List<int> getAyahUQsForPagesByAyahNumbers(
+      {required int startPage,
+      required int endPage,
+      required List<int> ayahNumbers}) {
+    final result = <int>{};
+    final sp = startPage.clamp(1, 604);
+    final ep = endPage.clamp(1, 604);
+    for (int p = sp; p <= ep; p++) {
+      final pageAyahs = staticPages.isNotEmpty
+          ? staticPages[p - 1].ayahs
+          : ayahs.where((a) => a.page == p).toList();
+      for (final a in pageAyahs) {
+        if (ayahNumbers.contains(a.ayahNumber)) {
+          result.add(a.ayahUQNumber);
+        }
+      }
+    }
+    return result.toList();
+  }
+
+  /// إرجاع أرقام UQ لكل الآيات ضمن نطاق عبر السور، مثل 2:15-3:25 (شامل)
+  List<int> getAyahUQsForSurahAyahRange({
+    required int startSurah,
+    required int startAyah,
+    required int endSurah,
+    required int endAyah,
+  }) {
+    // تصحيح الترتيب إذا كان البداية بعد النهاية
+    bool swapNeeded = (startSurah > endSurah) ||
+        (startSurah == endSurah && startAyah > endAyah);
+    int sSurah = swapNeeded ? endSurah : startSurah;
+    int sAyah = swapNeeded ? endAyah : startAyah;
+    int eSurah = swapNeeded ? startSurah : endSurah;
+    int eAyah = swapNeeded ? startAyah : endAyah;
+
+    // ضبط الحدود ضمن المدى الصحيح للسور
+    sSurah = sSurah.clamp(1, surahs.isEmpty ? 114 : surahs.length);
+    eSurah = eSurah.clamp(1, surahs.isEmpty ? 114 : surahs.length);
+
+    final result = <int>{};
+    for (int s = sSurah; s <= eSurah; s++) {
+      SurahModel? surah;
+      try {
+        surah = surahs.firstWhere((x) => x.surahNumber == s);
+      } catch (_) {
+        surah = null;
+      }
+      if (surah == null || surah.ayahs.isEmpty) continue;
+      final int firstAyah = (s == sSurah) ? sAyah : 1;
+      final int lastAyah = (s == eSurah)
+          ? eAyah
+          : surah.ayahs.last.ayahNumber; // آخر آية في السورة
+
+      final int from = firstAyah.clamp(1, surah.ayahs.last.ayahNumber);
+      final int to = lastAyah.clamp(1, surah.ayahs.last.ayahNumber);
+      for (final a in surah.ayahs) {
+        if (a.ayahNumber >= from && a.ayahNumber <= to) {
+          result.add(a.ayahUQNumber);
+        }
+      }
+    }
+    return result.toList();
+  }
+
+  /// يحلل نص نطاق على شكل "2:15-3:25" إلى (startSurah,startAyah,endSurah,endAyah)
+  /// يدعم الأرقام العربية والإنجليزية والمسافات.
+  (int startSurah, int startAyah, int endSurah, int endAyah)?
+      parseSurahAyahRangeString(String input) {
+    final normalized = input.convertArabicNumbersToEnglish(input).trim();
+    final reg = RegExp(r"^\s*(\d+)\s*:\s*(\d+)\s*-\s*(\d+)\s*:\s*(\d+)\s*$");
+    final m = reg.firstMatch(normalized);
+    if (m == null) return null;
+    try {
+      final ss = int.parse(m.group(1)!);
+      final sa = int.parse(m.group(2)!);
+      final es = int.parse(m.group(3)!);
+      final ea = int.parse(m.group(4)!);
+      return (ss, sa, es, ea);
+    } catch (_) {
+      return null;
+    }
   }
 
   void clearSelection() {

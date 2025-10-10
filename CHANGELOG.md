@@ -1,3 +1,7 @@
+## 2.1.2
+
+* **Fix Ayah selection in default fonts.**
+
 ## 2.1.1
 
 * **Add `QuranPagesScreen` to display a single page or a range of pages.**

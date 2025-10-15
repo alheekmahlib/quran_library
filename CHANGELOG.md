@@ -1,3 +1,7 @@
+## 2.1.3
+
+* **Fix Ayah selection.**
+
 ## 2.1.2
 
 * **Fix Ayah selection in default fonts.**

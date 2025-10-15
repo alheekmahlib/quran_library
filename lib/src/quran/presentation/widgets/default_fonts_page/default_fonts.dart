@@ -74,50 +74,53 @@ class DefaultFontsBuild extends StatelessWidget {
                   return WidgetSpan(
                     child: GestureDetector(
                       onLongPressStart: (details) {
-                        // استدعِ رد النداء إن وجد
                         if (onDefaultAyahLongPress != null) {
                           onDefaultAyahLongPress!(details, ayah);
-                        }
-                        // إزالة الإشارة المرجعية إن وجدت
-                        final bookmarkId = allBookmarks.any((bookmark) =>
-                                bookmark.ayahId == ayah.ayahUQNumber)
-                            ? allBookmarks
-                                .firstWhere((bookmark) =>
-                                    bookmark.ayahId == ayah.ayahUQNumber)
-                                .id
-                            : null;
-                        if (bookmarkId != null) {
-                          BookmarksCtrl.instance.removeBookmark(bookmarkId);
-                          return;
-                        }
-
-                        // تحديث التحديد
-                        if (quranCtrl.isMultiSelectMode.value) {
-                          quranCtrl.toggleAyahSelectionMulti(ayah.ayahUQNumber);
-                        } else {
                           quranCtrl.toggleAyahSelection(ayah.ayahUQNumber);
-                        }
+                        } else {
+                          final bookmarkId = allBookmarks.any((bookmark) =>
+                                  bookmark.ayahId == ayah.ayahUQNumber)
+                              ? allBookmarks
+                                  .firstWhere((bookmark) =>
+                                      bookmark.ayahId == ayah.ayahUQNumber)
+                                  .id
+                              : null;
+                          if (bookmarkId != null) {
+                            BookmarksCtrl.instance.removeBookmark(bookmarkId);
+                          } else {
+                            // تحديث التحديد
+                            if (quranCtrl.isMultiSelectMode.value) {
+                              quranCtrl
+                                  .toggleAyahSelectionMulti(ayah.ayahUQNumber);
+                            } else {
+                              quranCtrl.toggleAyahSelection(ayah.ayahUQNumber);
+                            }
+                            quranCtrl.state.overlayEntry?.remove();
+                            quranCtrl.state.overlayEntry = null;
 
-                        // عرض حوار الخيارات
-                        quranCtrl.state.overlayEntry?.remove();
-                        quranCtrl.state.overlayEntry = null;
-                        final overlay = Overlay.of(context);
-                        final newOverlayEntry = OverlayEntry(
-                          builder: (context) => AyahLongClickDialog(
-                            context: context,
-                            isDark: isDark,
-                            ayah: ayah,
-                            position: details.globalPosition,
-                            index: i,
-                            pageIndex: pageIndex,
-                            anotherMenuChild: anotherMenuChild,
-                            anotherMenuChildOnTap: anotherMenuChildOnTap,
-                            secondMenuChild: secondMenuChild,
-                            secondMenuChildOnTap: secondMenuChildOnTap,
-                          ),
-                        );
-                        quranCtrl.state.overlayEntry = newOverlayEntry;
-                        overlay.insert(newOverlayEntry);
+                            // إنشاء OverlayEntry جديد
+                            final overlay = Overlay.of(context);
+                            final newOverlayEntry = OverlayEntry(
+                              builder: (context) => AyahLongClickDialog(
+                                context: context,
+                                isDark: isDark,
+                                ayah: ayah,
+                                position: details.globalPosition,
+                                index: ayah.ayahNumber,
+                                pageIndex: pageIndex,
+                                anotherMenuChild: anotherMenuChild,
+                                anotherMenuChildOnTap: anotherMenuChildOnTap,
+                                secondMenuChild: secondMenuChild,
+                                secondMenuChildOnTap: secondMenuChildOnTap,
+                              ),
+                            );
+
+                            quranCtrl.state.overlayEntry = newOverlayEntry;
+
+                            // إدخال OverlayEntry في Overlay
+                            overlay.insert(newOverlayEntry);
+                          }
+                        }
                       },
                       child: Container(
                         decoration: BoxDecoration(

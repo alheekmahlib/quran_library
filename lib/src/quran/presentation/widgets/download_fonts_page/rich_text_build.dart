@@ -114,52 +114,57 @@ class RichTextBuild extends StatelessWidget {
               ayahNum: ayahs[ayahIndex].ayahNumber,
               ayahBookmarked: ayahBookmarked,
               onLongPressStart: (details) {
-                // استدعِ رد النداء إن وجد
                 if (onAyahLongPress != null) {
                   onAyahLongPress!(details, ayahs[ayahIndex]);
-                }
-                // إن كانت الآية تحمل إشارة مرجعية، أزلها مباشرة كما في السلوك السابق
-                final bookmarkId = allBookmarks.any((bookmark) =>
-                        bookmark.ayahId == ayahs[ayahIndex].ayahUQNumber)
-                    ? allBookmarks
-                        .firstWhere((bookmark) =>
-                            bookmark.ayahId == ayahs[ayahIndex].ayahUQNumber)
-                        .id
-                    : null;
-                if (bookmarkId != null) {
-                  BookmarksCtrl.instance.removeBookmark(bookmarkId);
-                  return;
-                }
-
-                // حدث التحديد (متعدد أو عادي)
-                if (quranCtrl.isMultiSelectMode.value) {
-                  quranCtrl
-                      .toggleAyahSelectionMulti(ayahs[ayahIndex].ayahUQNumber);
-                } else {
                   quranCtrl.toggleAyahSelection(ayahs[ayahIndex].ayahUQNumber);
+                  quranCtrl.state.overlayEntry?.remove();
+                  quranCtrl.state.overlayEntry = null;
+                } else {
+                  final bookmarkId = allBookmarks.any((bookmark) =>
+                          bookmark.ayahId == ayahs[ayahIndex].ayahUQNumber)
+                      ? allBookmarks
+                          .firstWhere((bookmark) =>
+                              bookmark.ayahId == ayahs[ayahIndex].ayahUQNumber)
+                          .id
+                      : null;
+                  if (bookmarkId != null) {
+                    BookmarksCtrl.instance.removeBookmark(bookmarkId);
+                  } else {
+                    // حدث التحديد (متعدد أو عادي)
+                    if (quranCtrl.isMultiSelectMode.value) {
+                      quranCtrl.toggleAyahSelectionMulti(
+                          ayahs[ayahIndex].ayahUQNumber);
+                    } else {
+                      quranCtrl
+                          .toggleAyahSelection(ayahs[ayahIndex].ayahUQNumber);
+                    }
+                    quranCtrl.state.overlayEntry?.remove();
+                    quranCtrl.state.overlayEntry = null;
+
+                    // إنشاء OverlayEntry جديد
+                    final overlay = Overlay.of(context);
+                    final newOverlayEntry = OverlayEntry(
+                      builder: (context) => AyahLongClickDialog(
+                        context: context,
+                        isDark: isDark,
+                        ayah: ayahs[ayahIndex],
+                        position: details.globalPosition,
+                        index: ayahIndex,
+                        pageIndex: pageIndex,
+                        anotherMenuChild: anotherMenuChild,
+                        anotherMenuChildOnTap: anotherMenuChildOnTap,
+                        secondMenuChild: secondMenuChild,
+                        secondMenuChildOnTap: secondMenuChildOnTap,
+                      ),
+                    );
+
+                    quranCtrl.state.overlayEntry = newOverlayEntry;
+
+                    // إدخال OverlayEntry في Overlay
+                    quranCtrl.state.overlayEntry = newOverlayEntry;
+                    overlay.insert(newOverlayEntry);
+                  }
                 }
-
-                // أزل أي Overlay سابق ثم اعرض مربع الخيارات الاعتيادي
-                quranCtrl.state.overlayEntry?.remove();
-                quranCtrl.state.overlayEntry = null;
-
-                final overlay = Overlay.of(context);
-                final newOverlayEntry = OverlayEntry(
-                  builder: (context) => AyahLongClickDialog(
-                    context: context,
-                    isDark: isDark,
-                    ayah: ayahs[ayahIndex],
-                    position: details.globalPosition,
-                    index: ayahIndex,
-                    pageIndex: pageIndex,
-                    anotherMenuChild: anotherMenuChild,
-                    anotherMenuChildOnTap: anotherMenuChildOnTap,
-                    secondMenuChild: secondMenuChild,
-                    secondMenuChildOnTap: secondMenuChildOnTap,
-                  ),
-                );
-                quranCtrl.state.overlayEntry = newOverlayEntry;
-                overlay.insert(newOverlayEntry);
               },
               bookmarkList: bookmarkList,
               textColor: textColor ?? (isDark ? Colors.white : Colors.black),

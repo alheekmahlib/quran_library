@@ -38,8 +38,8 @@ class _MyAppState extends State<MyApp> {
       home: Scaffold(
         // body: SingleAyah(),
         // body: SingleSurah(),
-        body: QuranPages(),
-        // body: FullQuran(),
+        // body: QuranPages(),
+        body: FullQuran(),
       ),
     );
   }

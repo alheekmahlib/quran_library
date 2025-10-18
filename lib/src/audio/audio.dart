@@ -6,6 +6,7 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 // import 'package:dio/dio.dart' as d;
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_sliding_panel/flutter_sliding_panel.dart';

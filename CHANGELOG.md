@@ -1,3 +1,7 @@
+## 2.1.4
+
+* **Fix playing Surah in background.**
+
 ## 2.1.3
 
 * **Fix Ayah selection.**

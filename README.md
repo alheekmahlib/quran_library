@@ -55,6 +55,26 @@
 #### Android
 The required permissions for audio playback (`WAKE_LOCK`, `FOREGROUND_SERVICE`, and `FOREGROUND_SERVICE_MEDIA_PLAYBACK`) are automatically added by the package. You don't need to manually edit your AndroidManifest.xml.
 
+Additionally, to enable system-integrated audio controls (notification/lockscreen) using `audio_service`, your app's MainActivity must extend `AudioServiceActivity`:
+
+Kotlin:
+
+```kotlin
+import com.ryanheise.audioservice.AudioServiceActivity
+
+class MainActivity: AudioServiceActivity()
+```
+
+Java:
+
+```java
+import com.ryanheise.audioservice.AudioServiceActivity;
+
+public class MainActivity extends AudioServiceActivity {}
+```
+
+If you don't apply this change, the audio will still work locally, but `AudioService.init()` may fail and system controls won't be available.
+
 #### iOS
 For background audio playback, you must add the following to your app's `Info.plist`:
 
@@ -72,7 +92,7 @@ In the `pubspec.yaml` of your flutter project, add the following dependency:
 ```yaml
 dependencies:
   ...
-  quran_library: ^2.1.3
+  quran_library: ^2.1.4
 ```
 
 Import it:

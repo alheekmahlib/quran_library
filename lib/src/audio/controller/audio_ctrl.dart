@@ -40,18 +40,16 @@ class AudioCtrl extends GetxController {
     });
     state.selectedSurahIndex.value = 0;
 
-    state.audioServiceInitialized.value =
-        state.box.read(StorageConstants.audioServiceInitialized) ?? false;
+    // ابدأ كل جلسة باعتبار الخدمة غير مهيّأة، ولا تستخدم تخزينًا دائمًا
+    state.audioServiceInitialized.value = false;
     if (Platform.isIOS || Platform.isAndroid || Platform.isMacOS) {
       if (!state.audioServiceInitialized.value) {
         if (!QuranCtrl.instance.state.isQuranLoaded) {
           await QuranCtrl.instance.loadQuran().then((_) async {
             await initAudioService();
-            state.box.write(StorageConstants.audioServiceInitialized, true);
           });
         } else {
           await initAudioService();
-          state.box.write(StorageConstants.audioServiceInitialized, true);
         }
       } else {
         await QuranCtrl.instance.loadQuran();
@@ -85,21 +83,49 @@ class AudioCtrl extends GetxController {
 
     // إلغاء تسجيل الخدمة / Unregister service
     SurahState.setAudioServiceActive(false);
+    state.audioServiceInitialized.value = false;
     super.onClose();
   }
 
   /// -------- [Methods] ----------
 
   Future<void> initAudioService() async {
-    await AudioService.init(
-      builder: () => AudioHandler.instance,
-      config: const AudioServiceConfig(
-        androidNotificationChannelId: 'com.alheekmah.quranPackage.audio',
-        androidNotificationChannelName: 'Audio playback',
-        androidNotificationOngoing: true,
-        androidStopForegroundOnPause: true,
-      ),
-    );
+    try {
+      await AudioService.init(
+        builder: () => AudioHandler.instance,
+        config: const AudioServiceConfig(
+          androidNotificationChannelId: 'com.alheekmah.quranPackage.audio',
+          androidNotificationChannelName: 'Audio playback',
+          androidNotificationOngoing: true,
+          androidStopForegroundOnPause: true,
+        ),
+      );
+      state.audioServiceInitialized.value = true;
+    } on PlatformException catch (e, s) {
+      // منع تعطل تطبيق المستهلك وإظهار إرشاد واضح للمطور
+      log(
+        'تعذّرت تهيئة AudioService. تأكد أن MainActivity يرث AudioServiceActivity.\n'
+        'Kotlin: class MainActivity: AudioServiceActivity()\n'
+        'Java: public class MainActivity extends AudioServiceActivity {}\n'
+        'الرسالة الأصلية: ${e.message}',
+        name: 'AudioCtrl',
+        error: e,
+        stackTrace: s,
+      );
+      if (Get.context != null) {
+        // تنبيه ودّي للمستخدم النهائي بدون تفاصيل تقنية
+        ToastUtils().showToast(
+            Get.context!, 'تعذّرت تهيئة خدمة الصوت. ستعمل دون تحكم بالنظام.');
+      }
+      // علّم الحالة ليتصرّف المشغّل دون تكامل النظام
+      state.audioServiceInitialized.value = false;
+      SurahState.setAudioServiceActive(false);
+    } catch (e, s) {
+      log('Unexpected error initializing AudioService: $e',
+          name: 'AudioCtrl', stackTrace: s);
+      state.audioServiceInitialized.value = false;
+      SurahState.setAudioServiceActive(false);
+    }
   }
 
   /// -------- [DownloadingMethods] ----------

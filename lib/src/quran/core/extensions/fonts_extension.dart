@@ -270,6 +270,7 @@ extension FontsExtension on QuranCtrl {
       final urls = [
         // 'https://github.com/alheekmahlib/Islamic_database/raw/refs/heads/main/quran_database/Quran%20Font/quran_fonts.zip',
         // 'https://raw.githubusercontent.com/alheekmahlib/Islamic_database/main/quran_database/Quran%20Font/quran_fonts.zip',
+        'https://github.com/alheekmahlib/test/raw/refs/heads/main/qcf4.zip',
         'https://raw.githubusercontent.com/alheekmahlib/test/main/qcf4.zip',
       ];
       // تحميل الملف باستخدام Dio

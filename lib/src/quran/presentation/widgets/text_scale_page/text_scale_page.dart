@@ -200,67 +200,6 @@ class _QuranTextScale extends StatelessWidget {
                                 ayahSelectedBackgroundColor:
                                     ayahSelectedBackgroundColor,
                                 languageCode: languageCode),
-                            quranCtrl._downThePageIndex.contains(pageIndex) &&
-                                    quranCtrl.state.fontsSelected.value == 1
-                                ? SurahHeaderWidget(
-                                    surahNumber ??
-                                        quranCtrl
-                                                .getSurahDataByAyah(ayahs.first)
-                                                .surahNumber +
-                                            1,
-                                    bannerStyle: bannerStyle ??
-                                        BannerStyle(
-                                          isImage: false,
-                                          bannerSvgPath: isDark
-                                              ? AssetsPath
-                                                  .assets.surahSvgBannerDark
-                                              : AssetsPath
-                                                  .assets.surahSvgBanner,
-                                          bannerSvgHeight: 40.0,
-                                          bannerSvgWidth: 150.0,
-                                          bannerImagePath: '',
-                                          bannerImageHeight: 50,
-                                          bannerImageWidth: double.infinity,
-                                        ),
-                                    surahNameStyle: surahNameStyle ??
-                                        SurahNameStyle(
-                                          surahNameSize: 70,
-                                          surahNameColor: isDark
-                                              ? Colors.white
-                                              : Colors.black,
-                                        ),
-                                    surahInfoStyle: surahInfoStyle ??
-                                        SurahInfoStyle(
-                                          ayahCount: 'عدد الآيات',
-                                          secondTabText: 'عن السورة',
-                                          firstTabText: 'أسماء السورة',
-                                          backgroundColor:
-                                              AppColors.getBackgroundColor(
-                                                  isDark),
-                                          closeIconColor: isDark
-                                              ? Colors.white
-                                              : Colors.black,
-                                          indicatorColor: Colors.amber
-                                              .withValues(alpha: .2),
-                                          primaryColor: Colors.amber
-                                              .withValues(alpha: .2),
-                                          surahNameColor: isDark
-                                              ? Colors.white
-                                              : Colors.black,
-                                          surahNumberColor: isDark
-                                              ? Colors.white
-                                              : Colors.black,
-                                          textColor: isDark
-                                              ? Colors.white
-                                              : Colors.black,
-                                          titleColor: isDark
-                                              ? Colors.white
-                                              : Colors.black,
-                                        ),
-                                    onSurahBannerPress: onSurahBannerPress,
-                                    isDark: isDark,
-                                  )
-                                : const SizedBox.shrink(),
                             // context.surahBannerLastPlace(pageIndex, i),
                           ],
                         );

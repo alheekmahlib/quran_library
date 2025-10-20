@@ -2,6 +2,16 @@ part of '/quran.dart';
 
 /// Extension to handle font-related operations for the QuranCtrl class.
 extension FontsExtension on QuranCtrl {
+  bool get isPhones =>
+      Platform.isAndroid || Platform.isIOS || Platform.isFuchsia;
+
+  String getFontFullPath(Directory fontsDir, int pageIndex) => isPhones
+      ? '${fontsDir.path}/qcf4_woff/qcf4_woff/QCF4${((pageIndex + 1).toString().padLeft(3, '0'))}_X-Regular.woff'
+      : '${fontsDir.path}/qcf4_ttf/qcf4_ttf/QCF4${((pageIndex + 1).toString().padLeft(3, '0'))}_X-Regular.ttf';
+
+  String getFontPath(int pageIndex) =>
+      'QCF4${((pageIndex + 1).toString().padLeft(3, '0'))}_X-Regular';
+
   /// يتحقق من إمكانية الوصول للإنترنت وإعدادات الشبكة
   /// Checks internet accessibility and network settings
   Future<bool> _checkNetworkConnectivity() async {
@@ -94,10 +104,13 @@ extension FontsExtension on QuranCtrl {
     try {
       log('Trying alternative download with Dio', name: 'FontsDownload');
 
-      final zipPath = '${_dir.path}/quran_fonts.zip';
+      // final zipPath = '${_dir.path}/quran_fonts.zip';
+      final zipPath = '${_dir.path}/qcf4_woff.zip';
 
       await _downloadWithDio(
-        'https://raw.githubusercontent.com/alheekmahlib/Islamic_database/main/quran_database/Quran%20Font/quran_fonts.zip',
+        isPhones
+            ? 'https://raw.githubusercontent.com/alheekmahlib/Islamic_database/main/quran_database/Quran%20Font/qcf4_woff.zip'
+            : 'https://raw.githubusercontent.com/alheekmahlib/Islamic_database/main/quran_database/Quran%20Font/qcf4_ttf.zip',
         zipPath,
       );
 
@@ -119,7 +132,8 @@ extension FontsExtension on QuranCtrl {
   /// Extract and process ZIP file
   Future<void> _extractAndProcessZip(File zipFile) async {
     try {
-      final fontsDir = Directory('${_dir.path}/quran_fonts');
+      // final fontsDir = Directory('${_dir.path}/quran_fonts');
+      final fontsDir = Directory('${_dir.path}/qcf4_woff');
 
       final bytes = zipFile.readAsBytesSync();
       final archive = ZipDecoder().decodeBytes(bytes);
@@ -206,19 +220,23 @@ extension FontsExtension on QuranCtrl {
   /// Returns a [Future] that completes when the font has been successfully loaded.
   Future<void> loadFontFromZip(int pageIndex) async {
     try {
-      final fontsDir = Directory('${_dir.path}/quran_fonts');
+      // final fontsDir = Directory('${_dir.path}/quran_fonts');
+      final fontsDir = Directory(
+          isPhones ? '${_dir.path}/qcf4_woff' : '${_dir.path}/qcf4_ttf');
 
       // تحقق من الملفات داخل المجلد
       final files = await fontsDir.list().toList();
       log('Files in fontsDir: ${files.map((file) => file.path).join(', ')}');
 
-      final fontFile =
-          File('${fontsDir.path}/quran_fonts/p${(pageIndex + 2001)}.ttf');
+      // final fontFile =
+      //     File('${fontsDir.path}/quran_fonts/p${(pageIndex + 2001)}.ttf');
+      final fontFile = File(getFontFullPath(fontsDir, pageIndex));
       if (!await fontFile.exists()) {
         throw Exception("Font file not found for page: ${pageIndex + 1}");
       }
 
-      final fontLoader = FontLoader('p${(pageIndex + 2001)}');
+      // final fontLoader = FontLoader('p${(pageIndex + 2001)}');
+      final fontLoader = FontLoader(getFontPath(pageIndex));
       fontLoader.addFont(_getFontLoaderBytes(fontFile));
       await fontLoader.load();
     } catch (e) {
@@ -259,10 +277,15 @@ extension FontsExtension on QuranCtrl {
 
       // قائمة بالروابط البديلة للتحميل
       // List of alternative download URLs
-      final urls = [
-        'https://github.com/alheekmahlib/Islamic_database/raw/refs/heads/main/quran_database/Quran%20Font/quran_fonts.zip',
-        'https://raw.githubusercontent.com/alheekmahlib/Islamic_database/main/quran_database/Quran%20Font/quran_fonts.zip',
-      ];
+      final urls = (Platform.isAndroid || Platform.isIOS || Platform.isFuchsia)
+          ? [
+              'https://github.com/alheekmahlib/Islamic_database/raw/refs/heads/main/quran_database/Quran%20Font/qcf4_woff.zip',
+              'https://raw.githubusercontent.com/alheekmahlib/Islamic_database/main/quran_database/Quran%20Font/qcf4_woff.zip',
+            ]
+          : [
+              'https://github.com/alheekmahlib/Islamic_database/raw/refs/heads/main/quran_database/Quran%20Font/qcf4_ttf.zip',
+              'https://raw.githubusercontent.com/alheekmahlib/Islamic_database/main/quran_database/Quran%20Font/qcf4_ttf.zip',
+            ];
       // تحميل الملف باستخدام Dio
 
       // تحميل الملف باستخدام http.Client مع إعدادات محسنة للماك
@@ -315,13 +338,18 @@ extension FontsExtension on QuranCtrl {
       }
 
       // تحديد المسار الذي سيتم حفظ الملف فيه
-      final fontsDir = Directory('${_dir.path}/quran_fonts');
+      // final fontsDir = Directory('${_dir.path}/quran_fonts');
+      final fontsDir = Directory(
+          isPhones ? '${_dir.path}/qcf4_woff' : '${_dir.path}/qcf4_ttf');
       if (!await fontsDir.exists()) {
         await fontsDir.create(recursive: true);
       }
 
       // حفظ ملف ZIP إلى التطبيق
-      final zipFile = File('${_dir.path}/quran_fonts.zip');
+      // final zipFile = File('${_dir.path}/quran_fonts.zip');
+      final zipFile = File(isPhones
+          ? '${_dir.path}/qcf4_woff.zip'
+          : '${_dir.path}/qcf4_ttf.zip');
       final fileSink = zipFile.openWrite();
 
       // حجم الملف الإجمالي
@@ -471,17 +499,21 @@ extension FontsExtension on QuranCtrl {
           return;
         }
         // تعديل المسار ليشمل المجلد الإضافي
-        final fontFile = File(
-            '${_dir.path}/quran_fonts/quran_fonts/p${(pageIndex + 2001)}.ttf');
+        // final fontFile = File(
+        //     '${_dir.path}/quran_fonts/quran_fonts/p${(pageIndex + 2001)}.ttf');
+        final fontFile = File(getFontFullPath(_dir, pageIndex));
         if (!await fontFile.exists()) {
-          throw Exception("Font file not found for page: ${pageIndex + 2001}");
+          throw Exception(
+              "Font file not exists for page: ${(pageIndex + 1).toString().padLeft(3, '0')}");
         }
-        final fontLoader = FontLoader('p${(pageIndex + 2001)}');
+        // final fontLoader = FontLoader('p${(pageIndex + 2001)}');
+        final fontLoader = FontLoader(getFontPath(pageIndex));
         fontLoader.addFont(_getFontLoaderBytes(fontFile));
         await fontLoader.load();
         state.loadedFontPages.add(pageIndex);
       } catch (e) {
-        throw Exception("Failed to load font for page ${pageIndex + 1}: $e");
+        throw Exception(
+            "Failed to load font for page ${(pageIndex + 1).toString().padLeft(3, '0')}: $e");
       }
     }
   }
@@ -497,7 +529,8 @@ extension FontsExtension on QuranCtrl {
   Future<void> deleteFonts() async {
     try {
       state.fontsDownloadedList.value = [];
-      final fontsDir = Directory('${_dir.path}/quran_fonts');
+      final fontsDir = Directory(
+          isPhones ? '${_dir.path}/qcf4_woff' : '${_dir.path}/qcf4_ttf');
 
       // التحقق من وجود مجلد الخطوط
       if (await fontsDir.exists()) {

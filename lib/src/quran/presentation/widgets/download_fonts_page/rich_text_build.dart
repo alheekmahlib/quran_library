@@ -64,7 +64,9 @@ class RichTextBuild extends StatelessWidget {
         maxLines: null,
         text: TextSpan(
           style: TextStyle(
-            fontFamily: isFontsLocal ? fontsName : 'p${(pageIndex + 2001)}',
+            // fontFamily: isFontsLocal ? fontsName : 'p${(pageIndex + 2001)}',
+            fontFamily:
+                isFontsLocal ? fontsName : quranCtrl.getFontPath(pageIndex),
             fontSize: 100,
             height: 1.7,
             // إزالة letterSpacing لتقليل كلفة التخطيط
@@ -72,16 +74,16 @@ class RichTextBuild extends StatelessWidget {
             // letterSpacing: null,
             // إضافة الظل فقط عند الحاجة لتقليل كلفة الرسم
             // Add shadow only when needed to reduce paint cost
-            shadows: quranCtrl.state.isBold.value == 0
-                ? [
-                    Shadow(
-                      blurRadius: 0.5,
-                      color:
-                          textColor ?? (isDark ? Colors.white : Colors.black),
-                      offset: const Offset(0.5, 0.5),
-                    ),
-                  ]
-                : const [],
+            // shadows: quranCtrl.state.isBold.value == 0
+            //     ? [
+            //         Shadow(
+            //           blurRadius: 0.5,
+            //           color:
+            //               textColor ?? (isDark ? Colors.white : Colors.black),
+            //           offset: const Offset(0.5, 0.5),
+            //         ),
+            //       ]
+            //     : const [],
           ),
           children: List.generate(ayahs.length, (ayahIndex) {
             quranCtrl.selectedAyahsByUnequeNumber

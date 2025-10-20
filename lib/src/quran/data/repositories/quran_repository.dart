@@ -56,7 +56,7 @@ class QuranRepository {
   /// ```
   Future<List<dynamic>> getFontsQuran() async {
     String jsonString = await rootBundle
-        .loadString('packages/quran_library/assets/jsons/quranV2.json');
+        .loadString('packages/quran_library/assets/jsons/quranV3.json');
     Map<String, dynamic> jsonResponse = jsonDecode(jsonString);
     List<dynamic> surahsJson = jsonResponse['data']['surahs'];
     return surahsJson;

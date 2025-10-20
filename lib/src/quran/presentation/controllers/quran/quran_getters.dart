@@ -128,49 +128,9 @@ extension QuranGetters on QuranCtrl {
         112,
       ];
 
-  List<int> get _downThePageIndex => [
-        75,
-        206,
-        330,
-        340,
-        348,
-        365,
-        375,
-        413,
-        416,
-        444,
-        451,
-        497,
-        505,
-        524,
-        547,
-        554,
-        556,
-        583
-      ];
-
   List<int> get _topOfThePageIndex => [
-        76,
-        207,
-        331,
-        341,
-        349,
-        366,
-        376,
-        414,
-        417,
         435,
-        445,
-        452,
-        498,
-        506,
-        525,
-        548,
-        554,
-        555,
-        557,
         583,
-        584
       ];
 
   /// Returns a list of lists of AyahModel, where each sublist contains Ayahs

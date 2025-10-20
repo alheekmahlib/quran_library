@@ -75,6 +75,7 @@ class QuranCtrl extends GetxController {
 
   Future<void> loadFontsQuran() async {
     lastPage = _quranRepository.getLastPage() ?? 1;
+    state.currentPageNumber.value = lastPage;
     if (lastPage != 0) {
       jumpToPage(lastPage - 1);
     }
@@ -112,6 +113,7 @@ class QuranCtrl extends GetxController {
       {int quranPages = QuranRepository.hafsPagesNumber}) async {
     // حفظ آخر صفحة
     lastPage = _quranRepository.getLastPage() ?? 1;
+    state.currentPageNumber.value = lastPage;
     if (lastPage != 0) {
       jumpToPage(lastPage - 1);
     }
@@ -342,6 +344,7 @@ class QuranCtrl extends GetxController {
 
   PageController getPageController(BuildContext context) =>
       quranPagesController = PageController(
+        initialPage: state.currentPageNumber.value - 1,
         keepPage: true,
         viewportFraction:
             (Responsive.isDesktop(context) && context.isLandscape) ? 1 / 2 : 1,

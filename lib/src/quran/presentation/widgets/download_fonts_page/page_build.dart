@@ -82,21 +82,10 @@ class PageBuild extends StatelessWidget {
                             !quranCtrl._topOfThePageIndex.contains(pageIndex)
                         ? SurahHeaderWidget(
                             surahNumber ?? surahData.surahNumber,
-                            bannerStyle: bannerStyle ??
-                                BannerStyle(
-                                  isImage: false,
-                                  bannerSvgPath: isDark
-                                      ? AssetsPath.assets.surahSvgBannerDark
-                                      : AssetsPath.assets.surahSvgBanner,
-                                  bannerSvgHeight: 140.0,
-                                  bannerSvgWidth: 190.0,
-                                  bannerImagePath: '',
-                                  bannerImageHeight: 100.0,
-                                  bannerImageWidth: double.infinity,
-                                ),
+                            bannerStyle: bannerStyle ?? BannerStyle(),
                             surahNameStyle: surahNameStyle ??
                                 SurahNameStyle(
-                                  surahNameSize: 190,
+                                  surahNameSize: 120,
                                   surahNameColor:
                                       isDark ? Colors.white : Colors.black,
                                 ),
@@ -171,54 +160,6 @@ class PageBuild extends StatelessWidget {
                           anotherMenuChild: anotherMenuChild,
                           anotherMenuChildOnTap: anotherMenuChildOnTap),
                     ),
-                    quranCtrl._downThePageIndex.contains(pageIndex)
-                        ? SurahHeaderWidget(
-                            surahNumber ?? surahData.surahNumber + 1,
-                            bannerStyle: bannerStyle ??
-                                BannerStyle(
-                                  isImage: false,
-                                  bannerSvgPath: isDark
-                                      ? AssetsPath.assets.surahSvgBannerDark
-                                      : AssetsPath.assets.surahSvgBanner,
-                                  bannerSvgHeight: 140.0,
-                                  bannerSvgWidth: 150.0,
-                                  bannerImagePath: '',
-                                  bannerImageHeight: 100.0,
-                                  bannerImageWidth: double.infinity,
-                                ),
-                            surahNameStyle: surahNameStyle ??
-                                SurahNameStyle(
-                                  surahNameSize: 190,
-                                  surahNameColor:
-                                      isDark ? Colors.white : Colors.black,
-                                ),
-                            surahInfoStyle: surahInfoStyle ??
-                                SurahInfoStyle(
-                                  ayahCount: 'عدد الآيات',
-                                  secondTabText: 'عن السورة',
-                                  firstTabText: 'أسماء السورة',
-                                  backgroundColor:
-                                      AppColors.getBackgroundColor(isDark),
-                                  closeIconColor:
-                                      isDark ? Colors.white : Colors.black,
-                                  indicatorColor:
-                                      Colors.amber.withValues(alpha: .2),
-                                  primaryColor:
-                                      Colors.amber.withValues(alpha: .2),
-                                  surahNameColor:
-                                      isDark ? Colors.white : Colors.black,
-                                  surahNumberColor:
-                                      isDark ? Colors.white : Colors.black,
-                                  textColor:
-                                      isDark ? Colors.white : Colors.black,
-                                  titleColor:
-                                      isDark ? Colors.white : Colors.black,
-                                ),
-                            onSurahBannerPress: onSurahBannerPress,
-                            isDark: isDark,
-                          )
-                        : const SizedBox.shrink(),
-                    // context.surahBannerLastPlace(pageIndex, i),
                   ],
                 );
               },

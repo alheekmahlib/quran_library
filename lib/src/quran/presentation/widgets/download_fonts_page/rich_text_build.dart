@@ -65,9 +65,8 @@ class RichTextBuild extends StatelessWidget {
         text: TextSpan(
           style: TextStyle(
             // fontFamily: isFontsLocal ? fontsName : 'p${(pageIndex + 2001)}',
-            fontFamily: isFontsLocal
-                ? fontsName
-                : 'QCF4${((pageIndex + 1).toString().padLeft(3, '0'))}_X-Regular',
+            fontFamily:
+                isFontsLocal ? fontsName : quranCtrl.getFontPath(pageIndex),
             fontSize: 100,
             height: 1.7,
             // إزالة letterSpacing لتقليل كلفة التخطيط

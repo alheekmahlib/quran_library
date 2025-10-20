@@ -68,9 +68,8 @@ TextSpan _span({
         text: partOne,
         style: TextStyle(
           // fontFamily: isFontsLocal ? fontsName : 'p${(pageIndex + 2001)}',
-          fontFamily: isFontsLocal
-              ? fontsName
-              : 'QCF4${((pageIndex + 1).toString().padLeft(3, '0'))}_X-Regular',
+          fontFamily:
+              isFontsLocal ? fontsName : quranCtrl.getFontPath(pageIndex),
           fontSize: fontSize,
           height: 2.1,
           // letterSpacing: pageSpacing ? -5 : 30,
@@ -102,9 +101,8 @@ TextSpan _span({
         text: partTwo,
         style: TextStyle(
           // fontFamily: isFontsLocal ? fontsName : 'p${(pageIndex + 2001)}',
-          fontFamily: isFontsLocal
-              ? fontsName
-              : 'QCF4${((pageIndex + 1).toString().padLeft(3, '0'))}_X-Regular',
+          fontFamily:
+              isFontsLocal ? fontsName : quranCtrl.getFontPath(pageIndex),
           fontSize: fontSize,
           height: 2.1,
           // letterSpacing: 0,
@@ -139,9 +137,7 @@ TextSpan _span({
       text: initialPart,
       style: TextStyle(
         // fontFamily: isFontsLocal ? fontsName : 'p${(pageIndex + 2001)}',
-        fontFamily: isFontsLocal
-            ? fontsName
-            : 'QCF4${((pageIndex + 1).toString().padLeft(3, '0'))}_X-Regular',
+        fontFamily: isFontsLocal ? fontsName : quranCtrl.getFontPath(pageIndex),
         fontSize: fontSize,
         height: 2.1,
         // letterSpacing: 0,
@@ -187,9 +183,8 @@ TextSpan _span({
             text: lastCharacter,
             style: TextStyle(
               // fontFamily: isFontsLocal ? fontsName : 'p${(pageIndex + 2001)}',
-              fontFamily: isFontsLocal
-                  ? fontsName
-                  : 'QCF4${((pageIndex + 1).toString().padLeft(3, '0'))}_X-Regular',
+              fontFamily:
+                  isFontsLocal ? fontsName : quranCtrl.getFontPath(pageIndex),
               fontSize: fontSize,
               height: 2.1,
               // letterSpacing: isFirstAyah &&

@@ -80,14 +80,14 @@ class _QuranTextScale extends StatelessWidget {
               : SingleChildScrollView(
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
-                    children: List.generate(
-                      quranCtrl
-                          .getCurrentPageAyahsSeparatedForBasmalah(pageIndex)
-                          .length,
-                      (i) {
-                        final ayahs =
-                            quranCtrl.getCurrentPageAyahsSeparatedForBasmalah(
-                                pageIndex)[i];
+                    children: () {
+                      final separated = quranCtrl
+                          .getCurrentPageAyahsSeparatedForBasmalah(pageIndex);
+                      return List.generate(separated.length, (i) {
+                        final ayahs = separated[i];
+                        final surahNum = quranCtrl
+                            .getSurahDataByAyah(ayahs.first)
+                            .surahNumber;
                         return Column(
                           children: [
                             ayahs.first.ayahNumber == 1 &&
@@ -96,10 +96,7 @@ class _QuranTextScale extends StatelessWidget {
                                         quranCtrl.state.fontsSelected.value ==
                                             0)
                                 ? SurahHeaderWidget(
-                                    surahNumber ??
-                                        quranCtrl
-                                            .getSurahDataByAyah(ayahs.first)
-                                            .surahNumber,
+                                    surahNumber ?? surahNum,
                                     bannerStyle: bannerStyle ??
                                         BannerStyle(
                                           isImage: false,
@@ -153,22 +150,13 @@ class _QuranTextScale extends StatelessWidget {
                                     isDark: isDark,
                                   )
                                 : const SizedBox.shrink(),
-                            quranCtrl
-                                            .getSurahDataByAyah(ayahs.first)
-                                            .surahNumber ==
-                                        9 ||
-                                    quranCtrl
-                                            .getSurahDataByAyah(ayahs.first)
-                                            .surahNumber ==
-                                        1
+                            surahNum == 9 || surahNum == 1
                                 ? const SizedBox.shrink()
                                 : Padding(
                                     padding: const EdgeInsets.only(bottom: 8.0),
                                     child: ayahs.first.ayahNumber == 1
                                         ? BasmallahWidget(
-                                            surahNumber: quranCtrl
-                                                .getSurahDataByAyah(ayahs.first)
-                                                .surahNumber,
+                                            surahNumber: surahNum,
                                             basmalaStyle: basmalaStyle ??
                                                 BasmalaStyle(
                                                   basmalaColor: isDark
@@ -203,8 +191,8 @@ class _QuranTextScale extends StatelessWidget {
                             // context.surahBannerLastPlace(pageIndex, i),
                           ],
                         );
-                      },
-                    ),
+                      });
+                    }(),
                   ),
                 ),
         ),

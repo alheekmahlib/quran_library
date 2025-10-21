@@ -46,8 +46,9 @@ class TextScaleRichTextBuild extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Obx(
-      () => RichText(
+    return GetBuilder<QuranCtrl>(
+      id: 'selection_page_$pageIndex',
+      builder: (_) => RichText(
         textDirection: TextDirection.rtl,
         textAlign: TextAlign.center,
         text: TextSpan(

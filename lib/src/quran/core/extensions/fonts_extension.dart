@@ -1,5 +1,9 @@
 part of '/quran.dart';
 
+/// مُعرّف جيل لتحميل الخطوط يُستخدم لإلغاء دفعات قديمة عند تغيّر الصفحة بسرعة
+/// Generation token to cancel outdated preloading batches when page changes quickly
+int _fontPreloadGeneration = 0;
+
 /// Extension to handle font-related operations for the QuranCtrl class.
 extension FontsExtension on QuranCtrl {
   bool get isPhones =>
@@ -192,22 +196,46 @@ extension FontsExtension on QuranCtrl {
   /// Returns a [Future] that completes when all specified fonts have been
   /// successfully loaded.
   Future<void> prepareFonts(int pageIndex, {bool isFontsLocal = false}) async {
-    // الصفحة الحالية
+    // زيادة جيل التحميل لإلغاء أي مهام قديمة
+    final currentGeneration = ++_fontPreloadGeneration;
+
+    // 1) حمّل خط الصفحة الحالية فقط مع await لضمان الجاهزية
     await loadFont(pageIndex, isFontsLocal: isFontsLocal);
 
-    // الصفحات المجاورة: ±2 كتحضير مسبق أوسع لتقليل أي نتش متبقٍ
-    final neighbors = [-2, -1, 1, 2];
-    final candidates = neighbors
-        .map((o) => pageIndex + o)
-        .where((i) => i >= 0 && i < 604)
-        .toList();
-    for (final i in candidates) {
-      try {
-        await loadFont(i, isFontsLocal: isFontsLocal);
-      } catch (_) {
-        // تجاهل أخطاء التحميل المسبق
-      }
+    // 2) جدولة تحميل الجيران بدون await وبعدد أقل (±2) لتقليل الضغط
+    // ترتيب الأولويات: 1، -1، 2، -2 (الأقرب أولًا)
+    const neighborOffsets = [1, -1, 2, -2];
+    for (final offset in neighborOffsets) {
+      final idx = pageIndex + offset;
+      if (idx < 0 || idx >= 604) continue;
+      // تأخير بسيط متناسب مع البعد لتفادي التكدس على نفس الإطار
+      final delay = Duration(milliseconds: 20 * offset.abs());
+      _scheduleNeighborFont(idx, currentGeneration,
+          isFontsLocal: isFontsLocal, delay: delay);
     }
+  }
+
+  /// جدولة تحميل خط صفحة مجاورة بدون حجب واجهة المستخدم مع دعم الإلغاء بواسطة الجيل
+  Future<void> _scheduleNeighborFont(
+    int pageIndex,
+    int generation, {
+    bool isFontsLocal = false,
+    Duration? delay,
+  }) async {
+    // إطلاق مهمة غير محجوبة للواجهة
+    // ignore: discarded_futures
+    Future(() async {
+      if (delay != null && delay.inMilliseconds > 0) {
+        await Future.delayed(delay);
+      }
+      // إذا تغيّر الجيل، تجاهل هذه المهمة لأنها أصبحت قديمة
+      if (generation != _fontPreloadGeneration) return;
+      try {
+        await loadFont(pageIndex, isFontsLocal: isFontsLocal);
+      } catch (_) {
+        // تجاهل أخطاء التحميل المسبق للجيران
+      }
+    });
   }
 
   /// Loads a font from a ZIP file for the specified page index.

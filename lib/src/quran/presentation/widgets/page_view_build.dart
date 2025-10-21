@@ -1,5 +1,24 @@
 part of '/quran.dart';
 
+/// ويدجت مساعدة للحفاظ على الصفحة حيّة ضمن PageView
+class _KeepAlive extends StatefulWidget {
+  const _KeepAlive({required this.child});
+  final Widget child;
+  @override
+  State<_KeepAlive> createState() => _KeepAliveState();
+}
+
+class _KeepAliveState extends State<_KeepAlive>
+    with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
+  @override
+  Widget build(BuildContext context) {
+    super.build(context);
+    return widget.child;
+  }
+}
+
 class PageViewBuild extends StatelessWidget {
   const PageViewBuild({
     super.key,
@@ -73,8 +92,12 @@ class PageViewBuild extends StatelessWidget {
   Widget build(BuildContext context) {
     final deviceSize = MediaQuery.of(userContext)
         .size; // استخدام سياق المستخدم / Using user context
+    // تحضير مجموعات وبيانات ثابتة لتقليل الحسابات داخل البناء الداخلي
+    final bookmarksCtrl = BookmarksCtrl.instance;
+    final Map<int, List<BookmarkModel>> bookmarksMap = bookmarksCtrl.bookmarks;
+    final Set<int> bookmarksAyahSet = bookmarksCtrl.bookmarksAyahs.toSet();
     List<String> newSurahs = [];
-    final bookmarkCtrl = BookmarksCtrl.instance;
+    // final bookmarkCtrl = BookmarksCtrl.instance;
     return GetBuilder<QuranCtrl>(
       id: '_pageViewBuild',
       init: QuranCtrl.instance,
@@ -107,7 +130,7 @@ class PageViewBuild extends StatelessWidget {
                           textColor: ayahSelectedFontColor ?? textColor,
                           ayahIconColor: ayahIconColor,
                           showAyahBookmarkedIcon: showAyahBookmarkedIcon,
-                          bookmarks: bookmarkCtrl.bookmarks,
+                          bookmarks: bookmarksMap,
                           onAyahLongPress: onAyahLongPress,
                           bookmarksColor: bookmarksColor,
                           surahInfoStyle: surahInfoStyle,
@@ -116,7 +139,7 @@ class PageViewBuild extends StatelessWidget {
                           basmalaStyle: basmalaStyle,
                           onSurahBannerPress: onSurahBannerPress,
                           surahNumber: surahNumber,
-                          bookmarksAyahs: bookmarkCtrl.bookmarksAyahs,
+                          bookmarksAyahs: bookmarksAyahSet.toList(),
                           ayahSelectedBackgroundColor:
                               ayahSelectedBackgroundColor,
                           isDark: isDark,
@@ -179,7 +202,7 @@ class PageViewBuild extends StatelessWidget {
                     textColor: ayahSelectedFontColor ?? textColor,
                     ayahIconColor: ayahIconColor,
                     showAyahBookmarkedIcon: showAyahBookmarkedIcon,
-                    bookmarks: bookmarkCtrl.bookmarks,
+                    bookmarks: bookmarksMap,
                     onAyahLongPress: onAyahLongPress,
                     bookmarksColor: bookmarksColor,
                     surahInfoStyle: surahInfoStyle,
@@ -188,7 +211,7 @@ class PageViewBuild extends StatelessWidget {
                     basmalaStyle: basmalaStyle,
                     onSurahBannerPress: onSurahBannerPress,
                     surahNumber: surahNumber,
-                    bookmarksAyahs: bookmarkCtrl.bookmarksAyahs,
+                    bookmarksAyahs: bookmarksAyahSet.toList(),
                     ayahSelectedBackgroundColor: ayahSelectedBackgroundColor,
                     onPagePress: onPagePress,
                     languageCode: languageCode,

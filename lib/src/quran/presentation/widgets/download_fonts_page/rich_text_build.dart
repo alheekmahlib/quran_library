@@ -51,10 +51,15 @@ class RichTextBuild extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // شرح: تحسين RichText بإضافة خصائص الأداء
-    // Explanation: Optimize RichText by adding performance properties
-    return Obx(
-      () => RichText(
+    // تحضيرات لتقليل الحسابات داخل الحلقة
+    final Set<int> bookmarksSet = bookmarksAyahs.toSet();
+    final currentSurahNumber =
+        quranCtrl.getCurrentSurahByPageNumber(pageIndex + 1).surahNumber;
+
+    // شرح: إعادة بناء انتقائي عند تغيّر تحديد الآيات في الصفحة فقط
+    return GetBuilder<QuranCtrl>(
+      id: 'selection_page_$pageIndex',
+      builder: (_) => RichText(
         textDirection: TextDirection.rtl,
         textAlign: TextAlign.center,
         // شرح: تحسين أداء النص للنصوص الطويلة
@@ -86,22 +91,18 @@ class RichTextBuild extends StatelessWidget {
             //     : const [],
           ),
           children: List.generate(ayahs.length, (ayahIndex) {
-            quranCtrl.selectedAyahsByUnequeNumber
-                .contains(ayahs[ayahIndex].ayahUQNumber);
-            final allBookmarks =
-                bookmarks.values.expand((list) => list).toList();
-            bool isFirstAyah = ayahIndex == 0 &&
-                (ayahs[ayahIndex].ayahNumber != 1 ||
-                    quranCtrl._startSurahsNumbers.contains(quranCtrl
-                        .getSurahDataByAyah(ayahs[ayahIndex])
-                        .surahNumber));
-            String text = isFirstAyah
-                ? '${ayahs[ayahIndex].codeV2![0]}${ayahs[ayahIndex].codeV2!.substring(1)}'
-                : ayahs[ayahIndex].codeV2!;
-            final isSelectedCombined = quranCtrl.selectedAyahsByUnequeNumber
-                    .contains(ayahs[ayahIndex].ayahUQNumber) ||
-                quranCtrl.externallyHighlightedAyahs
-                    .contains(ayahs[ayahIndex].ayahUQNumber);
+            final ayah = ayahs[ayahIndex];
+            final isFirstAyah = ayahIndex == 0 &&
+                (ayah.ayahNumber != 1 ||
+                    quranCtrl._startSurahsNumbers.contains(
+                        quranCtrl.getSurahDataByAyah(ayah).surahNumber));
+            final text = isFirstAyah
+                ? '${ayah.codeV2![0]}${ayah.codeV2!.substring(1)}'
+                : ayah.codeV2!;
+            final uq = ayah.ayahUQNumber;
+            final isSelectedCombined =
+                quranCtrl.selectedAyahsByUnequeNumber.contains(uq) ||
+                    quranCtrl.externallyHighlightedAyahs.contains(uq);
             return _span(
               isFirstAyah: isFirstAyah,
               text: text,
@@ -109,36 +110,32 @@ class RichTextBuild extends StatelessWidget {
               pageIndex: pageIndex,
               isSelected: isSelectedCombined,
               fontSize: 100,
-              surahNum: quranCtrl
-                  .getCurrentSurahByPageNumber(pageIndex + 1)
-                  .surahNumber,
-              ayahUQNum: ayahs[ayahIndex].ayahUQNumber,
-              ayahNum: ayahs[ayahIndex].ayahNumber,
+              surahNum: currentSurahNumber,
+              ayahUQNum: uq,
+              ayahNum: ayah.ayahNumber,
               ayahBookmarked: ayahBookmarked,
               onLongPressStart: (details) {
                 if (onAyahLongPress != null) {
-                  onAyahLongPress!(details, ayahs[ayahIndex]);
-                  quranCtrl.toggleAyahSelection(ayahs[ayahIndex].ayahUQNumber);
+                  onAyahLongPress!(details, ayah);
+                  quranCtrl.toggleAyahSelection(uq);
                   quranCtrl.state.overlayEntry?.remove();
                   quranCtrl.state.overlayEntry = null;
                 } else {
-                  final bookmarkId = allBookmarks.any((bookmark) =>
-                          bookmark.ayahId == ayahs[ayahIndex].ayahUQNumber)
-                      ? allBookmarks
-                          .firstWhere((bookmark) =>
-                              bookmark.ayahId == ayahs[ayahIndex].ayahUQNumber)
-                          .id
-                      : null;
+                  int? bookmarkId;
+                  for (final b in bookmarks.values.expand((list) => list)) {
+                    if (b.ayahId == uq) {
+                      bookmarkId = b.id;
+                      break;
+                    }
+                  }
                   if (bookmarkId != null) {
                     BookmarksCtrl.instance.removeBookmark(bookmarkId);
                   } else {
                     // حدث التحديد (متعدد أو عادي)
                     if (quranCtrl.isMultiSelectMode.value) {
-                      quranCtrl.toggleAyahSelectionMulti(
-                          ayahs[ayahIndex].ayahUQNumber);
+                      quranCtrl.toggleAyahSelectionMulti(uq);
                     } else {
-                      quranCtrl
-                          .toggleAyahSelection(ayahs[ayahIndex].ayahUQNumber);
+                      quranCtrl.toggleAyahSelection(uq);
                     }
                     quranCtrl.state.overlayEntry?.remove();
                     quranCtrl.state.overlayEntry = null;
@@ -149,7 +146,7 @@ class RichTextBuild extends StatelessWidget {
                       builder: (context) => AyahLongClickDialog(
                         context: context,
                         isDark: isDark,
-                        ayah: ayahs[ayahIndex],
+                        ayah: ayah,
                         position: details.globalPosition,
                         index: ayahIndex,
                         pageIndex: pageIndex,
@@ -174,7 +171,7 @@ class RichTextBuild extends StatelessWidget {
                   ayahIconColor ?? (isDark ? Colors.white : Colors.black),
               showAyahBookmarkedIcon: showAyahBookmarkedIcon,
               bookmarks: bookmarks,
-              bookmarksAyahs: bookmarksAyahs,
+              bookmarksAyahs: bookmarksSet.toList(),
               bookmarksColor: bookmarksColor,
               ayahSelectedBackgroundColor: ayahSelectedBackgroundColor,
               isFontsLocal: isFontsLocal,

@@ -48,113 +48,125 @@ class TextScaleRichTextBuild extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetBuilder<QuranCtrl>(
       id: 'selection_page_$pageIndex',
-      builder: (_) => RichText(
-        textDirection: TextDirection.rtl,
-        textAlign: TextAlign.center,
-        text: TextSpan(
-          style: TextStyle(
-            fontFamily: 'hafs',
-            fontSize: 20 * quranCtrl.state.scaleFactor.value,
-            height: 1.7,
-            // letterSpacing: 2,
-            fontWeight: FontWeight.bold,
-            color: textColor ?? (isDark ? Colors.white : Colors.black),
-            // shadows: [
-            //   Shadow(
-            //     blurRadius: 0.5,
-            //     color: quranCtrl.state.isBold.value == 0
-            //         ? Colors.black
-            //         : Colors.transparent,
-            //     offset: const Offset(0.5, 0.5),
-            //   ),
-            // ],
-            package: 'quran_library',
-          ),
-          children: List.generate(ayahs.length, (ayahIndex) {
-            final allBookmarks =
-                bookmarks.values.expand((list) => list).toList();
-            final isSelectedCombined = quranCtrl.selectedAyahsByUnequeNumber
-                    .contains(ayahs[ayahIndex].ayahUQNumber) ||
-                quranCtrl.externallyHighlightedAyahs
-                    .contains(ayahs[ayahIndex].ayahUQNumber);
-            return _customSpan(
-              text: ayahs[ayahIndex].text,
-              isDark: isDark,
-              pageIndex: pageIndex,
-              isSelected: isSelectedCombined,
-              fontSize: 20 * quranCtrl.state.scaleFactor.value,
-              surahNum: quranCtrl
-                  .getCurrentSurahByPageNumber(pageIndex + 1)
-                  .surahNumber,
-              ayahUQNum: ayahs[ayahIndex].ayahUQNumber,
-              hasBookmark:
-                  ayahBookmarked.contains(ayahs[ayahIndex].ayahUQNumber),
-              onLongPressStart: (details) {
-                if (onAyahLongPress != null) {
-                  onAyahLongPress!(details, ayahs[ayahIndex]);
-                  quranCtrl.toggleAyahSelection(ayahs[ayahIndex].ayahUQNumber);
-                  quranCtrl.state.overlayEntry?.remove();
-                  quranCtrl.state.overlayEntry = null;
-                } else {
-                  final bookmarkId = allBookmarks.any((bookmark) =>
-                          bookmark.ayahId == ayahs[ayahIndex].ayahUQNumber)
-                      ? allBookmarks
-                          .firstWhere((bookmark) =>
-                              bookmark.ayahId == ayahs[ayahIndex].ayahUQNumber)
-                          .id
-                      : null;
-                  if (bookmarkId != null) {
-                    BookmarksCtrl.instance.removeBookmark(bookmarkId);
-                  } else {
-                    // حدث التحديد (متعدد أو عادي)
-                    if (quranCtrl.isMultiSelectMode.value) {
-                      quranCtrl.toggleAyahSelectionMulti(
-                          ayahs[ayahIndex].ayahUQNumber);
-                    } else {
+      builder: (_) => LayoutBuilder(
+        builder: (ctx, constraints) {
+          final base = PageFontSizeHelper.hafsFontSize(
+            context: ctx,
+            maxWidth: constraints.maxWidth,
+          );
+          final fs = base * quranCtrl.state.scaleFactor.value;
+          return RichText(
+            textDirection: TextDirection.rtl,
+            textAlign: TextAlign.center,
+            text: TextSpan(
+              style: TextStyle(
+                fontFamily: 'hafs',
+                fontSize: fs,
+                height: 1.7,
+                // letterSpacing: 2,
+                fontWeight: FontWeight.bold,
+                color: textColor ?? (isDark ? Colors.white : Colors.black),
+                // shadows: [
+                //   Shadow(
+                //     blurRadius: 0.5,
+                //     color: quranCtrl.state.isBold.value == 0
+                //         ? Colors.black
+                //         : Colors.transparent,
+                //     offset: const Offset(0.5, 0.5),
+                //   ),
+                // ],
+                package: 'quran_library',
+              ),
+              children: List.generate(ayahs.length, (ayahIndex) {
+                final allBookmarks =
+                    bookmarks.values.expand((list) => list).toList();
+                final isSelectedCombined = quranCtrl.selectedAyahsByUnequeNumber
+                        .contains(ayahs[ayahIndex].ayahUQNumber) ||
+                    quranCtrl.externallyHighlightedAyahs
+                        .contains(ayahs[ayahIndex].ayahUQNumber);
+                return _customSpan(
+                  text: ayahs[ayahIndex].text,
+                  isDark: isDark,
+                  pageIndex: pageIndex,
+                  isSelected: isSelectedCombined,
+                  fontSize: fs,
+                  surahNum: quranCtrl
+                      .getCurrentSurahByPageNumber(pageIndex + 1)
+                      .surahNumber,
+                  ayahUQNum: ayahs[ayahIndex].ayahUQNumber,
+                  hasBookmark:
+                      ayahBookmarked.contains(ayahs[ayahIndex].ayahUQNumber),
+                  onLongPressStart: (details) {
+                    if (onAyahLongPress != null) {
+                      onAyahLongPress!(details, ayahs[ayahIndex]);
                       quranCtrl
                           .toggleAyahSelection(ayahs[ayahIndex].ayahUQNumber);
+                      quranCtrl.state.overlayEntry?.remove();
+                      quranCtrl.state.overlayEntry = null;
+                    } else {
+                      final bookmarkId = allBookmarks.any((bookmark) =>
+                              bookmark.ayahId == ayahs[ayahIndex].ayahUQNumber)
+                          ? allBookmarks
+                              .firstWhere((bookmark) =>
+                                  bookmark.ayahId ==
+                                  ayahs[ayahIndex].ayahUQNumber)
+                              .id
+                          : null;
+                      if (bookmarkId != null) {
+                        BookmarksCtrl.instance.removeBookmark(bookmarkId);
+                      } else {
+                        // حدث التحديد (متعدد أو عادي)
+                        if (quranCtrl.isMultiSelectMode.value) {
+                          quranCtrl.toggleAyahSelectionMulti(
+                              ayahs[ayahIndex].ayahUQNumber);
+                        } else {
+                          quranCtrl.toggleAyahSelection(
+                              ayahs[ayahIndex].ayahUQNumber);
+                        }
+                        quranCtrl.state.overlayEntry?.remove();
+                        quranCtrl.state.overlayEntry = null;
+
+                        // إنشاء OverlayEntry جديد
+                        final overlay = Overlay.of(context);
+                        final newOverlayEntry = OverlayEntry(
+                          builder: (context) => AyahLongClickDialog(
+                            context: context,
+                            isDark: isDark,
+                            ayah: ayahs[ayahIndex],
+                            position: details.globalPosition,
+                            index: ayahIndex,
+                            pageIndex: pageIndex,
+                            anotherMenuChild: anotherMenuChild,
+                            anotherMenuChildOnTap: anotherMenuChildOnTap,
+                            secondMenuChild: secondMenuChild,
+                            secondMenuChildOnTap: secondMenuChildOnTap,
+                          ),
+                        );
+
+                        quranCtrl.state.overlayEntry = newOverlayEntry;
+
+                        // إدخال OverlayEntry في Overlay
+                        overlay.insert(newOverlayEntry);
+                      }
                     }
-                    quranCtrl.state.overlayEntry?.remove();
-                    quranCtrl.state.overlayEntry = null;
-
-                    // إنشاء OverlayEntry جديد
-                    final overlay = Overlay.of(context);
-                    final newOverlayEntry = OverlayEntry(
-                      builder: (context) => AyahLongClickDialog(
-                        context: context,
-                        isDark: isDark,
-                        ayah: ayahs[ayahIndex],
-                        position: details.globalPosition,
-                        index: ayahIndex,
-                        pageIndex: pageIndex,
-                        anotherMenuChild: anotherMenuChild,
-                        anotherMenuChildOnTap: anotherMenuChildOnTap,
-                        secondMenuChild: secondMenuChild,
-                        secondMenuChildOnTap: secondMenuChildOnTap,
-                      ),
-                    );
-
-                    quranCtrl.state.overlayEntry = newOverlayEntry;
-
-                    // إدخال OverlayEntry في Overlay
-                    overlay.insert(newOverlayEntry);
-                  }
-                }
-              },
-              bookmarkList: bookmarkList,
-              textColor: textColor ?? (isDark ? Colors.white : Colors.black),
-              ayahIconColor:
-                  ayahIconColor ?? (isDark ? Colors.white : Colors.black),
-              showAyahBookmarkedIcon: showAyahBookmarkedIcon,
-              bookmarks: bookmarks,
-              bookmarksAyahs: bookmarksAyahs,
-              bookmarksColor: bookmarksColor,
-              ayahSelectedBackgroundColor: ayahSelectedBackgroundColor,
-              ayahNumber: ayahs[ayahIndex].ayahNumber,
-              languageCode: languageCode,
-            );
-          }),
-        ),
+                  },
+                  bookmarkList: bookmarkList,
+                  textColor:
+                      textColor ?? (isDark ? Colors.white : Colors.black),
+                  ayahIconColor:
+                      ayahIconColor ?? (isDark ? Colors.white : Colors.black),
+                  showAyahBookmarkedIcon: showAyahBookmarkedIcon,
+                  bookmarks: bookmarks,
+                  bookmarksAyahs: bookmarksAyahs,
+                  bookmarksColor: bookmarksColor,
+                  ayahSelectedBackgroundColor: ayahSelectedBackgroundColor,
+                  ayahNumber: ayahs[ayahIndex].ayahNumber,
+                  languageCode: languageCode,
+                );
+              }),
+            ),
+          );
+        },
       ),
     );
   }

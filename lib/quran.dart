@@ -38,6 +38,7 @@ part 'src/quran/core/extensions/sajda_extension.dart';
 part 'src/quran/core/extensions/string_extensions.dart';
 part 'src/quran/core/extensions/surah_info_extension.dart';
 part 'src/quran/core/extensions/text_span_extension.dart';
+part 'src/quran/core/helpers/page_font_size.dart';
 part 'src/quran/core/utils/storage_constants.dart';
 part 'src/quran/data/models/ayah_model.dart';
 part 'src/quran/data/models/quran_constants.dart';

@@ -187,6 +187,7 @@ TextSpan _span({
                   isFontsLocal ? fontsName : quranCtrl.getFontPath(pageIndex),
               fontSize: fontSize,
               height: 2.1,
+              fontWeight: FontWeight.bold,
               // letterSpacing: isFirstAyah &&
               //     (pageIndex == 1 ||
               //         pageIndex == 49 ||
@@ -196,7 +197,7 @@ TextSpan _span({
               //         pageIndex == 498)
               // ? 20
               // : null,
-              color: ayahIconColor ?? (isDark ? Colors.white : Colors.black),
+              color: ayahIconColor ?? Colors.teal,
               backgroundColor: ayahBookmarked.contains(ayahUQNum)
                   ? bookmarksColor
                   : (bookmarksAyahs.contains(ayahUQNum)
@@ -293,7 +294,7 @@ TextSpan _customSpan({
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
                   child: SvgPicture.asset(
                     AssetsPath.assets.ayahBookmarked,
-                    height: 35,
+                    height: 100,
                   ),
                 ))
             : TextSpan(

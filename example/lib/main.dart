@@ -56,7 +56,7 @@ class FullQuran extends StatelessWidget {
       parentContext: context,
       isDark: false,
       showAyahBookmarkedIcon: true,
-      ayahIconColor: Color(0xffcdad80),
+      // ayahIconColor: Colors.teal,
       // backgroundColor: Colors.white,
       // textColor: Colors.black,
       isFontsLocal: false,

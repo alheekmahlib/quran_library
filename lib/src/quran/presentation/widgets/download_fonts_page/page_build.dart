@@ -61,11 +61,11 @@ class PageBuild extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // شرح: تحسين FittedBox بإضافة RepaintBoundary لتقليل إعادة الرسم
-    // Explanation: Optimize FittedBox by adding RepaintBoundary to reduce repainting
+    // شرح: إعادة FittedBox لكن مع BoxFit.scaleDown لمنع overflow وتقليل الكلفة
+    // Explanation: Re-add FittedBox with BoxFit.scaleDown to avoid overflow while reducing unnecessary scaling
     return RepaintBoundary(
       child: FittedBox(
-        fit: BoxFit.fitWidth,
+        fit: BoxFit.scaleDown,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: () {

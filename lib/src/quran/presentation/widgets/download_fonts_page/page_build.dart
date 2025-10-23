@@ -61,8 +61,6 @@ class PageBuild extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // شرح: إعادة FittedBox لكن مع BoxFit.scaleDown لمنع overflow وتقليل الكلفة
-    // Explanation: Re-add FittedBox with BoxFit.scaleDown to avoid overflow while reducing unnecessary scaling
     return RepaintBoundary(
       child: FittedBox(
         fit: BoxFit.scaleDown,

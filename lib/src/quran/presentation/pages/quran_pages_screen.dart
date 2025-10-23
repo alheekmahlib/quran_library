@@ -214,11 +214,11 @@ class QuranPagesScreen extends StatelessWidget {
     final int startIndex = sp - 1; // محول إلى 0-based
     final int count = (ep - sp) + 1; // عدد الصفحات
 
-    if (QuranCtrl.instance.isDownloadFonts) {
-      // تنفيذ بعد انتهاء الإطار لتجنّب أي تجميد
-      Future.microtask(() => QuranCtrl.instance
-          .prepareFonts(startIndex, isFontsLocal: isFontsLocal!));
-    }
+    // if (QuranCtrl.instance.isDownloadFonts) {
+    //   // تنفيذ بعد انتهاء الإطار لتجنّب أي تجميد
+    //   Future.microtask(() => QuranCtrl.instance
+    //       .prepareFonts(startIndex, isFontsLocal: isFontsLocal!));
+    // }
     return ScreenUtilInit(
       designSize: const Size(392.72727272727275, 800.7272727272727),
       minTextAdapt: true,
@@ -289,16 +289,16 @@ class QuranPagesScreen extends StatelessWidget {
               onNotification: (notification) {
                 final metrics = notification.metrics;
                 if (metrics is PageMetrics) {
-                  final int currentLocal = (metrics.page ??
-                          (metrics.pixels / metrics.viewportDimension))
-                      .round();
-                  final int currentGlobal = startIndex + currentLocal;
-                  if (quranCtrl.isDownloadFonts) {
-                    Future.microtask(() => quranCtrl.prepareFonts(
-                          currentGlobal,
-                          isFontsLocal: isFontsLocal!,
-                        ));
-                  }
+                  // final int currentLocal = (metrics.page ??
+                  //         (metrics.pixels / metrics.viewportDimension))
+                  //     .round();
+                  // final int currentGlobal = startIndex + currentLocal;
+                  // if (quranCtrl.isDownloadFonts) {
+                  //   Future.microtask(() => quranCtrl.prepareFonts(
+                  //         currentGlobal,
+                  //         isFontsLocal: isFontsLocal!,
+                  //       ));
+                  // }
                 }
                 return false;
               },
@@ -321,11 +321,11 @@ class QuranPagesScreen extends StatelessWidget {
                     quranCtrl.state.currentPageNumber.value = globalIndex + 1;
                     quranCtrl.saveLastPage(globalIndex + 1);
                   });
-                  if (quranCtrl.isDownloadFonts) {
-                    // تنفيذ بعد انتهاء الإطار لتجنّب أي تجميد
-                    Future.microtask(() => quranCtrl.prepareFonts(startIndex,
-                        isFontsLocal: isFontsLocal!));
-                  }
+                  // if (quranCtrl.isDownloadFonts) {
+                  //   // تنفيذ بعد انتهاء الإطار لتجنّب أي تجميد
+                  //   Future.microtask(() => quranCtrl.prepareFonts(startIndex,
+                  //       isFontsLocal: isFontsLocal!));
+                  // }
                 },
                 itemBuilder: (ctx, localIndex) {
                   final globalIndex = startIndex + localIndex;

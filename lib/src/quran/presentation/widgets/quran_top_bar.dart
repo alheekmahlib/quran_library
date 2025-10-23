@@ -54,6 +54,17 @@ class _QuranTopBar extends StatelessWidget {
         ),
         child: Row(
           children: [
+            if (defaults.showBackButton ?? false)
+              IconButton(
+                icon: SvgPicture.asset(
+                    defaults.backIconPath ?? AssetsPath.assets.backArrow,
+                    height: defaults.iconSize,
+                    colorFilter: ColorFilter.mode(
+                        defaults.iconColor ?? Colors.teal, BlendMode.srcIn)),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
             if (defaults.showMenuButton ?? true)
               IconButton(
                 icon: SvgPicture.asset(
@@ -65,53 +76,59 @@ class _QuranTopBar extends StatelessWidget {
                   _showMenuBottomSheet(context, defaults);
                 },
               ),
-            if (defaults.showAudioButton ?? true)
-              IconButton(
-                icon: SvgPicture.asset(
-                    defaults.audioIconPath ?? AssetsPath.assets.surahsAudio,
-                    height: defaults.iconSize,
-                    colorFilter: ColorFilter.mode(
-                        defaults.iconColor ?? Colors.teal, BlendMode.srcIn)),
-                onPressed: () async {
-                  await AudioCtrl.instance.state.audioPlayer.stop();
-                  await AudioCtrl.instance.lastAudioSource();
-                  if (context.mounted) {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => SurahAudioScreen(
-                          isDark: isDark,
-                          style: style,
-                          languageCode: languageCode,
-                        ),
-                      ),
-                    );
-                  }
-                },
-              ),
             const Spacer(),
-            if (defaults.showFontsButton ?? true)
-              FontsDownloadDialog(
-                downloadFontsDialogStyle: downloadFontsDialogStyle ??
-                    DownloadFontsDialogStyle(
-                      title: defaults.fontsDialogTitle ?? 'الخطوط',
-                      titleColor: textColor,
-                      notes: defaults.fontsDialogNotes ??
-                          'لجعل مظهر المصحف مشابه لمصحف المدينة يمكنك تحميل خطوط المصحف',
-                      notesColor: textColor,
-                      linearProgressBackgroundColor: linearBg,
-                      linearProgressColor: accentColor,
-                      downloadButtonBackgroundColor: accentColor,
-                      downloadingText:
-                          defaults.fontsDialogDownloadingText ?? 'جارِ التحميل',
-                      backgroundColor: isDark
-                          ? const Color(0xff1E1E1E)
-                          : const Color(0xFFF7EFE0),
-                    ),
-                languageCode: languageCode,
-                isFontsLocal: isFontsLocal,
-                isDark: isDark,
-              )
+            Row(
+              children: [
+                if (defaults.showAudioButton ?? true)
+                  IconButton(
+                    icon: SvgPicture.asset(
+                        defaults.audioIconPath ?? AssetsPath.assets.surahsAudio,
+                        height: defaults.iconSize,
+                        colorFilter: ColorFilter.mode(
+                            defaults.iconColor ?? Colors.teal,
+                            BlendMode.srcIn)),
+                    onPressed: () async {
+                      await AudioCtrl.instance.state.audioPlayer.stop();
+                      await AudioCtrl.instance.lastAudioSource();
+                      if (context.mounted) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => SurahAudioScreen(
+                              isDark: isDark,
+                              style: style,
+                              languageCode: languageCode,
+                            ),
+                          ),
+                        );
+                      }
+                    },
+                  ),
+                if (defaults.showFontsButton ?? true)
+                  FontsDownloadDialog(
+                    downloadFontsDialogStyle: downloadFontsDialogStyle ??
+                        DownloadFontsDialogStyle(
+                          title: defaults.fontsDialogTitle ?? 'الخطوط',
+                          titleColor: textColor,
+                          notes: defaults.fontsDialogNotes ??
+                              'لجعل مظهر المصحف مشابه لمصحف المدينة يمكنك تحميل خطوط المصحف',
+                          notesColor: textColor,
+                          linearProgressBackgroundColor: linearBg,
+                          linearProgressColor: accentColor,
+                          downloadButtonBackgroundColor: accentColor,
+                          downloadingText:
+                              defaults.fontsDialogDownloadingText ??
+                                  'جارِ التحميل',
+                          backgroundColor: isDark
+                              ? const Color(0xff1E1E1E)
+                              : const Color(0xFFF7EFE0),
+                        ),
+                    languageCode: languageCode,
+                    isFontsLocal: isFontsLocal,
+                    isDark: isDark,
+                  )
+              ],
+            )
           ],
         ),
       ),
@@ -378,9 +395,9 @@ class _SearchTab extends StatelessWidget {
                         onTap: () async {
                           Navigator.pop(context);
                           quranCtrl.searchResultSurahs.value = [];
-                          if (quranCtrl.isDownloadFonts) {
-                            await quranCtrl.prepareFonts(search.startPage!);
-                          }
+                          // if (quranCtrl.isDownloadFonts) {
+                          //   await quranCtrl.prepareFonts(search.startPage!);
+                          // }
                           QuranLibrary().jumpToSurah(search.surahNumber);
                         },
                         child: Container(
@@ -446,9 +463,9 @@ class _SearchTab extends StatelessWidget {
                       onTap: () async {
                         Navigator.pop(context);
                         quranCtrl.searchResultAyahs.value = [];
-                        if (quranCtrl.isDownloadFonts) {
-                          await quranCtrl.prepareFonts(ayah.page);
-                        }
+                        // if (quranCtrl.isDownloadFonts) {
+                        //   await quranCtrl.prepareFonts(ayah.page);
+                        // }
                         QuranLibrary().jumpToAyah(ayah.page, ayah.ayahUQNumber);
                       },
                     );

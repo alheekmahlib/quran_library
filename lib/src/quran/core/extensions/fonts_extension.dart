@@ -2,7 +2,7 @@ part of '/quran.dart';
 
 /// مُعرّف جيل لتحميل الخطوط يُستخدم لإلغاء دفعات قديمة عند تغيّر الصفحة بسرعة
 /// Generation token to cancel outdated preloading batches when page changes quickly
-int _fontPreloadGeneration = 0;
+// int _fontPreloadGeneration = 0;
 
 /// Extension to handle font-related operations for the QuranCtrl class.
 extension FontsExtension on QuranCtrl {
@@ -28,6 +28,44 @@ extension FontsExtension on QuranCtrl {
     } catch (e) {
       log('Network connectivity check failed: $e', name: 'FontsDownload');
       return false;
+    }
+  }
+
+  /// يقوم بتحميل وتسجيل جميع الصفحات المحفوظة دفعة واحدة (Bulk)
+  /// - يقرأ القائمة من GetStorage.loadedFontPages
+  /// - يتخطّى الصفحات المسجّلة في الذاكرة state.loadedFontPages
+  /// - يعمل على دفعات صغيرة لتجنّب حجب واجهة المستخدم
+  Future<void> loadPersistedFontsBulk({
+    List<int>? pages,
+    int batchSize = 24,
+  }) async {
+    try {
+      final storage = GetStorage();
+      final stored = (pages ??
+              (storage
+                      .read<List<dynamic>>(_StorageConstants().loadedFontPages)
+                      ?.cast<int>() ??
+                  []))
+          .where((p) => p >= 0 && p < 604)
+          .toSet()
+          .toList()
+        ..sort();
+
+      if (stored.isEmpty) return;
+
+      // تحميل على دفعات صغيرة لتجنّب الجانك
+      for (int i = 0; i < stored.length; i += batchSize) {
+        final chunk =
+            stored.sublist(i, (i + batchSize).clamp(0, stored.length));
+        for (final page in chunk) {
+          // سيقوم loadFont بتخطّي الصفحة إذا كانت محمّلة مسبقًا
+          await loadFont(page, isFontsLocal: true);
+        }
+        // فسح المجال للإطار التالي
+        await Future.delayed(const Duration(milliseconds: 1));
+      }
+    } catch (e) {
+      log('Bulk load persisted fonts failed: $e', name: 'FontsLoad');
     }
   }
 
@@ -159,6 +197,9 @@ extension FontsExtension on QuranCtrl {
 
       await QuranCtrl.instance.loadFontsQuran();
 
+      // بعد فك الضغط، حمّل (سجّل) كل الخطوط دفعة واحدة واحفظ النتائج
+      await loadFontFromZip();
+
       // حفظ حالة التحميل في التخزين المحلي
       // Save download status in local storage
       GetStorage().write(_StorageConstants().isDownloadedCodeV2Fonts, true);
@@ -182,62 +223,6 @@ extension FontsExtension on QuranCtrl {
     }
   }
 
-  /// Prepares fonts for the specified page index and adjacent pages.
-  ///
-  /// This method asynchronously loads the font for the given [pageIndex] and
-  /// additionally preloads fonts for the next four pages if the [pageIndex] is
-  /// less than 600, and the previous four pages if the [pageIndex] is greater
-  /// than or equal to 4. This ensures smoother font loading experience as the
-  /// user navigates through pages.
-  ///
-  /// [pageIndex] - The index of the page for which the font and its adjacent
-  /// pages' fonts should be prepared.
-  ///
-  /// Returns a [Future] that completes when all specified fonts have been
-  /// successfully loaded.
-  Future<void> prepareFonts(int pageIndex, {bool isFontsLocal = false}) async {
-    // زيادة جيل التحميل لإلغاء أي مهام قديمة
-    final currentGeneration = ++_fontPreloadGeneration;
-
-    // 1) حمّل خط الصفحة الحالية فقط مع await لضمان الجاهزية
-    await loadFont(pageIndex, isFontsLocal: isFontsLocal);
-
-    // 2) جدولة تحميل الجيران بدون await وبعدد أقل (±2) لتقليل الضغط
-    // ترتيب الأولويات: 1، -1، 2، -2 (الأقرب أولًا)
-    const neighborOffsets = [1, -1, 2, -2];
-    for (final offset in neighborOffsets) {
-      final idx = pageIndex + offset;
-      if (idx < 0 || idx >= 604) continue;
-      // تأخير بسيط متناسب مع البعد لتفادي التكدس على نفس الإطار
-      final delay = Duration(milliseconds: 20 * offset.abs());
-      _scheduleNeighborFont(idx, currentGeneration,
-          isFontsLocal: isFontsLocal, delay: delay);
-    }
-  }
-
-  /// جدولة تحميل خط صفحة مجاورة بدون حجب واجهة المستخدم مع دعم الإلغاء بواسطة الجيل
-  Future<void> _scheduleNeighborFont(
-    int pageIndex,
-    int generation, {
-    bool isFontsLocal = false,
-    Duration? delay,
-  }) async {
-    // إطلاق مهمة غير محجوبة للواجهة
-    // ignore: discarded_futures
-    Future(() async {
-      if (delay != null && delay.inMilliseconds > 0) {
-        await Future.delayed(delay);
-      }
-      // إذا تغيّر الجيل، تجاهل هذه المهمة لأنها أصبحت قديمة
-      if (generation != _fontPreloadGeneration) return;
-      try {
-        await loadFont(pageIndex, isFontsLocal: isFontsLocal);
-      } catch (_) {
-        // تجاهل أخطاء التحميل المسبق للجيران
-      }
-    });
-  }
-
   /// Loads a font from a ZIP file for the specified page index.
   ///
   /// This method asynchronously loads a font from a ZIP file based on the given
@@ -246,29 +231,44 @@ extension FontsExtension on QuranCtrl {
   /// [pageIndex] - The index of the page for which the font should be loaded.
   ///
   /// Returns a [Future] that completes when the font has been successfully loaded.
-  Future<void> loadFontFromZip(int pageIndex) async {
+  Future<void> loadFontFromZip([int? pageIndex]) async {
     try {
-      // final fontsDir = Directory('${_dir.path}/quran_fonts');
+      // مسار مجلد الخطوط بعد فك الضغط
       final fontsDir = Directory(
           isPhones ? '${_dir.path}/qcf4_woff' : '${_dir.path}/qcf4_ttf');
 
-      // تحقق من الملفات داخل المجلد
-      final files = await fontsDir.list().toList();
-      log('Files in fontsDir: ${files.map((file) => file.path).join(', ')}');
+      final loadedSet = state.loadedFontPages; // في الذاكرة
 
-      // final fontFile =
-      //     File('${fontsDir.path}/quran_fonts/p${(pageIndex + 2001)}.ttf');
-      final fontFile = File(getFontFullPath(fontsDir, pageIndex));
-      if (!await fontFile.exists()) {
-        throw Exception("Font file not found for page: ${pageIndex + 1}");
+      // حمّل جميع الخطوط المتاحة 001..604
+      for (int i = 0; i < 604; i++) {
+        try {
+          // إذا كان محمّلًا في هذه الجلسة، تخطّه
+          if (loadedSet.contains(i)) continue;
+
+          final fontPath = getFontFullPath(fontsDir, i);
+          final fontFile = File(fontPath);
+          if (!await fontFile.exists()) {
+            // قد تكون بعض الملفات غير موجودة في مجموعة معينة
+            continue;
+          }
+
+          final loader = FontLoader(getFontPath(i));
+          loader.addFont(_getFontLoaderBytes(fontFile));
+          await loader.load();
+          loadedSet.add(i);
+        } catch (e) {
+          // تجاهل فشل صفحة واحدة واستمر
+          log('Failed to register font for page ${i + 1}: $e',
+              name: 'FontsLoad');
+          continue;
+        }
       }
 
-      // final fontLoader = FontLoader('p${(pageIndex + 2001)}');
-      final fontLoader = FontLoader(getFontPath(pageIndex));
-      fontLoader.addFont(_getFontLoaderBytes(fontFile));
-      await fontLoader.load();
+      // حفظ الصفحات التي تم تحميل خطوطها
+      GetStorage()
+          .write(_StorageConstants().loadedFontPages, loadedSet.toList());
     } catch (e) {
-      throw Exception("Failed to load font: $e");
+      throw Exception("Failed to load fonts from disk: $e");
     }
   }
 
@@ -281,7 +281,6 @@ extension FontsExtension on QuranCtrl {
   /// [fontIndex] - The index of the font set to be downloaded.
   ///
   /// Returns a [Future] that completes when the download is finished.
-
   Future<void> downloadAllFontsZipFile(int fontIndex) async {
     // if (GetStorage().read(StorageConstants().isDownloadedCodeV2Fonts) ??
     //     false || state.isDownloadingFonts.value) {
@@ -446,6 +445,9 @@ extension FontsExtension on QuranCtrl {
               log('Files in fontsDir after extraction: ${files.map((file) => file.path).join(', ')}');
             }
             await QuranCtrl.instance.loadFontsQuran();
+            // بعد فك الضغط، حمّل (سجّل) كل الخطوط دفعة واحدة واحفظ النتائج
+            await loadFontFromZip().then((_) =>
+                loadPersistedFontsBulk(pages: List.generate(604, (i) => i)));
             // حفظ حالة التحميل في التخزين المحلي
             // Save download status in local storage
             GetStorage()
@@ -517,32 +519,28 @@ extension FontsExtension on QuranCtrl {
   ///
   /// Returns a [Future] that completes when the font has been successfully loaded.
   Future<void> loadFont(int pageIndex, {bool isFontsLocal = false}) async {
-    if (isFontsLocal) {
-      return;
-    } else {
-      try {
-        // إذا كان الخط لهذه الصفحة محملًا، لا تعِد التحميل
-        // If font for this page is already loaded, skip
-        if (state.loadedFontPages.contains(pageIndex)) {
-          return;
-        }
-        // تعديل المسار ليشمل المجلد الإضافي
-        // final fontFile = File(
-        //     '${_dir.path}/quran_fonts/quran_fonts/p${(pageIndex + 2001)}.ttf');
-        final fontFile = File(getFontFullPath(_dir, pageIndex));
-        if (!await fontFile.exists()) {
-          throw Exception(
-              "Font file not exists for page: ${(pageIndex + 1).toString().padLeft(3, '0')}");
-        }
-        // final fontLoader = FontLoader('p${(pageIndex + 2001)}');
-        final fontLoader = FontLoader(getFontPath(pageIndex));
-        fontLoader.addFont(_getFontLoaderBytes(fontFile));
-        await fontLoader.load();
-        state.loadedFontPages.add(pageIndex);
-      } catch (e) {
-        throw Exception(
-            "Failed to load font for page ${(pageIndex + 1).toString().padLeft(3, '0')}: $e");
+    try {
+      // إذا كان الخط لهذه الصفحة محملًا، لا تعِد التحميل
+      // If font for this page is already loaded, skip
+      if (state.loadedFontPages.contains(pageIndex)) {
+        return;
       }
+      // التحميل من التخزين المحلي (سواء كانت isFontsLocal true أم false)
+      final fontFile = File(getFontFullPath(_dir, pageIndex));
+      if (!await fontFile.exists()) {
+        throw Exception(
+            "Font file not exists for page: ${(pageIndex + 1).toString().padLeft(3, '0')}");
+      }
+      final fontLoader = FontLoader(getFontPath(pageIndex));
+      fontLoader.addFont(_getFontLoaderBytes(fontFile));
+      await fontLoader.load();
+      state.loadedFontPages.add(pageIndex);
+      // حفظ القائمة لتسريع الجلسات اللاحقة
+      GetStorage().write(
+          _StorageConstants().loadedFontPages, state.loadedFontPages.toList());
+    } catch (e) {
+      throw Exception(
+          "Failed to load font for page ${(pageIndex + 1).toString().padLeft(3, '0')}: $e");
     }
   }
 

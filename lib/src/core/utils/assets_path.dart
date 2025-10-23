@@ -18,6 +18,7 @@ abstract class _AssetsPath {
   String get surahsAudio;
   String get buttomSheet;
   String get options;
+  String get backArrow;
 }
 
 class AssetsPath implements _AssetsPath {

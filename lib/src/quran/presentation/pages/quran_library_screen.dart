@@ -365,12 +365,6 @@ class QuranLibraryScreen extends StatelessWidget {
                                     pageIndex + 1;
                                 quranCtrl.saveLastPage(pageIndex + 1);
                               });
-                              if (quranCtrl.isDownloadFonts) {
-                                // تنفيذ بعد انتهاء الإطار لتجنّب أي تجميد
-                                Future.microtask(() => quranCtrl.prepareFonts(
-                                    pageIndex,
-                                    isFontsLocal: isFontsLocal!));
-                              }
                             },
                             pageSnapping: true,
                             itemBuilder: (ctx, index) {

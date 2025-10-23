@@ -33,10 +33,11 @@ extension AyahCtrlExtension on AudioCtrl {
           .play()
           .then((_) => state.isPlaying.value = true)
           .whenComplete(() {
+        state.audioPlayer.stop();
         QuranCtrl.instance.clearSelection();
         state.isPlaying.value = false;
       });
-      log('تحميل سورة $selectedSurahAyahsFileNames تم بنجاح.');
+      log('تحميل $currentAyahFileName تم بنجاح.');
       return;
     } catch (e) {
       log('Error in playFile: $e', name: 'AudioController');

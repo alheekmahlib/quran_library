@@ -53,7 +53,8 @@ class BasmallahWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 24.0),
+      padding:
+          EdgeInsets.symmetric(vertical: basmalaStyle?.verticalPadding ?? 24.0),
       child: Center(
         child: SvgPicture.asset(
           surahNumber == 95 || surahNumber == 97

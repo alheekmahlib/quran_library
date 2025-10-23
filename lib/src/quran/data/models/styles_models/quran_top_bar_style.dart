@@ -20,6 +20,7 @@ class QuranTopBarStyle {
 
   // Icons
   final String? menuIconPath;
+  final String? backIconPath;
   final String? audioIconPath;
   final String? optionsIconPath;
   final double? iconSize;
@@ -41,8 +42,11 @@ class QuranTopBarStyle {
   final bool? showMenuButton;
   final bool? showAudioButton;
   final bool? showFontsButton;
+  final bool? showBackButton;
 
   const QuranTopBarStyle({
+    this.showBackButton,
+    this.backIconPath,
     this.backgroundColor,
     this.textColor,
     this.accentColor,
@@ -71,6 +75,7 @@ class QuranTopBarStyle {
   });
 
   QuranTopBarStyle copyWith({
+    String? backIconPath,
     Color? backgroundColor,
     Color? textColor,
     Color? accentColor,
@@ -95,9 +100,11 @@ class QuranTopBarStyle {
     bool? showMenuButton,
     bool? showAudioButton,
     bool? showFontsButton,
+    bool? showBackButton,
     String? optionsIconPath,
   }) =>
       QuranTopBarStyle(
+        backIconPath: backIconPath ?? this.backIconPath,
         backgroundColor: backgroundColor ?? this.backgroundColor,
         textColor: textColor ?? this.textColor,
         accentColor: accentColor ?? this.accentColor,
@@ -123,12 +130,14 @@ class QuranTopBarStyle {
         showMenuButton: showMenuButton ?? this.showMenuButton,
         showAudioButton: showAudioButton ?? this.showAudioButton,
         showFontsButton: showFontsButton ?? this.showFontsButton,
+        showBackButton: showBackButton ?? this.showBackButton,
         optionsIconPath: optionsIconPath ?? this.optionsIconPath,
       );
 
   /// Provide sensible defaults based on theme (isDark)
   factory QuranTopBarStyle.defaults({required bool isDark}) {
     return QuranTopBarStyle(
+      backIconPath: AssetsPath.assets.backArrow,
       backgroundColor: AppColors.getBackgroundColor(isDark),
       textColor: AppColors.getTextColor(isDark),
       accentColor: Colors.teal,
@@ -154,6 +163,7 @@ class QuranTopBarStyle {
       showMenuButton: true,
       showAudioButton: true,
       showFontsButton: true,
+      showBackButton: false,
       optionsIconPath: AssetsPath.assets.options,
     );
   }

@@ -67,6 +67,12 @@ class QuranLibrary {
     /// must be initilized after QuranCtrl, because it uses it
     AudioCtrl.instance;
 
+    // تسجيل الخطوط المحفوظة دفعة واحدة في الخلفية إن كانت متاحة
+    if (quranCtrl.state.isDownloadedV2Fonts.value) {
+      Future(() => QuranCtrl.instance
+          .loadPersistedFontsBulk(pages: List.generate(604, (i) => i)));
+    }
+
     // Initialize bookmarks
     BookmarksCtrl.instance.initBookmarks(
         userBookmarks: userBookmarks, overwrite: overwriteBookmarks);
@@ -371,10 +377,10 @@ class QuranLibrary {
   ///
   /// to prepare the fonts was downloaded before just call [getFontsPrepareMethod]
   /// required to pass [pageIndex]
-  Future<void> getFontsPrepareMethod(
-      {required int pageIndex, bool isFontsLocal = false}) async {
-    await quranCtrl.prepareFonts(pageIndex, isFontsLocal: isFontsLocal);
-  }
+  // Future<void> getFontsPrepareMethod(
+  //     {required int pageIndex, bool isFontsLocal = false}) async {
+  //   await quranCtrl.prepareFonts(pageIndex, isFontsLocal: isFontsLocal);
+  // }
 
   /// لحذف الخطوط فقط قم بإستدعاء [deleteFontsMethod]
   ///

@@ -83,7 +83,7 @@ class DefaultFirstTwoSurahs extends StatelessWidget {
                 ),
             surahNameStyle: surahNameStyle ??
                 SurahNameStyle(
-                  surahNameSize: 50,
+                  surahNameSize: 27,
                   surahNameColor: isDark ? Colors.white : Colors.black,
                 ),
             surahInfoStyle: surahInfoStyle ??
@@ -112,6 +112,7 @@ class DefaultFirstTwoSurahs extends StatelessWidget {
                     basmalaColor: isDark ? Colors.white : Colors.black,
                     basmalaWidth: 160.0,
                     basmalaHeight: 30.0,
+                    verticalPadding: 0.0,
                   ),
             ),
           ...quranCtrl.staticPages[pageIndex].lines.map((line) {

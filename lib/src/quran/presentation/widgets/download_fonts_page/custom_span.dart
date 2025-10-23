@@ -187,7 +187,6 @@ TextSpan _span({
                   isFontsLocal ? fontsName : quranCtrl.getFontPath(pageIndex),
               fontSize: fontSize,
               height: 2.1,
-              fontWeight: FontWeight.bold,
               // letterSpacing: isFirstAyah &&
               //     (pageIndex == 1 ||
               //         pageIndex == 49 ||

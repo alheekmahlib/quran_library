@@ -62,12 +62,12 @@ class AudioCtrl extends GetxController {
 
     // Listen to player state changes to play the next Surah automatically
     // استخدام subscription واحد فقط / Use only one subscription
-    state.audioPlayer.playerStateStream.listen((playerState) async {
-      if (playerState.processingState == ProcessingState.completed &&
-          !state.isPlayingSurahsMode) {
-        await playNextSurah();
-      }
-    });
+    // state.audioPlayer.playerStateStream.listen((playerState) async {
+    //   if (playerState.processingState == ProcessingState.completed &&
+    //       !state.isPlayingSurahsMode) {
+    //     await playNextSurah();
+    //   }
+    // });
 
     // تسجيل الخدمة كنشطة / Register service as active
     SurahState.setAudioServiceActive(true);
@@ -472,7 +472,7 @@ class AudioCtrl extends GetxController {
   /// إعادة تعيين أيقونة التطبيق للرابط الافتراضي / Reset app icon to default URL
   Future<void> resetAppIconToDefault() async {
     await updateAppIconUrl(
-        'https://raw.githubusercontent.com/alheekmahlib/thegarlanded/master/Photos/ios-1024.png');
+        'https://raw.githubusercontent.com/alheekmahlib/thegarlanded/master/Photos/Packages/quran_library/quran_library_logo.jpg');
   }
 
   void didChangeAppLifecycleState(AppLifecycleState states) {

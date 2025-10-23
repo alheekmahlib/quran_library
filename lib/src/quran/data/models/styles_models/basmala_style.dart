@@ -14,6 +14,9 @@ class BasmalaStyle {
   ///[basmalaHeight] If you wanna change the height for the basmalah.
   final double? basmalaHeight;
 
+  ///[verticalPadding] If you wanna change the padding for the basmalah.
+  final double? verticalPadding;
+
   /// A class that defines the style for the Basmala.
   ///
   /// The Basmala is the phrase "Bismillah" which is often used in Islamic texts.
@@ -36,5 +39,6 @@ class BasmalaStyle {
     this.basmalaColor,
     this.basmalaWidth,
     this.basmalaHeight,
+    this.verticalPadding,
   });
 }

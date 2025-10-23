@@ -89,7 +89,7 @@ class DefaultFontsPageBuild extends StatelessWidget {
                                 ),
                             surahNameStyle: surahNameStyle ??
                                 SurahNameStyle(
-                                  surahNameSize: 50,
+                                  surahNameSize: 27,
                                   surahNameColor:
                                       isDark ? Colors.white : Colors.black,
                                 ),
@@ -130,6 +130,7 @@ class DefaultFontsPageBuild extends StatelessWidget {
                                       isDark ? Colors.white : Colors.black,
                                   basmalaWidth: 160.0,
                                   basmalaHeight: 40.0,
+                                  verticalPadding: 0.0,
                                 ),
                           ),
                         SizedBox(

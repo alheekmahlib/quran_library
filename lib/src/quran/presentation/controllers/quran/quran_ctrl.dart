@@ -42,8 +42,8 @@ class QuranCtrl extends GetxController {
     viewportFraction: 1.0,
   );
 
-  bool _scrollListenerAttached = false;
-  int _lastPrefetchedForPage = -1;
+  // final bool _scrollListenerAttached = false;
+  // final int _lastPrefetchedForPage = -1;
 
   QuranState state = QuranState();
   Timer? _savePageDebounce;
@@ -362,59 +362,59 @@ class QuranCtrl extends GetxController {
     }
 
     // إضافة مستمع تمرير لمرة واحدة
-    if (!_scrollListenerAttached) {
-      _scrollListenerAttached = true;
-      quranPagesController.addListener(() {
-        final metrics = quranPagesController.positions.isNotEmpty
-            ? quranPagesController.position
-            : null;
-        if (metrics == null) return;
-        final viewport = metrics.viewportDimension;
-        if (viewport == 0) return;
+    // if (!_scrollListenerAttached) {
+    //   _scrollListenerAttached = true;
+    //   quranPagesController.addListener(() {
+    //     final metrics = quranPagesController.positions.isNotEmpty
+    //         ? quranPagesController.position
+    //         : null;
+    //     if (metrics == null) return;
+    //     final viewport = metrics.viewportDimension;
+    //     if (viewport == 0) return;
 
-        final page = metrics.pixels / viewport;
+    //     final page = metrics.pixels / viewport;
 
-        // تحديد الصفحة الحالية والاتجاه
-        final currentIndex = page.floor().clamp(0, 603);
-        final delta = page - currentIndex;
+    //     // تحديد الصفحة الحالية والاتجاه
+    //     final currentIndex = page.floor().clamp(0, 603);
+    //     final delta = page - currentIndex;
 
-        // اقتراب من الحافة اليمنى/اليسرى لبدء تحميل مبكر
-        const threshold = 0.82; // بدء التهيئة قبل السنيب
-        int? targetNeighbor;
-        if (delta > threshold && currentIndex + 1 < 604) {
-          targetNeighbor = currentIndex + 1; // يسار -> الصفحة التالية (RTL)
-        } else if (delta < (1 - threshold) && currentIndex - 1 >= 0) {
-          // عند بداية الصفحة، حضّر السابقة
-          targetNeighbor = currentIndex - 1;
-        }
+    //     // اقتراب من الحافة اليمنى/اليسرى لبدء تحميل مبكر
+    //     const threshold = 0.82; // بدء التهيئة قبل السنيب
+    //     int? targetNeighbor;
+    //     if (delta > threshold && currentIndex + 1 < 604) {
+    //       targetNeighbor = currentIndex + 1; // يسار -> الصفحة التالية (RTL)
+    //     } else if (delta < (1 - threshold) && currentIndex - 1 >= 0) {
+    //       // عند بداية الصفحة، حضّر السابقة
+    //       targetNeighbor = currentIndex - 1;
+    //     }
 
-        if (targetNeighbor != null &&
-            targetNeighbor != _lastPrefetchedForPage) {
-          _lastPrefetchedForPage = targetNeighbor;
-          // اختيار عدد الجيران بحسب الجهاز: هواتف ±1، غيرها ±2
-          final isWeak =
-              Platform.isAndroid || Platform.isIOS || Platform.isFuchsia;
-          final neighborOffsets =
-              isWeak ? const [0, 1, -1] : const [0, 1, -1, 2, -2];
-          final targets = neighborOffsets
-              .map((o) => targetNeighbor! + o)
-              .where((i) => i >= 0 && i < 604)
-              .toList();
+    //     if (targetNeighbor != null &&
+    //         targetNeighbor != _lastPrefetchedForPage) {
+    //       _lastPrefetchedForPage = targetNeighbor;
+    //       // اختيار عدد الجيران بحسب الجهاز: هواتف ±1، غيرها ±2
+    //       final isWeak =
+    //           Platform.isAndroid || Platform.isIOS || Platform.isFuchsia;
+    //       final neighborOffsets =
+    //           isWeak ? const [0, 1, -1] : const [0, 1, -1, 2, -2];
+    //       final targets = neighborOffsets
+    //           .map((o) => targetNeighbor! + o)
+    //           .where((i) => i >= 0 && i < 604)
+    //           .toList();
 
-          // جدولة بوقت الخمول لضمان عدم حجب UI
-          SchedulerBinding.instance.scheduleTask(() async {
-            if (!isDownloadFonts) return;
-            for (final t in targets) {
-              try {
-                await prepareFonts(t, isFontsLocal: false);
-              } catch (_) {
-                // تجاهل أخطاء التهيئة المسبقة
-              }
-            }
-          }, Priority.idle);
-        }
-      });
-    }
+    //       // جدولة بوقت الخمول لضمان عدم حجب UI
+    //       SchedulerBinding.instance.scheduleTask(() async {
+    //         if (!isDownloadFonts) return;
+    //         for (final t in targets) {
+    //           try {
+    //             await prepareFonts(t, isFontsLocal: false);
+    //           } catch (_) {
+    //             // تجاهل أخطاء التهيئة المسبقة
+    //           }
+    //         }
+    //       }, Priority.idle);
+    //     }
+    //   });
+    // }
 
     return quranPagesController;
   }

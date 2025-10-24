@@ -81,7 +81,7 @@ class _QuranFontsPage extends StatelessWidget {
         child: quranCtrl.state.pages.isEmpty
             ? circularProgressWidget ??
                 const CircularProgressIndicator.adaptive()
-            : Platform.isAndroid || Platform.isIOS
+            : (!kIsWeb && (Platform.isAndroid || Platform.isIOS))
                 ? isLandscape &&
                         (Responsive.isMobile(context) ||
                             Responsive.isMobileLarge(context))

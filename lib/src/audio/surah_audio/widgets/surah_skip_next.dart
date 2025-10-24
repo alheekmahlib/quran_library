@@ -7,20 +7,24 @@ class SurahSkipToNext extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<SequenceState?>(
-      stream: audioCtrl.state.audioPlayer.sequenceStateStream,
-      builder: (context, snapshot) => IconButton(
-        icon: Semantics(
-          button: true,
-          enabled: true,
-          label: 'next'.tr,
-          child: Icon(
-            Icons.skip_previous,
-            color: style!.playIconColor ?? Colors.teal,
-            size: style!.nextIconHeight ?? 38,
+    return SizedBox(
+      height: 50,
+      width: 50,
+      child: StreamBuilder<SequenceState?>(
+        stream: audioCtrl.state.audioPlayer.sequenceStateStream,
+        builder: (context, snapshot) => IconButton(
+          icon: Semantics(
+            button: true,
+            enabled: true,
+            label: 'next'.tr,
+            child: Icon(
+              Icons.skip_previous,
+              color: style!.playIconColor ?? Colors.teal,
+              size: style!.nextIconHeight ?? 38,
+            ),
           ),
+          onPressed: () async => await audioCtrl.playNextSurah(),
         ),
-        onPressed: () async => await audioCtrl.playNextSurah(),
       ),
     );
   }

@@ -10,6 +10,7 @@ class SurahCollapsedPlayWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.sizeOf(context);
     final bg = style?.audioSliderBackgroundColor ?? const Color(0xfffaf7f3);
     final handleColor = Colors.grey.withValues(alpha: .6);
     final borderColor =
@@ -17,11 +18,11 @@ class SurahCollapsedPlayWidget extends StatelessWidget {
             .withValues(alpha: 0.15);
     final textColor = style?.surahNameColor ?? AppColors.getTextColor(isDark);
     return Align(
-      alignment: Alignment.centerLeft,
+      alignment: Alignment.centerRight,
       child: Container(
-        height: MediaQuery.sizeOf(context).height,
-        width: UiHelper.currentOrientation(MediaQuery.sizeOf(context).width,
-            MediaQuery.sizeOf(context).width * .5, context),
+        height: size.height,
+        width:
+            UiHelper.currentOrientation(size.width, size.width * .5, context),
         margin: const EdgeInsets.only(left: 16, right: 16, top: 16),
         decoration: BoxDecoration(
           color: bg,
@@ -41,8 +42,7 @@ class SurahCollapsedPlayWidget extends StatelessWidget {
             const SizedBox(height: 8.0),
             _PanelHandle(color: handleColor),
             Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 32.0, vertical: 16),
+              padding: const EdgeInsets.symmetric(horizontal: 32.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.center,

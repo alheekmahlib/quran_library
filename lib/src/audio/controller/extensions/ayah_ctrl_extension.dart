@@ -8,26 +8,37 @@ extension AyahCtrlExtension on AudioCtrl {
   Future<void> _playSingleAyahFile(
       BuildContext context, int currentAyahUniqueNumber) async {
     state.tmpDownloadedAyahsCount = 0;
-    // لا تعتمد على التخزين فقط؛ تحقق من الواقع
-    bool isSurahDownloaded =
-        await _isAyahSurahFullyDownloaded(currentSurahNumber);
+    // لا تعتمد على التخزين فقط؛ تحقق من الواقع (غير الويب)
+    bool isSurahDownloaded = false;
+    if (!kIsWeb) {
+      isSurahDownloaded = await _isAyahSurahFullyDownloaded(currentSurahNumber);
+    }
 
     try {
       // إيقاف أي تشغيل سابق / Stop any previous playback
       await state.stopAllAudio();
 
       QuranCtrl.instance.toggleAyahSelection(state.currentAyahUniqueNumber);
-      final filePath = isSurahDownloaded
-          ? join((await state.dir).path, currentAyahFileName)
-          : await _downloadFileIfNotExist(currentAyahUrl, currentAyahFileName,
-              context: context, ayahUqNumber: currentAyahUniqueNumber);
+      if (kIsWeb) {
+        await state.audioPlayer.setAudioSource(
+          AudioSource.uri(
+            Uri.parse(currentAyahUrl),
+            tag: mediaItem,
+          ),
+        );
+      } else {
+        final filePath = isSurahDownloaded
+            ? join((await state.dir).path, currentAyahFileName)
+            : await _downloadFileIfNotExist(currentAyahUrl, currentAyahFileName,
+                context: context, ayahUqNumber: currentAyahUniqueNumber);
 
-      await state.audioPlayer.setAudioSource(
-        AudioSource.file(
-          filePath,
-          tag: mediaItem,
-        ),
-      );
+        await state.audioPlayer.setAudioSource(
+          AudioSource.file(
+            filePath,
+            tag: mediaItem,
+          ),
+        );
+      }
       state.isPlaying.value = true;
       await state.audioPlayer
           .play()
@@ -51,41 +62,58 @@ extension AyahCtrlExtension on AudioCtrl {
     state.tmpDownloadedAyahsCount = 0;
     final ayahsFilesNames = selectedSurahAyahsFileNames;
 
-    // إذا لم تكن آيات السورة محمّلة بالكامل، افتح bottomSheet لإدارة التحميل
-    final isSurahFullyDownloaded =
-        await _isAyahSurahFullyDownloaded(currentSurahNumber);
-    if (!isSurahFullyDownloaded) {
-      if (context != null) {
-        await _showAyahDownloadBottomSheet(context,
-            initialSurahToDownload: currentSurahNumber);
-      }
-      // بعد إغلاق الـ bottomSheet، أعد التحقق
-      final downloadedNow =
+    if (!kIsWeb) {
+      // إذا لم تكن آيات السورة محمّلة بالكامل، افتح bottomSheet لإدارة التحميل
+      final isSurahFullyDownloaded =
           await _isAyahSurahFullyDownloaded(currentSurahNumber);
-      if (!downloadedNow) {
-        // المستخدم أغلق أو لم يكتمل التحميل
-        return;
+      if (!isSurahFullyDownloaded) {
+        if (context != null) {
+          await _showAyahDownloadBottomSheet(context,
+              initialSurahToDownload: currentSurahNumber);
+        }
+        // بعد إغلاق الـ bottomSheet، أعد التحقق
+        final downloadedNow =
+            await _isAyahSurahFullyDownloaded(currentSurahNumber);
+        if (!downloadedNow) {
+          // المستخدم أغلق أو لم يكتمل التحميل
+          return;
+        }
       }
     }
 
     // عند هذه النقطة كل الآيات محمّلة بالكامل، يمكن إنشاء المصادر وتشغيلها
     try {
-      final directory = await state.dir;
       // إنشاء مصادر الصوت / Create audio sources
-      final audioSources = List.generate(
-        ayahsFilesNames.length,
-        (i) => AudioSource.file(
-          join(directory.path, ayahsFilesNames[i]),
-          tag: mediaItemsForCurrentSurah[i],
-        ),
-      );
+      final List<AudioSource> audioSources;
+      if (kIsWeb) {
+        audioSources = List.generate(
+          ayahsFilesNames.length,
+          (i) => AudioSource.uri(
+            Uri.parse(selectedSurahAyahsUrls[i]),
+            tag: mediaItemsForCurrentSurah[i],
+          ),
+        );
+      } else {
+        final directory = await state.dir;
+        audioSources = List.generate(
+          ayahsFilesNames.length,
+          (i) => AudioSource.file(
+            join(directory.path, ayahsFilesNames[i]),
+            tag: mediaItemsForCurrentSurah[i],
+          ),
+        );
+      }
 
-      // التأكد من وجود ملفات الصوت / Verify audio files exist
-      for (int i = 0; i < ayahsFilesNames.length; i++) {
-        final filePath = join(directory.path, ayahsFilesNames[i]);
-        if (!await File(filePath).exists()) {
-          log('Audio file does not exist: $filePath', name: 'AudioController');
-          throw Exception('ملف الصوت غير موجود: ${ayahsFilesNames[i]}');
+      if (!kIsWeb) {
+        // التأكد من وجود ملفات الصوت / Verify audio files exist
+        final directory = await state.dir;
+        for (int i = 0; i < ayahsFilesNames.length; i++) {
+          final filePath = join(directory.path, ayahsFilesNames[i]);
+          if (!await File(filePath).exists()) {
+            log('Audio file does not exist: $filePath',
+                name: 'AudioController');
+            throw Exception('ملف الصوت غير موجود: ${ayahsFilesNames[i]}');
+          }
         }
       }
 
@@ -228,6 +256,15 @@ extension AyahCtrlExtension on AudioCtrl {
 
   /// تحديث خريطة الآيات المحملة - Update downloaded ayahs map
   Future<void> _updateDownloadedAyahsMap() async {
+    if (kIsWeb) {
+      for (final surah in QuranCtrl.instance.surahs) {
+        for (final ayah in surah.ayahs) {
+          state.ayahsDownloadStatus[ayah.ayahUQNumber] = false;
+        }
+      }
+      update(['ayahDownloadManager']);
+      return;
+    }
     final dir = await state.dir;
     for (final surah in QuranCtrl.instance.surahs) {
       for (final ayah in surah.ayahs) {
@@ -248,6 +285,7 @@ extension AyahCtrlExtension on AudioCtrl {
 
   /// حالة تحميل آيات السورة بالكامل حسب القارئ الحالي
   Future<bool> _isAyahSurahFullyDownloaded(int surahNumber) async {
+    if (kIsWeb) return false;
     final key = 'surah_$surahNumberـ${state.ayahReaderIndex.value}';
     // أولاً تحقّق من الملفات فعلياً
     try {
@@ -291,6 +329,10 @@ extension AyahCtrlExtension on AudioCtrl {
   /// بدء تحميل آيات سورة معيّنة بالكامل (متسلسلًا) مع تحديث الحالة
   Future<void> _startDownloadAyahSurah(int surahNumber,
       {BuildContext? context}) async {
+    if (kIsWeb) {
+      // على الويب لا ندير تنزيلات محلية
+      return;
+    }
     // منع تشغيل صوت أثناء التحميل لتجنّب إلغاء التحميل
     await state.audioPlayer.pause();
 
@@ -340,6 +382,10 @@ extension AyahCtrlExtension on AudioCtrl {
 
   /// حذف جميع ملفات آيات سورة معيّنة للقارئ الحالي
   Future<void> _deleteAyahSurahDownloads(int surahNumber) async {
+    if (kIsWeb) {
+      // على الويب لا توجد ملفات لحذفها
+      return;
+    }
     try {
       final surah = QuranCtrl.instance.surahs
           .firstWhere((s) => s.surahNumber == surahNumber);

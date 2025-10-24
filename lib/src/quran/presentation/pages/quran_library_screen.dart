@@ -321,6 +321,12 @@ class QuranLibraryScreen extends StatelessWidget {
       // Use builder only if you need to use library outside ScreenUtilInit context
       builder: (_, __) => GetBuilder<QuranCtrl>(
         builder: (quranCtrl) {
+          // تهيئة خاملة لخطوط الصفحات المجاورة حول الصفحة الحالية بعد أول إطار
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            final idx =
+                (quranCtrl.state.currentPageNumber.value - 1).clamp(0, 603);
+            QuranCtrl.instance.idlePreloadFontsAround(idx);
+          });
           return Directionality(
             textDirection: TextDirection.rtl,
             child: Scaffold(
@@ -364,6 +370,11 @@ class QuranLibraryScreen extends StatelessWidget {
                                 quranCtrl.state.currentPageNumber.value =
                                     pageIndex + 1;
                                 quranCtrl.saveLastPage(pageIndex + 1);
+                                if (kIsWeb) {
+                                  // جدولة تحميل خامل لخطوط الصفحات المجاورة
+                                  QuranCtrl.instance
+                                      .idlePreloadFontsAround(pageIndex);
+                                }
                               });
                             },
                             pageSnapping: true,

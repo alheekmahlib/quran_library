@@ -172,7 +172,8 @@ class TafsirItemWidget extends StatelessWidget {
       id: 'tafsirs_menu_list',
       builder: (tafsirCtrl) {
         RxBool isDownloaded =
-            tafsirCtrl.tafsirDownloadIndexList.contains(tafsirIndex).obs;
+            (kIsWeb || tafsirCtrl.tafsirDownloadIndexList.contains(tafsirIndex))
+                .obs;
         return InkWell(
           onTap: () async {
             if (!isDownloaded.value) return;
@@ -245,16 +246,17 @@ class TafsirItemWidget extends StatelessWidget {
                                 value: tafsirCtrl.progress.value,
                               ),
                             ),
-                            IconButton(
-                              icon: Icon(Icons.cloud_download_outlined,
-                                  size: 22,
-                                  color: tafsirStyle.unSelectedTafsirColor ??
-                                      const Color(0xffCDAD80)),
-                              onPressed: () async {
-                                tafsirCtrl.downloadIndex.value = tafsirIndex;
-                                await tafsirCtrl.tafsirDownload(tafsirIndex);
-                              },
-                            ),
+                            if (!kIsWeb)
+                              IconButton(
+                                icon: Icon(Icons.cloud_download_outlined,
+                                    size: 22,
+                                    color: tafsirStyle.unSelectedTafsirColor ??
+                                        const Color(0xffCDAD80)),
+                                onPressed: () async {
+                                  tafsirCtrl.downloadIndex.value = tafsirIndex;
+                                  await tafsirCtrl.tafsirDownload(tafsirIndex);
+                                },
+                              ),
                           ],
                         ),
                 ),

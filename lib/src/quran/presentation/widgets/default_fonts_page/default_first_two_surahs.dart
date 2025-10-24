@@ -51,18 +51,14 @@ class DefaultFirstTwoSurahs extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isLandscape =
-        MediaQuery.of(context).orientation == Orientation.landscape;
     return Container(
-      height: isLandscape
-          ? MediaQuery.sizeOf(context).height
-          : MediaQuery.sizeOf(context).height * .63,
+      height: MediaQuery.sizeOf(context).height,
       padding: EdgeInsets.symmetric(
-          vertical: UiHelper.currentOrientation(
-              MediaQuery.sizeOf(context).width * .16,
-              MediaQuery.sizeOf(context).height * .01,
-              context),
-          horizontal: UiHelper.currentOrientation(0.0, 0.0, context)),
+        vertical: UiHelper.currentOrientation(
+            MediaQuery.sizeOf(context).width * .16,
+            MediaQuery.sizeOf(context).height * .01,
+            context),
+      ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -75,8 +71,8 @@ class DefaultFirstTwoSurahs extends StatelessWidget {
                   bannerSvgPath: isDark
                       ? AssetsPath.assets.surahSvgBannerDark
                       : AssetsPath.assets.surahSvgBanner,
-                  bannerSvgHeight: 40.0,
-                  bannerSvgWidth: 150.0,
+                  bannerSvgHeight: 30.0,
+                  bannerSvgWidth: 120.0,
                   bannerImagePath: '',
                   bannerImageHeight: 50,
                   bannerImageWidth: double.infinity,
@@ -124,7 +120,9 @@ class DefaultFirstTwoSurahs extends StatelessWidget {
                     return Column(
                       children: [
                         SizedBox(
-                          width: deviceSize.width,
+                          width: Responsive.isDesktop(context)
+                              ? deviceSize.width - 800
+                              : deviceSize.width,
                           // width: deviceSize.width - 32,
                           child: DefaultFontsBuild(
                             context,

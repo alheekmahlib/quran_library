@@ -50,7 +50,9 @@ class QuranCtrl extends GetxController {
 
   @override
   void onInit() async {
-    _dir = await getApplicationDocumentsDirectory();
+    if (!kIsWeb) {
+      _dir = await getApplicationDocumentsDirectory();
+    }
     super.onInit();
   }
 

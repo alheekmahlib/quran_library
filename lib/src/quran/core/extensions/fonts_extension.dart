@@ -7,7 +7,7 @@ part of '/quran.dart';
 /// Extension to handle font-related operations for the QuranCtrl class.
 extension FontsExtension on QuranCtrl {
   bool get isPhones =>
-      Platform.isAndroid || Platform.isIOS || Platform.isFuchsia;
+      !kIsWeb && (Platform.isAndroid || Platform.isIOS || Platform.isFuchsia);
 
   String getFontFullPath(Directory fontsDir, int pageIndex) => isPhones
       ? '${fontsDir.path}/qcf4_woff/qcf4_woff/QCF4${((pageIndex + 1).toString().padLeft(3, '0'))}_X-Regular.woff'
@@ -16,19 +16,64 @@ extension FontsExtension on QuranCtrl {
   String getFontPath(int pageIndex) =>
       'QCF4${((pageIndex + 1).toString().padLeft(3, '0'))}_X-Regular';
 
-  /// يتحقق من إمكانية الوصول للإنترنت وإعدادات الشبكة
-  /// Checks internet accessibility and network settings
-  Future<bool> _checkNetworkConnectivity() async {
-    try {
-      // اختبار اتصال بسيط مع Google DNS
-      // Simple connectivity test with Google DNS
-      final result = await InternetAddress.lookup('google.com')
-          .timeout(const Duration(seconds: 5));
-      return result.isNotEmpty && result[0].rawAddress.isNotEmpty;
-    } catch (e) {
-      log('Network connectivity check failed: $e', name: 'FontsDownload');
-      return false;
+  /// URL مباشر لملف الخط على الويب (GitHub Raw)
+  /// ملاحظة: بعض المستودعات/الفروع قد تختلف في المسار؛ جهّز بدائل متعددة وتحقّق بالتسلسل
+  String getWebFontUrl(int pageIndex) {
+    final id = (pageIndex + 1).toString().padLeft(3, '0');
+    // المسار المرجّح (raw + main + مجلد واحد qcf4_woff)
+    return 'https://raw.githubusercontent.com/alheekmahlib/Islamic_database/main/quran_database/Quran%20Font/qcf4_woff/QCF4${id}_X-Regular.woff';
+  }
+
+  /// جميع المسارات المرشّحة لتحميل الخط على الويب (WOFF أولاً ثم TTF كاحتياط)
+  List<String> _webFontCandidateUrls(int pageIndex) {
+    final id = (pageIndex + 1).toString().padLeft(3, '0');
+    return [
+      // raw.githubusercontent.com مع main
+      'https://raw.githubusercontent.com/alheekmahlib/Islamic_database/main/quran_database/Quran%20Font/qcf4_woff/QCF4${id}_X-Regular.woff',
+      'https://raw.githubusercontent.com/alheekmahlib/Islamic_database/main/quran_database/Quran%20Font/qcf4_ttf/QCF4${id}_X-Regular.ttf',
+      // raw.githubusercontent.com مع refs/heads/main
+      'https://raw.githubusercontent.com/alheekmahlib/Islamic_database/refs/heads/main/quran_database/Quran%20Font/qcf4_woff/QCF4${id}_X-Regular.woff',
+      'https://raw.githubusercontent.com/alheekmahlib/Islamic_database/refs/heads/main/quran_database/Quran%20Font/qcf4_ttf/QCF4${id}_X-Regular.ttf',
+      // github.com/raw كحلٍ أخير
+      'https://github.com/alheekmahlib/Islamic_database/raw/refs/heads/main/quran_database/Quran%20Font/qcf4_woff/QCF4${id}_X-Regular.woff',
+      'https://github.com/alheekmahlib/Islamic_database/raw/refs/heads/main/quran_database/Quran%20Font/qcf4_ttf/QCF4${id}_X-Regular.ttf',
+    ];
+  }
+
+  // Deprecated: استخدم _getWebFontBytes بدلاً من ذلك
+  // Future<ByteData> _getFontLoaderBytesFromNetwork(String url) async { ... }
+
+  /// يحاول تحميل الخط من عدة روابط مرشّحة حتى ينجح
+  Future<ByteData> _getWebFontBytes(int pageIndex) async {
+    final dio = Dio();
+    final candidates = _webFontCandidateUrls(pageIndex);
+    DioException? lastError;
+    for (final url in candidates) {
+      try {
+        final resp = await dio.get<List<int>>(url,
+            options: Options(responseType: ResponseType.bytes, headers: {
+              'Accept': '*/*',
+              'Connection': 'keep-alive',
+              'User-Agent': 'Flutter/Quran-Library',
+            }));
+        if (resp.statusCode == 200 &&
+            resp.data != null &&
+            resp.data!.isNotEmpty) {
+          final buffer = Uint8List.fromList(List<int>.from(resp.data!)).buffer;
+          return ByteData.view(buffer);
+        }
+      } on DioException catch (e) {
+        lastError = e;
+        // جرّب المرشح التالي
+        continue;
+      } catch (_) {
+        // أي خطأ آخر، واصل المحاولة في الرابط التالي
+        continue;
+      }
     }
+    // إذا فشلت كل الروابط
+    throw Exception(
+        'Failed to fetch web font for page ${(pageIndex + 1).toString().padLeft(3, '0')}. Last error: ${lastError?.message ?? 'unknown'}');
   }
 
   /// يقوم بتحميل وتسجيل جميع الصفحات المحفوظة دفعة واحدة (Bulk)
@@ -61,6 +106,13 @@ extension FontsExtension on QuranCtrl {
           // سيقوم loadFont بتخطّي الصفحة إذا كانت محمّلة مسبقًا
           await loadFont(page, isFontsLocal: true);
         }
+        // بعد كل دفعة على المنصات غير الويب: أعد بناء الواجهة كي تنعكس الخطوط
+        // On non-web, a chunk-level rebuild is sufficient; web already rebuilds per page load
+        if (!kIsWeb && !isClosed) {
+          try {
+            update();
+          } catch (_) {}
+        }
         // فسح المجال للإطار التالي
         await Future.delayed(const Duration(milliseconds: 1));
       }
@@ -69,158 +121,36 @@ extension FontsExtension on QuranCtrl {
     }
   }
 
-  /// يقترح حلول لمشاكل الشبكة في macOS
-  /// Suggests solutions for network issues on macOS
-  void _showMacOSNetworkTroubleshooting() {
-    Get.dialog(
-      AlertDialog(
-        title: const Text('مشكلة في الاتصال - Connection Issue'),
-        content: const Text(
-          'يبدو أن هناك مشكلة في الاتصال بالإنترنت أو إعدادات الشبكة في macOS.\n\n'
-          'الحلول المقترحة:\n'
-          '1. تحقق من اتصال الإنترنت\n'
-          '2. أعد تشغيل التطبيق\n'
-          '3. تحقق من إعدادات جدار الحماية\n'
-          '4. جرب استخدام VPN\n\n'
-          'It seems there\'s an internet connection or network settings issue on macOS.\n\n'
-          'Suggested solutions:\n'
-          '1. Check internet connection\n'
-          '2. Restart the application\n'
-          '3. Check firewall settings\n'
-          '4. Try using a VPN',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Get.back(),
-            child: const Text('موافق - OK'),
-          ),
-          TextButton(
-            onPressed: () {
-              Get.back();
-              _tryAlternativeDownload();
-            },
-            child: const Text('جرب طريقة بديلة - Try Alternative'),
-          ),
-        ],
-      ),
-    );
-  }
+  /// تهيئة خاملة لخطوط صفحات مجاورة حول [centerIndex]
+  /// - على الهواتف: نطاق ±1
+  /// - على الأجهزة الأخرى: نطاق ±2
+  /// تُنفَّذ بوقت الخمول لتجنّب حجب واجهة المستخدم.
+  void idlePreloadFontsAround(int centerIndex) {
+    // لا تنفّذ إذا كان المتحكم مغلقًا/محرّرًا
+    if (isClosed) return;
 
-  /// طريقة بديلة للتحميل باستخدام Dio (للماك)
-  /// Alternative download method using Dio (for macOS)
-  Future<void> _downloadWithDio(String url, String savePath) async {
-    try {
-      final dio = Dio();
-
-      // إعدادات خاصة لـ macOS
-      // Special settings for macOS
-      dio.options.headers = {
-        'User-Agent': 'Flutter/Quran-Library-Dio',
-        'Accept': '*/*',
-        'Connection': 'keep-alive',
-      };
-
-      await dio.download(
-        url,
-        savePath,
-        onReceiveProgress: (received, total) {
-          if (total != -1) {
-            double progress = received / total * 100;
-            state.fontsDownloadProgress.value = progress;
-            update(['fontsDownloadingProgress']);
-          }
-        },
-        options: Options(
-          receiveTimeout: const Duration(minutes: 5),
-          sendTimeout: const Duration(seconds: 30),
-        ),
-      );
-    } catch (e) {
-      throw Exception('Dio download failed: $e');
+    // تحديد نصف القطر حسب الجهاز
+    final radius = isPhones ? 1 : 2;
+    final targets = <int>{};
+    for (int o = -radius; o <= radius; o++) {
+      final idx = centerIndex + o;
+      if (idx >= 0 && idx < 604) targets.add(idx);
     }
-  }
+    // تجنّب تحميل الصفحات المسجلة بالفعل
+    targets.removeWhere((i) => state.loadedFontPages.contains(i));
+    if (targets.isEmpty) return;
 
-  /// يجرب طريقة تحميل بديلة باستخدام Dio
-  /// Tries alternative download method using Dio
-  Future<void> _tryAlternativeDownload() async {
-    try {
-      log('Trying alternative download with Dio', name: 'FontsDownload');
-
-      // final zipPath = '${_dir.path}/quran_fonts.zip';
-      final zipPath = '${_dir.path}/qcf4_woff.zip';
-
-      await _downloadWithDio(
-        isPhones
-            ? 'https://raw.githubusercontent.com/alheekmahlib/Islamic_database/main/quran_database/Quran%20Font/qcf4_woff.zip'
-            : 'https://raw.githubusercontent.com/alheekmahlib/Islamic_database/main/quran_database/Quran%20Font/qcf4_ttf.zip',
-        zipPath,
-      );
-
-      // إذا نجح التحميل، تابع مع استخراج الملفات
-      // If download succeeds, continue with file extraction
-      final zipFile = File(zipPath);
-      await _extractAndProcessZip(zipFile);
-    } catch (e) {
-      log('Alternative download also failed: $e', name: 'FontsDownload');
-      Get.snackbar(
-        'خطأ - Error',
-        'فشل في جميع طرق التحميل - All download methods failed',
-        snackPosition: SnackPosition.BOTTOM,
-      );
-    }
-  }
-
-  /// استخراج ومعالجة ملف ZIP
-  /// Extract and process ZIP file
-  Future<void> _extractAndProcessZip(File zipFile) async {
-    try {
-      // final fontsDir = Directory('${_dir.path}/quran_fonts');
-      final fontsDir = Directory('${_dir.path}/qcf4_woff');
-
-      final bytes = zipFile.readAsBytesSync();
-      final archive = ZipDecoder().decodeBytes(bytes);
-
-      if (archive.isEmpty) {
-        throw FormatException('Failed to extract ZIP file: Archive is empty');
-      }
-
-      // استخراج الملفات إلى مجلد الخطوط
-      // Extract files to fonts directory
-      for (final file in archive) {
-        final filename = '${fontsDir.path}/${file.name}';
-        if (file.isFile) {
-          final outFile = File(filename);
-          await outFile.create(recursive: true);
-          await outFile.writeAsBytes(file.content as List<int>);
+    // جدولة بوقت الخمول
+    SchedulerBinding.instance.scheduleTask(() async {
+      if (isClosed) return;
+      for (final t in targets) {
+        try {
+          await loadFont(t, isFontsLocal: true);
+        } catch (_) {
+          // تجاهل فشل صفحة واحدة
         }
       }
-
-      await QuranCtrl.instance.loadFontsQuran();
-
-      // بعد فك الضغط، حمّل (سجّل) كل الخطوط دفعة واحدة واحفظ النتائج
-      await loadFontFromZip();
-
-      // حفظ حالة التحميل في التخزين المحلي
-      // Save download status in local storage
-      GetStorage().write(_StorageConstants().isDownloadedCodeV2Fonts, true);
-      state.fontsDownloadedList.add(0); // Font index 0 as default
-      GetStorage().write(
-          _StorageConstants().fontsDownloadedList, state.fontsDownloadedList);
-
-      // تحديث حالة التحميل وإكمال شريط التقدم
-      // Update download status and complete progress bar
-      state.isDownloadedV2Fonts.value = true;
-      state.isDownloadingFonts.value = false;
-      state.isPreparingDownload.value = false;
-      state.fontsDownloadProgress.value = 100.0;
-
-      update(['fontsDownloadingProgress']);
-      Get.forceAppUpdate();
-
-      log('Fonts downloaded and extracted successfully', name: 'FontsDownload');
-    } catch (e) {
-      throw Exception('Failed to extract ZIP file: $e');
-    }
+    }, Priority.idle);
   }
 
   /// Loads a font from a ZIP file for the specified page index.
@@ -282,20 +212,18 @@ extension FontsExtension on QuranCtrl {
   ///
   /// Returns a [Future] that completes when the download is finished.
   Future<void> downloadAllFontsZipFile(int fontIndex) async {
+    // على الويب لا نحتاج التنزيل، سنحمّل مباشرة عند الحاجة
+    if (kIsWeb) {
+      state.isDownloadedV2Fonts.value = true;
+      state.isDownloadingFonts.value = false;
+      state.isPreparingDownload.value = false;
+      update(['fontsDownloadingProgress']);
+      return;
+    }
     // if (GetStorage().read(StorageConstants().isDownloadedCodeV2Fonts) ??
     //     false || state.isDownloadingFonts.value) {
     //   return Future.value();
     // }
-
-    // فحص الاتصال بالإنترنت أولاً (خاص بـ macOS)
-    // Check internet connectivity first (specific for macOS)
-    if (Platform.isMacOS) {
-      final hasConnection = await _checkNetworkConnectivity();
-      if (!hasConnection) {
-        _showMacOSNetworkTroubleshooting();
-        return;
-      }
-    }
 
     try {
       state.isPreparingDownload.value = true;
@@ -304,7 +232,8 @@ extension FontsExtension on QuranCtrl {
 
       // قائمة بالروابط البديلة للتحميل
       // List of alternative download URLs
-      final urls = (Platform.isAndroid || Platform.isIOS || Platform.isFuchsia)
+      final urls = (!kIsWeb &&
+              (Platform.isAndroid || Platform.isIOS || Platform.isFuchsia))
           ? [
               'https://github.com/alheekmahlib/Islamic_database/raw/refs/heads/main/quran_database/Quran%20Font/qcf4_woff.zip',
               'https://raw.githubusercontent.com/alheekmahlib/Islamic_database/main/quran_database/Quran%20Font/qcf4_woff.zip',
@@ -481,13 +410,6 @@ extension FontsExtension on QuranCtrl {
     } catch (e) {
       log('Failed to Download Code_v2 fonts: $e', name: 'FontsDownload');
 
-      // معالجة خاصة لأخطاء macOS
-      // Special handling for macOS errors
-      if (Platform.isMacOS &&
-          e.toString().contains('Operation not permitted')) {
-        _showMacOSNetworkTroubleshooting();
-      }
-
       // تحديث حالة التحميل في حالة فشل العملية
       // Update download status if operation fails
       state.isDownloadingFonts.value = false;
@@ -525,19 +447,29 @@ extension FontsExtension on QuranCtrl {
       if (state.loadedFontPages.contains(pageIndex)) {
         return;
       }
-      // التحميل من التخزين المحلي (سواء كانت isFontsLocal true أم false)
-      final fontFile = File(getFontFullPath(_dir, pageIndex));
-      if (!await fontFile.exists()) {
-        throw Exception(
-            "Font file not exists for page: ${(pageIndex + 1).toString().padLeft(3, '0')}");
-      }
       final fontLoader = FontLoader(getFontPath(pageIndex));
-      fontLoader.addFont(_getFontLoaderBytes(fontFile));
+      if (kIsWeb) {
+        fontLoader.addFont(_getWebFontBytes(pageIndex));
+      } else {
+        // التحميل من التخزين المحلي (سواء كانت isFontsLocal true أم false)
+        final fontFile = File(getFontFullPath(_dir, pageIndex));
+        if (!await fontFile.exists()) {
+          throw Exception(
+              "Font file not exists for page: ${(pageIndex + 1).toString().padLeft(3, '0')}");
+        }
+        fontLoader.addFont(_getFontLoaderBytes(fontFile));
+      }
       await fontLoader.load();
       state.loadedFontPages.add(pageIndex);
       // حفظ القائمة لتسريع الجلسات اللاحقة
       GetStorage().write(
           _StorageConstants().loadedFontPages, state.loadedFontPages.toList());
+      // على الويب بشكل خاص: أعد بناء الواجهة لتفعيل الخط فورًا دون قلب الصفحة
+      if (kIsWeb && !isClosed) {
+        try {
+          update();
+        } catch (_) {}
+      }
     } catch (e) {
       throw Exception(
           "Failed to load font for page ${(pageIndex + 1).toString().padLeft(3, '0')}: $e");

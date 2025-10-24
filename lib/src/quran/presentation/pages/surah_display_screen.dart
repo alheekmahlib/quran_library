@@ -576,7 +576,7 @@ class SurahDisplayScreen extends StatelessWidget {
         topTitleChild: topTitleChild,
         surahName: surahCtrl.getSurahName(),
         isSurah: true,
-        child: Platform.isAndroid || Platform.isIOS
+        child: (!kIsWeb && (Platform.isAndroid || Platform.isIOS))
             ? isLandscape
                 ? SingleChildScrollView(
                     child: _firstTwoSurahs(

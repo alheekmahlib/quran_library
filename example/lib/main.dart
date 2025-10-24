@@ -28,6 +28,7 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      locale: const Locale('ar'),
       // useInheritedMediaQuery: true,
       // locale: DevicePreview.locale(context),
       // builder: DevicePreview.appBuilder,

@@ -56,8 +56,13 @@ class SurahState {
   // رقم السورة الجاري تحميل آياتها حاليًا (-1 إذا لا يوجد)
   RxInt currentDownloadingAyahSurahNumber = (-1).obs;
   Directory? _dir;
-  Future<Directory> get dir async =>
-      _dir ??= await getApplicationDocumentsDirectory();
+  Future<Directory> get dir async {
+    if (!kIsWeb) {
+      return _dir ??= await getApplicationDocumentsDirectory();
+    }
+    throw UnsupportedError('Directory access is not supported on web');
+  }
+
   bool snackBarShownForBatch = false;
 
   /// ===== single verse =====

@@ -82,9 +82,10 @@ class TafsirCtrl extends GetxController {
 
   Future<void> removeCustomTafsir(TafsirNameModel model) async {
     if (!model.isCustom) return;
-    if (model.type == TafsirFileType.json && model.databaseName.isNotEmpty) {
-      // try by databaseName inside app dir
-
+    if (!kIsWeb &&
+        model.type == TafsirFileType.json &&
+        model.databaseName.isNotEmpty) {
+      // try by databaseName inside app dir (non-web only)
       final f = File(join(_appDir.path, model.databaseName));
       if (await f.exists()) await f.delete();
     }
@@ -109,7 +110,9 @@ class TafsirCtrl extends GetxController {
   @override
   Future<void> onInit() async {
     // start from defaults
-    _appDir = await getApplicationDocumentsDirectory();
+    if (!kIsWeb) {
+      _appDir = await getApplicationDocumentsDirectory();
+    }
     if (!_isTafsirInitialized) {
       await initTafsir();
     }
@@ -180,14 +183,23 @@ class TafsirCtrl extends GetxController {
           jsonString = await rootBundle.loadString(
               'packages/quran_library/assets/$_defaultDownloadedTafsirName.json');
         } else {
-          String filePath = join(_appDir.path, selectedTafsir.databaseName);
-          final exists = await File(filePath).exists();
-          if (!exists) {
-            log('NotExists');
-            await tafsirDownload(radioValue.value);
-            return;
+          if (kIsWeb) {
+            final url =
+                'https://raw.githubusercontent.com/alheekmahlib/Islamic_database/refs/heads/main/tafseer_database/${selectedTafsir.databaseName}';
+            final dio = Dio();
+            final resp = await dio.get<String>(url,
+                options: Options(responseType: ResponseType.plain));
+            jsonString = resp.data ?? '[]';
           } else {
-            jsonString = await File(filePath).readAsString();
+            String filePath = join(_appDir.path, selectedTafsir.databaseName);
+            final exists = await File(filePath).exists();
+            if (!exists) {
+              log('NotExists');
+              await tafsirDownload(radioValue.value);
+              return;
+            } else {
+              jsonString = await File(filePath).readAsString();
+            }
           }
         }
         final jsonData =
@@ -234,18 +246,28 @@ class TafsirCtrl extends GetxController {
   /// Explanation: Fetch translation
   Future<void> fetchTranslate() async {
     try {
-      String path = radioValue.value == translationsStartIndex
-          ? 'packages/quran_library/assets/en.json'
-          : join(_appDir.path, '$translationLangCode.json');
       isLoading.value = true;
 
       String jsonString;
-      final exists = await File(path).exists();
-
-      if (radioValue.value == translationsStartIndex || !exists) {
+      if (radioValue.value == translationsStartIndex) {
         jsonString = await rootBundle
             .loadString('packages/quran_library/assets/en.json');
+      } else if (kIsWeb) {
+        final url =
+            'https://raw.githubusercontent.com/alheekmahlib/Islamic_database/refs/heads/main/quran_database/translate/$translationLangCode.json';
+        final dio = Dio();
+        final resp = await dio.get<String>(url,
+            options: Options(responseType: ResponseType.plain));
+        jsonString = resp.data ?? '{}';
       } else {
+        final String path = join(_appDir.path, '$translationLangCode.json');
+        final exists = await File(path).exists();
+        if (!exists) {
+          // حمّل الملف محليًا ثم اقرأه
+          await tafsirDownload(radioValue.value);
+          final exists2 = await File(path).exists();
+          if (!exists2) throw Exception('Translation file not found');
+        }
         jsonString = await File(path).readAsString();
       }
 
@@ -386,6 +408,12 @@ class TafsirCtrl extends GetxController {
   /// شرح: تحميل قاعدة بيانات التفسير أو الترجمة
   /// Explanation: Download tafsir or translation database
   Future<void> tafsirDownload(int i) async {
+    if (kIsWeb) {
+      // على الويب لا يوجد تنزيل محلي، اعتبره "متاح" مباشرةً
+      _onDownloadSuccess(i);
+      update(['tafsirs_menu_list']);
+      return;
+    }
     String path;
     String fileUrl;
     final idx = (i >= 0 && i < tafsirAndTranslationsItems.length) ? i : 0;
@@ -440,6 +468,13 @@ class TafsirCtrl extends GetxController {
   /// شرح: فحص جميع ملفات التفسير
   /// Explanation: Check all tafsir files
   Future<Map<int, bool>> _checkAllTafsirDownloaded() async {
+    if (kIsWeb) {
+      // على الويب: نعتبر جميع العناصر "متاحة" بدون تنزيلات محلية
+      for (int i = 0; i < tafsirAndTranslationsItems.length; i++) {
+        tafsirDownloadStatus.value[i] = true;
+      }
+      return tafsirDownloadStatus.value;
+    }
     for (int i = 0; i < tafsirAndTranslationsItems.length; i++) {
       if (i == _defaultTafsirIndex ||
           i == translationsStartIndex ||

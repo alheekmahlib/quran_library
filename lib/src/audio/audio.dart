@@ -5,6 +5,7 @@ import 'dart:io' show Directory, File, HttpHeaders, Platform;
 import 'package:connectivity_plus/connectivity_plus.dart';
 // import 'package:dio/dio.dart' as d;
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';

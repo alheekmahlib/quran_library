@@ -51,7 +51,7 @@ extension FontsDownloadWidgetExtension on QuranCtrl {
 
       Widget trailingForDownload() {
         if (!isDownloadOption) return const SizedBox.shrink();
-        if (fontsLocal) return const SizedBox.shrink();
+        if (fontsLocal || kIsWeb) return const SizedBox.shrink();
         return Obx(() {
           final preparing = ctrl.state.isPreparingDownload.value;
           final downloading = ctrl.state.isDownloadingFonts.value;
@@ -103,7 +103,7 @@ extension FontsDownloadWidgetExtension on QuranCtrl {
 
       Widget progressIndicatorForDownload() {
         if (!isDownloadOption) return const SizedBox.shrink();
-        if (fontsLocal) return const SizedBox.shrink();
+        if (fontsLocal || kIsWeb) return const SizedBox.shrink();
         return Obx(() {
           final preparing = ctrl.state.isPreparingDownload.value;
           final downloading = ctrl.state.isDownloadingFonts.value;
@@ -181,7 +181,9 @@ extension FontsDownloadWidgetExtension on QuranCtrl {
                   minTileHeight: isSelected ? 65 : 55,
                   contentPadding: const EdgeInsetsDirectional.symmetric(
                       horizontal: 12, vertical: 0),
-                  onTap: (fontsLocal || ctrl.state.isDownloadedV2Fonts.value)
+                  onTap: (fontsLocal ||
+                          ctrl.state.isDownloadedV2Fonts.value ||
+                          kIsWeb)
                       ? () {
                           ctrl.state.fontsSelected.value = index;
                           GetStorage()

@@ -33,9 +33,9 @@ dependencies:
 # But note that it works and fits on mobile size devices
 # Additional Screen Sizes will be supported later
 platforms:
-  # web
   # linux
   # windows
+  ? web
   ? android
   ? ios
   ? macos

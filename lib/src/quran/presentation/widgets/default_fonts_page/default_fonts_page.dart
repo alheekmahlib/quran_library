@@ -76,7 +76,7 @@ class _DefaultFontsPage extends StatelessWidget {
               sajdaName: sajdaName,
               isRight: pageIndex.isEven ? true : false,
               topTitleChild: topTitleChild,
-              child: Platform.isAndroid || Platform.isIOS
+              child: (!kIsWeb && (Platform.isAndroid || Platform.isIOS))
                   ? isLandscape
                       ? SingleChildScrollView(
                           child: DefaultFirstTwoSurahs(

@@ -35,7 +35,7 @@ class BottomSlider extends StatelessWidget {
     if (!isVisible) return const SizedBox.shrink();
 
     return Align(
-      alignment: Alignment.bottomCenter,
+      alignment: kIsWeb ? Alignment.bottomLeft : Alignment.bottomCenter,
       // لا داعي لاستخدام Obx هنا لأن bottomSlideAnim ليس Rx ولا متغير ملاحظ
       // No need for Obx here, bottomSlideAnim is not Rx and not observable
       child: SlideTransition(
@@ -46,6 +46,9 @@ class BottomSlider extends StatelessWidget {
               height: MediaQuery.of(context).size.height *
                       sliderCtrl.bottomSliderHeight.value +
                   sliderHeight!,
+              width: kIsWeb
+                  ? MediaQuery.of(context).size.width * .5
+                  : MediaQuery.of(context).size.width,
               decoration: BoxDecoration(
                 color: style!.backgroundColor ??
                     AppColors.getBackgroundColor(isDark),

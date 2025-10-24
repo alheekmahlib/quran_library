@@ -22,7 +22,9 @@ class AudioCtrl extends GetxController {
       return;
     }
     QuranCtrl.instance;
-    state._dir ??= await getApplicationDocumentsDirectory();
+    if (!kIsWeb) {
+      state._dir ??= await getApplicationDocumentsDirectory();
+    }
     await Future.wait([
       _addDownloadedSurahToPlaylist(),
       _updateDownloadedAyahsMap(),
@@ -42,7 +44,7 @@ class AudioCtrl extends GetxController {
 
     // ابدأ كل جلسة باعتبار الخدمة غير مهيّأة، ولا تستخدم تخزينًا دائمًا
     state.audioServiceInitialized.value = false;
-    if (Platform.isIOS || Platform.isAndroid || Platform.isMacOS) {
+    if (!kIsWeb && (Platform.isIOS || Platform.isAndroid || Platform.isMacOS)) {
       if (!state.audioServiceInitialized.value) {
         if (!QuranCtrl.instance.state.isQuranLoaded) {
           await QuranCtrl.instance.loadQuran().then((_) async {
@@ -136,6 +138,15 @@ class AudioCtrl extends GetxController {
 
     if (surahNum != null) {
       state.selectedSurahIndex.value = (surahNum - 1);
+    }
+    // على الويب: لا تنزيلات محلية، شغّل مباشرةً من الرابط
+    if (kIsWeb) {
+      state.isPlaying.value = true;
+      await state.audioPlayer.setAudioSource(
+        AudioSource.uri(Uri.parse(urlSurahFilePath), tag: mediaItem),
+      );
+      state.audioPlayer.play();
+      return;
     }
     String filePath = localSurahFilePath;
     File file = File(filePath);
@@ -331,6 +342,13 @@ class AudioCtrl extends GetxController {
 
   Future<Map<int, bool>> checkAllSurahsDownloaded() async {
     Map<int, bool> surahDownloadStatus = {};
+    if (kIsWeb) {
+      // على الويب لا ندير ملفات محلية؛ اعتبر جميع السور غير مُحمّلة محليًا
+      for (int i = 1; i <= 114; i++) {
+        surahDownloadStatus[i] = false;
+      }
+      return surahDownloadStatus;
+    }
     final directory = await state.dir;
 
     for (int i = 1; i <= 114; i++) {
@@ -365,6 +383,10 @@ class AudioCtrl extends GetxController {
   }
 
   Future<void> _addDownloadedSurahToPlaylist() async {
+    if (kIsWeb) {
+      // على الويب: قائمة التحميلات المحلية غير مدعومة
+      return;
+    }
     final directory = await state.dir;
     for (int i = 1; i <= 114; i++) {
       String filePath =

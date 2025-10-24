@@ -3,6 +3,10 @@ part of '../../audio.dart';
 extension SurahGetters on AudioCtrl {
   /// -------- [Getters] ----------
   String get localSurahFilePath {
+    if (kIsWeb) {
+      // على الويب لا نستخدم مسارًا محليًا
+      return '';
+    }
     return '${state._dir!.path}/${state.surahReaderNameValue}${state.currentAudioListSurahNum.value.toString().padLeft(3, "0")}.mp3';
   }
 
@@ -125,6 +129,14 @@ extension SurahGetters on AudioCtrl {
   List<AudioSource> get currentSurahAudioSources => List.generate(
         selectedSurahAyahsFileNames.length,
         (i) {
+          if (kIsWeb) {
+            // على الويب: استخدم روابط الشبكة دائمًا
+            return AudioSource.uri(
+              Uri.parse(selectedSurahAyahsUrls[i]),
+              tag: mediaItemsForCurrentSurah[i],
+            );
+          }
+
           /// check if file is downloaded or add it as uri
           if (state.ayahsDownloadStatus[currentAyah.ayahUQNumber + i] ==
               false) {

@@ -68,6 +68,9 @@ class DefaultFontsPageBuild extends StatelessWidget {
                   newSurahs.add(line.ayahs[0].arabicName!);
                   firstAyah = true;
                 }
+                final surahNum = quranCtrl
+                    .getSurahDataByAyahUQ(line.ayahs[0].ayahUQNumber)
+                    .surahNumber;
                 return GetBuilder<BookmarksCtrl>(
                   builder: (bookmarkCtrl) {
                     return Column(
@@ -81,15 +84,19 @@ class DefaultFontsPageBuild extends StatelessWidget {
                                   bannerSvgPath: isDark
                                       ? AssetsPath.assets.surahSvgBannerDark
                                       : AssetsPath.assets.surahSvgBanner,
-                                  bannerSvgHeight: 40.0,
-                                  bannerSvgWidth: 150.0,
+                                  bannerSvgHeight: Responsive.isDesktop(context)
+                                      ? 90.0.h.clamp(90, 150)
+                                      : 35.0.h.clamp(35, 90),
+                                  bannerSvgWidth: 150.0.w.clamp(150, 250),
                                   bannerImagePath: '',
                                   bannerImageHeight: 50,
                                   bannerImageWidth: double.infinity,
                                 ),
                             surahNameStyle: surahNameStyle ??
                                 SurahNameStyle(
-                                  surahNameSize: 27,
+                                  surahNameSize: Responsive.isDesktop(context)
+                                      ? 40.sp.clamp(40, 80)
+                                      : 27.sp.clamp(27, 64),
                                   surahNameColor:
                                       isDark ? Colors.white : Colors.black,
                                 ),
@@ -120,16 +127,15 @@ class DefaultFontsPageBuild extends StatelessWidget {
                           ),
                         if (firstAyah && (line.ayahs[0].surahNumber != 9))
                           BasmallahWidget(
-                            surahNumber: quranCtrl
-                                .getSurahDataByAyahUQ(
-                                    line.ayahs[0].ayahUQNumber)
-                                .surahNumber,
+                            surahNumber: surahNum,
                             basmalaStyle: basmalaStyle ??
                                 BasmalaStyle(
                                   basmalaColor:
                                       isDark ? Colors.white : Colors.black,
-                                  basmalaWidth: 160.0,
-                                  basmalaHeight: 40.0,
+                                  basmalaWidth: 140.0.w.clamp(140, 250),
+                                  basmalaHeight: Responsive.isDesktop(context)
+                                      ? 90.0.h.clamp(90, 150)
+                                      : 30.0.h.clamp(30, 90),
                                   verticalPadding: 0.0,
                                 ),
                           ),

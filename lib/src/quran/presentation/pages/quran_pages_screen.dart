@@ -285,6 +285,10 @@ class QuranPagesScreen extends StatelessWidget {
           if (withPageView) {
             // PageView محلي على النطاق فقط
             final controller = PageController(initialPage: 0);
+            // تهيئة خاملة لأقرب الصفحات حول البداية مباشرة بعد أول إطار
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              QuranCtrl.instance.idlePreloadFontsAround(startIndex);
+            });
             body = NotificationListener<ScrollEndNotification>(
               onNotification: (notification) {
                 final metrics = notification.metrics;
@@ -321,6 +325,8 @@ class QuranPagesScreen extends StatelessWidget {
                     quranCtrl.state.currentPageNumber.value = globalIndex + 1;
                     quranCtrl.saveLastPage(globalIndex + 1);
                   });
+                  // جدولة تحميل خامل لخطوط الصفحات المجاورة (يحسّن السلاسة أثناء التقليب)
+                  QuranCtrl.instance.idlePreloadFontsAround(globalIndex);
                   // if (quranCtrl.isDownloadFonts) {
                   //   // تنفيذ بعد انتهاء الإطار لتجنّب أي تجميد
                   //   Future.microtask(() => quranCtrl.prepareFonts(startIndex,

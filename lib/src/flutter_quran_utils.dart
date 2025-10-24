@@ -68,9 +68,19 @@ class QuranLibrary {
     AudioCtrl.instance;
 
     // تسجيل الخطوط المحفوظة دفعة واحدة في الخلفية إن كانت متاحة
-    if (quranCtrl.state.isDownloadedV2Fonts.value) {
-      Future(() => QuranCtrl.instance
-          .loadPersistedFontsBulk(pages: List.generate(604, (i) => i)));
+    if (kIsWeb) {
+      // على الويب: لا تنزيلات مسبقة. سجّل فقط الصفحات التي تم تحميلها سابقًا (إن وُجدت)
+      final stored = storage
+              .read<List<dynamic>>(storageConstants.loadedFontPages)
+              ?.cast<int>() ??
+          const <int>[];
+      if (stored.isNotEmpty) {
+        Future(() => QuranCtrl.instance
+            .loadPersistedFontsBulk(pages: stored, batchSize: 16));
+      }
+    } else if (quranCtrl.state.isDownloadedV2Fonts.value) {
+      // على المنصات الأخرى: سجّل الصفحات المحفوظة فقط (دع الدالة تقرأ من التخزين)
+      Future(() => QuranCtrl.instance.loadPersistedFontsBulk());
     }
 
     // Initialize bookmarks

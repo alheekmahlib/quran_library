@@ -88,7 +88,7 @@ class SurahLastListen extends StatelessWidget {
                   style: TextStyle(
                     color: numberColor,
                     fontFamily: 'surahName',
-                    fontSize: 32.sp,
+                    fontSize: 32.sp.clamp(32, 40),
                     package: 'quran_library',
                   ),
                 ),

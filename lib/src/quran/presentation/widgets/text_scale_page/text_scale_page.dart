@@ -98,19 +98,7 @@ class _QuranTextScale extends StatelessWidget {
                                 ? SurahHeaderWidget(
                                     surahNumber ?? surahNum,
                                     bannerStyle: bannerStyle ??
-                                        BannerStyle(
-                                          isImage: false,
-                                          bannerSvgPath: isDark
-                                              ? AssetsPath
-                                                  .assets.surahSvgBannerDark
-                                              : AssetsPath
-                                                  .assets.surahSvgBanner,
-                                          bannerSvgHeight: 40.0,
-                                          bannerSvgWidth: 150.0,
-                                          bannerImagePath: '',
-                                          bannerImageHeight: 50,
-                                          bannerImageWidth: double.infinity,
-                                        ),
+                                        BannerStyle.textScale(isDark: isDark),
                                     surahNameStyle: surahNameStyle ??
                                         SurahNameStyle(
                                           surahNameSize: 70,
@@ -119,33 +107,7 @@ class _QuranTextScale extends StatelessWidget {
                                               : Colors.black,
                                         ),
                                     surahInfoStyle: surahInfoStyle ??
-                                        SurahInfoStyle(
-                                          ayahCount: 'عدد الآيات',
-                                          secondTabText: 'عن السورة',
-                                          firstTabText: 'أسماء السورة',
-                                          backgroundColor:
-                                              AppColors.getBackgroundColor(
-                                                  isDark),
-                                          closeIconColor: isDark
-                                              ? Colors.white
-                                              : Colors.black,
-                                          indicatorColor:
-                                              Colors.teal.withValues(alpha: .2),
-                                          primaryColor:
-                                              Colors.teal.withValues(alpha: .2),
-                                          surahNameColor: isDark
-                                              ? Colors.white
-                                              : Colors.black,
-                                          surahNumberColor: isDark
-                                              ? Colors.white
-                                              : Colors.black,
-                                          textColor: isDark
-                                              ? Colors.white
-                                              : Colors.black,
-                                          titleColor: isDark
-                                              ? Colors.white
-                                              : Colors.black,
-                                        ),
+                                        SurahInfoStyle.defaults(isDark: isDark),
                                     onSurahBannerPress: onSurahBannerPress,
                                     isDark: isDark,
                                   )

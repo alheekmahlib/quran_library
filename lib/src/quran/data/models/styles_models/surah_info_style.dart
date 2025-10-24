@@ -26,4 +26,20 @@ class SurahInfoStyle {
     this.secondTabText,
     this.firstTabText,
   });
+
+  factory SurahInfoStyle.defaults({required bool isDark}) {
+    return SurahInfoStyle(
+      ayahCount: 'عدد الآيات',
+      secondTabText: 'عن السورة',
+      firstTabText: 'أسماء السورة',
+      backgroundColor: AppColors.getBackgroundColor(isDark),
+      closeIconColor: isDark ? Colors.white : Colors.black,
+      indicatorColor: Colors.teal.withValues(alpha: .2),
+      primaryColor: Colors.teal.withValues(alpha: .2),
+      surahNameColor: isDark ? Colors.white : Colors.black,
+      surahNumberColor: isDark ? Colors.white : Colors.black,
+      textColor: isDark ? Colors.white : Colors.black,
+      titleColor: isDark ? Colors.white : Colors.black,
+    );
+  }
 }

@@ -14,6 +14,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:quran_library/quran_library.dart';
 
 import '/src/tafsir/core/extensions/helpers.dart';
+import '../core/utils/app_colors.dart';
 
 part 'controller/tafsir_ctrl.dart';
 part 'controller/tafsir_ui.dart';

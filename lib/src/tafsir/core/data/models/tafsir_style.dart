@@ -48,4 +48,22 @@ class TafsirStyle {
     this.tafsirBackgroundColor,
     this.tafsirIsEmptyNote,
   });
+
+  factory TafsirStyle.defaults({required bool isDark}) {
+    return TafsirStyle(
+      backgroundColor: AppColors.getBackgroundColor(isDark),
+      tafsirNameWidget: Text(
+        'التفسير',
+        style: QuranLibrary().cairoStyle.copyWith(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: isDark ? Colors.white : Colors.black,
+            ),
+      ),
+      fontSizeWidget: SizedBox().fontSizeDropDown(
+        height: 30.0,
+        isDark: isDark,
+      ),
+    );
+  }
 }

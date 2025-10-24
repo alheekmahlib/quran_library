@@ -31,4 +31,66 @@ class BannerStyle {
     this.bannerSvgWidth,
     this.bannerSvgHeight,
   });
+
+  BannerStyle copyWith({
+    String? bannerImagePath,
+    double? bannerImageWidth,
+    double? bannerImageHeight,
+    bool? isImage,
+    String? bannerSvgPath,
+    double? bannerSvgWidth,
+    double? bannerSvgHeight,
+  }) {
+    return BannerStyle(
+      bannerImagePath: bannerImagePath ?? this.bannerImagePath,
+      bannerImageWidth: bannerImageWidth ?? this.bannerImageWidth,
+      bannerImageHeight: bannerImageHeight ?? this.bannerImageHeight,
+      isImage: isImage ?? this.isImage,
+      bannerSvgPath: bannerSvgPath ?? this.bannerSvgPath,
+      bannerSvgWidth: bannerSvgWidth ?? this.bannerSvgWidth,
+      bannerSvgHeight: bannerSvgHeight ?? this.bannerSvgHeight,
+    );
+  }
+
+  factory BannerStyle.defaults({required bool isDark}) {
+    return BannerStyle(
+      isImage: false,
+      bannerSvgPath: isDark
+          ? AssetsPath.assets.surahSvgBannerDark
+          : AssetsPath.assets.surahSvgBanner,
+      bannerSvgHeight: 30.0,
+      bannerSvgWidth: 120.0,
+      bannerImagePath: '',
+      bannerImageHeight: 50,
+      bannerImageWidth: double.infinity,
+    );
+  }
+
+  factory BannerStyle.downloadFonts({required bool isDark}) {
+    return BannerStyle(
+      isImage: false,
+      bannerSvgPath: isDark
+          ? AssetsPath.assets.surahSvgBannerDark
+          : AssetsPath.assets.surahSvgBanner,
+      bannerSvgHeight: 30.0,
+      bannerSvgWidth: 120.0,
+      bannerImagePath: '',
+      bannerImageHeight: 50,
+      bannerImageWidth: double.infinity,
+    );
+  }
+
+  factory BannerStyle.textScale({required bool isDark}) {
+    return BannerStyle(
+      isImage: false,
+      bannerSvgPath: isDark
+          ? AssetsPath.assets.surahSvgBannerDark
+          : AssetsPath.assets.surahSvgBanner,
+      bannerSvgHeight: 40.0,
+      bannerSvgWidth: 150.0,
+      bannerImagePath: '',
+      bannerImageHeight: 50,
+      bannerImageWidth: double.infinity,
+    );
+  }
 }

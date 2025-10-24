@@ -99,7 +99,7 @@ class SurahBackDropWidget extends StatelessWidget {
           // Explanation: Surah list with design improvements
           _buildEnhancedCard(
             child: SizedBox(
-              height: size.height * 0.68,
+              height: size.height * 0.6,
               child: SurahAudioList(
                 style: style,
                 isDark: isDark,

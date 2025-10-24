@@ -31,6 +31,12 @@ class QuranLibrary {
 
     await GetStorage.init();
 
+    // تهيئة backend الصوت للويندوز قبل إنشاء أي AudioPlayer
+    // Initialize Windows audio backend before constructing any AudioPlayer
+    if (Platform.isWindows) {
+      JustAudioMediaKit.ensureInitialized();
+    }
+
     // Initialize state values
     final storage = GetStorage();
     final storageConstants = _StorageConstants();

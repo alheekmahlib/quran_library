@@ -97,9 +97,9 @@ class PageBuild extends StatelessWidget {
                                   closeIconColor:
                                       isDark ? Colors.white : Colors.black,
                                   indicatorColor:
-                                      Colors.amber.withValues(alpha: .2),
+                                      Colors.teal.withValues(alpha: .2),
                                   primaryColor:
-                                      Colors.amber.withValues(alpha: .2),
+                                      Colors.teal.withValues(alpha: .2),
                                   surahNameColor:
                                       isDark ? Colors.white : Colors.black,
                                   surahNumberColor:

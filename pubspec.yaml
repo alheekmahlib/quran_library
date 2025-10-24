@@ -23,18 +23,19 @@ dependencies:
   get: ^4.7.2
   get_storage: ^2.1.1
   just_audio: ^0.10.5
+  just_audio_media_kit: ^2.1.0
+  just_audio_windows: ^0.2.2
+  media_kit_libs_windows_audio: ^1.0.9
   path: ^1.9.1
   path_provider: ^2.1.5
   rxdart: ^0.28.0
-  just_audio_media_kit: ^2.1.0
-  media_kit_libs_windows_audio: ^1.0.9
 
 # This package supports all platforms listed below.
 # But note that it works and fits on mobile size devices
 # Additional Screen Sizes will be supported later
 platforms:
   # linux
-  # windows
+  ? windows
   ? web
   ? android
   ? ios

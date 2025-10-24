@@ -4,10 +4,12 @@ extension SurahGetters on AudioCtrl {
   /// -------- [Getters] ----------
   String get localSurahFilePath {
     if (kIsWeb) {
-      // على الويب لا نستخدم مسارًا محليًا
       return '';
     }
-    return '${state._dir!.path}/${state.surahReaderNameValue}${state.currentAudioListSurahNum.value.toString().padLeft(3, "0")}.mp3';
+    return join(
+      state._dir!.path,
+      '${state.surahReaderNameValue}${state.currentAudioListSurahNum.value.toString().padLeft(3, "0")}.mp3',
+    );
   }
 
   String get urlSurahFilePath {
@@ -98,12 +100,17 @@ extension SurahGetters on AudioCtrl {
 
   List<String> get selectedSurahAyahsFileNames {
     return List.generate(
-        currentAyahsSurah.ayahs.length,
-        (i) => ReadersConstants.ayahReaderInfo[state.ayahReaderIndex.value]
-                    ['url'] ==
+      currentAyahsSurah.ayahs.length,
+      (i) {
+        final fileName = ReadersConstants
+                    .ayahReaderInfo[state.ayahReaderIndex.value]['url'] ==
                 ReadersConstants.ayahs1stSource
-            ? '$ayahReaderValue/${currentAyahsSurah.ayahs[i].ayahUQNumber}.mp3'
-            : '$ayahReaderValue/${currentAyahsSurah.surahNumber.toString().padLeft(3, "0")}${currentAyahsSurah.ayahs[i].ayahNumber.toString().padLeft(3, "0")}.mp3');
+            ? '${currentAyahsSurah.ayahs[i].ayahUQNumber}.mp3'
+            : '${currentAyahsSurah.surahNumber.toString().padLeft(3, "0")}${currentAyahsSurah.ayahs[i].ayahNumber.toString().padLeft(3, "0")}.mp3';
+
+        return join(ayahReaderValue, fileName);
+      },
+    );
   }
 
   List<String> get selectedSurahAyahsUrls {
@@ -113,17 +120,17 @@ extension SurahGetters on AudioCtrl {
 
   String get ayahDownloadSource =>
       ReadersConstants.ayahReaderInfo[state.ayahReaderIndex.value]['url'];
+
   String get currentAyahUrl => '$ayahDownloadSource$currentAyahFileName';
+
   String get currentAyahFileName {
-    if (ReadersConstants.ayahReaderInfo[state.ayahReaderIndex.value]['url'] ==
-        ReadersConstants.ayahs1stSource) {
-      return '$ayahReaderValue/${state.currentAyahUniqueNumber}.mp3';
-    } else {
-      final surahNum = currentAyahsSurah.surahNumber.toString().padLeft(3, '0');
-      final currentAyahNumber =
-          currentAyah.ayahNumber.toString().padLeft(3, '0');
-      return '$ayahReaderValue/$surahNum$currentAyahNumber.mp3';
-    }
+    final fileName = ReadersConstants
+                .ayahReaderInfo[state.ayahReaderIndex.value]['url'] ==
+            ReadersConstants.ayahs1stSource
+        ? '${state.currentAyahUniqueNumber}.mp3'
+        : '${currentAyahsSurah.surahNumber.toString().padLeft(3, '0')}${currentAyah.ayahNumber.toString().padLeft(3, '0')}.mp3';
+
+    return join(ayahReaderValue, fileName);
   }
 
   List<AudioSource> get currentSurahAudioSources => List.generate(

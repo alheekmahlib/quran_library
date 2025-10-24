@@ -129,10 +129,10 @@ class _QuranTextScale extends StatelessWidget {
                                           closeIconColor: isDark
                                               ? Colors.white
                                               : Colors.black,
-                                          indicatorColor: Colors.amber
-                                              .withValues(alpha: .2),
-                                          primaryColor: Colors.amber
-                                              .withValues(alpha: .2),
+                                          indicatorColor:
+                                              Colors.teal.withValues(alpha: .2),
+                                          primaryColor:
+                                              Colors.teal.withValues(alpha: .2),
                                           surahNameColor: isDark
                                               ? Colors.white
                                               : Colors.black,

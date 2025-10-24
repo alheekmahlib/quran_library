@@ -278,7 +278,7 @@ packages:
     source: hosted
     version: "2.4.4"
   get:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: get
       sha256: c79eeb4339f1f3deffd9ec912f8a923834bec55f7b49c9e882b8fef2c139d425

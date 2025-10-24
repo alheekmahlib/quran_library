@@ -77,84 +77,99 @@ class _QuranTextScale extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 8.0),
           child: quranCtrl.state.pages.isEmpty
               ? circularProgressWidget ?? CircularProgressIndicator.adaptive()
-              : SingleChildScrollView(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: () {
-                      final separated = quranCtrl
-                          .getCurrentPageAyahsSeparatedForBasmalah(pageIndex);
-                      return List.generate(separated.length, (i) {
-                        final ayahs = separated[i];
-                        final surahNum = quranCtrl
-                            .getSurahDataByAyah(ayahs.first)
-                            .surahNumber;
-                        return Column(
-                          children: [
-                            ayahs.first.ayahNumber == 1 &&
-                                    (!quranCtrl._topOfThePageIndex
-                                            .contains(pageIndex) ||
-                                        quranCtrl.state.fontsSelected.value ==
-                                            0)
-                                ? SurahHeaderWidget(
-                                    surahNumber ?? surahNum,
-                                    bannerStyle: bannerStyle ??
-                                        BannerStyle.textScale(isDark: isDark),
-                                    surahNameStyle: surahNameStyle ??
-                                        SurahNameStyle(
-                                          surahNameSize: 70,
-                                          surahNameColor: isDark
-                                              ? Colors.white
-                                              : Colors.black,
-                                        ),
-                                    surahInfoStyle: surahInfoStyle ??
-                                        SurahInfoStyle.defaults(isDark: isDark),
-                                    onSurahBannerPress: onSurahBannerPress,
-                                    isDark: isDark,
-                                  )
-                                : const SizedBox.shrink(),
-                            surahNum == 9 || surahNum == 1
-                                ? const SizedBox.shrink()
-                                : Padding(
-                                    padding: const EdgeInsets.only(bottom: 8.0),
-                                    child: ayahs.first.ayahNumber == 1
-                                        ? BasmallahWidget(
-                                            surahNumber: surahNum,
-                                            basmalaStyle: basmalaStyle ??
-                                                BasmalaStyle(
-                                                  basmalaColor: isDark
-                                                      ? Colors.white
-                                                      : Colors.black,
-                                                  basmalaWidth: 160.0,
-                                                  basmalaHeight: 45.0,
-                                                ),
-                                          )
-                                        : const SizedBox.shrink(),
-                                  ),
-                            TextScaleRichTextBuild(
-                                textColor: textColor,
-                                isDark: isDark,
-                                ayahs: ayahs,
-                                bookmarks: bookmarks,
-                                pageIndex: pageIndex,
-                                ayahBookmarked: ayahBookmarked,
-                                onAyahLongPress: onAyahLongPress,
-                                anotherMenuChild: anotherMenuChild,
-                                anotherMenuChildOnTap: anotherMenuChildOnTap,
-                                secondMenuChild: secondMenuChild,
-                                secondMenuChildOnTap: secondMenuChildOnTap,
-                                bookmarkList: bookmarkList,
-                                ayahIconColor: ayahIconColor,
-                                showAyahBookmarkedIcon: showAyahBookmarkedIcon,
-                                bookmarksAyahs: bookmarksAyahs,
-                                bookmarksColor: bookmarksColor,
-                                ayahSelectedBackgroundColor:
-                                    ayahSelectedBackgroundColor,
-                                languageCode: languageCode),
-                            // context.surahBannerLastPlace(pageIndex, i),
-                          ],
-                        );
-                      });
-                    }(),
+              : ScrollConfiguration(
+                  behavior: ScrollConfiguration.of(context).copyWith(
+                    scrollbars: false,
+                    dragDevices: {
+                      PointerDeviceKind.touch,
+                      PointerDeviceKind.mouse,
+                      PointerDeviceKind.trackpad,
+                      PointerDeviceKind.stylus,
+                      PointerDeviceKind.unknown
+                    },
+                  ),
+                  child: SingleChildScrollView(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: () {
+                        final separated = quranCtrl
+                            .getCurrentPageAyahsSeparatedForBasmalah(pageIndex);
+                        return List.generate(separated.length, (i) {
+                          final ayahs = separated[i];
+                          final surahNum = quranCtrl
+                              .getSurahDataByAyah(ayahs.first)
+                              .surahNumber;
+                          return Column(
+                            children: [
+                              ayahs.first.ayahNumber == 1 &&
+                                      (!quranCtrl._topOfThePageIndex
+                                              .contains(pageIndex) ||
+                                          quranCtrl.state.fontsSelected.value ==
+                                              0)
+                                  ? SurahHeaderWidget(
+                                      surahNumber ?? surahNum,
+                                      bannerStyle: bannerStyle ??
+                                          BannerStyle.textScale(isDark: isDark),
+                                      surahNameStyle: surahNameStyle ??
+                                          SurahNameStyle(
+                                            surahNameSize: 70,
+                                            surahNameColor: isDark
+                                                ? Colors.white
+                                                : Colors.black,
+                                          ),
+                                      surahInfoStyle: surahInfoStyle ??
+                                          SurahInfoStyle.defaults(
+                                              isDark: isDark),
+                                      onSurahBannerPress: onSurahBannerPress,
+                                      isDark: isDark,
+                                    )
+                                  : const SizedBox.shrink(),
+                              surahNum == 9 || surahNum == 1
+                                  ? const SizedBox.shrink()
+                                  : Padding(
+                                      padding:
+                                          const EdgeInsets.only(bottom: 8.0),
+                                      child: ayahs.first.ayahNumber == 1
+                                          ? BasmallahWidget(
+                                              surahNumber: surahNum,
+                                              basmalaStyle: basmalaStyle ??
+                                                  BasmalaStyle(
+                                                    basmalaColor: isDark
+                                                        ? Colors.white
+                                                        : Colors.black,
+                                                    basmalaWidth: 160.0,
+                                                    basmalaHeight: 45.0,
+                                                  ),
+                                            )
+                                          : const SizedBox.shrink(),
+                                    ),
+                              TextScaleRichTextBuild(
+                                  textColor: textColor,
+                                  isDark: isDark,
+                                  ayahs: ayahs,
+                                  bookmarks: bookmarks,
+                                  pageIndex: pageIndex,
+                                  ayahBookmarked: ayahBookmarked,
+                                  onAyahLongPress: onAyahLongPress,
+                                  anotherMenuChild: anotherMenuChild,
+                                  anotherMenuChildOnTap: anotherMenuChildOnTap,
+                                  secondMenuChild: secondMenuChild,
+                                  secondMenuChildOnTap: secondMenuChildOnTap,
+                                  bookmarkList: bookmarkList,
+                                  ayahIconColor: ayahIconColor,
+                                  showAyahBookmarkedIcon:
+                                      showAyahBookmarkedIcon,
+                                  bookmarksAyahs: bookmarksAyahs,
+                                  bookmarksColor: bookmarksColor,
+                                  ayahSelectedBackgroundColor:
+                                      ayahSelectedBackgroundColor,
+                                  languageCode: languageCode),
+                              // context.surahBannerLastPlace(pageIndex, i),
+                            ],
+                          );
+                        });
+                      }(),
+                    ),
                   ),
                 ),
         ),

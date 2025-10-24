@@ -40,14 +40,7 @@ extension AyahCtrlExtension on AudioCtrl {
         );
       }
       state.isPlaying.value = true;
-      await state.audioPlayer
-          .play()
-          .then((_) => state.isPlaying.value = true)
-          .whenComplete(() {
-        state.audioPlayer.stop();
-        QuranCtrl.instance.clearSelection();
-        state.isPlaying.value = false;
-      });
+      await state.audioPlayer.play();
       log('تحميل $currentAyahFileName تم بنجاح.');
       return;
     } catch (e) {

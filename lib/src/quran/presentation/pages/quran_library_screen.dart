@@ -341,12 +341,23 @@ class QuranLibraryScreen extends StatelessWidget {
                             itemCount: 604,
                             controller: quranCtrl.getPageController(context),
                             padEnds: false,
-                            // شرح: اختيار نوع الفيزياء حسب إعداد التحسين
+                            // شرح: اختيار نوع الفيزياء حسب إعداد التحسين QuranPagesScreen
                             // Explanation: Choose physics type based on optimization setting
                             physics: const ClampingScrollPhysics(),
                             // شرح: إضافة allowImplicitScrolling لتحسين الأداء
                             // Explanation: Adding allowImplicitScrolling for better performance
                             allowImplicitScrolling: true,
+                            scrollBehavior:
+                                const MaterialScrollBehavior().copyWith(
+                              dragDevices: {
+                                PointerDeviceKind.touch,
+                                PointerDeviceKind.mouse,
+                                PointerDeviceKind.trackpad,
+                                PointerDeviceKind.stylus,
+                                PointerDeviceKind.unknown
+                              },
+                            ),
+
                             // شرح: تقليل القص لتخفيف كلفة الرسم ما لم نحتاجه
                             // Explanation: Reduce clipping cost unless necessary
                             clipBehavior: Clip.none,
@@ -392,6 +403,7 @@ class QuranLibraryScreen extends StatelessWidget {
                                     quranCtrl.state.overlayEntry = null;
                                   }
                                 },
+                                hoverColor: Colors.transparent,
                                 focusColor: Colors.transparent,
                                 splashColor: Colors.transparent,
                                 highlightColor: Colors.transparent,

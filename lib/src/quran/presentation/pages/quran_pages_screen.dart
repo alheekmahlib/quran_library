@@ -239,6 +239,7 @@ class QuranPagesScreen extends StatelessWidget {
                   quranCtrl.state.overlayEntry = null;
                 }
               },
+              hoverColor: Colors.transparent,
               focusColor: Colors.transparent,
               splashColor: Colors.transparent,
               highlightColor: Colors.transparent,

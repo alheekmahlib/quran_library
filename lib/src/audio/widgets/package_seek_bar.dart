@@ -184,7 +184,7 @@ class _PackageSliderWidgetState extends State<PackageSliderWidget> {
                       ),
                     ),
                     child: Text(
-                      'downloading'.tr,
+                      'جارِ التحميل',
                       style: QuranLibrary().cairoStyle.copyWith(
                             color: widget.textColor ?? Colors.white,
                             height: 1.3,

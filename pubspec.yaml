@@ -24,7 +24,6 @@ dependencies:
   get_storage: ^2.1.1
   just_audio: ^0.10.5
   just_audio_media_kit: ^2.1.0
-  just_audio_windows: ^0.2.2
   media_kit_libs_windows_audio: ^1.0.9
   path: ^1.9.1
   path_provider: ^2.1.5

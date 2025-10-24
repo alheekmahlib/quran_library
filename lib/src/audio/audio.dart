@@ -28,6 +28,7 @@ import 'core/custom_paint/custom_slider.dart';
 // Export audio dependencies for main app usage
 export 'package:audio_service/audio_service.dart';
 export 'package:just_audio/just_audio.dart';
+export 'package:just_audio_media_kit/just_audio_media_kit.dart';
 
 part 'constants/readers_constants.dart';
 part 'constants/storage_constants.dart';

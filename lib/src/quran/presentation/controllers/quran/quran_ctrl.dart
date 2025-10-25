@@ -353,14 +353,44 @@ class QuranCtrl extends GetxController {
   }
 
   PageController getPageController(BuildContext context) {
-    // أنشئ/أعد استخدام نفس الـ PageController لتجنّب فقدان المستمع
-    if (!quranPagesController.hasClients && state.currentPageNumber.value > 0) {
+    final Orientation orientation = MediaQuery.of(context).orientation;
+
+    // احسب قيمة الـ viewportFraction الهدف بناءً على حجم/اتجاه الشاشة
+    final double targetFraction =
+        (Responsive.isDesktop(context) && orientation == Orientation.landscape)
+            ? 0.5
+            : 1.0;
+
+    // إذا لم يكن لدينا عملاء (أول إنشاء) أو تغيّرت القيمة، أعد إنشاء المتحكم
+    final bool needsNewController = !quranPagesController.hasClients ||
+        (quranPagesController.viewportFraction != targetFraction);
+
+    if (needsNewController) {
+      // حافظ على الفهرس الحالي للصفحة
+      int currentIndex = state.currentPageNumber.value - 1;
+      if (quranPagesController.hasClients) {
+        final double? p = quranPagesController.page;
+        if (p != null) currentIndex = p.round();
+      }
+      currentIndex = currentIndex.clamp(0, 603);
+
+      final oldController = quranPagesController;
       quranPagesController = PageController(
-        initialPage: state.currentPageNumber.value - 1,
+        initialPage: currentIndex,
         keepPage: true,
-        viewportFraction:
-            (Responsive.isDesktop(context) && context.isLandscape) ? 1 / 2 : 1,
+        viewportFraction: targetFraction,
       );
+
+      // تخلّص من المتحكم القديم بعد الإطار لتجنّب تعارضات التثبيت
+      if (oldController != quranPagesController) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          try {
+            oldController.dispose();
+          } catch (_) {
+            // تجاهل أي أخطاء تصريف إن كان قد صُرّف سابقًا
+          }
+        });
+      }
     }
 
     // إضافة مستمع تمرير لمرة واحدة

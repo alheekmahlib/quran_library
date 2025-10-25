@@ -33,8 +33,10 @@ class QuranLibrary {
 
     // تهيئة backend الصوت للويندوز قبل إنشاء أي AudioPlayer
     // Initialize Windows audio backend before constructing any AudioPlayer
-    if (Platform.isWindows) {
-      JustAudioMediaKit.ensureInitialized();
+    if (!kIsWeb) {
+      if (Platform.isWindows) {
+        JustAudioMediaKit.ensureInitialized(windows: true);
+      }
     }
 
     // Initialize state values

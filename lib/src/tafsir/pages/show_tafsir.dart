@@ -43,6 +43,10 @@ class ShowTafseer extends StatelessWidget {
     final double width = MediaQuery.maybeOf(context)?.size.width ?? 400;
     // تحسين الشكل: إضافة شريط علوي أنيق مع زر إغلاق واسم التفسير
     // UI Enhancement: Add a modern top bar with close button and tafsir name
+    // final stored = GetStorage()
+    //         .read<List<dynamic>>(quran._StorageConstants().loadedFontPages)
+    //         ?.cast<int>() ??
+    //     const <int>[];
     return GetBuilder<TafsirCtrl>(
       id: 'actualTafsirContent',
       builder: (tafsirCtrl) {

@@ -56,10 +56,6 @@ class GetSingleAyah extends StatelessWidget {
         ),
       );
     }
-    // if (currentFontsSelected) {
-    //   QuranLibrary().getFontsPrepareMethod(
-    //       pageIndex: pageNumber - 1, isFontsLocal: islocalFont ?? false);
-    // }
     return RichText(
       textDirection: TextDirection.rtl,
       textAlign: TextAlign.justify,
@@ -71,7 +67,7 @@ class GetSingleAyah extends StatelessWidget {
           fontFamily: islocalFont == true
               ? fontsName
               : (currentFontsSelected
-                  ? 'p${((pageNumber - 1) + 2001)}'
+                  ? QuranCtrl.instance.getFontPath(pageNumber - 1)
                   : 'hafs'),
           package: currentFontsSelected ? null : 'quran_library',
           fontSize: fontSize ?? 22,
@@ -97,7 +93,7 @@ class GetSingleAyah extends StatelessWidget {
               fontFamily: islocalFont == true
                   ? fontsName
                   : (currentFontsSelected
-                      ? 'p${((pageNumber - 1) + 2001)}'
+                      ? QuranCtrl.instance.getFontPath(pageNumber - 1)
                       : 'hafs'),
               package: currentFontsSelected ? null : 'quran_library',
               fontSize: fontSize ?? 22,

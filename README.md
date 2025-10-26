@@ -1,6 +1,6 @@
 ## Quran Library
 <p align="center">
-<img src="https://raw.githubusercontent.com/alheekmahlib/thegarlanded/refs/heads/master/Photos/quran_library.svg" width="150"/>
+<img src="https://raw.githubusercontent.com/alheekmahlib/thegarlanded/master/Photos/Packages/quran_library/quran_library_banner.png" width="500"/>
 </p>
 
 <p align="center"><strong>Choose your language for the documentation:</strong></p>
@@ -17,11 +17,6 @@
   <a href="https://alheekmahlib.github.io/quran_library_web/#/es" style="display: inline-block; padding: 6px 24px; margin: 8px; background: linear-gradient(135deg, #FCFBF8, #E0CCB0); color: black; text-decoration: none; border-radius: 8px; box-shadow: 0 4px 15px rgba(238, 186, 32, 0.11); font-weight: bold; font-size: 14px; transition: all 0.3s ease; text-transform: uppercase;">Español</a>
 </p>
 
-### This package is a continuation of [flutter_quran](https://pub.dev/packages/flutter_quran) by [Hesham Erfan](https://www.linkedin.com/in/hesham-erfan-876b83105/) with many new features.
-
-<p align="center">
-<img src="https://github.com/alheekmahlib/thegarlanded/blob/master/Photos/quran_package_banner.png?raw=true" width="500"/>
-</p>
 
 ### Important note before starting to use: Please make:
 ```dart
@@ -47,13 +42,15 @@
 - [Fonts Download](#fonts-download)
 - [Tafsir](#tafsir)
 - [Audio Playback](#audio-playback)
+- [Sources](#sources)
+- [License](#license)
 
 #
 
 ## Getting started
 
 #### Android
-The required permissions for audio playback (`WAKE_LOCK`, `FOREGROUND_SERVICE`, and `FOREGROUND_SERVICE_MEDIA_PLAYBACK`) are automatically added by the package. You don't need to manually edit your AndroidManifest.xml.
+The required permissions for audio playback (`WAKE_LOCK`, and `FOREGROUND_SERVICE_MEDIA_PLAYBACK`) are automatically added by the package. You don't need to manually edit your AndroidManifest.xml.
 
 Additionally, to enable system-integrated audio controls (notification/lockscreen) using `audio_service`, your app's MainActivity must extend `AudioServiceActivity`:
 
@@ -92,7 +89,7 @@ In the `pubspec.yaml` of your flutter project, add the following dependency:
 ```yaml
 dependencies:
   ...
-  quran_library: ^2.1.4
+  quran_library: ^2.2.0
 ```
 
 Import it:
@@ -104,7 +101,13 @@ import 'package:quran_library/quran_library.dart';
 Initialize it:
 
 ```dart
-QuranLibrary.init();
+Future<void> main() async {
+  await WidgetsFlutterBinding.ensureInitialized();
+  await QuranLibrary.init();
+  runApp(
+    const MyApp(),
+  );
+}
 ```
 
 ## Usage Example
@@ -155,57 +158,72 @@ QuranLibraryScreen(
 
 ### Individual Surah Display
 
+<details>
+<summary>Expand section</summary>
+
+
 ```dart
 /// For displaying a single surah with custom pagination
 SurahDisplayScreen(
-    /// [surahNumber] The surah number to display
-    surahNumber: 1, // For Al-Fatihah
-    /// [onPageChanged] if provided it will be called when a surah page changed
-    onPageChanged: (int pageIndex) => print("Surah page changed: $pageIndex"),
-    /// [isDark] enable or disable dark mode
-    isDark: false,
-    /// [basmalaStyle] Change the style of Basmala
-    basmalaStyle: BasmalaStyle(
-        basmalaColor: Colors.black,
-        basmalaWidth: 160.0,
-        basmalaHeight: 30.0,
-    ),
-    /// [bannerStyle] Change the style of banner
-    bannerStyle: BannerStyle(
-        isImage: false,
-        bannerSvgHeight: 40.0,
-        bannerSvgWidth: 150.0,
-    ),
-    /// and more options...
+  /// [surahNumber] The surah number to display
+  surahNumber: 1, // For Al-Fatihah
+  /// [onPageChanged] if provided it will be called when a surah page changed
+  onPageChanged: (int pageIndex) => print("Surah page changed: $pageIndex"),
+  /// [isDark] enable or disable dark mode
+  isDark: false,
+  /// [basmalaStyle] Change the style of Basmala
+  basmalaStyle: BasmalaStyle(
+    basmalaColor: Colors.black,
+    basmalaWidth: 160.0,
+    basmalaHeight: 30.0,
+  ),
+  /// [bannerStyle] Change the style of banner
+  bannerStyle: BannerStyle(
+    isImage: false,
+    bannerSvgHeight: 40.0,
+    bannerSvgWidth: 150.0,
+  ),
+  /// and more options...
 ),
 ```
 
+</details>
+
 ### Single Ayah Display
+
+<details>
+<summary>Expand section</summary>
+
 
 ```dart
 /// For displaying a single ayah from any surah
 GetSingleAyah(
-    /// [surahNumber] - must be between 1 and 114
-    surahNumber: 1, // Surah number
+  /// [surahNumber] - must be between 1 and 114
+  surahNumber: 1, // Surah number
     
-    /// [ayahNumber] - ayah number within the surah
-    ayahNumber: 2, // Ayah number
+  /// [ayahNumber] - ayah number within the surah
+  ayahNumber: 2, // Ayah number
     
-    /// [textColor] - optional text color
-    textColor: Colors.black,
+  /// [textColor] - optional text color
+  textColor: Colors.black,
     
-    /// [isDark] - optional, default is false
-    isDark: false,
+  /// [isDark] - optional, default is false
+  isDark: false,
     
-    /// [fontSize] - optional, default is 22
-    fontSize: 24.0,
+  /// [fontSize] - optional, default is 22
+  fontSize: 24.0,
     
-    /// [isBold] - optional, default is true
-    isBold: true,
+  /// [isBold] - optional, default is true
+  isBold: true,
 ),
 ```
 
+</details>
+
 ### Partial Pages (single or range) + Highlighting
+
+<details>
+<summary>Expand section</summary>
 
 You can display just one specific page or a range of pages using `QuranPagesScreen`.
 
@@ -284,7 +302,13 @@ Notes:
 - Highlighting is applied programmatically and does not replace manual selection.
 - You can combine multiple highlighting inputs; they’ll be merged internally.
 
+</details>
+
 #### Using GetSingleAyah in a list:
+
+<details>
+<summary>Expand section</summary>
+
 
 ```dart
 class SingleAyahExample extends StatelessWidget {
@@ -346,6 +370,8 @@ class SingleAyahExample extends StatelessWidget {
 }
 ```
 
+</details>
+
 ## Utils
 
 ### The package provides a lot of utils like:
@@ -373,7 +399,7 @@ QuranLibrary().jumpToAyah(AyahModel ayah);
 /// jumpToPage, jumpToJoz, jumpToHizb, jumpToBookmark and jumpToSurah.
 ```
 
-<img src="https://github.com/alheekmahlib/thegarlanded/blob/master/Photos/Quran_package_jumpTo.png?raw=true" width="320"/>
+<img src="https://raw.githubusercontent.com/alheekmahlib/thegarlanded/master/Photos/Packages/quran_library/archive_screen.png" width="320"/>
 
 * ### Adding, setting, removing, getting and navigating to bookmarks:
 
@@ -386,7 +412,7 @@ QuranLibrary().removeBookmark(bookmarkId: 0);
 QuranLibrary().jumpToBookmark(BookmarkModel bookmark);
 ```
 
-<img src="https://github.com/alheekmahlib/thegarlanded/blob/master/Photos/Quran_package_bookmark.png?raw=true" width="320"/> <img src="https://github.com/alheekmahlib/thegarlanded/blob/master/Photos/Quran_package_bookmark2.png?raw=true" width="320"/>
+<img src="https://raw.githubusercontent.com/alheekmahlib/thegarlanded/master/Photos/Packages/quran_library/bookmark_screen2.png" width="320"/> <img src="https://raw.githubusercontent.com/alheekmahlib/thegarlanded/master/Photos/Packages/quran_library/bookmark_screen.png" width="320"/>
 
 * ### searching for any Ayah
 ```dart
@@ -403,7 +429,7 @@ TextField(
   ),
 ),
 ```
-<img src="https://github.com/alheekmahlib/thegarlanded/blob/master/Photos/Quran_package_search.png?raw=true" width="320"/>
+<img src="https://raw.githubusercontent.com/alheekmahlib/thegarlanded/master/Photos/Packages/quran_library/search_screen.png" width="320"/>
 
 ## Fonts Download
 
@@ -448,7 +474,7 @@ QuranLibrary().fontsDownloadProgress;
 QuranLibrary().isFontsDownloaded;
 ```
 
-<img src="https://github.com/alheekmahlib/thegarlanded/blob/master/Photos/Quran_package_fontes.png?raw=true" width="320"/>
+<img src="https://raw.githubusercontent.com/alheekmahlib/thegarlanded/master/Photos/Packages/quran_library/font_download_screen.png" width="320"/>
 
 ## Tafsir
 
@@ -476,9 +502,6 @@ final added = await TafsirController.instance.addCustomFromFile(
 /// Show a popup menu to change the tafsir style.
 QuranLibrary().changeTafsirPopupMenu(TafsirStyle tafsirStyle, {int? pageNumber});
 
-/// Close and re-initialize the database (usually when changing the tafsir).
-QuranLibrary().closeAndInitializeDatabase({int? pageNumber});
-
 /// Fetch tafsir for a specific page by its page number.
 QuranLibrary().fetchTafsir({required int pageNumber});
 
@@ -503,6 +526,8 @@ QuranLibrary().fetchTranslation();
 /// Download the tafsir by the given index.
 QuranLibrary().tafsirDownload(int i);
 ```
+
+<img src="https://raw.githubusercontent.com/alheekmahlib/thegarlanded/master/Photos/Packages/quran_library/tafsir_screen.png" width="320"/>
 
 ## Audio Playback
 
@@ -544,6 +569,8 @@ await QuranLibrary().seekToNextSurah();
 /// Move to previous surah and play it
 await QuranLibrary().seekToPreviousSurah();
 ```
+
+<img src="https://raw.githubusercontent.com/alheekmahlib/thegarlanded/master/Photos/Packages/quran_library/play_surahs_screen.png" width="320"/>
 
 * ### Download Management
 
@@ -667,16 +694,6 @@ class _AudioControlExampleState extends State<AudioControlExample> {
 }
 ```
 
-### Audio Features Summary:
-- ✅ **Verse Playback** - Play individual or sequential verses
-- ✅ **Complete Surah Playback** - Play complete surahs
-- ✅ **Navigation Controls** - Navigation tools between verses and surahs
-- ✅ **Offline Download** - Download for offline playback
-- ✅ **Resume Functionality** - Resume playback from last position
-- ✅ **Background Playback** - Playback in the background
-- ✅ **Position Tracking** - Track playback position
-- ✅ **Download Management** - Comprehensive download and cancel management
-
 * ### You can also use the default Quran font or Naskh font
 ```dart
 /// [hafsStyle] is the default style for Quran so all special characters will be rendered correctly
@@ -685,3 +702,16 @@ QuranLibrary().hafsStyle;
 /// [naskhStyle] is the default style for other text.
 QuranLibrary().naskhStyle;
 ```
+
+## Sources
+
+- Quran text and metadata: King Fahd Glorious Quran Printing Complex — Quran Developer Portal
+  - https://qurancomplex.gov.sa/quran-dev/
+
+- Fonts, Tafsir, and Translations: Quranic Universal Library (QUL) by Tarteel
+  - https://qul.tarteel.ai/
+
+## License
+MIT for code. QCF fonts are provided via Quranic Universal Library (QUL). Ensure you comply with QUL terms (and any upstream KFGQPC terms) when distributing applications that include or bundle these assets.
+
+Read more about the license [here](LICENSE).

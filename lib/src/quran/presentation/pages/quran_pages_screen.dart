@@ -231,10 +231,8 @@ class QuranPagesScreen extends StatelessWidget {
                 if (onPagePress != null) {
                   onPagePress!();
                 } else {
-                  quranCtrl.showControlToggle();
-                  if (!enableMultiSelect) {
-                    quranCtrl.clearSelection();
-                  }
+                  quranCtrl.showControlToggle(
+                      enableMultiSelect: !enableMultiSelect);
                   quranCtrl.state.overlayEntry?.remove();
                   quranCtrl.state.overlayEntry = null;
                 }

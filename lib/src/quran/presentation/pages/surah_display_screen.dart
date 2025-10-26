@@ -285,7 +285,6 @@ class SurahDisplayScreen extends StatelessWidget {
                       onPagePress!();
                     } else {
                       quranCtrl.showControlToggle();
-                      quranCtrl.clearSelection();
                       quranCtrl.state.overlayEntry?.remove();
                       quranCtrl.state.overlayEntry = null;
                     }

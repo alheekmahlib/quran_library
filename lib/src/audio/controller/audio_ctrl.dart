@@ -64,12 +64,19 @@ class AudioCtrl extends GetxController {
 
     // Listen to player state changes to play the next Surah automatically
     // استخدام subscription واحد فقط / Use only one subscription
-    // state.audioPlayer.playerStateStream.listen((playerState) async {
-    //   if (playerState.processingState == ProcessingState.completed &&
-    //       !state.isPlayingSurahsMode) {
-    //     await playNextSurah();
-    //   }
-    // });
+
+    state.audioPlayer.playerStateStream.listen((playerState) async {
+      if (playerState.processingState == ProcessingState.completed &&
+          !state.isPlayingSurahsMode) {
+        if (state.currentAyahUniqueNumber >
+            selectedSurahAyahsFileNames.length - 1) {
+          state.isPlaying.value = false;
+          await state.audioPlayer.stop();
+        } else {
+          await playNextSurah();
+        }
+      }
+    });
 
     // تسجيل الخدمة كنشطة / Register service as active
     SurahState.setAudioServiceActive(true);

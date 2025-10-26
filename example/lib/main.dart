@@ -36,11 +36,14 @@ class _MyAppState extends State<MyApp> {
         primaryColor: Colors.blue,
         useMaterial3: false,
       ),
-      home: Scaffold(
-        // body: SingleAyah(),
-        // body: SingleSurah(),
-        // body: QuranPages(),
-        body: FullQuran(),
+      home: Directionality(
+        textDirection: TextDirection.rtl,
+        child: Scaffold(
+          // body: SingleAyah(),
+          // body: SingleSurah(),
+          // body: QuranPages(),
+          body: FullQuran(),
+        ),
       ),
     );
   }

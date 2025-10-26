@@ -15,8 +15,7 @@ dependencies:
 
   quran_library:
     path: ../
-  drift_flutter: ^0.2.4
-  device_preview: ^1.2.0
+  # device_preview: ^1.2.0
 
 dev_dependencies:
   flutter_test:

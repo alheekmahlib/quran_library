@@ -71,67 +71,22 @@ class GetSingleAyah extends StatelessWidget {
                   : 'hafs'),
           package: currentFontsSelected ? null : 'quran_library',
           fontSize: fontSize ?? 22,
-          height: 1.7,
-          letterSpacing: currentFontsSelected ? 3 : null,
+          height: 2.0,
+          // letterSpacing: currentFontsSelected ? 3 : null,
+          fontWeight: isBold! ? FontWeight.bold : FontWeight.normal,
           color: textColor ?? AppColors.getTextColor(isDark!),
-          shadows: [
-            Shadow(
-              blurRadius: 0.5,
-              color: isBold!
-                  ? textColor ?? AppColors.getTextColor(isDark!)
-                  : Colors.transparent,
-              offset: const Offset(0.5, 0.5),
-            ),
-          ],
         ),
         children: [
           TextSpan(
             text: currentFontsSelected
                 ? '${ayah.codeV2!.replaceAll('\n', '').split(' ').join(' ')} '
                 : '${ayah.text} ',
-            style: TextStyle(
-              fontFamily: islocalFont == true
-                  ? fontsName
-                  : (currentFontsSelected
-                      ? QuranCtrl.instance.getFontPath(pageNumber - 1)
-                      : 'hafs'),
-              package: currentFontsSelected ? null : 'quran_library',
-              fontSize: fontSize ?? 22,
-              height: 1.7,
-              letterSpacing: currentFontsSelected ? 3 : null,
-              color: textColor ?? AppColors.getTextColor(isDark!),
-              shadows: [
-                Shadow(
-                  blurRadius: 0.5,
-                  color: isBold!
-                      ? textColor ?? AppColors.getTextColor(isDark!)
-                      : Colors.transparent,
-                  offset: const Offset(0.5, 0.5),
-                ),
-              ],
-            ),
           ),
           currentFontsSelected
               ? TextSpan()
               : TextSpan(
                   text: '${ayah.ayahNumber}'
                       .convertEnglishNumbersToArabic('${ayah.ayahNumber}'),
-                  style: TextStyle(
-                    fontFamily: 'hafs',
-                    package: 'quran_library',
-                    fontSize: fontSize ?? 22,
-                    height: 1.7,
-                    color: textColor ?? AppColors.getTextColor(isDark!),
-                    shadows: [
-                      Shadow(
-                        blurRadius: 0.5,
-                        color: isBold!
-                            ? textColor ?? AppColors.getTextColor(isDark!)
-                            : Colors.transparent,
-                        offset: const Offset(0.5, 0.5),
-                      ),
-                    ],
-                  ),
                 ),
         ],
       ),

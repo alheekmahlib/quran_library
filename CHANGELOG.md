@@ -1,3 +1,10 @@
+## 2.2.0
+
+* **Upgrade Quran Mushaf fonts to v4 (replacing the legacy version).**
+* **Add Web and Windows platform support.**
+* **UI improvements.**
+* **Performance improvements.**
+
 ## 2.1.4
 
 * **Fix playing Surah in background.**

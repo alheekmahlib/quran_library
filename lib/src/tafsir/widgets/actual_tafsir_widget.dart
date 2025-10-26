@@ -41,7 +41,7 @@ class ActualTafsirWidget extends StatelessWidget {
         GetSingleAyah(
           surahNumber: surahs.surahNumber,
           ayahNumber: ayahs.ayahNumber,
-          fontSize: 19.sp,
+          fontSize: 21.sp,
           isBold: false,
           ayahs: ayahs,
           isSingleAyah: false,
@@ -49,8 +49,7 @@ class ActualTafsirWidget extends StatelessWidget {
           fontsName: fontsName,
           isDark: isDark,
           pageIndex: pageIndex! + 1,
-          textColor:
-              tafsirStyle.textColor ?? (isDark ? Colors.white : Colors.black),
+          textColor: tafsirStyle.textColor ?? AppColors.getTextColor(isDark),
         ),
         Text.rich(
           TextSpan(
@@ -120,7 +119,7 @@ class ActualTafsirWidget extends StatelessWidget {
     }
     final spans = <InlineSpan>[
       // النص الأساسي بدون HTML tags
-      TextSpan(children: translation.cleanText.customTextSpans()),
+      TextSpan(children: translation.text.toFlutterText(isDark)),
     ];
 
     // إضافة الحواشي إذا وجدت

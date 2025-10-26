@@ -42,8 +42,17 @@ extension AyahCtrlExtension on AudioCtrl {
       state.isPlaying.value = true;
       await state.audioPlayer.play();
       log('تحميل $currentAyahFileName تم بنجاح.');
+      state._playerStateSubscription ??=
+          state.audioPlayer.playerStateStream.listen((d) async {
+        if (d.processingState == ProcessingState.completed) {
+          state.isPlaying.value = false;
+          await state.audioPlayer.stop();
+        }
+      });
       return;
     } catch (e) {
+      state.isPlaying.value = false;
+      await state.audioPlayer.stop();
       log('Error in playFile: $e', name: 'AudioController');
     }
   }
@@ -131,13 +140,11 @@ extension AyahCtrlExtension on AudioCtrl {
               currentAyahsSurah.ayahs[currentIndex].ayahUQNumber;
 
           QuranCtrl.instance.toggleAyahSelection(state.currentAyahUniqueNumber);
-          if (QuranCtrl.instance
-                  .getPageAyahsByIndex(
-                      QuranCtrl.instance.state.currentPageNumber.value - 1)
-                  .first
-                  .ayahUQNumber ==
-              (state.currentAyahUniqueNumber)) {
-            await moveToNextPage();
+          if (isLastAyahInPageButNotInSurah) {
+            await skipNextAyah(context!, state.currentAyahUniqueNumber);
+          } else if (index > ayahsFilesNames.length + 1) {
+            state.isPlaying.value = false;
+            await state.audioPlayer.stop();
           }
           log('Current playing index: $index', name: 'AudioController');
         }
@@ -148,12 +155,17 @@ extension AyahCtrlExtension on AudioCtrl {
 
       // استخدام subscription محدود لتجنب إنشاء listeners متعددة / Use limited subscription to avoid creating multiple listeners
       state._playerStateSubscription ??=
-          state.audioPlayer.playerStateStream.listen((d) {
+          state.audioPlayer.playerStateStream.listen((d) async {
         if (d.processingState == ProcessingState.completed &&
             !state.playSingleAyahOnly &&
             currentSurahNumber < 114) {
-          state.currentAyahUniqueNumber++;
-          _playAyahsFile(context, state.currentAyahUniqueNumber);
+          if (state.currentAyahUniqueNumber > ayahsFilesNames.length - 1) {
+            state.isPlaying.value = false;
+            await state.audioPlayer.stop();
+          } else {
+            state.currentAyahUniqueNumber++;
+            _playAyahsFile(context, state.currentAyahUniqueNumber);
+          }
         }
       });
     } catch (e) {

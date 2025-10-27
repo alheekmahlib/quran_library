@@ -8,7 +8,7 @@ class _StorageConstants {
   final String isTajweed = 'isTajweed';
   final String fontsDownloadedList = 'fontsDownloadedList';
   final String loadedFontPages = 'loadedFontPages';
-  final String isBold = 'IS_BOLD';
+  final String isBold = 'IS_BOLD_BOOL';
 
   /// Tafsir & Translation Constants
   final String radioValue = 'TAFSEER_VAL';

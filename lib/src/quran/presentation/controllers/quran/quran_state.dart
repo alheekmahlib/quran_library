@@ -9,7 +9,7 @@ class QuranState {
   RxInt currentPageNumber = 1.obs;
   RxBool isPlayExpanded = false.obs;
   // RxBool isSajda => false.obs;
-  RxInt isBold = 0.obs;
+  RxBool isBold = false.obs;
   RxDouble scaleFactor = 1.0.obs;
   RxDouble baseScaleFactor = 1.0.obs;
   Map<int, int> pageToHizbQuarterMap = {};

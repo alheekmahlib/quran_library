@@ -81,6 +81,16 @@ class RichTextBuild extends StatelessWidget {
                     isFontsLocal ? fontsName : quranCtrl.getFontPath(pageIndex),
                 fontSize: fs,
                 height: 1.7,
+                shadows: quranCtrl.state.isBold.value
+                    ? [
+                        Shadow(
+                          blurRadius: 0.5,
+                          color: textColor ??
+                              (isDark ? Colors.white : Colors.black),
+                          offset: const Offset(0.5, 0.5),
+                        ),
+                      ]
+                    : const [],
               ),
               children: List.generate(ayahs.length, (ayahIndex) {
                 final ayah = ayahs[ayahIndex];

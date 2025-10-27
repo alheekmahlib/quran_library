@@ -49,7 +49,8 @@ class QuranLibrary {
 
     quranCtrl.state.isDownloadedV2Fonts.value =
         storage.read(storageConstants.isDownloadedCodeV2Fonts) ?? false;
-    quranCtrl.state.isBold.value = storage.read(storageConstants.isBold) ?? 0;
+    quranCtrl.state.isBold.value =
+        storage.read(storageConstants.isBold) ?? false;
     quranCtrl.state.fontsSelected.value =
         storage.read(storageConstants.fontsSelected) ?? 0;
     quranCtrl.state.fontsDownloadedList.value = (storage
@@ -383,26 +384,26 @@ class QuranLibrary {
         isFontsLocal: isFontsLocal,
       );
 
-  /// للحصول على طريقة تنزيل الخطوط فقط قم بإستدعاء [fontsDownloadMethod]
+  /// للحصول على طريقة تنزيل الخطوط فقط قم بإستدعاء [getFontsDownloadMethod]
   ///
-  /// to get the fonts download method just call [fontsDownloadMethod]
+  /// to get the fonts download method just call [getFontsDownloadMethod]
   Future<void> getFontsDownloadMethod({required int fontIndex}) async {
     await quranCtrl.downloadAllFontsZipFile(fontIndex);
   }
 
-  /// للحصول على طريقة تنزيل الخطوط فقط قم بإستدعاء [getFontsPrepareMethod]
-  /// مطلوب تمرير رقم الصفحة [pageIndex]
+  /// للحصول على طريقة إعداد الخطوط فقط قم بإستدعاء [getFontsPrepareMethod]
+  /// يمكنك تمرير ارقام الصفحات [pages]
   ///
   /// to prepare the fonts was downloaded before just call [getFontsPrepareMethod]
-  /// required to pass [pageIndex]
-  // Future<void> getFontsPrepareMethod(
-  //     {required int pageIndex, bool isFontsLocal = false}) async {
-  //   await quranCtrl.prepareFonts(pageIndex, isFontsLocal: isFontsLocal);
-  // }
+  /// you can pass pages numbers [pages]
+  Future<void> getFontsPrepareMethod(
+      {List<int>? pages, int batchSize = 24}) async {
+    await quranCtrl.loadPersistedFontsBulk(pages: pages, batchSize: batchSize);
+  }
 
-  /// لحذف الخطوط فقط قم بإستدعاء [deleteFontsMethod]
+  /// لحذف الخطوط فقط قم بإستدعاء [getDeleteFontsMethod]
   ///
-  /// to delete the fonts just call [deleteFontsMethod]
+  /// to delete the fonts just call [getDeleteFontsMethod]
   Future<void> getDeleteFontsMethod() async {
     await quranCtrl.deleteFonts();
   }

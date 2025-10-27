@@ -1,3 +1,8 @@
+## 2.2.1
+
+* **Add fontWeight options.**
+* **Add getFontsPrepareMethod.**
+
 ## 2.2.0
 
 * **Upgrade Quran Mushaf fonts to v4 (replacing the legacy version).**

@@ -97,6 +97,7 @@ class PlaySurahsWidget extends StatelessWidget {
                   textDirection: TextDirection.rtl,
                   children: [
                     Row(
+                      textDirection: TextDirection.rtl,
                       children: [
                         SurahSkipToNext(style: style),
                         const SizedBox(width: 8),
@@ -121,6 +122,7 @@ class PlaySurahsWidget extends StatelessWidget {
                     ),
                     SurahOnlinePlayButton(style: style),
                     Row(
+                      textDirection: TextDirection.rtl,
                       children: [
                         SizedBox(
                           height: 25,

@@ -320,7 +320,7 @@ class _SearchTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final Color textColor = AppColors.getTextColor(isDark);
-    final Color accentColor = Colors.teal;
+    const Color accentColor = Colors.teal;
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Padding(
@@ -405,10 +405,9 @@ class _SearchTab extends StatelessWidget {
                           padding: const EdgeInsets.symmetric(horizontal: 8.0),
                           margin: const EdgeInsets.symmetric(
                               horizontal: 4.0, vertical: 10.0),
-                          decoration: BoxDecoration(
+                          decoration: const BoxDecoration(
                             color: accentColor,
-                            borderRadius:
-                                const BorderRadius.all(Radius.circular(8)),
+                            borderRadius: BorderRadius.all(Radius.circular(8)),
                           ),
                           child: Text(
                             search.surahNumber.toString(),
@@ -701,7 +700,7 @@ class _SurahsList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final Color textColor = AppColors.getTextColor(isDark);
-    final Color accentColor = Colors.teal;
+    const Color accentColor = Colors.teal;
     return ListView.builder(
       itemCount: surahs.length,
       itemBuilder: (context, index) => Material(
@@ -783,7 +782,7 @@ class _JozzList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final Color textColor = AppColors.getTextColor(isDark);
-    final Color accentColor = Colors.teal;
+    const Color accentColor = Colors.teal;
     return ListView.builder(
       itemCount: jozzList.length,
       itemBuilder: (context, jozzIndex) => Container(

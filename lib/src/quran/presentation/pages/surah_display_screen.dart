@@ -313,14 +313,14 @@ class SurahDisplayScreen extends StatelessWidget {
                                           .hideBottomContent();
                                     },
                                     style: ayahStyle ?? AyahAudioStyle(),
-                                    contentChild: SizedBox.shrink(),
+                                    contentChild: const SizedBox.shrink(),
                                     child: Flexible(
                                       child: AyahsAudioWidget(
                                           style: ayahStyle ?? AyahAudioStyle()),
                                     ),
                                   )),
                             )
-                          : SizedBox.shrink(),
+                          : const SizedBox.shrink(),
                     ],
                   ),
                 )),

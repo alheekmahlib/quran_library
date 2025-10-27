@@ -33,7 +33,7 @@ class HeaderDialogWidget extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Icon(Icons.font_download_rounded, color: Colors.teal),
+              const Icon(Icons.font_download_rounded, color: Colors.teal),
               const SizedBox(width: 8),
               Text(
                 title,

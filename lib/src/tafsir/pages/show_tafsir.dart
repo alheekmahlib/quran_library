@@ -55,7 +55,7 @@ class ShowTafseer extends StatelessWidget {
           child: Container(
             height: height * .9,
             width: width,
-            padding: EdgeInsets.only(bottom: 16.0),
+            padding: const EdgeInsets.only(bottom: 16.0),
             margin: EdgeInsets.symmetric(
                 horizontal: tafsirStyle.horizontalMargin ?? 0.0,
                 vertical: tafsirStyle.verticalMargin ?? 0.0),
@@ -119,8 +119,8 @@ class ShowTafseer extends StatelessWidget {
                 // محتوى التفسير
                 Expanded(
                   child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: const BorderRadius.only(
+                    decoration: const BoxDecoration(
+                      borderRadius: BorderRadius.only(
                         topLeft: Radius.circular(18),
                         topRight: Radius.circular(18),
                       ),

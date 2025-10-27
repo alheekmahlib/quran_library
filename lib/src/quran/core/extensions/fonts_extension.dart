@@ -263,7 +263,7 @@ extension FontsExtension on QuranCtrl {
           response = await dio.get(url,
               options: Options(
                 responseType: ResponseType.stream,
-                sendTimeout: Duration(seconds: 30),
+                sendTimeout: const Duration(seconds: 30),
                 headers: {
                   'User-Agent': 'Flutter/Quran-Library',
                   'Accept': '*/*',
@@ -349,7 +349,7 @@ extension FontsExtension on QuranCtrl {
             final archive = ZipDecoder().decodeBytes(bytes);
 
             if (archive.isEmpty) {
-              throw FormatException(
+              throw const FormatException(
                   'Failed to extract ZIP file: Archive is empty');
             }
 

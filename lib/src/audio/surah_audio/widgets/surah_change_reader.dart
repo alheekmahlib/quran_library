@@ -38,7 +38,7 @@ class SurahChangeSurahReader extends StatelessWidget {
             button: true,
             enabled: true,
             label: 'Change Reader',
-            child: Icon(Icons.keyboard_arrow_down_outlined,
+            child: const Icon(Icons.keyboard_arrow_down_outlined,
                 size: 24, color: Colors.black),
           ),
         ],
@@ -81,7 +81,7 @@ class SurahChangeSurahReader extends StatelessWidget {
               ),
               child: surahAudioCtrl.state.surahReaderNameValue ==
                       ReadersConstants.surahReaderInfo[index]['readerN']
-                  ? Icon(Icons.done, size: 14, color: Colors.black)
+                  ? const Icon(Icons.done, size: 14, color: Colors.black)
                   : null,
             ),
             onTap: () => surahAudioCtrl.changeSurahReadersOnTap(context, index),

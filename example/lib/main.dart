@@ -29,7 +29,7 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      localizationsDelegates: [
+      localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
@@ -46,7 +46,7 @@ class _MyAppState extends State<MyApp> {
         primaryColor: Colors.blue,
         useMaterial3: false,
       ),
-      home: Scaffold(
+      home: const Scaffold(
         // body: SingleAyah(),
         // body: SingleSurah(),
         // body: QuranPages(),
@@ -72,7 +72,7 @@ class FullQuran extends StatelessWidget {
       // textColor: Colors.black,
       isFontsLocal: false,
       anotherMenuChild:
-          Icon(Icons.play_arrow_outlined, size: 28, color: Colors.teal),
+          const Icon(Icons.play_arrow_outlined, size: 28, color: Colors.teal),
       anotherMenuChildOnTap: (ayah) {
         // SurahAudioController.instance.state.currentAyahUnequeNumber =
         //     ayah.ayahUQNumber;
@@ -80,7 +80,8 @@ class FullQuran extends StatelessWidget {
             .playAyah(context, ayah.ayahUQNumber, playSingleAyah: true);
         log('Another Menu Child Tapped: ${ayah.ayahUQNumber}');
       },
-      secondMenuChild: Icon(Icons.playlist_play, size: 28, color: Colors.teal),
+      secondMenuChild:
+          const Icon(Icons.playlist_play, size: 28, color: Colors.teal),
       secondMenuChildOnTap: (ayah) {
         // SurahAudioController.instance.state.currentAyahUnequeNumber =
         //     ayah.ayahUQNumber;
@@ -106,7 +107,7 @@ class SingleSurah extends StatelessWidget {
       languageCode: 'ar',
       useDefaultAppBar: false,
       anotherMenuChild:
-          Icon(Icons.play_arrow_outlined, size: 28, color: Colors.grey),
+          const Icon(Icons.play_arrow_outlined, size: 28, color: Colors.grey),
       anotherMenuChildOnTap: (ayah) {
         // SurahAudioController.instance.state.currentAyahUnequeNumber =
         //     ayah.ayahUQNumber;
@@ -114,7 +115,8 @@ class SingleSurah extends StatelessWidget {
             .playAyah(context, ayah.ayahUQNumber, playSingleAyah: true);
         log('Another Menu Child Tapped: ${ayah.ayahUQNumber}');
       },
-      secondMenuChild: Icon(Icons.playlist_play, size: 28, color: Colors.grey),
+      secondMenuChild:
+          const Icon(Icons.playlist_play, size: 28, color: Colors.grey),
       secondMenuChildOnTap: (ayah) {
         // SurahAudioController.instance.state.currentAyahUnequeNumber =
         //     ayah.ayahUQNumber;
@@ -133,7 +135,7 @@ class SingleAyah extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
+    return const Center(
       child: GetSingleAyah(
         surahNumber: 114,
         ayahNumber: 4,
@@ -168,12 +170,12 @@ class QuranPages extends StatelessWidget {
         //     ayahs: [7, 8, 9, 10, 11, 12],
         //   )
         // ],
-        highlightedRanges: [
+        highlightedRanges: const [
           (startSurah: 2, startAyah: 30, endSurah: 2, endAyah: 35)
         ],
         withPageView: true, // تمكين/تعطيل السحب بين الصفحات
         anotherMenuChild:
-            Icon(Icons.play_arrow_outlined, size: 28, color: Colors.teal),
+            const Icon(Icons.play_arrow_outlined, size: 28, color: Colors.teal),
         anotherMenuChildOnTap: (ayah) {
           // SurahAudioController.instance.state.currentAyahUnequeNumber =
           //     ayah.ayahUQNumber;
@@ -182,7 +184,7 @@ class QuranPages extends StatelessWidget {
           log('Another Menu Child Tapped: ${ayah.ayahUQNumber}');
         },
         secondMenuChild:
-            Icon(Icons.playlist_play, size: 28, color: Colors.teal),
+            const Icon(Icons.playlist_play, size: 28, color: Colors.teal),
         secondMenuChildOnTap: (ayah) {
           // SurahAudioController.instance.state.currentAyahUnequeNumber =
           //     ayah.ayahUQNumber;

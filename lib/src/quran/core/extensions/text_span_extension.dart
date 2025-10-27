@@ -101,12 +101,12 @@ extension TextSpanExtension on String {
                     TextStyle(color: AppColors.getTextColor(isDark))));
             return;
           case 'qpc-hafs':
-            textStyle = parentStyle?.merge(TextStyle(
+            textStyle = parentStyle?.merge(const TextStyle(
                   color: Color(0xff008000),
                   fontFamily: 'hafs',
                   package: "quran_library",
                 )) ??
-                TextStyle(
+                const TextStyle(
                   color: Color(0xff008000),
                   fontFamily: 'hafs',
                   package: "quran_library",
@@ -134,22 +134,22 @@ extension TextSpanExtension on String {
           case 'span':
             if (node.classes.contains('c5')) {
               textStyle =
-                  parentStyle?.merge(TextStyle(color: Color(0xff008000)));
+                  parentStyle?.merge(const TextStyle(color: Color(0xff008000)));
             } else if (node.classes.contains('qpc-hafs')) {
-              textStyle = parentStyle?.merge(TextStyle(
+              textStyle = parentStyle?.merge(const TextStyle(
                 color: Color(0xff008000),
                 fontFamily: 'hafs',
                 package: "quran_library",
               ));
             } else if (node.classes.contains('c4')) {
               textStyle =
-                  parentStyle?.merge(TextStyle(color: Color(0xff814714)));
+                  parentStyle?.merge(const TextStyle(color: Color(0xff814714)));
             } else if (node.classes.contains('c2')) {
               textStyle =
-                  parentStyle?.merge(TextStyle(color: Color(0xff814714)));
+                  parentStyle?.merge(const TextStyle(color: Color(0xff814714)));
             } else if (node.classes.contains('c1')) {
               textStyle =
-                  parentStyle?.merge(TextStyle(color: Color(0xffa24308)));
+                  parentStyle?.merge(const TextStyle(color: Color(0xffa24308)));
             } else {
               textStyle = parentStyle
                   ?.merge(TextStyle(color: AppColors.getTextColor(isDark)));

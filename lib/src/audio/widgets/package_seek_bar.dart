@@ -177,9 +177,9 @@ class _PackageSliderWidgetState extends State<PackageSliderWidget> {
                 ? Container(
                     padding: const EdgeInsets.symmetric(
                         horizontal: 8.0, vertical: 2.0),
-                    decoration: BoxDecoration(
+                    decoration: const BoxDecoration(
                       color: Colors.teal,
-                      borderRadius: const BorderRadius.all(
+                      borderRadius: BorderRadius.all(
                         Radius.circular(4),
                       ),
                     ),
@@ -199,9 +199,9 @@ class _PackageSliderWidgetState extends State<PackageSliderWidget> {
                       Container(
                         padding: const EdgeInsets.symmetric(
                             horizontal: 8.0, vertical: 2.0),
-                        decoration: BoxDecoration(
+                        decoration: const BoxDecoration(
                           color: Colors.teal,
-                          borderRadius: const BorderRadius.only(
+                          borderRadius: BorderRadius.only(
                             topLeft: Radius.circular(4),
                             bottomLeft: Radius.circular(4),
                           ),
@@ -224,9 +224,9 @@ class _PackageSliderWidgetState extends State<PackageSliderWidget> {
                       Container(
                         padding: const EdgeInsets.symmetric(
                             horizontal: 8.0, vertical: 2.0),
-                        decoration: BoxDecoration(
+                        decoration: const BoxDecoration(
                           color: Colors.teal,
-                          borderRadius: const BorderRadius.only(
+                          borderRadius: BorderRadius.only(
                             topRight: Radius.circular(4),
                             bottomRight: Radius.circular(4),
                           ),

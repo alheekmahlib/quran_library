@@ -128,9 +128,9 @@ extension SurahInfoExtension on void {
                   height: height,
                   width: double.infinity,
                   padding: const EdgeInsets.all(16.0),
-                  decoration: BoxDecoration(
+                  decoration: const BoxDecoration(
                     color: Colors.transparent,
-                    borderRadius: const BorderRadius.all(Radius.circular(8)),
+                    borderRadius: BorderRadius.all(Radius.circular(8)),
                   ),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,

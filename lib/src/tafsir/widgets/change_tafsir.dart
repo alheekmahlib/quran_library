@@ -132,7 +132,7 @@ class DailogBuild extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 6.0),
         margin: const EdgeInsets.symmetric(vertical: 6.0),
         decoration: BoxDecoration(
-          color: tafsirStyle.backgroundTitleColor ?? Color(0xffCDAD80),
+          color: tafsirStyle.backgroundTitleColor ?? const Color(0xffCDAD80),
           borderRadius: BorderRadius.circular(8),
         ),
         child: Text(
@@ -191,7 +191,8 @@ class TafsirItemWidget extends StatelessWidget {
               color: tafsirCtrl.radioValue.value == tafsirIndex
                   ? (tafsirStyle.selectedTafsirColor ?? const Color(0xffCDAD80))
                       .withValues(alpha: 0.3)
-                  : (tafsirStyle.unSelectedTafsirColor ?? Color(0xffCDAD80))
+                  : (tafsirStyle.unSelectedTafsirColor ??
+                          const Color(0xffCDAD80))
                       .withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
@@ -260,7 +261,7 @@ class TafsirItemWidget extends StatelessWidget {
                           ],
                         ),
                 ),
-                SizedBox(width: 8),
+                const SizedBox(width: 8),
                 Expanded(
                   child: Align(
                     alignment: AlignmentDirectional.centerStart,

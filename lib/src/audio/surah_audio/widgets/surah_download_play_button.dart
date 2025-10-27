@@ -24,7 +24,7 @@ class SurahDownloadPlayButton extends StatelessWidget {
                 final processingState = playerState?.processingState;
                 if (processingState == ProcessingState.loading ||
                     processingState == ProcessingState.buffering) {
-                  return SizedBox(
+                  return const SizedBox(
                       width: 20,
                       height: 20,
                       child: CircularProgressIndicator(

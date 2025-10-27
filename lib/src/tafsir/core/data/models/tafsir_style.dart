@@ -60,7 +60,7 @@ class TafsirStyle {
               color: isDark ? Colors.white : Colors.black,
             ),
       ),
-      fontSizeWidget: SizedBox().fontSizeDropDown(
+      fontSizeWidget: const SizedBox().fontSizeDropDown(
         height: 30.0,
         isDark: isDark,
       ),

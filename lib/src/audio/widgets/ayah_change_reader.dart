@@ -53,7 +53,7 @@ class AyahChangeReader extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             // Header
-            HeaderDialogWidget(title: 'تغيير القارئ'),
+            const HeaderDialogWidget(title: 'تغيير القارئ'),
             const SizedBox(height: 8),
             const Divider(height: 1),
             const SizedBox(height: 8),
@@ -61,7 +61,7 @@ class AyahChangeReader extends StatelessWidget {
             Flexible(
               child: ListView.separated(
                 shrinkWrap: true,
-                physics: ClampingScrollPhysics(),
+                physics: const ClampingScrollPhysics(),
                 itemCount: ReadersConstants.ayahReaderInfo.length,
                 separatorBuilder: (_, __) => Divider(
                   height: 1,
@@ -158,7 +158,7 @@ class _SelectionIndicator extends StatelessWidget {
         border: Border.all(color: Colors.black, width: 2),
       ),
       child: isSelected
-          ? Icon(
+          ? const Icon(
               Icons.done,
               size: 14,
               color: Colors.black,

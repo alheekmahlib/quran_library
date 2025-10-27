@@ -83,7 +83,7 @@ class GetSingleAyah extends StatelessWidget {
                 : '${ayah.text} ',
           ),
           currentFontsSelected
-              ? TextSpan()
+              ? const TextSpan()
               : TextSpan(
                   text: '${ayah.ayahNumber}'
                       .convertEnglishNumbersToArabic('${ayah.ayahNumber}'),

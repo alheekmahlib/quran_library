@@ -19,7 +19,7 @@ class PlayAyahWidget extends StatelessWidget {
               processingState == ProcessingState.buffering ||
               (audioCtrl.state.isDownloading.value &&
                   audioCtrl.state.progress.value == 0)) {
-            return SizedBox(
+            return const SizedBox(
                 width: 20,
                 height: 20,
                 child: CircularProgressIndicator(

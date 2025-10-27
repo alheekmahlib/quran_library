@@ -76,7 +76,8 @@ class _QuranTextScale extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 8.0),
           child: quranCtrl.state.pages.isEmpty
-              ? circularProgressWidget ?? CircularProgressIndicator.adaptive()
+              ? circularProgressWidget ??
+                  const CircularProgressIndicator.adaptive()
               : ScrollConfiguration(
                   behavior: ScrollConfiguration.of(context).copyWith(
                     scrollbars: false,

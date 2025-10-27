@@ -30,8 +30,8 @@ extension SajdaExtension on Widget {
                 children: [
                   SvgPicture.asset(AssetsPath.assets.sajdaIcon,
                       height: 15,
-                      colorFilter: ColorFilter.mode(
-                          const Color(0xff77554B), BlendMode.srcIn)),
+                      colorFilter: const ColorFilter.mode(
+                          Color(0xff77554B), BlendMode.srcIn)),
                   const SizedBox(width: 8.0),
                   Text(
                     sajdaName,

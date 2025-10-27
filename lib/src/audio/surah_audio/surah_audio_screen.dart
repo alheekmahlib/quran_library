@@ -16,6 +16,7 @@ class SurahAudioScreen extends StatelessWidget {
     final background =
         style?.backgroundColor ?? AppColors.getBackgroundColor(dark);
     final textColor = style?.textColor ?? AppColors.getTextColor(dark);
+    final size = MediaQuery.sizeOf(context);
 
     return Scaffold(
       backgroundColor: background,
@@ -38,11 +39,11 @@ class SurahAudioScreen extends StatelessWidget {
           controller: surahCtrl.state.panelController,
           config: SlidingPanelConfig(
             anchorPosition: 100,
-            expandPosition: MediaQuery.sizeOf(context).height * .6,
+            expandPosition: UiHelper.currentOrientation(
+                size.height * .7, size.height * .8, context),
           ),
           pageContent: SurahBackDropWidget(
               style: style, isDark: dark, languageCode: languageCode),
-          //! FIXME: Adjust the panel position in horizontal orientation when the interface language is set to Arabic
           panelContent: Obx(
             () => !surahCtrl.state.isSheetOpen.value
                 ? SurahCollapsedPlayWidget(

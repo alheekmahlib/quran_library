@@ -18,7 +18,7 @@ class SurahCollapsedPlayWidget extends StatelessWidget {
             .withValues(alpha: 0.15);
     final textColor = style?.surahNameColor ?? AppColors.getTextColor(isDark);
     return Align(
-      alignment: Alignment.centerRight,
+      alignment: AlignmentDirectional.centerEnd,
       child: Container(
         height: size.height,
         width:
@@ -50,6 +50,7 @@ class SurahCollapsedPlayWidget extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
+                    textDirection: TextDirection.rtl,
                     children: [
                       SurahSkipToPrevious(style: style),
                       SurahOnlinePlayButton(style: style),

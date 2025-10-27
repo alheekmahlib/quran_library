@@ -38,12 +38,12 @@ class _MyAppState extends State<MyApp> {
         Locale('en'),
         Locale('ar'),
       ],
-      locale: const Locale('ar'),
+      locale: const Locale('en'),
       // useInheritedMediaQuery: true,
       // locale: DevicePreview.locale(context),
       // builder: DevicePreview.appBuilder,
       theme: ThemeData(
-        primaryColor: Colors.blue,
+        primaryColor: Colors.teal,
         useMaterial3: false,
       ),
       home: const Scaffold(

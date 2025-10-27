@@ -30,6 +30,7 @@ class AudioCtrl extends GetxController {
       _updateDownloadedAyahsMap(),
       loadLastSurahAndPosition(),
       setCachedArtUri(),
+      lastAudioSource(),
     ]);
 
     super.onInit();

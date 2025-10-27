@@ -42,6 +42,7 @@ class SurahAudioScreen extends StatelessWidget {
           ),
           pageContent: SurahBackDropWidget(
               style: style, isDark: dark, languageCode: languageCode),
+          //! FIXME: Adjust the panel position in horizontal orientation when the interface language is set to Arabic
           panelContent: Obx(
             () => !surahCtrl.state.isSheetOpen.value
                 ? SurahCollapsedPlayWidget(

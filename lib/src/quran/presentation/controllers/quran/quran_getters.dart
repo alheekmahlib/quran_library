@@ -17,7 +17,7 @@ extension QuranGetters on QuranCtrl {
     // إعادة التحقق من حالة التحميل من التخزين
     // Re-check download status from storage
     final storageValue =
-        GetStorage().read<bool>(_StorageConstants().isDownloadedCodeV2Fonts);
+        GetStorage().read<bool>(_StorageConstants().isDownloadedCodeV4Fonts);
     state.isDownloadedV2Fonts.value = storageValue ?? false;
 
     // التحقق مما إذا كان الخط المطلوب هو نفس الخط الحالي

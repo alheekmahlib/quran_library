@@ -3,7 +3,8 @@ part of '/quran.dart';
 class _StorageConstants {
   final String bookmarks = 'bookmarks';
   final String lastPage = 'last_page';
-  final String isDownloadedCodeV2Fonts = 'isDownloadedCodeV2Fonts';
+  final String isDownloadedCodeV4Fonts = 'isDownloadedCodeV4Fonts';
+  // final String isDownloadedCodeV2Fonts = 'isDownloadedCodeV2Fonts';
   final String fontsSelected = 'fontsSelected2';
   final String isTajweed = 'isTajweed';
   final String fontsDownloadedList = 'fontsDownloadedList';

@@ -75,7 +75,8 @@ class ActualTafsirWidget extends StatelessWidget {
                           color: tafsirStyle.textColor ??
                               (isDark ? Colors.white : Colors.black),
                           height: 1.5,
-                          fontSize: tafsirStyle.fontSize ?? fontSizeArabic),
+                          fontSize:
+                              (tafsirStyle.fontSize ?? fontSizeArabic).sp),
                     )
                   : TextSpan(
                       children: _buildTranslationSpans(),
@@ -83,7 +84,8 @@ class ActualTafsirWidget extends StatelessWidget {
                           color: tafsirStyle.textColor ??
                               (isDark ? Colors.white : Colors.black),
                           height: 1.5,
-                          fontSize: tafsirStyle.fontSize ?? fontSizeArabic),
+                          fontSize:
+                              (tafsirStyle.fontSize ?? fontSizeArabic).sp),
                     ),
             ],
           ),

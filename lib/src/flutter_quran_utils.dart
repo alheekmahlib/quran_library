@@ -48,7 +48,7 @@ class QuranLibrary {
     await _initTafsir();
 
     quranCtrl.state.isDownloadedV2Fonts.value =
-        storage.read(storageConstants.isDownloadedCodeV2Fonts) ?? false;
+        storage.read(storageConstants.isDownloadedCodeV4Fonts) ?? false;
     quranCtrl.state.isBold.value =
         storage.read(storageConstants.isBold) ?? false;
     quranCtrl.state.fontsSelected.value =
@@ -57,6 +57,10 @@ class QuranLibrary {
             .read<List<dynamic>>(storageConstants.fontsDownloadedList)
             ?.cast<int>() ??
         []);
+
+    if (!kIsWeb) {
+      QuranCtrl.instance.deleteOldFonts();
+    }
 
     // Load data in parallel
     final futures = <Future<void>>[
@@ -427,7 +431,7 @@ class QuranLibrary {
     // التحقق من قيمة isDownloadedV2Fonts في GetStorage
     // Check the value of isDownloadedV2Fonts in GetStorage
     final storageValue =
-        GetStorage().read<bool>(_StorageConstants().isDownloadedCodeV2Fonts);
+        GetStorage().read<bool>(_StorageConstants().isDownloadedCodeV4Fonts);
     // تحديث قيمة المتغير في state ليتوافق مع قيمة التخزين
     // Update the state variable to match storage value
     quranCtrl.state.isDownloadedV2Fonts.value = storageValue ?? false;

@@ -380,7 +380,7 @@ extension FontsExtension on QuranCtrl {
             // حفظ حالة التحميل في التخزين المحلي
             // Save download status in local storage
             GetStorage()
-                .write(_StorageConstants().isDownloadedCodeV2Fonts, true);
+                .write(_StorageConstants().isDownloadedCodeV4Fonts, true);
             state.fontsDownloadedList.add(fontIndex);
             GetStorage().write(_StorageConstants().fontsDownloadedList,
                 state.fontsDownloadedList);
@@ -497,7 +497,7 @@ extension FontsExtension on QuranCtrl {
         log('Fonts directory deleted successfully.');
 
         // تحديث حالة التخزين المحلي
-        GetStorage().write(_StorageConstants().isDownloadedCodeV2Fonts, false);
+        GetStorage().write(_StorageConstants().isDownloadedCodeV4Fonts, false);
         GetStorage().write(_StorageConstants().fontsSelected, 0);
         // state.fontsDownloadedList.elementAt(fontIndex);
         GetStorage().write(
@@ -511,6 +511,38 @@ extension FontsExtension on QuranCtrl {
       }
     } catch (e) {
       log('Failed to delete fonts: $e');
+    }
+  }
+
+  Future<void> deleteOldFonts() async {
+    if (GetStorage().read('isDownloadedCodeV2Fonts') == true) {
+      try {
+        state.fontsDownloadedList.value = [];
+        final fontsDir = Directory('${_dir.path}/quran_fonts');
+
+        // التحقق من وجود مجلد الخطوط
+        if (await fontsDir.exists()) {
+          // حذف جميع الملفات والمجلدات داخل مجلد الخطوط
+          await fontsDir.delete(recursive: true);
+          log('Fonts directory deleted successfully.');
+
+          // تحديث حالة التخزين المحلي
+          GetStorage()
+              .write(_StorageConstants().isDownloadedCodeV4Fonts, false);
+          GetStorage().write(_StorageConstants().fontsSelected, 0);
+          // state.fontsDownloadedList.elementAt(fontIndex);
+          GetStorage().write(_StorageConstants().fontsDownloadedList,
+              state.fontsDownloadedList);
+          state.isDownloadedV2Fonts.value = false;
+          state.fontsSelected.value = 0;
+          state.fontsDownloadProgress.value = 0;
+          Get.forceAppUpdate();
+        } else {
+          log('Fonts directory does not exist.');
+        }
+      } catch (e) {
+        log('Failed to delete fonts: $e');
+      }
     }
   }
 }

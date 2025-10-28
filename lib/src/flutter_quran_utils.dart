@@ -47,7 +47,7 @@ class QuranLibrary {
     QuranCtrl.instance;
     await _initTafsir();
 
-    quranCtrl.state.isDownloadedV2Fonts.value =
+    quranCtrl.state.isFontDownloaded.value =
         storage.read(storageConstants.isDownloadedCodeV4Fonts) ?? false;
     quranCtrl.state.isBold.value =
         storage.read(storageConstants.isBold) ?? false;
@@ -91,7 +91,7 @@ class QuranLibrary {
         Future(() => QuranCtrl.instance
             .loadPersistedFontsBulk(pages: stored, batchSize: 16));
       }
-    } else if (quranCtrl.state.isDownloadedV2Fonts.value) {
+    } else if (quranCtrl.state.isFontDownloaded.value) {
       // على المنصات الأخرى: سجّل الصفحات المحفوظة فقط (دع الدالة تقرأ من التخزين)
       Future(() => QuranCtrl.instance.loadPersistedFontsBulk());
     }
@@ -434,10 +434,10 @@ class QuranLibrary {
         GetStorage().read<bool>(_StorageConstants().isDownloadedCodeV4Fonts);
     // تحديث قيمة المتغير في state ليتوافق مع قيمة التخزين
     // Update the state variable to match storage value
-    quranCtrl.state.isDownloadedV2Fonts.value = storageValue ?? false;
+    quranCtrl.state.isFontDownloaded.value = storageValue ?? false;
     // إرجاع القيمة المحدثة
     // Return the updated value
-    return quranCtrl.state.isDownloadedV2Fonts.value;
+    return quranCtrl.state.isFontDownloaded.value;
   }
 
   /// لمعرفة الخط الذي تم تحديده، ما عليك سوى إستدعاء [currentFontsSelected]

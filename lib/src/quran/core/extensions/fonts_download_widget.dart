@@ -55,7 +55,7 @@ extension FontsDownloadWidgetExtension on QuranCtrl {
         return Obx(() {
           final preparing = ctrl.state.isPreparingDownload.value;
           final downloading = ctrl.state.isDownloadingFonts.value;
-          final downloaded = ctrl.state.isDownloadedV2Fonts.value;
+          final downloaded = ctrl.state.isFontDownloaded.value;
           // Keep a consistent button area size
           const double buttonHeight = 55;
 
@@ -182,7 +182,7 @@ extension FontsDownloadWidgetExtension on QuranCtrl {
                   contentPadding: const EdgeInsetsDirectional.symmetric(
                       horizontal: 12, vertical: 0),
                   onTap: (fontsLocal ||
-                          ctrl.state.isDownloadedV2Fonts.value ||
+                          ctrl.state.isFontDownloaded.value ||
                           kIsWeb)
                       ? () {
                           ctrl.state.fontsSelected.value = index;

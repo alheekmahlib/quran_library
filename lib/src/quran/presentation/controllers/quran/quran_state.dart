@@ -18,7 +18,7 @@ class QuranState {
 
   bool isQuranLoaded = false;
   RxBool isDownloadingFonts = false.obs;
-  RxBool isDownloadedV2Fonts = false.obs;
+  RxBool isFontDownloaded = false.obs;
   RxList<int> fontsDownloadedList = <int>[].obs;
   RxInt fontsSelected = 0.obs;
   RxDouble fontsDownloadProgress = 0.0.obs;
@@ -43,7 +43,7 @@ class QuranState {
     scaleFactor.close();
     baseScaleFactor.close();
     isDownloadingFonts.close();
-    isDownloadedV2Fonts.close();
+    isFontDownloaded.close();
     fontsDownloadedList.close();
     fontsSelected.close();
     fontsDownloadProgress.close();

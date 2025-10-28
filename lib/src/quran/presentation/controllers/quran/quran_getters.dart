@@ -18,12 +18,12 @@ extension QuranGetters on QuranCtrl {
     // Re-check download status from storage
     final storageValue =
         GetStorage().read<bool>(_StorageConstants().isDownloadedCodeV4Fonts);
-    state.isDownloadedV2Fonts.value = storageValue ?? false;
+    state.isFontDownloaded.value = storageValue ?? false;
 
     // التحقق مما إذا كان الخط المطلوب هو نفس الخط الحالي
     // Check if the requested font is the same as the current font
     if (state.fontsSelected.value == fontIndex &&
-        (fontIndex == 0 || state.isDownloadedV2Fonts.value)) {
+        (fontIndex == 0 || state.isFontDownloaded.value)) {
       log('Font is already selected', name: 'QuranGetters');
       return;
     }
@@ -40,7 +40,7 @@ extension QuranGetters on QuranCtrl {
 
     // إذا كان الخط محملاً بالفعل، قم بتعيينه
     // If the font is already downloaded, just set it
-    if (state.isDownloadedV2Fonts.value) {
+    if (state.isFontDownloaded.value) {
       state.fontsSelected.value = fontIndex;
       GetStorage().write(_StorageConstants().fontsSelected, fontIndex);
       update(['fontsSelected']);

@@ -214,7 +214,7 @@ extension FontsExtension on QuranCtrl {
   Future<void> downloadAllFontsZipFile(int fontIndex) async {
     // على الويب لا نحتاج التنزيل، سنحمّل مباشرة عند الحاجة
     if (kIsWeb) {
-      state.isDownloadedV2Fonts.value = true;
+      state.isFontDownloaded.value = true;
       state.isDownloadingFonts.value = false;
       state.isPreparingDownload.value = false;
       update(['fontsDownloadingProgress']);
@@ -387,7 +387,7 @@ extension FontsExtension on QuranCtrl {
 
             // تحديث حالة التحميل وإكمال شريط التقدم
             // Update download status and complete progress bar
-            state.isDownloadedV2Fonts.value = true;
+            state.isFontDownloaded.value = true;
             state.isDownloadingFonts.value = false;
             state.isPreparingDownload.value = false;
             state.fontsDownloadProgress.value = 100.0;
@@ -502,7 +502,7 @@ extension FontsExtension on QuranCtrl {
         // state.fontsDownloadedList.elementAt(fontIndex);
         GetStorage().write(
             _StorageConstants().fontsDownloadedList, state.fontsDownloadedList);
-        state.isDownloadedV2Fonts.value = false;
+        state.isFontDownloaded.value = false;
         state.fontsSelected.value = 0;
         state.fontsDownloadProgress.value = 0;
         Get.forceAppUpdate();
@@ -527,13 +527,12 @@ extension FontsExtension on QuranCtrl {
           log('Fonts directory deleted successfully.');
 
           // تحديث حالة التخزين المحلي
-          GetStorage()
-              .write(_StorageConstants().isDownloadedCodeV4Fonts, false);
+          GetStorage().write('isDownloadedCodeV2Fonts', false);
           GetStorage().write(_StorageConstants().fontsSelected, 0);
           // state.fontsDownloadedList.elementAt(fontIndex);
           GetStorage().write(_StorageConstants().fontsDownloadedList,
               state.fontsDownloadedList);
-          state.isDownloadedV2Fonts.value = false;
+          state.isFontDownloaded.value = false;
           state.fontsSelected.value = 0;
           state.fontsDownloadProgress.value = 0;
           Get.forceAppUpdate();

@@ -1,3 +1,8 @@
+## 2.2.2
+
+* **Fix some UI issue.**
+* **Add method to delete old font.**
+
 ## 2.2.1
 
 * **Add fontWeight options.**

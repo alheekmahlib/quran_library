@@ -121,26 +121,27 @@ extension FontsExtension on QuranCtrl {
   //   }
   // }
   Future<void> prepareFonts(int pageIndex, {bool isFontsLocal = false}) async {
-    // الصفحة الحالية
-    await loadFont(pageIndex, isFontsLocal: isFontsLocal);
+    SchedulerBinding.instance.scheduleTask(() async {
+      // QuranCtrl.instance.prepareFonts(index);
+      await QuranCtrl.instance.loadFont(pageIndex);
 
-    // الصفحات المجاورة: ±2 كتحضير مسبق أوسع لتقليل أي نتش متبقٍ
-    final neighbors = [-2, -1, 1, 2];
-    final candidates = neighbors
-        .map((o) => pageIndex + o)
-        .where((i) => i >= 0 && i < 604)
-        .toList();
-    for (final i in candidates) {
-      try {
-        await SchedulerBinding.instance.scheduleTask(() async {
-          if (isClosed) return;
-          await loadFont(i, isFontsLocal: isFontsLocal);
-        }, Priority.idle);
-        // await loadFont(i, isFontsLocal: isFontsLocal);
-      } catch (_) {
-        // تجاهل أخطاء التحميل المسبق
+      // الصفحات المجاورة: ±2 كتحضير مسبق أوسع لتقليل أي نتش متبقٍ
+      final neighbors = [-2, -1, 1, 2];
+      final candidates = neighbors
+          .map((o) => pageIndex + o)
+          .where((i) => i >= 0 && i < 604)
+          .toList();
+      for (final i in candidates) {
+        try {
+          SchedulerBinding.instance.scheduleTask(() async {
+            await QuranCtrl.instance.loadFont(i);
+          }, Priority.idle);
+          // await loadFont(i, isFontsLocal: isFontsLocal);
+        } catch (_) {
+          // تجاهل أخطاء التحميل المسبق
+        }
       }
-    }
+    }, Priority.animation);
   }
 
   /// تهيئة خاملة لخطوط صفحات مجاورة حول [centerIndex]

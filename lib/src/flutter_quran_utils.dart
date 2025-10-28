@@ -93,7 +93,7 @@ class QuranLibrary {
       }
     } else if (quranCtrl.state.isFontDownloaded.value) {
       // على المنصات الأخرى: سجّل الصفحات المحفوظة فقط (دع الدالة تقرأ من التخزين)
-      Future(() => QuranCtrl.instance.loadPersistedFontsBulk());
+      QuranCtrl.instance.loadPersistedFontsBulk();
     }
 
     // Initialize bookmarks

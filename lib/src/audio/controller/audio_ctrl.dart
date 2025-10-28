@@ -48,14 +48,14 @@ class AudioCtrl extends GetxController {
     if (!kIsWeb && (Platform.isIOS || Platform.isAndroid || Platform.isMacOS)) {
       if (!state.audioServiceInitialized.value) {
         if (!QuranCtrl.instance.state.isQuranLoaded) {
-          await QuranCtrl.instance.loadQuran().then((_) async {
+          await QuranCtrl.instance.loadQuranDataV1().then((_) async {
             await initAudioService();
           });
         } else {
           await initAudioService();
         }
       } else {
-        await QuranCtrl.instance.loadQuran();
+        await QuranCtrl.instance.loadQuranDataV1();
         log("Audio service already initialized",
             name: 'surah_audio_controller');
       }

@@ -80,44 +80,66 @@ extension FontsExtension on QuranCtrl {
   /// - يقرأ القائمة من GetStorage.loadedFontPages
   /// - يتخطّى الصفحات المسجّلة في الذاكرة state.loadedFontPages
   /// - يعمل على دفعات صغيرة لتجنّب حجب واجهة المستخدم
-  Future<void> loadPersistedFontsBulk({
-    List<int>? pages,
-    int batchSize = 24,
-  }) async {
-    try {
-      final storage = GetStorage();
-      final stored = (pages ??
-              (storage
-                      .read<List<dynamic>>(_StorageConstants().loadedFontPages)
-                      ?.cast<int>() ??
-                  []))
-          .where((p) => p >= 0 && p < 604)
-          .toSet()
-          .toList()
-        ..sort();
+  // Future<void> loadPersistedFontsBulk({
+  //   List<int>? pages,
+  //   int batchSize = 24,
+  // }) async {
+  //   try {
+  //     final storage = GetStorage();
+  //     final stored = (pages ??
+  //             (storage
+  //                     .read<List<dynamic>>(_StorageConstants().loadedFontPages)
+  //                     ?.cast<int>() ??
+  //                 []))
+  //         .where((p) => p >= 0 && p < 604)
+  //         .toSet()
+  //         .toList()
+  //       ..sort();
 
-      if (stored.isEmpty) return;
+  //     if (stored.isEmpty) return;
 
-      // تحميل على دفعات صغيرة لتجنّب الجانك
-      for (int i = 0; i < stored.length; i += batchSize) {
-        final chunk =
-            stored.sublist(i, (i + batchSize).clamp(0, stored.length));
-        for (final page in chunk) {
-          // سيقوم loadFont بتخطّي الصفحة إذا كانت محمّلة مسبقًا
-          await loadFont(page, isFontsLocal: true);
-        }
-        // بعد كل دفعة على المنصات غير الويب: أعد بناء الواجهة كي تنعكس الخطوط
-        // On non-web, a chunk-level rebuild is sufficient; web already rebuilds per page load
-        if (!kIsWeb && !isClosed) {
-          try {
-            update();
-          } catch (_) {}
-        }
-        // فسح المجال للإطار التالي
-        await Future.delayed(const Duration(milliseconds: 1));
+  //     // تحميل على دفعات صغيرة لتجنّب الجانك
+  //     for (int i = 0; i < stored.length; i += batchSize) {
+  //       final chunk =
+  //           stored.sublist(i, (i + batchSize).clamp(0, stored.length));
+  //       for (final page in chunk) {
+  //         // سيقوم loadFont بتخطّي الصفحة إذا كانت محمّلة مسبقًا
+  //         await loadFont(page, isFontsLocal: true);
+  //       }
+  //       // بعد كل دفعة على المنصات غير الويب: أعد بناء الواجهة كي تنعكس الخطوط
+  //       // On non-web, a chunk-level rebuild is sufficient; web already rebuilds per page load
+  //       if (!kIsWeb && !isClosed) {
+  //         try {
+  //           update();
+  //         } catch (_) {}
+  //       }
+  //       // فسح المجال للإطار التالي
+  //       await Future.delayed(const Duration(milliseconds: 1));
+  //     }
+  //   } catch (e) {
+  //     log('Bulk load persisted fonts failed: $e', name: 'FontsLoad');
+  //   }
+  // }
+  Future<void> prepareFonts(int pageIndex, {bool isFontsLocal = false}) async {
+    // الصفحة الحالية
+    await loadFont(pageIndex, isFontsLocal: isFontsLocal);
+
+    // الصفحات المجاورة: ±2 كتحضير مسبق أوسع لتقليل أي نتش متبقٍ
+    final neighbors = [-2, -1, 1, 2];
+    final candidates = neighbors
+        .map((o) => pageIndex + o)
+        .where((i) => i >= 0 && i < 604)
+        .toList();
+    for (final i in candidates) {
+      try {
+        await SchedulerBinding.instance.scheduleTask(() async {
+          if (isClosed) return;
+          await loadFont(i, isFontsLocal: isFontsLocal);
+        }, Priority.idle);
+        // await loadFont(i, isFontsLocal: isFontsLocal);
+      } catch (_) {
+        // تجاهل أخطاء التحميل المسبق
       }
-    } catch (e) {
-      log('Bulk load persisted fonts failed: $e', name: 'FontsLoad');
     }
   }
 
@@ -373,10 +395,11 @@ extension FontsExtension on QuranCtrl {
             } else {
               log('Files in fontsDir after extraction: ${files.map((file) => file.path).join(', ')}');
             }
-            await QuranCtrl.instance.loadFontsQuran();
+            // await QuranCtrl.instance.loadFontsQuran();
             // بعد فك الضغط، حمّل (سجّل) كل الخطوط دفعة واحدة واحفظ النتائج
-            await loadFontFromZip().then((_) =>
-                loadPersistedFontsBulk(pages: List.generate(604, (i) => i)));
+            // await loadFontFromZip();
+            // .then((_) =>
+            //     loadPersistedFontsBulk(pages: List.generate(604, (i) => i)));
             // حفظ حالة التحميل في التخزين المحلي
             // Save download status in local storage
             GetStorage()

@@ -54,7 +54,7 @@ class QuranRepository {
   /// ```dart
   /// List<dynamic> fonts = await getFontsQuran();
   /// ```
-  Future<List<dynamic>> getFontsQuran() async {
+  Future<List<dynamic>> getQuranDataV3() async {
     String jsonString = await rootBundle
         .loadString('packages/quran_library/assets/jsons/quranV3.json');
     Map<String, dynamic> jsonResponse = jsonDecode(jsonString);

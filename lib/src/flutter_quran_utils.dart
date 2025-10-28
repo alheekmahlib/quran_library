@@ -64,13 +64,13 @@ class QuranLibrary {
 
     // Load data in parallel
     final futures = <Future<void>>[
-      QuranCtrl.instance.loadQuran(),
-      QuranCtrl.instance.loadFontsQuran(),
+      QuranCtrl.instance.loadQuranDataV1(),
+      QuranCtrl.instance.loadQuranDataV3(),
       QuranCtrl.instance.fetchSurahs(),
       Future(() async {
         final lastPage = QuranRepository().getLastPage();
         if (lastPage != null) {
-          // Handle last page if needed
+          QuranCtrl.instance.jumpToPage(lastPage - 1);
         }
       }),
     ];
@@ -81,20 +81,20 @@ class QuranLibrary {
     AudioCtrl.instance;
 
     // تسجيل الخطوط المحفوظة دفعة واحدة في الخلفية إن كانت متاحة
-    if (kIsWeb) {
-      // على الويب: لا تنزيلات مسبقة. سجّل فقط الصفحات التي تم تحميلها سابقًا (إن وُجدت)
-      final stored = storage
-              .read<List<dynamic>>(storageConstants.loadedFontPages)
-              ?.cast<int>() ??
-          const <int>[];
-      if (stored.isNotEmpty) {
-        Future(() => QuranCtrl.instance
-            .loadPersistedFontsBulk(pages: stored, batchSize: 16));
-      }
-    } else if (quranCtrl.state.isFontDownloaded.value) {
-      // على المنصات الأخرى: سجّل الصفحات المحفوظة فقط (دع الدالة تقرأ من التخزين)
-      QuranCtrl.instance.loadPersistedFontsBulk();
-    }
+    // if (kIsWeb) {
+    //   // على الويب: لا تنزيلات مسبقة. سجّل فقط الصفحات التي تم تحميلها سابقًا (إن وُجدت)
+    //   final stored = storage
+    //           .read<List<dynamic>>(storageConstants.loadedFontPages)
+    //           ?.cast<int>() ??
+    //       const <int>[];
+    //   if (stored.isNotEmpty) {
+    //     Future(() => QuranCtrl.instance
+    //         .loadPersistedFontsBulk(pages: stored, batchSize: 16));
+    //   }
+    // } else if (quranCtrl.state.isFontDownloaded.value) {
+    //   // على المنصات الأخرى: سجّل الصفحات المحفوظة فقط (دع الدالة تقرأ من التخزين)
+    //   QuranCtrl.instance.loadPersistedFontsBulk();
+    // }
 
     // Initialize bookmarks
     BookmarksCtrl.instance.initBookmarks(
@@ -400,10 +400,10 @@ class QuranLibrary {
   ///
   /// to prepare the fonts was downloaded before just call [getFontsPrepareMethod]
   /// you can pass pages numbers [pages]
-  Future<void> getFontsPrepareMethod(
-      {List<int>? pages, int batchSize = 24}) async {
-    await quranCtrl.loadPersistedFontsBulk(pages: pages, batchSize: batchSize);
-  }
+  // Future<void> getFontsPrepareMethod(
+  //     {List<int>? pages, int batchSize = 24}) async {
+  //   await quranCtrl.loadPersistedFontsBulk(pages: pages, batchSize: batchSize);
+  // }
 
   /// لحذف الخطوط فقط قم بإستدعاء [getDeleteFontsMethod]
   ///

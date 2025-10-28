@@ -386,6 +386,7 @@ class QuranLibraryScreen extends StatelessWidget {
                                   QuranCtrl.instance
                                       .idlePreloadFontsAround(pageIndex);
                                 }
+                                quranCtrl.prepareFonts(pageIndex);
                               });
                             },
                             pageSnapping: true,

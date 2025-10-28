@@ -79,21 +79,21 @@ class QuranCtrl extends GetxController {
   //   await quranSearch.loadModel(); // تحميل نموذج BERT
   // }
 
-  Future<void> loadFontsQuran() async {
-    lastPage = _quranRepository.getLastPage() ?? 1;
-    state.currentPageNumber.value = lastPage;
-    if (lastPage != 0) {
-      jumpToPage(lastPage - 1);
-    }
+  Future<void> loadQuranDataV3() async {
+    // lastPage = _quranRepository.getLastPage() ?? 1;
+    // state.currentPageNumber.value = lastPage;
+    // if (lastPage != 0) {
+    //   jumpToPage(lastPage - 1);
+    // }
     if (state.surahs.isEmpty) {
-      List<dynamic> surahsJson = await _quranRepository.getFontsQuran();
+      List<dynamic> surahsJson = await _quranRepository.getQuranDataV3();
       state.surahs =
           surahsJson.map((s) => SurahModel.fromDownloadedFontsJson(s)).toList();
 
       for (final surah in state.surahs) {
         state.allAyahs.addAll(surah.ayahs);
         // log('Added ${surah.arabicName} ayahs');
-        update();
+        // update();
       }
       List.generate(604, (pageIndex) {
         state.pages.add(state.allAyahs
@@ -115,14 +115,14 @@ class QuranCtrl extends GetxController {
     return filteredAyahs;
   }
 
-  Future<void> loadQuran(
+  Future<void> loadQuranDataV1(
       {int quranPages = QuranRepository.hafsPagesNumber}) async {
     // حفظ آخر صفحة
-    lastPage = _quranRepository.getLastPage() ?? 1;
-    state.currentPageNumber.value = lastPage;
-    if (lastPage != 0) {
-      jumpToPage(lastPage - 1);
-    }
+    // lastPage = _quranRepository.getLastPage() ?? 1;
+    // state.currentPageNumber.value = lastPage;
+    // if (lastPage != 0) {
+    //   jumpToPage(lastPage - 1);
+    // }
     // إذا كانت الصفحات لم تُملأ أو العدد غير متطابق
     if (staticPages.isEmpty || quranPages != staticPages.length) {
       // إنشاء صفحات فارغة
@@ -377,7 +377,7 @@ class QuranCtrl extends GetxController {
       final oldController = quranPagesController;
       quranPagesController = PageController(
         initialPage: currentIndex,
-        keepPage: true,
+        keepPage: kIsWeb || GetPlatform.isDesktop,
         viewportFraction: targetFraction,
       );
 

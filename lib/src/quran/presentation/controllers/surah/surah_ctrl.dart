@@ -61,7 +61,7 @@ class SurahCtrl extends GetxController {
       // Explanation: Ensure full Quran is loaded first
       final quranCtrl = QuranCtrl.instance;
       if (quranCtrl.staticPages.isEmpty) {
-        await quranCtrl.loadQuran();
+        await quranCtrl.loadQuranDataV1();
       }
 
       // شرح: فلترة آيات السورة المطلوبة

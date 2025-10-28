@@ -48,6 +48,15 @@ extension QuranGetters on QuranCtrl {
       log('Downloaded font selected', name: 'QuranGetters');
       return;
     }
+
+    // إذا كان الخط غير محمل، قم بتحميله أولاً ثم تعيينه
+    // If the font is not downloaded, download it first then set it
+
+    state.fontsSelected.value = fontIndex;
+    GetStorage().write(_StorageConstants().fontsSelected, fontIndex);
+    update(['fontsSelected', 'fontsDownloadingProgress']);
+    Get.forceAppUpdate();
+    log('Font downloaded and selected', name: 'QuranGetters');
   }
 
   List<int> get _startSurahsNumbers => [

@@ -80,11 +80,11 @@ class QuranCtrl extends GetxController {
   // }
 
   Future<void> loadQuranDataV3() async {
-    // lastPage = _quranRepository.getLastPage() ?? 1;
-    // state.currentPageNumber.value = lastPage;
-    // if (lastPage != 0) {
-    //   jumpToPage(lastPage - 1);
-    // }
+    lastPage = _quranRepository.getLastPage() ?? 1;
+    state.currentPageNumber.value = lastPage;
+    if (lastPage != 0) {
+      jumpToPage(lastPage - 1);
+    }
     if (state.surahs.isEmpty) {
       List<dynamic> surahsJson = await _quranRepository.getQuranDataV3();
       state.surahs =
@@ -93,7 +93,7 @@ class QuranCtrl extends GetxController {
       for (final surah in state.surahs) {
         state.allAyahs.addAll(surah.ayahs);
         // log('Added ${surah.arabicName} ayahs');
-        update();
+        // update();
       }
       List.generate(604, (pageIndex) {
         state.pages.add(state.allAyahs

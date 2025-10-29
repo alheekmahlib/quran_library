@@ -1,3 +1,8 @@
+## 2.2.3
+
+* **Fix some UI issue.**
+* **Add method to preparing fonts.**
+
 ## 2.2.2
 
 * **Fix some UI issue.**

@@ -568,25 +568,4 @@ extension FontsExtension on QuranCtrl {
       }
     }
   }
-
-  /// يحمّل الخطوط في isolate منفصل
-  Future<void> loadFontsInBackground(List<int> pages) async {
-    await compute(_loadFontsIsolate, pages);
-  }
-
-  /// دالة الـ isolate
-  static Future<void> _loadFontsIsolate(List<int> pages) async {
-    for (final page in pages) {
-      try {
-        final loader = FontLoader('p$page');
-        final fontData = rootBundle.load('fonts/p$page.ttf');
-        loader.addFont(fontData);
-        await loader.load();
-      } catch (e) {
-        // تجاهل الأخطاء في الـ isolate
-      }
-      // فترة راحة صغيرة
-      await Future.delayed(const Duration(microseconds: 500));
-    }
-  }
 }

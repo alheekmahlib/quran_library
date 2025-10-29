@@ -68,7 +68,8 @@ class QuranLibrary {
       QuranCtrl.instance.loadQuranDataV3(),
       QuranCtrl.instance.fetchSurahs(),
       Future(() async {
-        final lastPage = QuranRepository().getLastPage();
+        final lastPage = storage.read(
+            _StorageConstants().lastPage); // QuranRepository().getLastPage();
         if (lastPage != null) {
           QuranCtrl.instance.jumpToPage(lastPage - 1);
         }

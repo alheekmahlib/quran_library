@@ -93,7 +93,7 @@ class QuranCtrl extends GetxController {
       for (final surah in state.surahs) {
         state.allAyahs.addAll(surah.ayahs);
         // log('Added ${surah.arabicName} ayahs');
-        // update();
+        update();
       }
       List.generate(604, (pageIndex) {
         state.pages.add(state.allAyahs

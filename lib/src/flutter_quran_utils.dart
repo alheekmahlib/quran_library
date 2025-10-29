@@ -601,6 +601,11 @@ class QuranLibrary {
   bool get isTafsir => TafsirCtrl.instance.selectedTafsir.isTafsir;
   bool get isTtranslation => TafsirCtrl.instance.selectedTafsir.isTranslation;
 
+  /// التحقق إذا كان التفسير قيد التحميل حالياً.
+  /// Check if the tafsir is currently being downloaded.
+  bool get isPreparingDownloadTafsir =>
+      TafsirCtrl.instance.isPreparingDownload.value;
+
   /// الحصول على رقم التفسير المختار حالياً.
   /// Get the currently selected tafsir index.
   int get selectedTafsirIndex => TafsirCtrl.instance.radioValue.value;
@@ -613,7 +618,7 @@ class QuranLibrary {
   /// تحميل التفسير المحدد حسب الفهرس.
   /// Download the tafsir by the given index.
   Future<void> tafsirDownload(int i) async =>
-      await TafsirCtrl.instance.tafsirDownload(i);
+      await TafsirCtrl.instance.tafsirAndTranslationDownload(i);
 
   // Future<void> initializeDatabase() async =>
   //     await TafsirCtrl.instance.initializeDatabase();

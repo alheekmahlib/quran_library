@@ -70,7 +70,7 @@ class ActualTafsirWidget extends StatelessWidget {
             children: <InlineSpan>[
               isTafsir
                   ? TextSpan(
-                      children: tafsir.tafsirText.customTextSpans(),
+                      children: tafsir.tafsirText.toFlutterText(isDark),
                       style: TextStyle(
                           color: tafsirStyle.textColor ??
                               (isDark ? Colors.white : Colors.black),

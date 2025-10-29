@@ -233,6 +233,31 @@ class TafsirItemWidget extends StatelessWidget {
                       : Stack(
                           alignment: Alignment.center,
                           children: [
+                            // مؤشر دوران أثناء مرحلة التهيئة وقبل ظهور التقدم
+                            Obx(() {
+                              final isThisItem =
+                                  tafsirIndex == tafsirCtrl.downloadIndex.value;
+                              final preparing =
+                                  tafsirCtrl.isPreparingDownload.value;
+                              final startedNoProgress =
+                                  tafsirCtrl.onDownloading.value &&
+                                      tafsirCtrl.progress.value == 0.0;
+                              final showInit = isThisItem &&
+                                  (preparing || startedNoProgress);
+                              return showInit
+                                  ? SizedBox(
+                                      height: 24,
+                                      width: 24,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        color:
+                                            tafsirStyle.selectedTafsirColor ??
+                                                const Color(0xffCDAD80),
+                                      ),
+                                    )
+                                  : const SizedBox.shrink();
+                            }),
+                            // مؤشر تقدم أثناء التحميل
                             Obx(
                               () => CircularProgressIndicator(
                                 strokeWidth: 2,
@@ -247,17 +272,41 @@ class TafsirItemWidget extends StatelessWidget {
                                 value: tafsirCtrl.progress.value,
                               ),
                             ),
+                            // زر التحميل يُخفى أثناء التهيئة أو عند بدء التحميل بدون تقدم
                             if (!kIsWeb)
-                              IconButton(
-                                icon: Icon(Icons.cloud_download_outlined,
-                                    size: 22,
-                                    color: tafsirStyle.unSelectedTafsirColor ??
-                                        const Color(0xffCDAD80)),
-                                onPressed: () async {
-                                  tafsirCtrl.downloadIndex.value = tafsirIndex;
-                                  await tafsirCtrl.tafsirDownload(tafsirIndex);
-                                },
-                              ),
+                              Obx(() {
+                                final isThisItem = tafsirIndex ==
+                                    tafsirCtrl.downloadIndex.value;
+                                final preparing =
+                                    tafsirCtrl.isPreparingDownload.value;
+                                final startedNoProgress =
+                                    tafsirCtrl.onDownloading.value &&
+                                        tafsirCtrl.progress.value == 0.0;
+                                final hideIcon = isThisItem &&
+                                    (preparing ||
+                                        startedNoProgress ||
+                                        tafsirCtrl.onDownloading.value);
+                                return Visibility(
+                                  visible: !hideIcon,
+                                  child: IconButton(
+                                    icon: Icon(
+                                      Icons.cloud_download_outlined,
+                                      size: 22,
+                                      color:
+                                          tafsirStyle.unSelectedTafsirColor ??
+                                              const Color(0xffCDAD80),
+                                    ),
+                                    onPressed: () async {
+                                      tafsirCtrl.downloadIndex.value =
+                                          tafsirIndex;
+                                      tafsirCtrl.update(['tafsirs_menu_list']);
+                                      await tafsirCtrl
+                                          .tafsirAndTranslationDownload(
+                                              tafsirIndex);
+                                    },
+                                  ),
+                                );
+                              }),
                           ],
                         ),
                 ),

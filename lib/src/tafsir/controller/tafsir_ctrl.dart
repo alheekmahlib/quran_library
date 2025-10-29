@@ -24,6 +24,8 @@ class TafsirCtrl extends GetxController {
   final box = GetStorage();
   RxBool isDownloading = false.obs;
   RxBool onDownloading = false.obs;
+  // مؤشر لمرحلة التهيئة قبل بدء التحميل الفعلي
+  RxBool isPreparingDownload = false.obs;
   RxString progressString = "0".obs;
   RxDouble progress = 0.0.obs;
   RxDouble fontSizeArabic = 20.0.obs;
@@ -195,7 +197,7 @@ class TafsirCtrl extends GetxController {
             final exists = await File(filePath).exists();
             if (!exists) {
               log('NotExists');
-              await tafsirDownload(radioValue.value);
+              await tafsirAndTranslationDownload(radioValue.value);
               return;
             } else {
               jsonString = await File(filePath).readAsString();
@@ -264,7 +266,7 @@ class TafsirCtrl extends GetxController {
         final exists = await File(path).exists();
         if (!exists) {
           // حمّل الملف محليًا ثم اقرأه
-          await tafsirDownload(radioValue.value);
+          await tafsirAndTranslationDownload(radioValue.value);
           final exists2 = await File(path).exists();
           if (!exists2) throw Exception('Translation file not found');
         }
@@ -407,13 +409,20 @@ class TafsirCtrl extends GetxController {
   /// ------------[DownloadMethods]------------
   /// شرح: تحميل قاعدة بيانات التفسير أو الترجمة
   /// Explanation: Download tafsir or translation database
-  Future<void> tafsirDownload(int i) async {
+  Future<void> tafsirAndTranslationDownload(int i) async {
+    // ابدأ عرض حالة التهيئة فور النقر قبل بدء التحميل الفعلي
+    isPreparingDownload.value = true;
+    update(['tafsirs_menu_list']);
+
     if (kIsWeb) {
       // على الويب لا يوجد تنزيل محلي، اعتبره "متاح" مباشرةً
       _onDownloadSuccess(i);
+      // انتهاء مرحلة التهيئة
+      isPreparingDownload.value = false;
       update(['tafsirs_menu_list']);
       return;
     }
+
     String path;
     String fileUrl;
     final idx = (i >= 0 && i < tafsirAndTranslationsItems.length) ? i : 0;
@@ -427,6 +436,7 @@ class TafsirCtrl extends GetxController {
       fileUrl =
           'https://github.com/alheekmahlib/Islamic_database/raw/refs/heads/main/quran_database/translate/${selected.fileName}.json';
     }
+
     if (!onDownloading.value) {
       onDownloading.value = true;
       await downloadFile(path, fileUrl).then((_) async {
@@ -436,9 +446,14 @@ class TafsirCtrl extends GetxController {
         await _loadTafsirDownloadIndices();
         await handleRadioValueChanged(i);
       });
+      // انتهاء التحميل: أوقف مؤشر التهيئة إن كان ما يزال مفعلاً
+      isPreparingDownload.value = false;
       onDownloading.value = false;
       update(['tafsirs_menu_list']);
       log('Downloading from URL: $fileUrl', name: 'TafsirCtrl');
+    } else {
+      // يوجد تنزيل جارٍ بالفعل، أوقف مؤشر التهيئة لهذا الطلب
+      isPreparingDownload.value = false;
     }
     update(['tafsirs_menu_list']);
   }

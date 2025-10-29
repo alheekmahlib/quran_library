@@ -1,3 +1,8 @@
+## 2.2.3+1
+
+* **Fix the way Tafsir texts are displayed.**
+* **Add variable to check if the tafsir is currently being downloaded.**
+
 ## 2.2.3
 
 * **Fix some UI issue.**

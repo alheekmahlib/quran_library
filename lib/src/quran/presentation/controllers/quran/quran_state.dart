@@ -33,6 +33,8 @@ class QuranState {
   // Guard to prepare initial page fonts once
   bool didPrepareInitialFonts = false;
 
+  final FocusNode quranPageRLFocusNode = FocusNode();
+
   // ملاحظة: تم إزالة GlobalKey<ScaffoldState> لتجنب التعارض مع التطبيقات الأخرى
   // Note: GlobalKey<ScaffoldState> has been removed to avoid conflicts with other applications
 

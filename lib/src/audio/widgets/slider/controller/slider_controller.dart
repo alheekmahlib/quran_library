@@ -281,8 +281,8 @@ class SliderController extends GetxController with GetTickerProviderStateMixin {
 
   // ارتفاع متوسط للسلايدر (60%)
   // Medium height for slider (60%)
-  void setMediumHeight(BuildContext context) =>
-      setBottomSliderHeight(UiHelper.currentOrientation(0.23, 0.4, context));
+  void setMediumHeight(BuildContext context) => setBottomSliderHeight(
+      UiHelper.currentOrientation(0.23, kIsWeb ? 0.3 : 0.4, context));
 
   // ارتفاع كبير للسلايدر (80%)
   // Large height for slider (80%)

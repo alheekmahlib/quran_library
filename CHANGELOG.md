@@ -1,3 +1,10 @@
+## 2.2.3+2
+
+* **Fix .**
+* **Add more optinos to AyahAudioStyle.**
+* **Ability to add a custom widget to tapbar.**
+* **Support for turning pages using the keyboard in the web and desktop.**
+
 ## 2.2.3+1
 
 * **Fix the way Tafsir texts are displayed.**

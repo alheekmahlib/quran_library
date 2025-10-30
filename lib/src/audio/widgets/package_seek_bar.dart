@@ -28,6 +28,7 @@ class PackageSliderWidget extends StatefulWidget {
   final double? currentPosition;
   final double? filesCount;
   final Color? thumbColor;
+  final Color? timeContainerColor;
   final String? languageCode;
 
   factory PackageSliderWidget.downloading({
@@ -37,6 +38,7 @@ class PackageSliderWidget extends StatefulWidget {
     Color? thumbColor,
     Color? activeTrackColor,
     Color? inactiveTrackColor,
+    Color? timeContainerColor,
   }) {
     return PackageSliderWidget(
       currentPosition: currentPosition.toDouble(),
@@ -45,6 +47,7 @@ class PackageSliderWidget extends StatefulWidget {
       thumbColor: thumbColor,
       activeTrackColor: activeTrackColor,
       inactiveTrackColor: inactiveTrackColor,
+      timeContainerColor: timeContainerColor,
     );
   }
   factory PackageSliderWidget.player({
@@ -65,6 +68,7 @@ class PackageSliderWidget extends StatefulWidget {
     bool fullWidth = false,
     Color? thumbColor,
     String? languageCode,
+    Color? timeContainerColor,
   }) {
     return PackageSliderWidget(
       position: position,
@@ -84,6 +88,7 @@ class PackageSliderWidget extends StatefulWidget {
       fullWidth: fullWidth,
       thumbColor: thumbColor,
       languageCode: languageCode,
+      timeContainerColor: timeContainerColor,
     );
   }
 
@@ -109,6 +114,7 @@ class PackageSliderWidget extends StatefulWidget {
     super.key,
     this.thumbColor,
     this.languageCode,
+    this.timeContainerColor,
   });
 
   @override
@@ -177,9 +183,9 @@ class _PackageSliderWidgetState extends State<PackageSliderWidget> {
                 ? Container(
                     padding: const EdgeInsets.symmetric(
                         horizontal: 8.0, vertical: 2.0),
-                    decoration: const BoxDecoration(
-                      color: Colors.teal,
-                      borderRadius: BorderRadius.all(
+                    decoration: BoxDecoration(
+                      color: widget.timeContainerColor ?? Colors.teal,
+                      borderRadius: const BorderRadius.all(
                         Radius.circular(4),
                       ),
                     ),
@@ -199,9 +205,9 @@ class _PackageSliderWidgetState extends State<PackageSliderWidget> {
                       Container(
                         padding: const EdgeInsets.symmetric(
                             horizontal: 8.0, vertical: 2.0),
-                        decoration: const BoxDecoration(
-                          color: Colors.teal,
-                          borderRadius: BorderRadius.only(
+                        decoration: BoxDecoration(
+                          color: widget.timeContainerColor ?? Colors.teal,
+                          borderRadius: const BorderRadius.only(
                             topLeft: Radius.circular(4),
                             bottomLeft: Radius.circular(4),
                           ),
@@ -224,9 +230,9 @@ class _PackageSliderWidgetState extends State<PackageSliderWidget> {
                       Container(
                         padding: const EdgeInsets.symmetric(
                             horizontal: 8.0, vertical: 2.0),
-                        decoration: const BoxDecoration(
-                          color: Colors.teal,
-                          borderRadius: BorderRadius.only(
+                        decoration: BoxDecoration(
+                          color: widget.timeContainerColor ?? Colors.teal,
+                          borderRadius: const BorderRadius.only(
                             topRight: Radius.circular(4),
                             bottomRight: Radius.circular(4),
                           ),

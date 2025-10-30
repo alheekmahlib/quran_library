@@ -14,7 +14,8 @@ class AyahsAudioWidget extends StatelessWidget {
       child: Container(
           margin: const EdgeInsets.symmetric(vertical: 8.0),
           decoration: BoxDecoration(
-            color: AppColors.getBackgroundColor(isDark!),
+            color:
+                style?.backgroundColor ?? AppColors.getBackgroundColor(isDark!),
             borderRadius: const BorderRadius.all(Radius.circular(8)),
           ),
           child: Obx(() => AnimatedCrossFade(

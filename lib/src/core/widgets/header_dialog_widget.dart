@@ -4,10 +4,16 @@ import 'package:quran_library/src/core/utils/app_colors.dart';
 class HeaderDialogWidget extends StatelessWidget {
   final bool? isDark;
   final String title;
+  final Gradient? backgroundGradient;
+  final Color? titleColor;
+  final Color? closeIconColor;
   const HeaderDialogWidget({
     super.key,
     this.isDark = false,
     required this.title,
+    this.backgroundGradient,
+    this.titleColor,
+    this.closeIconColor,
   });
 
   @override
@@ -20,14 +26,15 @@ class HeaderDialogWidget extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12),
-            gradient: LinearGradient(
-              begin: AlignmentDirectional.centerStart,
-              end: AlignmentDirectional.centerEnd,
-              colors: [
-                Colors.teal.withValues(alpha: .12),
-                Colors.teal.withValues(alpha: .04),
-              ],
-            ),
+            gradient: backgroundGradient ??
+                LinearGradient(
+                  begin: AlignmentDirectional.centerStart,
+                  end: AlignmentDirectional.centerEnd,
+                  colors: [
+                    Colors.teal.withValues(alpha: .12),
+                    Colors.teal.withValues(alpha: .04),
+                  ],
+                ),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -42,7 +49,7 @@ class HeaderDialogWidget extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                   fontFamily: 'cairo',
                   height: 1.3,
-                  color: AppColors.getTextColor(isDark!),
+                  color: titleColor ?? AppColors.getTextColor(isDark!),
                   package: 'quran_library',
                 ),
                 textAlign: TextAlign.center,
@@ -53,7 +60,8 @@ class HeaderDialogWidget extends StatelessWidget {
         IconButton(
           tooltip: 'إغلاق',
           icon: Icon(Icons.close,
-              color: AppColors.getTextColor(isDark!), size: 20),
+              color: closeIconColor ?? AppColors.getTextColor(isDark!),
+              size: 20),
           onPressed: () => Navigator.of(context).maybePop(),
         ),
       ],

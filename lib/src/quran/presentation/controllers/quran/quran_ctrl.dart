@@ -705,4 +705,29 @@ class QuranCtrl extends GetxController {
   //   }
   //   return tajweedRulesListAr;
   // }
+
+  KeyEventResult controlRLByKeyboard(FocusNode node, KeyEvent event) {
+    // على الويب، التقط فقط KeyDown لتجنب التكرارات أو التعارض مع KeyUp
+    if (event is! KeyDownEvent) return KeyEventResult.ignored;
+
+    // تأكد من جاهزية المتحكم قبل التحريك
+    if (!quranPagesController.hasClients) return KeyEventResult.ignored;
+
+    if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
+      log('Left Arrow Pressed');
+      quranPagesController.nextPage(
+        duration: const Duration(milliseconds: 600),
+        curve: Curves.easeInOut,
+      );
+      return KeyEventResult.handled;
+    } else if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
+      log('Right Arrow Pressed');
+      quranPagesController.previousPage(
+        duration: const Duration(milliseconds: 600),
+        curve: Curves.easeInOut,
+      );
+      return KeyEventResult.handled;
+    }
+    return KeyEventResult.ignored;
+  }
 }

@@ -20,25 +20,42 @@ class AyahAudioStyle {
   final double? borderRadius;
   final Color? dialogBackgroundColor;
   final double? dialogBorderRadius;
+  final double? dialogWidth;
+  final double? dialogHeight;
+  final Gradient? dialogHeaderBackgroundGradient;
+  final Color? dialogHeaderTitleColor;
+  final Color? dialogCloseIconColor;
+  final Color? dialogSelectedReaderColor;
+  final Color? dialogUnSelectedReaderColor;
+  final Color? dialogReaderTextColor;
 
-  AyahAudioStyle(
-      {this.textColor,
-      this.playIconPath,
-      this.playIconHeight,
-      this.playIconColor,
-      this.pauseIconPath,
-      this.pauseIconHeight,
-      this.readerNameInItemColor,
-      this.readerNameInItemFontSize,
-      this.readerNameFontSize,
-      this.seekBarThumbColor,
-      this.seekBarActiveTrackColor,
-      this.seekBarHorizontalPadding,
-      this.previousIconHeight,
-      this.nextIconHeight,
-      this.seekBarInactiveTrackColor,
-      this.backgroundColor,
-      this.borderRadius,
-      this.dialogBackgroundColor,
-      this.dialogBorderRadius});
+  AyahAudioStyle({
+    this.textColor,
+    this.playIconPath,
+    this.playIconHeight,
+    this.playIconColor,
+    this.pauseIconPath,
+    this.pauseIconHeight,
+    this.readerNameInItemColor,
+    this.readerNameInItemFontSize,
+    this.readerNameFontSize,
+    this.seekBarThumbColor,
+    this.seekBarActiveTrackColor,
+    this.seekBarHorizontalPadding,
+    this.previousIconHeight,
+    this.nextIconHeight,
+    this.seekBarInactiveTrackColor,
+    this.backgroundColor,
+    this.borderRadius,
+    this.dialogBackgroundColor,
+    this.dialogBorderRadius,
+    this.dialogWidth,
+    this.dialogHeight,
+    this.dialogHeaderBackgroundGradient,
+    this.dialogHeaderTitleColor,
+    this.dialogCloseIconColor,
+    this.dialogSelectedReaderColor,
+    this.dialogUnSelectedReaderColor,
+    this.dialogReaderTextColor,
+  });
 }

@@ -4,11 +4,13 @@ class CustomSliderThumbRect extends SliderComponentShape {
   final double thumbRadius;
   final int min;
   final int max;
+  final Color? thumbColor;
 
   const CustomSliderThumbRect({
     required this.thumbRadius,
     required this.min,
     required this.max,
+    this.thumbColor,
   });
 
   @override
@@ -39,7 +41,7 @@ class CustomSliderThumbRect extends SliderComponentShape {
     );
 
     final paint = Paint()
-      ..color = Colors.teal //Thumb Background Color
+      ..color = thumbColor ?? Colors.teal //Thumb Background Color
       ..style = PaintingStyle.fill;
 
     canvas.drawRRect(rRect, paint);

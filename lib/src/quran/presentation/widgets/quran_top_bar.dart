@@ -77,6 +77,9 @@ class _QuranTopBar extends StatelessWidget {
                 },
               ),
             const Spacer(),
+            if (defaults.customTopBarWidgets != null)
+              ...defaults.customTopBarWidgets!,
+            const Spacer(),
             Row(
               children: [
                 if (defaults.showAudioButton ?? true)

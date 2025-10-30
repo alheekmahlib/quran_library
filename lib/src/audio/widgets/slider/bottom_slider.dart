@@ -46,7 +46,7 @@ class BottomSlider extends StatelessWidget {
               height: MediaQuery.of(context).size.height *
                       sliderCtrl.bottomSliderHeight.value +
                   sliderHeight!,
-              width: kIsWeb
+              width: Responsive.isDesktop(context)
                   ? MediaQuery.of(context).size.width * .5
                   : MediaQuery.of(context).size.width,
               decoration: BoxDecoration(

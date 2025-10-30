@@ -7,21 +7,25 @@ class AyahSkipToNext extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<SequenceState?>(
-      stream: audioCtrl.state.audioPlayer.sequenceStateStream,
-      builder: (context, snapshot) => GestureDetector(
-        child: Semantics(
-          button: true,
-          enabled: true,
-          label: 'next'.tr,
-          child: Icon(
-            Icons.skip_previous,
-            color: style!.playIconColor ?? Colors.teal,
-            size: style!.nextIconHeight ?? 38,
+    return SizedBox(
+      height: 55,
+      width: 55,
+      child: StreamBuilder<SequenceState?>(
+        stream: audioCtrl.state.audioPlayer.sequenceStateStream,
+        builder: (context, snapshot) => GestureDetector(
+          child: Semantics(
+            button: true,
+            enabled: true,
+            label: 'next'.tr,
+            child: Icon(
+              Icons.skip_previous,
+              color: style!.playIconColor ?? Colors.teal,
+              size: style!.nextIconHeight ?? 38,
+            ),
           ),
+          onTap: () async => await audioCtrl.skipNextAyah(
+              context, audioCtrl.state.currentAyahUniqueNumber),
         ),
-        onTap: () async => await audioCtrl.skipNextAyah(
-            context, audioCtrl.state.currentAyahUniqueNumber),
       ),
     );
   }

@@ -44,6 +44,9 @@ class QuranTopBarStyle {
   final bool? showFontsButton;
   final bool? showBackButton;
 
+  // Custom widgets to add to the top bar
+  final List<Widget>? customTopBarWidgets;
+
   const QuranTopBarStyle({
     this.showBackButton,
     this.backIconPath,
@@ -72,6 +75,7 @@ class QuranTopBarStyle {
     this.showAudioButton,
     this.showFontsButton,
     this.optionsIconPath,
+    this.customTopBarWidgets,
   });
 
   QuranTopBarStyle copyWith({
@@ -102,6 +106,7 @@ class QuranTopBarStyle {
     bool? showFontsButton,
     bool? showBackButton,
     String? optionsIconPath,
+    List<Widget>? customTopBarWidgets,
   }) =>
       QuranTopBarStyle(
         backIconPath: backIconPath ?? this.backIconPath,
@@ -132,6 +137,7 @@ class QuranTopBarStyle {
         showFontsButton: showFontsButton ?? this.showFontsButton,
         showBackButton: showBackButton ?? this.showBackButton,
         optionsIconPath: optionsIconPath ?? this.optionsIconPath,
+        customTopBarWidgets: customTopBarWidgets ?? this.customTopBarWidgets,
       );
 
   /// Provide sensible defaults based on theme (isDark)
@@ -165,6 +171,7 @@ class QuranTopBarStyle {
       showFontsButton: true,
       showBackButton: false,
       optionsIconPath: AssetsPath.assets.options,
+      customTopBarWidgets: null,
     );
   }
 }

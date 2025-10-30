@@ -106,8 +106,7 @@ class PageBuild extends StatelessWidget {
                                           basmalaColor: isDark
                                               ? Colors.white
                                               : Colors.black,
-                                          basmalaWidth: 160.0,
-                                          basmalaHeight: 140.0,
+                                          basmalaFontSize: 100.0,
                                         ),
                                   )
                                 : const SizedBox.shrink(),

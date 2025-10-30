@@ -332,10 +332,13 @@ class QuranLibrary {
           SurahInfoStyle? surahInfoStyle,
           String? languageCode,
           bool isDark = false}) =>
-      surahInfoBottomSheetWidget(context, surahNumber - 1,
-          surahStyle: surahInfoStyle,
-          languageCode: languageCode,
-          isDark: isDark);
+      surahInfoBottomSheetWidget(
+        context,
+        surahNumber - 1,
+        surahStyle: surahInfoStyle,
+        languageCode: languageCode,
+        isDark: isDark,
+      );
 
   /// [getSurahInfo] تتيح لك الحصول على سورة مع جميع بياناتها.
   /// ملاحظة: تستقبل هذه الطريقة رقم السورة وليس فهرس السورة.

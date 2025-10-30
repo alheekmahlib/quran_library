@@ -138,8 +138,7 @@ class _QuranTextScale extends StatelessWidget {
                                                     basmalaColor: isDark
                                                         ? Colors.white
                                                         : Colors.black,
-                                                    basmalaWidth: 160.0,
-                                                    basmalaHeight: 45.0,
+                                                    basmalaFontSize: 50.0,
                                                   ),
                                             )
                                           : const SizedBox.shrink(),

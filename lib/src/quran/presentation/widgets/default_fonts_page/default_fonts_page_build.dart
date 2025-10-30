@@ -113,11 +113,8 @@ class DefaultFontsPageBuild extends StatelessWidget {
                                 BasmalaStyle(
                                   basmalaColor:
                                       isDark ? Colors.white : Colors.black,
-                                  basmalaWidth: 140.0.w.clamp(140, 250),
-                                  basmalaHeight: Responsive.isDesktop(context)
-                                      ? 90.0.h.clamp(90, 150)
-                                      : 30.0.h.clamp(30, 90),
-                                  verticalPadding: 0.0,
+                                  basmalaFontSize: 50.0,
+                                  verticalPadding: 8.0,
                                 ),
                           ),
                         SizedBox(

@@ -46,7 +46,7 @@ class SurahInfoStyle {
       textColor: isDark ? Colors.white : Colors.black,
       titleColor: isDark ? Colors.white : Colors.black,
       bottomSheetWidth: MediaQuery.of(context).size.width,
-      bottomSheetHeight: MediaQuery.of(context).size.height * 0.8,
+      bottomSheetHeight: MediaQuery.of(context).size.height * 0.9,
     );
   }
 }

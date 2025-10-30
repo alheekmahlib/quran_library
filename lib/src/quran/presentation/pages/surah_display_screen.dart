@@ -546,8 +546,7 @@ class SurahDisplayScreen extends StatelessWidget {
         basmalaStyle: basmalaStyle ??
             BasmalaStyle(
               basmalaColor: isDark ? Colors.white : Colors.black,
-              basmalaWidth: 160.0,
-              basmalaHeight: 30.0,
+              basmalaFontSize: 50.0,
             ),
       ),
     );

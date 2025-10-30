@@ -103,3 +103,6 @@ flutter:
         - asset: assets/fonts/Cairo-Medium.ttf
           weight: 500
         - asset: assets/fonts/Cairo-Regular.ttf
+    - family: bismillah
+      fonts:
+        - asset: assets/fonts/vertopal.com_QCF_Bismillah-Regular.ttf

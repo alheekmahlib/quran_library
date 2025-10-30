@@ -88,6 +88,10 @@ extension SurahInfoExtension on void {
       context: validContext,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
+      constraints: BoxConstraints(
+        maxHeight: height,
+        maxWidth: width,
+      ),
       // تحسين شكل الشاشة المنبثقة
       // Improve bottom sheet appearance
       shape: const RoundedRectangleBorder(

@@ -4,8 +4,6 @@ abstract class _AssetsPath {
   _AssetsPath._();
   String get surahSvgBanner;
   String get surahSvgBannerDark;
-  String get besmAllah2;
-  String get besmAllah;
   String get ayahBookmarked;
   String get sajdaIcon;
   String get suraNum;

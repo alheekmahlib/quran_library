@@ -56,15 +56,19 @@ class BasmallahWidget extends StatelessWidget {
       padding:
           EdgeInsets.symmetric(vertical: basmalaStyle?.verticalPadding ?? 24.0),
       child: Center(
-        child: SvgPicture.asset(
-          surahNumber == 95 || surahNumber == 97
-              ? AssetsPath.assets.besmAllah2
-              : AssetsPath.assets.besmAllah,
-          width: basmalaStyle?.basmalaWidth ?? 150,
-          height: basmalaStyle?.basmalaHeight ?? 40,
-          colorFilter: ColorFilter.mode(
-            basmalaStyle?.basmalaColor ?? Colors.black,
-            BlendMode.srcIn,
+        child: Text(
+          surahNumber == 2
+              ? 'ﲚﲛﲞﲤ'
+              : surahNumber == 95 || surahNumber == 97
+                  ? 'ﭗﲫﲮﲴ'
+                  : 'ﲪﲫﲮﲴ',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontFamily: 'bismillah',
+            fontSize: basmalaStyle?.basmalaFontSize ?? 50,
+            height: 2,
+            color: basmalaStyle?.basmalaColor ?? Colors.black,
+            package: 'quran_library',
           ),
         ),
       ),

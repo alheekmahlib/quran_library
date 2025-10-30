@@ -120,7 +120,7 @@ class _QuranTextScale extends StatelessWidget {
                                           ),
                                       surahInfoStyle: surahInfoStyle ??
                                           SurahInfoStyle.defaults(
-                                              isDark: isDark),
+                                              isDark: isDark, context: context),
                                       onSurahBannerPress: onSurahBannerPress,
                                       isDark: isDark,
                                     )

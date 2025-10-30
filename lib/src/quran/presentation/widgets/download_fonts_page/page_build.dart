@@ -88,7 +88,8 @@ class PageBuild extends StatelessWidget {
                                       isDark ? Colors.white : Colors.black,
                                 ),
                             surahInfoStyle: surahInfoStyle ??
-                                SurahInfoStyle.defaults(isDark: isDark),
+                                SurahInfoStyle.defaults(
+                                    isDark: isDark, context: context),
                             onSurahBannerPress: onSurahBannerPress,
                             isDark: isDark,
                           )

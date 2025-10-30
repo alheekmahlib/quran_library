@@ -71,8 +71,8 @@ class DefaultFirstTwoSurahs extends StatelessWidget {
                   surahNameSize: 27,
                   surahNameColor: isDark ? Colors.white : Colors.black,
                 ),
-            surahInfoStyle:
-                surahInfoStyle ?? SurahInfoStyle.defaults(isDark: isDark),
+            surahInfoStyle: surahInfoStyle ??
+                SurahInfoStyle.defaults(isDark: isDark, context: context),
             onSurahBannerPress: onSurahBannerPress,
             isDark: isDark,
           ),

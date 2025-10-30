@@ -152,6 +152,7 @@ class _PackageSliderWidgetState extends State<PackageSliderWidget> {
                   thumbRadius: 20,
                   min: widget.min,
                   max: widget.max,
+                  thumbColor: widget.thumbColor ?? Colors.teal,
                 ),
                 overlayShape:
                     const RoundSliderOverlayShape(overlayRadius: 10.0),

@@ -3,7 +3,10 @@ part of '../audio.dart';
 class AyahsAudioWidget extends StatelessWidget {
   final AyahAudioStyle? style;
   final bool? isDark;
-  AyahsAudioWidget({super.key, this.style, this.isDark = false});
+  final String? languageCode;
+
+  AyahsAudioWidget(
+      {super.key, this.style, this.isDark = false, this.languageCode});
   final quranCtrl = QuranCtrl.instance;
   final audioCtrl = AudioCtrl.instance;
 
@@ -72,23 +75,28 @@ class AyahsAudioWidget extends StatelessWidget {
                                                 final data = c.state
                                                     .tmpDownloadedAyahsCount;
                                                 log('$data => REBUILDING  ${audioCtrl.state.tmpDownloadedAyahsCount}');
-                                                return PackageSliderWidget.downloading(
-                                                    currentPosition: data,
-                                                    filesCount: audioCtrl
-                                                        .currentAyahFileName
-                                                        .length,
-                                                    activeTrackColor: style!
-                                                            .seekBarActiveTrackColor ??
-                                                        Colors.teal,
-                                                    inactiveTrackColor: style!
-                                                            .seekBarInactiveTrackColor ??
-                                                        Colors.grey,
-                                                    thumbColor: style!
-                                                            .seekBarThumbColor ??
-                                                        Colors.teal,
-                                                    horizontalPadding: style!
-                                                            .seekBarHorizontalPadding ??
-                                                        0);
+                                                return PackageSliderWidget
+                                                    .downloading(
+                                                  currentPosition: data,
+                                                  filesCount: audioCtrl
+                                                      .currentAyahFileName
+                                                      .length,
+                                                  activeTrackColor: style!
+                                                          .seekBarActiveTrackColor ??
+                                                      Colors.teal,
+                                                  inactiveTrackColor: style!
+                                                          .seekBarInactiveTrackColor ??
+                                                      Colors.grey,
+                                                  thumbColor: style!
+                                                          .seekBarThumbColor ??
+                                                      Colors.teal,
+                                                  horizontalPadding: style!
+                                                          .seekBarHorizontalPadding ??
+                                                      0,
+                                                  timeContainerColor: style!
+                                                          .seekBarTimeContainerColor ??
+                                                      Colors.teal,
+                                                );
                                               })
                                             : StreamBuilder<
                                                 PackagePositionData>(
@@ -122,6 +130,11 @@ class AyahsAudioWidget extends StatelessWidget {
                                                           .state
                                                           .audioPlayer
                                                           .seek,
+                                                      timeContainerColor: style!
+                                                              .seekBarTimeContainerColor ??
+                                                          Colors.teal,
+                                                      languageCode:
+                                                          languageCode ?? 'ar',
                                                     );
                                                   }
                                                   return const SizedBox

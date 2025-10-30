@@ -529,8 +529,11 @@ class QuranLibraryScreen extends StatelessWidget {
                                           contentChild: const SizedBox.shrink(),
                                           child: Flexible(
                                             child: AyahsAudioWidget(
-                                                style: ayahStyle ??
-                                                    AyahAudioStyle()),
+                                              style:
+                                                  ayahStyle ?? AyahAudioStyle(),
+                                              isDark: isDark,
+                                              languageCode: languageCode,
+                                            ),
                                           ),
                                         )
                                       : const SizedBox.shrink(),

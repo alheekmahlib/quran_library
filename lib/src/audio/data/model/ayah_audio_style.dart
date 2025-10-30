@@ -28,6 +28,7 @@ class AyahAudioStyle {
   final Color? dialogSelectedReaderColor;
   final Color? dialogUnSelectedReaderColor;
   final Color? dialogReaderTextColor;
+  final Color? seekBarTimeContainerColor;
 
   AyahAudioStyle({
     this.textColor,
@@ -57,5 +58,6 @@ class AyahAudioStyle {
     this.dialogSelectedReaderColor,
     this.dialogUnSelectedReaderColor,
     this.dialogReaderTextColor,
+    this.seekBarTimeContainerColor,
   });
 }

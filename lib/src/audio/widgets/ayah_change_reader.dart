@@ -23,6 +23,12 @@ class AyahChangeReader extends StatelessWidget {
           alignment: Alignment.center,
           insetPadding:
               const EdgeInsets.symmetric(horizontal: 24.0, vertical: 24.0),
+          constraints: BoxConstraints(
+            maxHeight: effectiveStyle.dialogHeight ??
+                MediaQuery.of(context).size.height * 0.7,
+            minWidth: effectiveStyle.dialogWidth ??
+                MediaQuery.of(context).size.width * 0.6,
+          ),
           child: _buildDialog(context, effectiveStyle, dark),
         ),
       ),
@@ -44,78 +50,70 @@ class AyahChangeReader extends StatelessWidget {
 
     return Padding(
       padding: const EdgeInsets.all(16.0),
-      child: ConstrainedBox(
-        constraints: BoxConstraints(
-          maxHeight: effectiveStyle.dialogHeight ??
-              MediaQuery.of(context).size.height * 0.7,
-          minWidth: effectiveStyle.dialogWidth ??
-              MediaQuery.of(context).size.width * 0.6,
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // Header
-            HeaderDialogWidget(
-              title: 'تغيير القارئ',
-              isDark: dark,
-              backgroundGradient: effectiveStyle.dialogHeaderBackgroundGradient,
-              titleColor: effectiveStyle.dialogHeaderTitleColor,
-              closeIconColor: effectiveStyle.dialogCloseIconColor,
-            ),
-            const SizedBox(height: 8),
-            const Divider(height: 1),
-            const SizedBox(height: 8),
-            // List
-            Flexible(
-              child: ListView.separated(
-                shrinkWrap: true,
-                physics: const ClampingScrollPhysics(),
-                itemCount: ReadersConstants.ayahReaderInfo.length,
-                separatorBuilder: (_, __) => Divider(
-                  height: 1,
-                  color: AppColors.getTextColor(dark).withValues(alpha: 0.08),
-                ),
-                itemBuilder: (context, index) {
-                  final info = ReadersConstants.ayahReaderInfo[index];
-                  final bool isSelected = selectedIndex == info['index'];
-                  final Color itemColor =
-                      isSelected ? activeColor : inactiveColor;
-
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 1.0),
-                    child: ListTile(
-                      minTileHeight: 44,
-                      dense: true,
-                      focusColor: itemColor.withValues(alpha: 0.12),
-                      splashColor: itemColor.withValues(alpha: 0.12),
-                      selectedColor: itemColor,
-                      selectedTileColor: itemColor.withValues(alpha: 0.12),
-                      tileColor: itemColor.withValues(alpha: 0.07),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 8),
-                      title: Text(
-                        '${info['name']}'.tr,
-                        style: QuranLibrary().cairoStyle.copyWith(
-                              color: textColor,
-                              fontSize: itemFontSize,
-                            ),
-                      ),
-                      trailing: _SelectionIndicator(
-                          isSelected: isSelected,
-                          color: effectiveStyle.dialogSelectedReaderColor ??
-                              Colors.teal),
-                      onTap: () async => await AudioCtrl.instance
-                          .changeAyahReadersOnTap(context, index),
-                    ),
-                  );
-                },
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // Header
+          HeaderDialogWidget(
+            title: 'تغيير القارئ',
+            isDark: dark,
+            backgroundGradient: effectiveStyle.dialogHeaderBackgroundGradient,
+            titleColor: effectiveStyle.dialogHeaderTitleColor,
+            closeIconColor: effectiveStyle.dialogCloseIconColor,
+          ),
+          const SizedBox(height: 8),
+          const Divider(height: 1),
+          const SizedBox(height: 8),
+          // List
+          Flexible(
+            child: ListView.separated(
+              shrinkWrap: true,
+              physics: const ClampingScrollPhysics(),
+              itemCount: ReadersConstants.ayahReaderInfo.length,
+              separatorBuilder: (_, __) => Divider(
+                height: 1,
+                color: AppColors.getTextColor(dark).withValues(alpha: 0.08),
               ),
+              itemBuilder: (context, index) {
+                final info = ReadersConstants.ayahReaderInfo[index];
+                final bool isSelected = selectedIndex == info['index'];
+                final Color itemColor =
+                    isSelected ? activeColor : inactiveColor;
+
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 1.0),
+                  child: ListTile(
+                    minTileHeight: 44,
+                    dense: true,
+                    focusColor: itemColor.withValues(alpha: 0.12),
+                    splashColor: itemColor.withValues(alpha: 0.12),
+                    selectedColor: itemColor,
+                    selectedTileColor: itemColor.withValues(alpha: 0.12),
+                    tileColor: itemColor.withValues(alpha: 0.07),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 8),
+                    title: Text(
+                      '${info['name']}'.tr,
+                      style: QuranLibrary().cairoStyle.copyWith(
+                            color: textColor,
+                            fontSize: itemFontSize,
+                          ),
+                    ),
+                    trailing: _SelectionIndicator(
+                        isSelected: isSelected,
+                        color: effectiveStyle.dialogSelectedReaderColor ??
+                            Colors.teal),
+                    onTap: () async => await AudioCtrl.instance
+                        .changeAyahReadersOnTap(context, index),
+                  ),
+                );
+              },
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

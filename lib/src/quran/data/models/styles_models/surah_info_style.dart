@@ -12,6 +12,8 @@ class SurahInfoStyle {
   final String? ayahCount;
   final String? secondTabText;
   final String? firstTabText;
+  final double? bottomSheetWidth;
+  final double? bottomSheetHeight;
 
   SurahInfoStyle({
     this.closeIconColor,
@@ -25,9 +27,12 @@ class SurahInfoStyle {
     this.ayahCount,
     this.secondTabText,
     this.firstTabText,
+    this.bottomSheetWidth,
+    this.bottomSheetHeight,
   });
 
-  factory SurahInfoStyle.defaults({required bool isDark}) {
+  factory SurahInfoStyle.defaults(
+      {required bool isDark, required BuildContext context}) {
     return SurahInfoStyle(
       ayahCount: 'عدد الآيات',
       secondTabText: 'عن السورة',
@@ -40,6 +45,8 @@ class SurahInfoStyle {
       surahNumberColor: isDark ? Colors.white : Colors.black,
       textColor: isDark ? Colors.white : Colors.black,
       titleColor: isDark ? Colors.white : Colors.black,
+      bottomSheetWidth: MediaQuery.of(context).size.width,
+      bottomSheetHeight: MediaQuery.of(context).size.height * 0.8,
     );
   }
 }

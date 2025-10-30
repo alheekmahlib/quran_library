@@ -23,6 +23,7 @@ class HeaderDialogWidget extends StatelessWidget {
       children: [
         Container(
           height: 45,
+          width: double.infinity,
           padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12),
@@ -36,25 +37,17 @@ class HeaderDialogWidget extends StatelessWidget {
                   ],
                 ),
           ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              const Icon(Icons.font_download_rounded, color: Colors.teal),
-              const SizedBox(width: 8),
-              Text(
-                title,
-                style: TextStyle(
-                  fontSize: 18.0,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'cairo',
-                  height: 1.3,
-                  color: titleColor ?? AppColors.getTextColor(isDark!),
-                  package: 'quran_library',
-                ),
-                textAlign: TextAlign.center,
-              ),
-            ],
+          child: Text(
+            title,
+            style: TextStyle(
+              fontSize: 18.0,
+              fontWeight: FontWeight.bold,
+              fontFamily: 'cairo',
+              height: 1.3,
+              color: titleColor ?? AppColors.getTextColor(isDark!),
+              package: 'quran_library',
+            ),
+            textAlign: TextAlign.center,
           ),
         ),
         IconButton(

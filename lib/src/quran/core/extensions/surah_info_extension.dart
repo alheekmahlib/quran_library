@@ -26,8 +26,12 @@ extension SurahInfoExtension on void {
       bool isDark = false}) {
     final quranCtrl = QuranCtrl.instance;
     final surah = quranCtrl.surahsList[surahNumber];
-    final double height = MediaQuery.maybeOf(context)?.size.height ?? 600;
-    final double width = MediaQuery.maybeOf(context)?.size.width ?? 400;
+    final double height = surahStyle?.bottomSheetHeight ??
+        MediaQuery.maybeOf(context)?.size.height ??
+        600;
+    final double width = surahStyle?.bottomSheetWidth ??
+        MediaQuery.maybeOf(context)?.size.width ??
+        400;
 
     // محاولة الحصول على سياق صالح لعرض النافذة المنبثقة
     // Try to get a valid context for showing bottom sheet

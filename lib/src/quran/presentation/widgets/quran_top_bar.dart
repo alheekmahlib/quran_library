@@ -156,6 +156,10 @@ class _QuranTopBar extends StatelessWidget {
             top: Radius.circular(defaults.borderRadius ?? 20)),
       ),
       isScrollControlled: true,
+      constraints: BoxConstraints(
+        maxWidth: UiHelper.currentOrientation(
+            double.infinity, MediaQuery.sizeOf(context).width * 0.5, context),
+      ),
       builder: (ctx) => _MenuBottomSheet(
         isDark: isDark,
         languageCode: languageCode,

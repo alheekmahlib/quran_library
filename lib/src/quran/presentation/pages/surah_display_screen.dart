@@ -42,6 +42,8 @@ class SurahDisplayScreen extends StatelessWidget {
     this.isShowAudioSlider = true,
     this.appIconUrlForPlayAudioInBackground,
     required this.parentContext,
+    this.indexTabStyle,
+    this.searchTabStyle,
   });
 
   /// رقم السورة المراد عرضها
@@ -209,6 +211,16 @@ class SurahDisplayScreen extends StatelessWidget {
   /// ```
   final BuildContext parentContext;
 
+  /// تخصيص نمط تبويب الفهرس الخاص بالمصحف
+  ///
+  /// [indexTabStyle] Index tab style customization for the Quran
+  final IndexTabStyle? indexTabStyle;
+
+  /// تخصيص نمط تبويب البحث الخاص بالمصحف
+  ///
+  /// [searchTabStyle] Search tab style customization for the Quran
+  final SearchTabStyle? searchTabStyle;
+
   final quranCtrl = QuranCtrl.instance;
 
   @override
@@ -276,6 +288,8 @@ class SurahDisplayScreen extends StatelessWidget {
                         isDark,
                         backgroundColor: backgroundColor,
                         topBarStyle: QuranTopBarStyle.defaults(isDark: isDark),
+                        indexTabStyle: indexTabStyle,
+                        searchTabStyle: searchTabStyle,
                       )
                     : null,
                 body: SafeArea(

@@ -31,6 +31,8 @@ class QuranCtrl extends GetxController {
   final RxBool isMultiSelectMode = false.obs;
   // آيات مظللة برمجياً (لا تعتمد على اختيار المستخدم)
   final RxList<int> externallyHighlightedAyahs = <int>[].obs;
+  late FocusNode searchFocusNode;
+  late TextEditingController searchTextController;
 
   late Directory _dir;
   // late QuranSearch quranSearch;
@@ -50,10 +52,12 @@ class QuranCtrl extends GetxController {
 
   @override
   void onInit() async {
+    super.onInit();
     if (!kIsWeb) {
       _dir = await getApplicationDocumentsDirectory();
     }
-    super.onInit();
+    searchFocusNode = FocusNode();
+    searchTextController = TextEditingController();
   }
 
   @override
@@ -70,6 +74,8 @@ class QuranCtrl extends GetxController {
     state.dispose();
     quranPagesController.dispose();
     super.onClose();
+    searchFocusNode.dispose();
+    searchTextController.dispose();
   }
 
   /// -------- [Methods] ----------

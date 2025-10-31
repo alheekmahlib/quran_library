@@ -61,6 +61,8 @@ class QuranLibraryScreen extends StatelessWidget {
     this.appIconUrlForPlayAudioInBackground,
     this.topBarStyle,
     required this.parentContext,
+    this.indexTabStyle,
+    this.searchTabStyle,
   });
 
   /// إذا قمت بإضافة شريط التطبيقات هنا فإنه سيحل محل شريط التطبيقات الافتراضية [appBar]
@@ -298,6 +300,16 @@ class QuranLibraryScreen extends StatelessWidget {
   /// ```
   final BuildContext parentContext;
 
+  /// تخصيص نمط تبويب الفهرس الخاص بالمصحف
+  ///
+  /// [indexTabStyle] Index tab style customization for the Quran
+  final IndexTabStyle? indexTabStyle;
+
+  /// تخصيص نمط تبويب البحث الخاص بالمصحف
+  ///
+  /// [searchTabStyle] Search tab style customization for the Quran
+  final SearchTabStyle? searchTabStyle;
+
   @override
   Widget build(BuildContext context) {
     // تحديث رابط أيقونة التطبيق إذا تم تمريره / Update app icon URL if provided
@@ -325,9 +337,19 @@ class QuranLibraryScreen extends StatelessWidget {
             final idx =
                 (quranCtrl.state.currentPageNumber.value - 1).clamp(0, 603);
             QuranCtrl.instance.idlePreloadFontsAround(idx);
-            // تأكد من امتلاك هذه الودجت للتركيز كي تستقبل أحداث لوحة المفاتيح على الويب
-            FocusScope.of(context)
-                .requestFocus(quranCtrl.state.quranPageRLFocusNode);
+            // على الويب: لا تسرق التركيز من حقول الكتابة
+            if (kIsWeb) {
+              final pf = FocusManager.instance.primaryFocus;
+              final isTextFieldFocused = pf?.context?.widget is EditableText;
+              if (!isTextFieldFocused) {
+                FocusScope.of(context)
+                    .requestFocus(quranCtrl.state.quranPageRLFocusNode);
+              }
+            } else {
+              // على المنصات الأخرى أبقِ السلوك كما هو
+              FocusScope.of(context)
+                  .requestFocus(quranCtrl.state.quranPageRLFocusNode);
+            }
           });
           return Directionality(
             textDirection: TextDirection.rtl,
@@ -341,7 +363,8 @@ class QuranLibraryScreen extends StatelessWidget {
                     withPageView
                         ? Focus(
                             focusNode: quranCtrl.state.quranPageRLFocusNode,
-                            autofocus: true,
+                            // على الويب، إيقاف الـ autofocus لتجنّب سرقة التركيز
+                            autofocus: kIsWeb ? false : true,
                             onKeyEvent: (node, event) =>
                                 quranCtrl.controlRLByKeyboard(node, event),
                             child: PageView.builder(
@@ -558,6 +581,8 @@ class QuranLibraryScreen extends StatelessWidget {
                                           topBarStyle: topBarStyle ??
                                               QuranTopBarStyle.defaults(
                                                   isDark: isDark),
+                                          indexTabStyle: indexTabStyle,
+                                          searchTabStyle: searchTabStyle,
                                         )
                                       : const SizedBox.shrink(),
                                 ],
@@ -573,91 +598,6 @@ class QuranLibraryScreen extends StatelessWidget {
             ),
           );
         },
-      ),
-    );
-  }
-}
-
-class JumpingPageControllerWidget extends StatelessWidget {
-  const JumpingPageControllerWidget({
-    super.key,
-    required this.backgroundColor,
-    required this.isDark,
-    required this.textColor,
-    required this.quranCtrl,
-  });
-
-  final Color? backgroundColor;
-  final bool isDark;
-  final Color? textColor;
-  final QuranCtrl quranCtrl;
-
-  @override
-  Widget build(BuildContext context) {
-    return Align(
-      alignment: Alignment.center,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Container(
-            height: 55,
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-            decoration: BoxDecoration(
-              color: backgroundColor ?? AppColors.getBackgroundColor(isDark),
-              borderRadius: BorderRadius.circular(12),
-              boxShadow: [
-                BoxShadow(
-                  color: (Colors.black.withValues(alpha: .2)),
-                  spreadRadius: 1,
-                  blurRadius: 5,
-                  offset: const Offset(0, 0),
-                ),
-              ],
-            ),
-            child: IconButton(
-              onPressed: () {
-                log('Current Page: ${quranCtrl.state.currentPageNumber.value}');
-                quranCtrl
-                    .jumpToPage(quranCtrl.state.currentPageNumber.value -= 2);
-                if (quranCtrl.state.currentPageNumber.value < 1) {
-                  quranCtrl.state.currentPageNumber.value = 1;
-                }
-              },
-              icon: Icon(
-                Icons.arrow_back_ios_new,
-                size: 22,
-                color: textColor ?? AppColors.getTextColor(isDark),
-              ),
-            ),
-          ),
-          Container(
-            height: 55,
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-            decoration: BoxDecoration(
-              color: backgroundColor ?? AppColors.getBackgroundColor(isDark),
-              borderRadius: BorderRadius.circular(12),
-              boxShadow: [
-                BoxShadow(
-                  color: (Colors.black.withValues(alpha: .2)),
-                  spreadRadius: 1,
-                  blurRadius: 5,
-                  offset: const Offset(0, 0),
-                ),
-              ],
-            ),
-            child: IconButton(
-              onPressed: () {
-                log('Current Page: ${quranCtrl.state.currentPageNumber.value}');
-                quranCtrl.jumpToPage(quranCtrl.state.currentPageNumber.value);
-              },
-              icon: Icon(
-                Icons.arrow_forward_ios_outlined,
-                size: 22,
-                color: textColor ?? AppColors.getTextColor(isDark),
-              ),
-            ),
-          ),
-        ],
       ),
     );
   }

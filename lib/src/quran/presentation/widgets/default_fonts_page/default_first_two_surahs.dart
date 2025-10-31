@@ -83,8 +83,8 @@ class DefaultFirstTwoSurahs extends StatelessWidget {
               basmalaStyle: basmalaStyle ??
                   BasmalaStyle(
                     basmalaColor: isDark ? Colors.white : Colors.black,
-                    basmalaFontSize: 50.0,
-                    verticalPadding: 8.0,
+                    basmalaFontSize: 25.0,
+                    verticalPadding: 0.0,
                   ),
             ),
           ...quranCtrl.staticPages[pageIndex].lines.map((line) {

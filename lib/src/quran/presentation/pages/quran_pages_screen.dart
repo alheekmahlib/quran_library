@@ -61,6 +61,8 @@ class QuranPagesScreen extends StatelessWidget {
     this.highlightedRanges = const [],
     this.highlightedRangesText = const [],
     required this.parentContext,
+    this.indexTabStyle,
+    this.searchTabStyle,
   }) : assert(
           (page != null && startPage == null && endPage == null) ||
               (page == null && (startPage != null || endPage != null)),
@@ -110,6 +112,16 @@ class QuranPagesScreen extends StatelessWidget {
   final String? appIconUrlForPlayAudioInBackground;
   final QuranTopBarStyle? topBarStyle;
   final BuildContext parentContext;
+
+  /// تخصيص نمط تبويب الفهرس الخاص بالمصحف
+  ///
+  /// [indexTabStyle] Index tab style customization for the Quran
+  final IndexTabStyle? indexTabStyle;
+
+  /// تخصيص نمط تبويب البحث الخاص بالمصحف
+  ///
+  /// [searchTabStyle] Search tab style customization for the Quran
+  final SearchTabStyle? searchTabStyle;
   // تمكين تظليل/تحديد متعدد للآيات داخل هذه الشاشة فقط
   final bool enableMultiSelect;
   // قائمة أرقام الآيات الفريدة المراد تظليلها برمجياً
@@ -405,6 +417,8 @@ class QuranPagesScreen extends StatelessWidget {
                                   isFontsLocal: isFontsLocal,
                                   topBarStyle: topBarStyle ??
                                       QuranTopBarStyle.defaults(isDark: isDark),
+                                  indexTabStyle: indexTabStyle,
+                                  searchTabStyle: searchTabStyle,
                                 )
                               : const SizedBox.shrink(),
                         ],

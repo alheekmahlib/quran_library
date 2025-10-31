@@ -1,8 +1,9 @@
-## 2.2.3+2
+## 2.2.4
 
-* **Fix .**
 * **Add more optinos to AyahAudioStyle.**
 * **Add AyahLongClickStyle.**
+* **Add IndexTabStyle to change Surah & Juz list style.**
+* **Add SearchTabStyle to change search tab style.**
 * **Add new Bismillah.**
 * **Ability to add a custom widget to tapbar.**
 * **Support for turning pages using the keyboard in the web and desktop.**

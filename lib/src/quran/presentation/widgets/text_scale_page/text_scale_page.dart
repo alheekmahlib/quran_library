@@ -28,6 +28,7 @@ class _QuranTextScale extends StatelessWidget {
     this.anotherMenuChildOnTap,
     this.secondMenuChild,
     this.secondMenuChildOnTap,
+    this.ayahLongClickStyle,
   });
 
   final quranCtrl = QuranCtrl.instance;
@@ -58,6 +59,7 @@ class _QuranTextScale extends StatelessWidget {
   final void Function(AyahModel ayah)? anotherMenuChildOnTap;
   final Widget? secondMenuChild;
   final void Function(AyahModel ayah)? secondMenuChildOnTap;
+  final AyahLongClickStyle? ayahLongClickStyle;
 
   @override
   Widget build(BuildContext context) {
@@ -144,26 +146,28 @@ class _QuranTextScale extends StatelessWidget {
                                           : const SizedBox.shrink(),
                                     ),
                               TextScaleRichTextBuild(
-                                  textColor: textColor,
-                                  isDark: isDark,
-                                  ayahs: ayahs,
-                                  bookmarks: bookmarks,
-                                  pageIndex: pageIndex,
-                                  ayahBookmarked: ayahBookmarked,
-                                  onAyahLongPress: onAyahLongPress,
-                                  anotherMenuChild: anotherMenuChild,
-                                  anotherMenuChildOnTap: anotherMenuChildOnTap,
-                                  secondMenuChild: secondMenuChild,
-                                  secondMenuChildOnTap: secondMenuChildOnTap,
-                                  bookmarkList: bookmarkList,
-                                  ayahIconColor: ayahIconColor,
-                                  showAyahBookmarkedIcon:
-                                      showAyahBookmarkedIcon,
-                                  bookmarksAyahs: bookmarksAyahs,
-                                  bookmarksColor: bookmarksColor,
-                                  ayahSelectedBackgroundColor:
-                                      ayahSelectedBackgroundColor,
-                                  languageCode: languageCode),
+                                textColor: textColor,
+                                isDark: isDark,
+                                ayahs: ayahs,
+                                bookmarks: bookmarks,
+                                pageIndex: pageIndex,
+                                ayahBookmarked: ayahBookmarked,
+                                onAyahLongPress: onAyahLongPress,
+                                anotherMenuChild: anotherMenuChild,
+                                anotherMenuChildOnTap: anotherMenuChildOnTap,
+                                secondMenuChild: secondMenuChild,
+                                secondMenuChildOnTap: secondMenuChildOnTap,
+                                bookmarkList: bookmarkList,
+                                ayahIconColor: ayahIconColor,
+                                showAyahBookmarkedIcon: showAyahBookmarkedIcon,
+                                bookmarksAyahs: bookmarksAyahs,
+                                bookmarksColor: bookmarksColor,
+                                ayahSelectedBackgroundColor:
+                                    ayahSelectedBackgroundColor,
+                                languageCode: languageCode,
+                                ayahLongClickStyle: ayahLongClickStyle,
+                              ),
+
                               // context.surahBannerLastPlace(pageIndex, i),
                             ],
                           );

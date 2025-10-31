@@ -63,6 +63,7 @@ class QuranPagesScreen extends StatelessWidget {
     required this.parentContext,
     this.indexTabStyle,
     this.searchTabStyle,
+    this.ayahLongClickStyle,
   }) : assert(
           (page != null && startPage == null && endPage == null) ||
               (page == null && (startPage != null || endPage != null)),
@@ -138,6 +139,10 @@ class QuranPagesScreen extends StatelessWidget {
       highlightedRanges;
   // صيغ نصية "2:15-3:25" (تدعم أرقام عربية أيضًا)
   final List<String> highlightedRangesText;
+
+  /// تخصيص نمط الضغط المطوّل على الآية
+  /// [ayahLongClickStyle] Long press style customization for ayahs
+  final AyahLongClickStyle? ayahLongClickStyle;
 
   // ——— تحديد صفحة واحدة أو نطاق صفحات ———
   final int? page; // 1..604
@@ -287,6 +292,7 @@ class QuranPagesScreen extends StatelessWidget {
                   pageIndex: globalIndex,
                   quranCtrl: quranCtrl,
                   isFontsLocal: isFontsLocal!,
+                  ayahLongClickStyle: ayahLongClickStyle,
                 ),
               ),
             );

@@ -26,6 +26,7 @@ class DefaultFontsPageBuild extends StatelessWidget {
     required this.secondMenuChildOnTap,
     required this.context,
     required this.constraints,
+    required this.ayahLongClickStyle,
   });
 
   final QuranCtrl quranCtrl;
@@ -52,6 +53,7 @@ class DefaultFontsPageBuild extends StatelessWidget {
   final void Function(AyahModel ayah)? secondMenuChildOnTap;
   final BuildContext context;
   final BoxConstraints constraints;
+  final AyahLongClickStyle? ayahLongClickStyle;
 
   @override
   Widget build(BuildContext context) {
@@ -152,6 +154,9 @@ class DefaultFontsPageBuild extends StatelessWidget {
                             anotherMenuChildOnTap: anotherMenuChildOnTap,
                             secondMenuChild: secondMenuChild,
                             secondMenuChildOnTap: secondMenuChildOnTap,
+                            ayahLongClickStyle: ayahLongClickStyle ??
+                                AyahLongClickStyle.defaults(
+                                    isDark: isDark, context: context),
                           ),
                         ),
                       ],

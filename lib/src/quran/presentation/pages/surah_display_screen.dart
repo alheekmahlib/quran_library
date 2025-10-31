@@ -44,6 +44,7 @@ class SurahDisplayScreen extends StatelessWidget {
     required this.parentContext,
     this.indexTabStyle,
     this.searchTabStyle,
+    this.ayahLongClickStyle,
   });
 
   /// رقم السورة المراد عرضها
@@ -221,6 +222,8 @@ class SurahDisplayScreen extends StatelessWidget {
   /// [searchTabStyle] Search tab style customization for the Quran
   final SearchTabStyle? searchTabStyle;
 
+  final AyahLongClickStyle? ayahLongClickStyle;
+
   final quranCtrl = QuranCtrl.instance;
 
   @override
@@ -309,7 +312,8 @@ class SurahDisplayScreen extends StatelessWidget {
                   child: Stack(
                     alignment: Alignment.center,
                     children: [
-                      _buildSurahBody(parentContext, surahCtrl),
+                      _buildSurahBody(parentContext, surahCtrl,
+                          ayahLongClickStyle: ayahLongClickStyle),
 
                       // السلايدر السفلي - يظهر من الأسفل للأعلى
                       // Bottom slider - appears from bottom to top
@@ -348,7 +352,8 @@ class SurahDisplayScreen extends StatelessWidget {
 
   /// بناء محتوى السورة
   /// Build surah content
-  Widget _buildSurahBody(BuildContext context, SurahCtrl surahCtrl) {
+  Widget _buildSurahBody(BuildContext context, SurahCtrl surahCtrl,
+      {AyahLongClickStyle? ayahLongClickStyle}) {
     // شرح: التحقق من تحميل البيانات
     // Explanation: Check if data is loaded
     if (surahCtrl.isLoading.value) {
@@ -385,6 +390,7 @@ class SurahDisplayScreen extends StatelessWidget {
             surahCtrl.surahPages[pageIndex],
             pageIndex,
             surahCtrl,
+            ayahLongClickStyle,
           );
         },
       ),
@@ -393,8 +399,12 @@ class SurahDisplayScreen extends StatelessWidget {
 
   /// بناء صفحة السورة
   /// Build surah page
-  Widget _buildSurahPage(BuildContext context, QuranPageModel surahPage,
-      int pageIndex, SurahCtrl surahCtrl) {
+  Widget _buildSurahPage(
+      BuildContext context,
+      QuranPageModel surahPage,
+      int pageIndex,
+      SurahCtrl surahCtrl,
+      AyahLongClickStyle? ayahLongClickStyle) {
     final deviceSize = MediaQuery.of(context).size;
     final isFirstPage = surahCtrl.isFirstPage(pageIndex);
     final isFirstPageInFirstOrSecondSurah =
@@ -426,14 +436,20 @@ class SurahDisplayScreen extends StatelessWidget {
           : isLandscape
               ? SingleChildScrollView(
                   child: _pageBuild(isFirstPage, surahCtrl, context, surahPage,
-                      deviceSize, pageIndex))
+                      deviceSize, pageIndex, ayahLongClickStyle))
               : _pageBuild(isFirstPage, surahCtrl, context, surahPage,
-                  deviceSize, pageIndex),
+                  deviceSize, pageIndex, ayahLongClickStyle),
     );
   }
 
-  Widget _pageBuild(bool isFirstPage, SurahCtrl surahCtrl, BuildContext context,
-      QuranPageModel surahPage, Size deviceSize, int pageIndex) {
+  Widget _pageBuild(
+      bool isFirstPage,
+      SurahCtrl surahCtrl,
+      BuildContext context,
+      QuranPageModel surahPage,
+      Size deviceSize,
+      int pageIndex,
+      AyahLongClickStyle? ayahLongClickStyle) {
     final currentPage = surahCtrl.getRealQuranPageNumber(pageIndex);
     return TopAndBottomWidget(
       pageIndex: currentPage - 1,
@@ -495,6 +511,9 @@ class SurahDisplayScreen extends StatelessWidget {
                             ayahSelectedFontColor: ayahSelectedFontColor,
                             secondMenuChild: secondMenuChild,
                             secondMenuChildOnTap: secondMenuChildOnTap,
+                            ayahLongClickStyle: ayahLongClickStyle ??
+                                AyahLongClickStyle.defaults(
+                                    isDark: isDark, context: context),
                           ),
                         );
                       }).toList(),

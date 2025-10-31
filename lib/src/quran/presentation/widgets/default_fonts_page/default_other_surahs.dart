@@ -29,6 +29,7 @@ class DefaultOtherSurahs extends StatelessWidget {
     required this.secondMenuChild,
     required this.secondMenuChildOnTap,
     required this.context,
+    required this.ayahLongClickStyle,
   });
 
   final int pageIndex;
@@ -58,6 +59,7 @@ class DefaultOtherSurahs extends StatelessWidget {
   final Widget? secondMenuChild;
   final void Function(AyahModel ayah)? secondMenuChildOnTap;
   final BuildContext context;
+  final AyahLongClickStyle? ayahLongClickStyle;
 
   @override
   Widget build(BuildContext context) {
@@ -77,29 +79,32 @@ class DefaultOtherSurahs extends StatelessWidget {
                       Responsive.isMobileLarge(context))
               ? SingleChildScrollView(
                   child: DefaultFontsPageBuild(
-                      quranCtrl: quranCtrl,
-                      pageIndex: pageIndex,
-                      newSurahs: newSurahs,
-                      surahNumber: surahNumber,
-                      bannerStyle: bannerStyle,
-                      isDark: isDark,
-                      surahNameStyle: surahNameStyle,
-                      surahInfoStyle: surahInfoStyle,
-                      onSurahBannerPress: onSurahBannerPress,
-                      basmalaStyle: basmalaStyle,
-                      deviceSize: deviceSize,
-                      onAyahLongPress: onAyahLongPress,
-                      bookmarksColor: bookmarksColor,
-                      textColor: textColor,
-                      bookmarkList: bookmarkList,
-                      ayahSelectedBackgroundColor: ayahSelectedBackgroundColor,
-                      ayahBookmarked: ayahBookmarked,
-                      anotherMenuChild: anotherMenuChild,
-                      anotherMenuChildOnTap: anotherMenuChildOnTap,
-                      secondMenuChild: secondMenuChild,
-                      secondMenuChildOnTap: secondMenuChildOnTap,
-                      context: context,
-                      constraints: constraints))
+                    quranCtrl: quranCtrl,
+                    pageIndex: pageIndex,
+                    newSurahs: newSurahs,
+                    surahNumber: surahNumber,
+                    bannerStyle: bannerStyle,
+                    isDark: isDark,
+                    surahNameStyle: surahNameStyle,
+                    surahInfoStyle: surahInfoStyle,
+                    onSurahBannerPress: onSurahBannerPress,
+                    basmalaStyle: basmalaStyle,
+                    deviceSize: deviceSize,
+                    onAyahLongPress: onAyahLongPress,
+                    bookmarksColor: bookmarksColor,
+                    textColor: textColor,
+                    bookmarkList: bookmarkList,
+                    ayahSelectedBackgroundColor: ayahSelectedBackgroundColor,
+                    ayahBookmarked: ayahBookmarked,
+                    anotherMenuChild: anotherMenuChild,
+                    anotherMenuChildOnTap: anotherMenuChildOnTap,
+                    secondMenuChild: secondMenuChild,
+                    secondMenuChildOnTap: secondMenuChildOnTap,
+                    context: context,
+                    constraints: constraints,
+                    ayahLongClickStyle: ayahLongClickStyle,
+                  ),
+                )
               : DefaultFontsPageBuild(
                   quranCtrl: quranCtrl,
                   pageIndex: pageIndex,
@@ -123,7 +128,9 @@ class DefaultOtherSurahs extends StatelessWidget {
                   secondMenuChild: secondMenuChild,
                   secondMenuChildOnTap: secondMenuChildOnTap,
                   context: context,
-                  constraints: constraints),
+                  constraints: constraints,
+                  ayahLongClickStyle: ayahLongClickStyle,
+                ),
         );
       },
     );

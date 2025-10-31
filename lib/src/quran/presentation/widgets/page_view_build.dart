@@ -53,6 +53,7 @@ class PageViewBuild extends StatelessWidget {
     required this.pageIndex,
     required this.quranCtrl,
     required this.isFontsLocal,
+    this.ayahLongClickStyle,
   });
 
   final Widget? circularProgressWidget;
@@ -87,6 +88,7 @@ class PageViewBuild extends StatelessWidget {
   final int pageIndex;
   final QuranCtrl quranCtrl;
   final bool isFontsLocal;
+  final AyahLongClickStyle? ayahLongClickStyle;
 
   @override
   Widget build(BuildContext context) {
@@ -151,6 +153,7 @@ class PageViewBuild extends StatelessWidget {
                           anotherMenuChildOnTap: anotherMenuChildOnTap,
                           secondMenuChild: secondMenuChild,
                           secondMenuChildOnTap: secondMenuChildOnTap,
+                          ayahLongClickStyle: ayahLongClickStyle,
                         ),
                       ))
               : quranCtrl.staticPages.isEmpty || quranCtrl.isLoading.value
@@ -183,6 +186,7 @@ class PageViewBuild extends StatelessWidget {
                       anotherMenuChildOnTap: anotherMenuChildOnTap,
                       secondMenuChild: secondMenuChild,
                       secondMenuChildOnTap: secondMenuChildOnTap,
+                      ayahLongClickStyle: ayahLongClickStyle,
                     )),
           quranCtrl.staticPages.isEmpty || quranCtrl.isLoading.value
               ? Center(
@@ -222,6 +226,7 @@ class PageViewBuild extends StatelessWidget {
                     anotherMenuChildOnTap: anotherMenuChildOnTap,
                     secondMenuChild: secondMenuChild,
                     secondMenuChildOnTap: secondMenuChildOnTap,
+                    ayahLongClickStyle: ayahLongClickStyle,
                   ),
                 ),
         ),

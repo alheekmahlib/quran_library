@@ -31,6 +31,7 @@ class _QuranFontsPage extends StatelessWidget {
   final void Function(AyahModel ayah)? anotherMenuChildOnTap;
   final Widget? secondMenuChild;
   final void Function(AyahModel ayah)? secondMenuChildOnTap;
+  final AyahLongClickStyle? ayahLongClickStyle;
 
   const _QuranFontsPage({
     required this.context,
@@ -59,6 +60,7 @@ class _QuranFontsPage extends StatelessWidget {
     this.anotherMenuChildOnTap,
     this.secondMenuChild,
     this.secondMenuChildOnTap,
+    this.ayahLongClickStyle,
   });
 
   @override
@@ -87,34 +89,34 @@ class _QuranFontsPage extends StatelessWidget {
                             Responsive.isMobileLarge(context))
                     ? SingleChildScrollView(
                         child: PageBuild(
-                          pageIndex: pageIndex,
-                          surahNumber: surahNumber,
-                          bannerStyle: bannerStyle,
-                          isDark: isDark,
-                          surahNameStyle: surahNameStyle,
-                          surahInfoStyle: surahInfoStyle,
-                          onSurahBannerPress: onSurahBannerPress,
-                          basmalaStyle: basmalaStyle,
-                          textColor: textColor,
-                          bookmarks: bookmarks,
-                          onAyahLongPress: onAyahLongPress,
-                          secondMenuChild: secondMenuChild,
-                          secondMenuChildOnTap: secondMenuChildOnTap,
-                          bookmarkList: bookmarkList,
-                          ayahIconColor: ayahIconColor,
-                          showAyahBookmarkedIcon: showAyahBookmarkedIcon,
-                          bookmarksAyahs: bookmarksAyahs,
-                          bookmarksColor: bookmarksColor,
-                          ayahSelectedBackgroundColor:
-                              ayahSelectedBackgroundColor,
-                          isFontsLocal: isFontsLocal,
-                          fontsName: fontsName,
-                          ayahBookmarked: ayahBookmarked,
-                          anotherMenuChild: anotherMenuChild,
-                          anotherMenuChildOnTap: anotherMenuChildOnTap,
-                          context: context,
-                          quranCtrl: quranCtrl,
-                        ),
+                            pageIndex: pageIndex,
+                            surahNumber: surahNumber,
+                            bannerStyle: bannerStyle,
+                            isDark: isDark,
+                            surahNameStyle: surahNameStyle,
+                            surahInfoStyle: surahInfoStyle,
+                            onSurahBannerPress: onSurahBannerPress,
+                            basmalaStyle: basmalaStyle,
+                            textColor: textColor,
+                            bookmarks: bookmarks,
+                            onAyahLongPress: onAyahLongPress,
+                            secondMenuChild: secondMenuChild,
+                            secondMenuChildOnTap: secondMenuChildOnTap,
+                            bookmarkList: bookmarkList,
+                            ayahIconColor: ayahIconColor,
+                            showAyahBookmarkedIcon: showAyahBookmarkedIcon,
+                            bookmarksAyahs: bookmarksAyahs,
+                            bookmarksColor: bookmarksColor,
+                            ayahSelectedBackgroundColor:
+                                ayahSelectedBackgroundColor,
+                            isFontsLocal: isFontsLocal,
+                            fontsName: fontsName,
+                            ayahBookmarked: ayahBookmarked,
+                            anotherMenuChild: anotherMenuChild,
+                            anotherMenuChildOnTap: anotherMenuChildOnTap,
+                            context: context,
+                            quranCtrl: quranCtrl,
+                            ayahLongClickStyle: ayahLongClickStyle),
                       )
                     : PageBuild(
                         pageIndex: pageIndex,
@@ -144,7 +146,7 @@ class _QuranFontsPage extends StatelessWidget {
                         anotherMenuChildOnTap: anotherMenuChildOnTap,
                         context: context,
                         quranCtrl: quranCtrl,
-                      )
+                        ayahLongClickStyle: ayahLongClickStyle)
                 : PageBuild(
                     pageIndex: pageIndex,
                     surahNumber: surahNumber,
@@ -172,7 +174,7 @@ class _QuranFontsPage extends StatelessWidget {
                     anotherMenuChildOnTap: anotherMenuChildOnTap,
                     context: context,
                     quranCtrl: quranCtrl,
-                  ),
+                    ayahLongClickStyle: ayahLongClickStyle),
       ),
     );
   }

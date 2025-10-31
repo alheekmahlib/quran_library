@@ -24,6 +24,7 @@ class DefaultFirstTwoSurahs extends StatelessWidget {
     required this.secondMenuChild,
     required this.secondMenuChildOnTap,
     required this.context,
+    required this.ayahLongClickStyle,
   });
 
   final int? surahNumber;
@@ -48,6 +49,7 @@ class DefaultFirstTwoSurahs extends StatelessWidget {
   final Widget? secondMenuChild;
   final void Function(AyahModel ayah)? secondMenuChildOnTap;
   final BuildContext context;
+  final AyahLongClickStyle? ayahLongClickStyle;
 
   @override
   Widget build(BuildContext context) {
@@ -120,6 +122,9 @@ class DefaultFirstTwoSurahs extends StatelessWidget {
                             anotherMenuChildOnTap: anotherMenuChildOnTap,
                             secondMenuChild: secondMenuChild,
                             secondMenuChildOnTap: secondMenuChildOnTap,
+                            ayahLongClickStyle: ayahLongClickStyle ??
+                                AyahLongClickStyle.defaults(
+                                    isDark: isDark, context: context),
                           ),
                         ),
                       ],

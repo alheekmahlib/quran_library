@@ -21,6 +21,7 @@ class TextScaleRichTextBuild extends StatelessWidget {
     required this.bookmarksColor,
     required this.ayahSelectedBackgroundColor,
     required this.languageCode,
+    this.ayahLongClickStyle,
   });
 
   final Color? textColor;
@@ -42,12 +43,13 @@ class TextScaleRichTextBuild extends StatelessWidget {
   final Color? bookmarksColor;
   final Color? ayahSelectedBackgroundColor;
   final String? languageCode;
+  final AyahLongClickStyle? ayahLongClickStyle;
   final quranCtrl = QuranCtrl.instance;
 
   @override
   Widget build(BuildContext context) {
     return GetBuilder<QuranCtrl>(
-      id: 'selection_page_$pageIndex',
+      id: 'selection_page_',
       builder: (_) => LayoutBuilder(
         builder: (ctx, constraints) {
           final base = PageFontSizeHelper.hafsFontSize(
@@ -140,6 +142,9 @@ class TextScaleRichTextBuild extends StatelessWidget {
                             anotherMenuChildOnTap: anotherMenuChildOnTap,
                             secondMenuChild: secondMenuChild,
                             secondMenuChildOnTap: secondMenuChildOnTap,
+                            style: ayahLongClickStyle ??
+                                AyahLongClickStyle.defaults(
+                                    isDark: isDark, context: context),
                           ),
                         );
 

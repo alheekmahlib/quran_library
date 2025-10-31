@@ -24,6 +24,7 @@ class RichTextBuild extends StatelessWidget {
     required this.ayahBookmarked,
     required this.anotherMenuChild,
     required this.anotherMenuChildOnTap,
+    this.ayahLongClickStyle,
   });
 
   final int pageIndex;
@@ -48,6 +49,7 @@ class RichTextBuild extends StatelessWidget {
   final List<int> ayahBookmarked;
   final Widget? anotherMenuChild;
   final Function(AyahModel ayah)? anotherMenuChildOnTap;
+  final AyahLongClickStyle? ayahLongClickStyle;
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +60,7 @@ class RichTextBuild extends StatelessWidget {
 
     // شرح: إعادة بناء انتقائي عند تغيّر تحديد الآيات في الصفحة فقط
     return GetBuilder<QuranCtrl>(
-      id: 'selection_page_$pageIndex',
+      id: 'selection_page_',
       builder: (_) => LayoutBuilder(
         builder: (ctx, constraints) {
           final fs = PageFontSizeHelper.qcfFontSize(
@@ -156,6 +158,9 @@ class RichTextBuild extends StatelessWidget {
                             anotherMenuChildOnTap: anotherMenuChildOnTap,
                             secondMenuChild: secondMenuChild,
                             secondMenuChildOnTap: secondMenuChildOnTap,
+                            style: ayahLongClickStyle ??
+                                AyahLongClickStyle.defaults(
+                                    isDark: isDark, context: context),
                           ),
                         );
 

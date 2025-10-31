@@ -29,6 +29,7 @@ class PageBuild extends StatelessWidget {
     required this.anotherMenuChildOnTap,
     required this.context,
     required this.quranCtrl,
+    this.ayahLongClickStyle,
   });
 
   final int pageIndex;
@@ -58,6 +59,7 @@ class PageBuild extends StatelessWidget {
   final void Function(AyahModel ayah)? anotherMenuChildOnTap;
   final BuildContext context;
   final QuranCtrl quranCtrl;
+  final AyahLongClickStyle? ayahLongClickStyle;
 
   @override
   Widget build(BuildContext context) {
@@ -136,7 +138,8 @@ class PageBuild extends StatelessWidget {
                           fontsName: fontsName!,
                           ayahBookmarked: ayahBookmarked,
                           anotherMenuChild: anotherMenuChild,
-                          anotherMenuChildOnTap: anotherMenuChildOnTap),
+                          anotherMenuChildOnTap: anotherMenuChildOnTap,
+                          ayahLongClickStyle: ayahLongClickStyle),
                     ),
                   ],
                 );

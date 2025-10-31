@@ -21,6 +21,7 @@ class DefaultFontsBuild extends StatelessWidget {
     required this.isDark,
     this.secondMenuChild,
     this.secondMenuChildOnTap,
+    this.ayahLongClickStyle,
   });
 
   final quranCtrl = QuranCtrl.instance;
@@ -44,10 +45,12 @@ class DefaultFontsBuild extends StatelessWidget {
   final bool isDark;
   final Widget? secondMenuChild;
   final void Function(AyahModel ayah)? secondMenuChildOnTap;
+  final AyahLongClickStyle? ayahLongClickStyle;
 
   @override
   Widget build(BuildContext context) {
-    return GetX<QuranCtrl>(
+    return GetBuilder<QuranCtrl>(
+      id: 'selection_page_',
       builder: (quranCtrl) {
         return FittedBox(
           fit: boxFit,
@@ -112,6 +115,9 @@ class DefaultFontsBuild extends StatelessWidget {
                                 anotherMenuChildOnTap: anotherMenuChildOnTap,
                                 secondMenuChild: secondMenuChild,
                                 secondMenuChildOnTap: secondMenuChildOnTap,
+                                style: ayahLongClickStyle ??
+                                    AyahLongClickStyle.defaults(
+                                        isDark: isDark, context: context),
                               ),
                             );
 

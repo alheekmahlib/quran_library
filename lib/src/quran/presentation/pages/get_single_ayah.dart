@@ -12,6 +12,7 @@ class GetSingleAyah extends StatelessWidget {
   final bool? islocalFont;
   final String? fontsName;
   final int? pageIndex;
+  final bool? useDefaultFont;
 
   const GetSingleAyah({
     super.key,
@@ -26,6 +27,7 @@ class GetSingleAyah extends StatelessWidget {
     this.islocalFont = false,
     this.fontsName,
     this.pageIndex,
+    this.useDefaultFont = false,
   });
 
   @override
@@ -66,10 +68,16 @@ class GetSingleAyah extends StatelessWidget {
         style: TextStyle(
           fontFamily: islocalFont == true
               ? fontsName
-              : (currentFontsSelected
-                  ? QuranCtrl.instance.getFontPath(pageNumber - 1)
-                  : 'hafs'),
-          package: currentFontsSelected ? null : 'quran_library',
+              : useDefaultFont!
+                  ? 'hafs'
+                  : (currentFontsSelected
+                      ? QuranCtrl.instance.getFontPath(pageNumber - 1)
+                      : 'hafs'),
+          package: useDefaultFont!
+              ? 'quran_library'
+              : currentFontsSelected
+                  ? null
+                  : 'quran_library',
           fontSize: fontSize ?? 22,
           height: 2.0,
           // letterSpacing: currentFontsSelected ? 3 : null,
@@ -78,16 +86,23 @@ class GetSingleAyah extends StatelessWidget {
         ),
         children: [
           TextSpan(
-            text: currentFontsSelected
-                ? '${ayah.codeV2!.replaceAll('\n', '').split(' ').join(' ')} '
-                : '${ayah.text} ',
+            text: useDefaultFont!
+                ? '${ayah.text} '
+                : currentFontsSelected || !useDefaultFont!
+                    ? '${ayah.codeV2!.replaceAll('\n', '').split(' ').join(' ')} '
+                    : '${ayah.text} ',
           ),
-          currentFontsSelected
-              ? const TextSpan()
-              : TextSpan(
+          useDefaultFont!
+              ? TextSpan(
                   text: '${ayah.ayahNumber}'
                       .convertEnglishNumbersToArabic('${ayah.ayahNumber}'),
-                ),
+                )
+              : currentFontsSelected
+                  ? const TextSpan()
+                  : TextSpan(
+                      text: '${ayah.ayahNumber}'
+                          .convertEnglishNumbersToArabic('${ayah.ayahNumber}'),
+                    ),
         ],
       ),
     );

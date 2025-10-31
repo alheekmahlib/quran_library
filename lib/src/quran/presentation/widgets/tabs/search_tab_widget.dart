@@ -208,6 +208,7 @@ class _SearchTabState extends State<_SearchTab> {
                         ayahNumber: ayah.ayahNumber,
                         isBold: false,
                         fontSize: 20,
+                        useDefaultFont: true,
                       ),
                       subtitle: Row(
                         children: [

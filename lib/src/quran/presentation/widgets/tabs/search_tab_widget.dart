@@ -209,6 +209,8 @@ class _SearchTabState extends State<_SearchTab> {
                         isBold: false,
                         fontSize: 20,
                         useDefaultFont: true,
+                        textColor: textColor,
+                        isDark: widget.isDark,
                       ),
                       subtitle: Row(
                         children: [

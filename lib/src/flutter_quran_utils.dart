@@ -641,6 +641,7 @@ class QuranLibrary {
     required String ayahTextN,
     required int ayahUQNum,
     required int ayahNumber,
+    bool? isDark,
     TafsirStyle? tafsirStyle,
   }) async =>
       await TafsirCtrl.instance.showTafsirOnTap(
@@ -649,7 +650,8 @@ class QuranLibrary {
         pageIndex: pageIndex,
         ayahUQNum: ayahUQNum,
         ayahNumber: ayahNumber,
-        tafsirStyle: tafsirStyle,
+        tafsirStyle: tafsirStyle ??
+            TafsirStyle.defaults(isDark: isDark ?? false, context: context),
       );
 
   /// للحصول على التفسير الخاص بالآية،

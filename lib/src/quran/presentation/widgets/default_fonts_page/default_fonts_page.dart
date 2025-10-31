@@ -28,6 +28,7 @@ class _DefaultFontsPage extends StatelessWidget {
   final Widget? secondMenuChild;
   final void Function(AyahModel ayah)? secondMenuChildOnTap;
   final AyahLongClickStyle? ayahLongClickStyle;
+  final TafsirStyle? tafsirStyle;
 
   _DefaultFontsPage({
     required this.context,
@@ -56,6 +57,7 @@ class _DefaultFontsPage extends StatelessWidget {
     this.secondMenuChild,
     this.secondMenuChildOnTap,
     this.ayahLongClickStyle,
+    this.tafsirStyle,
   });
 
   final quranCtrl = QuranCtrl.instance;
@@ -105,6 +107,7 @@ class _DefaultFontsPage extends StatelessWidget {
                             secondMenuChildOnTap: secondMenuChildOnTap,
                             context: context,
                             ayahLongClickStyle: ayahLongClickStyle,
+                            tafsirStyle: tafsirStyle,
                           ),
                         )
                       : DefaultFirstTwoSurahs(
@@ -131,6 +134,7 @@ class _DefaultFontsPage extends StatelessWidget {
                           secondMenuChildOnTap: secondMenuChildOnTap,
                           context: context,
                           ayahLongClickStyle: ayahLongClickStyle,
+                          tafsirStyle: tafsirStyle,
                         )
                   : DefaultFirstTwoSurahs(
                       surahNumber: surahNumber,
@@ -154,7 +158,9 @@ class _DefaultFontsPage extends StatelessWidget {
                       secondMenuChild: secondMenuChild,
                       secondMenuChildOnTap: secondMenuChildOnTap,
                       context: context,
-                      ayahLongClickStyle: ayahLongClickStyle),
+                      ayahLongClickStyle: ayahLongClickStyle,
+                      tafsirStyle: tafsirStyle,
+                    ),
             )
           : DefaultOtherSurahs(
               pageIndex: pageIndex,
@@ -184,6 +190,7 @@ class _DefaultFontsPage extends StatelessWidget {
               secondMenuChildOnTap: secondMenuChildOnTap,
               context: context,
               ayahLongClickStyle: ayahLongClickStyle,
+              tafsirStyle: tafsirStyle,
             ),
     );
   }

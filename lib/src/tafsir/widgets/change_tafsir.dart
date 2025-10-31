@@ -90,8 +90,12 @@ class DailogBuild extends StatelessWidget {
         id: 'tafsirs_menu_list',
         builder: (tafsirCtrl) {
           return Dialog(
+            backgroundColor: tafsirStyle.backgroundColor!,
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            constraints: BoxConstraints(
+                maxWidth: tafsirStyle.changeTafsirDialogWidth!,
+                maxHeight: tafsirStyle.changeTafsirDialogHeight!),
             child: Container(
               constraints: const BoxConstraints(maxHeight: 500),
               margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8.0),
@@ -124,15 +128,14 @@ class DailogBuild extends StatelessWidget {
 
   Widget tafsirOrTranslateTitle(int index, {String? title}) {
     if (index == 0 || index == TafsirCtrl.instance.translationsStartIndex) {
-      title ??= index == 0
-          ? tafsirStyle.tafsirName ?? 'التفاسير'
-          : tafsirStyle.translateName ?? 'الترجمات';
+      title ??=
+          index == 0 ? tafsirStyle.tafsirName! : tafsirStyle.translateName!;
       return Container(
         width: double.infinity,
         padding: const EdgeInsets.symmetric(vertical: 6.0),
         margin: const EdgeInsets.symmetric(vertical: 6.0),
         decoration: BoxDecoration(
-          color: tafsirStyle.backgroundTitleColor ?? const Color(0xffCDAD80),
+          color: tafsirStyle.backgroundTitleColor!,
           borderRadius: BorderRadius.circular(8),
         ),
         child: Text(
@@ -140,7 +143,7 @@ class DailogBuild extends StatelessWidget {
           style: QuranLibrary().cairoStyle.copyWith(
               fontSize: 16,
               fontWeight: FontWeight.bold,
-              color: tafsirStyle.textTitleColor ?? Colors.white),
+              color: tafsirStyle.textTitleColor!),
           textAlign: TextAlign.center,
         ),
       );
@@ -186,7 +189,7 @@ class TafsirItemWidget extends StatelessWidget {
           },
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 6),
-            margin: const EdgeInsets.symmetric(vertical: 4),
+            margin: const EdgeInsets.symmetric(vertical: 2),
             decoration: BoxDecoration(
               color: tafsirCtrl.radioValue.value == tafsirIndex
                   ? (tafsirStyle.selectedTafsirColor ?? const Color(0xffCDAD80))
@@ -216,8 +219,7 @@ class TafsirItemWidget extends StatelessWidget {
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
                             border: Border.all(
-                                color: tafsirStyle.unSelectedTafsirColor ??
-                                    const Color(0xffCDAD80),
+                                color: tafsirStyle.selectedTafsirBorderColor!,
                                 width: 2),
                             color: Colors.white,
                           ),
@@ -225,8 +227,7 @@ class TafsirItemWidget extends StatelessWidget {
                               ? Icon(
                                   Icons.done,
                                   size: 14,
-                                  color: tafsirStyle.selectedTafsirColor ??
-                                      const Color(0xffCDAD80),
+                                  color: tafsirStyle.selectedTafsirBorderColor,
                                 )
                               : null,
                         )
@@ -292,9 +293,7 @@ class TafsirItemWidget extends StatelessWidget {
                                     icon: Icon(
                                       Icons.cloud_download_outlined,
                                       size: 22,
-                                      color:
-                                          tafsirStyle.unSelectedTafsirColor ??
-                                              const Color(0xffCDAD80),
+                                      color: tafsirStyle.unSelectedTafsirColor,
                                     ),
                                     onPressed: () async {
                                       tafsirCtrl.downloadIndex.value =
@@ -327,13 +326,10 @@ class TafsirItemWidget extends StatelessWidget {
                             style: QuranLibrary().cairoStyle.copyWith(
                                   color: tafsirCtrl.radioValue.value ==
                                           tafsirIndex
-                                      ? tafsirStyle.selectedTafsirTextColor ??
-                                          (isDark ? Colors.white : Colors.black)
-                                      : tafsirStyle.unSelectedTafsirTextColor ??
-                                          (isDark
-                                              ? Colors.white
-                                              : Colors.black),
+                                      ? tafsirStyle.selectedTafsirTextColor!
+                                      : tafsirStyle.unSelectedTafsirTextColor!,
                                   fontSize: 14,
+                                  fontWeight: FontWeight.bold,
                                 ),
                           ),
                           Text(

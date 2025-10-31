@@ -22,6 +22,7 @@ class DefaultFontsBuild extends StatelessWidget {
     this.secondMenuChild,
     this.secondMenuChildOnTap,
     this.ayahLongClickStyle,
+    this.tafsirStyle,
   });
 
   final quranCtrl = QuranCtrl.instance;
@@ -46,6 +47,7 @@ class DefaultFontsBuild extends StatelessWidget {
   final Widget? secondMenuChild;
   final void Function(AyahModel ayah)? secondMenuChildOnTap;
   final AyahLongClickStyle? ayahLongClickStyle;
+  final TafsirStyle? tafsirStyle;
 
   @override
   Widget build(BuildContext context) {
@@ -117,6 +119,9 @@ class DefaultFontsBuild extends StatelessWidget {
                                 secondMenuChildOnTap: secondMenuChildOnTap,
                                 style: ayahLongClickStyle ??
                                     AyahLongClickStyle.defaults(
+                                        isDark: isDark, context: context),
+                                tafsirStyle: tafsirStyle ??
+                                    TafsirStyle.defaults(
                                         isDark: isDark, context: context),
                               ),
                             );

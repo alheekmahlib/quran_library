@@ -25,6 +25,7 @@ class DefaultFirstTwoSurahs extends StatelessWidget {
     required this.secondMenuChildOnTap,
     required this.context,
     required this.ayahLongClickStyle,
+    this.tafsirStyle,
   });
 
   final int? surahNumber;
@@ -50,6 +51,7 @@ class DefaultFirstTwoSurahs extends StatelessWidget {
   final void Function(AyahModel ayah)? secondMenuChildOnTap;
   final BuildContext context;
   final AyahLongClickStyle? ayahLongClickStyle;
+  final TafsirStyle? tafsirStyle;
 
   @override
   Widget build(BuildContext context) {
@@ -125,6 +127,7 @@ class DefaultFirstTwoSurahs extends StatelessWidget {
                             ayahLongClickStyle: ayahLongClickStyle ??
                                 AyahLongClickStyle.defaults(
                                     isDark: isDark, context: context),
+                            tafsirStyle: tafsirStyle,
                           ),
                         ),
                       ],

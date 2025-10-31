@@ -64,6 +64,7 @@ class QuranLibraryScreen extends StatelessWidget {
     this.indexTabStyle,
     this.searchTabStyle,
     this.ayahLongClickStyle,
+    this.tafsirStyle,
   });
 
   /// إذا قمت بإضافة شريط التطبيقات هنا فإنه سيحل محل شريط التطبيقات الافتراضية [appBar]
@@ -315,6 +316,10 @@ class QuranLibraryScreen extends StatelessWidget {
   /// [ayahLongClickStyle] Long press style customization for ayahs
   final AyahLongClickStyle? ayahLongClickStyle;
 
+  // تخصيص نمط التفسير
+  /// [tafsirStyle] Tafsir style customization
+  final TafsirStyle? tafsirStyle;
+
   @override
   Widget build(BuildContext context) {
     // تحديث رابط أيقونة التطبيق إذا تم تمريره / Update app icon URL if provided
@@ -484,6 +489,7 @@ class QuranLibraryScreen extends StatelessWidget {
                                         quranCtrl: quranCtrl,
                                         isFontsLocal: isFontsLocal!,
                                         ayahLongClickStyle: ayahLongClickStyle,
+                                        tafsirStyle: tafsirStyle,
                                       ),
                                     ),
                                   ),
@@ -525,6 +531,7 @@ class QuranLibraryScreen extends StatelessWidget {
                             quranCtrl: quranCtrl,
                             isFontsLocal: isFontsLocal!,
                             ayahLongClickStyle: ayahLongClickStyle,
+                            tafsirStyle: tafsirStyle,
                           ),
                     GetBuilder<QuranCtrl>(
                       id: 'isShowControl',

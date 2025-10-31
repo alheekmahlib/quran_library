@@ -49,6 +49,7 @@ class TafsirCtrl extends GetxController {
 
   List<TafsirNameModel> get tafsirWithoutTranslationItems =>
       tafsirAndTranslationsItems.where((t) => !t.isTranslation).toList();
+
   List<TafsirNameModel> get translationsWithoutTafsirItems =>
       tafsirAndTranslationsItems.where((t) => t.isTranslation).toList();
 
@@ -57,6 +58,7 @@ class TafsirCtrl extends GetxController {
 
   List<TafsirNameModel> get customTafsirWithoutTranslationsItems =>
       customTafsirAndTranslationsItems.where((e) => !e.isTranslation).toList();
+
   List<TafsirNameModel> get customTranslationsItems =>
       customTafsirAndTranslationsItems.where((e) => e.isTranslation).toList();
 

@@ -23,6 +23,7 @@ class AyahLongClickDialog extends StatelessWidget {
     this.secondMenuChild,
     this.secondMenuChildOnTap,
     this.style,
+    this.tafsirStyle,
   });
 
   /// The AyahModel that is the target of the long click event.
@@ -48,6 +49,7 @@ class AyahLongClickDialog extends StatelessWidget {
   final BuildContext context;
   final bool isDark;
   final AyahLongClickStyle? style;
+  final TafsirStyle? tafsirStyle;
 
   @override
   Widget build(BuildContext context) {
@@ -212,21 +214,9 @@ class AyahLongClickDialog extends StatelessWidget {
                                         1.3)
                                 ? ayah!.ayahNumber
                                 : ayah!.ayahNumber,
-                        tafsirStyle: TafsirStyle(
-                          backgroundColor: AppColors.getBackgroundColor(isDark),
-                          tafsirNameWidget: Text(
-                            'التفسير',
-                            style: QuranLibrary().cairoStyle.copyWith(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                  color: isDark ? Colors.white : Colors.black,
-                                ),
-                          ),
-                          fontSizeWidget: fontSizeDropDown(
-                            height: 30.0,
-                            isDark: isDark,
-                          ),
-                        ),
+                        tafsirStyle: tafsirStyle ??
+                            TafsirStyle.defaults(
+                                isDark: isDark, context: context),
                       );
                       QuranCtrl.instance.state.overlayEntry?.remove();
                       QuranCtrl.instance.state.overlayEntry = null;

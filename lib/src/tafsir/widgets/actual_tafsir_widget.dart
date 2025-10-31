@@ -41,7 +41,7 @@ class ActualTafsirWidget extends StatelessWidget {
         GetSingleAyah(
           surahNumber: surahs.surahNumber,
           ayahNumber: ayahs.ayahNumber,
-          fontSize: 21.sp,
+          fontSize: fontSizeArabic + 10,
           isBold: false,
           ayahs: ayahs,
           isSingleAyah: false,
@@ -49,15 +49,15 @@ class ActualTafsirWidget extends StatelessWidget {
           fontsName: fontsName,
           isDark: isDark,
           pageIndex: pageIndex! + 1,
-          textColor: tafsirStyle.textColor ?? AppColors.getTextColor(isDark),
+          textColor: tafsirStyle.textColor,
+          useDefaultFont: true,
         ),
         Text.rich(
           TextSpan(
             children: <InlineSpan>[
               WidgetSpan(
                   child: context.horizontalDivider(
-                color:
-                    tafsirStyle.textColor ?? Colors.grey.withValues(alpha: 0.8),
+                color: tafsirStyle.dividerColor,
                 height: 1.5,
               )),
             ],
@@ -72,20 +72,16 @@ class ActualTafsirWidget extends StatelessWidget {
                   ? TextSpan(
                       children: tafsir.tafsirText.toFlutterText(isDark),
                       style: TextStyle(
-                          color: tafsirStyle.textColor ??
-                              (isDark ? Colors.white : Colors.black),
+                          color: tafsirStyle.textColor,
                           height: 1.5,
-                          fontSize:
-                              (tafsirStyle.fontSize ?? fontSizeArabic).sp),
+                          fontSize: fontSizeArabic),
                     )
                   : TextSpan(
                       children: _buildTranslationSpans(),
                       style: TextStyle(
-                          color: tafsirStyle.textColor ??
-                              (isDark ? Colors.white : Colors.black),
+                          color: tafsirStyle.textColor,
                           height: 1.5,
-                          fontSize:
-                              (tafsirStyle.fontSize ?? fontSizeArabic).sp),
+                          fontSize: fontSizeArabic),
                     ),
             ],
           ),

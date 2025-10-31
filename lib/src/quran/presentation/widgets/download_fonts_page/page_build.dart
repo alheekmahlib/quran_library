@@ -30,6 +30,7 @@ class PageBuild extends StatelessWidget {
     required this.context,
     required this.quranCtrl,
     this.ayahLongClickStyle,
+    this.tafsirStyle,
   });
 
   final int pageIndex;
@@ -60,6 +61,7 @@ class PageBuild extends StatelessWidget {
   final BuildContext context;
   final QuranCtrl quranCtrl;
   final AyahLongClickStyle? ayahLongClickStyle;
+  final TafsirStyle? tafsirStyle;
 
   @override
   Widget build(BuildContext context) {

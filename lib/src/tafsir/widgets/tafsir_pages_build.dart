@@ -62,7 +62,9 @@ class TafsirPagesBuild extends StatelessWidget {
                 QuranCtrl.instance.getCurrentSurahByPageNumber(ayahs.page);
             return Container(
               width: width,
-              margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+              margin: EdgeInsets.symmetric(
+                  vertical: tafsirStyle.verticalMargin ?? 8,
+                  horizontal: tafsirStyle.horizontalMargin ?? 8),
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 color: tafsirStyle.tafsirBackgroundColor ??
@@ -77,8 +79,9 @@ class TafsirPagesBuild extends StatelessWidget {
                 ],
                 border: Border.symmetric(
                   horizontal: BorderSide(
-                    color: tafsirStyle.textColor ??
-                        Colors.grey.withValues(alpha: 0.8),
+                    color: tafsirStyle.unSelectedTafsirBorderColor ??
+                        (tafsirStyle.dividerColor ??
+                            Colors.grey.withValues(alpha: 0.3)),
                     width: 1.2,
                   ),
                 ),

@@ -108,6 +108,12 @@ extension ShowTafsirExtension on void {
         backgroundColor: Colors.transparent,
         enableDrag: true,
         isDismissible: true,
+        constraints: BoxConstraints(
+          maxHeight: tafsirStyle?.heightOfBottomSheet ??
+              MediaQuery.of(validContext).size.height * 0.9,
+          maxWidth: tafsirStyle?.widthOfBottomSheet ??
+              MediaQuery.of(validContext).size.width,
+        ),
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
         ),
@@ -125,7 +131,11 @@ extension ShowTafsirExtension on void {
             isDark: isDarkMode,
             islocalFont: islocalFont,
             fontsName: fontsName,
-            tafsirStyle: tafsirStyle!,
+            tafsirStyle: tafsirStyle ??
+                TafsirStyle.defaults(
+                  isDark: isDarkMode,
+                  context: validContext,
+                ),
           );
         },
       );

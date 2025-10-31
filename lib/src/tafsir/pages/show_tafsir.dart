@@ -39,8 +39,11 @@ class ShowTafseer extends StatelessWidget {
     // شرح: نتأكد أن عناصر tafsirStyle غير فارغة لتجنب الخطأ
     // Explanation: Ensure tafsirStyle widgets are not null to avoid null check errors
     final tafsirNameWidget = tafsirStyle.tafsirNameWidget ?? const SizedBox();
-    final double height = MediaQuery.maybeOf(context)?.size.height ?? 600;
-    final double width = MediaQuery.maybeOf(context)?.size.width ?? 400;
+    final double deviceHeight = MediaQuery.maybeOf(context)?.size.height ?? 600;
+    final double deviceWidth = MediaQuery.maybeOf(context)?.size.width ?? 400;
+    final double sheetHeight =
+        tafsirStyle.heightOfBottomSheet ?? (deviceHeight * 0.9);
+    final double sheetWidth = tafsirStyle.widthOfBottomSheet ?? deviceWidth;
     // تحسين الشكل: إضافة شريط علوي أنيق مع زر إغلاق واسم التفسير
     // UI Enhancement: Add a modern top bar with close button and tafsir name
     // final stored = GetStorage()
@@ -53,8 +56,8 @@ class ShowTafseer extends StatelessWidget {
         return Directionality(
           textDirection: TextDirection.rtl,
           child: Container(
-            height: height * .9,
-            width: width,
+            height: sheetHeight,
+            width: sheetWidth,
             padding: const EdgeInsets.only(bottom: 16.0),
             margin: EdgeInsets.symmetric(
                 horizontal: tafsirStyle.horizontalMargin ?? 0.0,

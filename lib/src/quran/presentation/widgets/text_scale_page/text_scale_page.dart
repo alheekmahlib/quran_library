@@ -29,6 +29,7 @@ class _QuranTextScale extends StatelessWidget {
     this.secondMenuChild,
     this.secondMenuChildOnTap,
     this.ayahLongClickStyle,
+    this.tafsirStyle,
   });
 
   final quranCtrl = QuranCtrl.instance;
@@ -60,6 +61,7 @@ class _QuranTextScale extends StatelessWidget {
   final Widget? secondMenuChild;
   final void Function(AyahModel ayah)? secondMenuChildOnTap;
   final AyahLongClickStyle? ayahLongClickStyle;
+  final TafsirStyle? tafsirStyle;
 
   @override
   Widget build(BuildContext context) {
@@ -166,6 +168,7 @@ class _QuranTextScale extends StatelessWidget {
                                     ayahSelectedBackgroundColor,
                                 languageCode: languageCode,
                                 ayahLongClickStyle: ayahLongClickStyle,
+                                tafsirStyle: tafsirStyle,
                               ),
 
                               // context.surahBannerLastPlace(pageIndex, i),

@@ -27,6 +27,7 @@ class DefaultFontsPageBuild extends StatelessWidget {
     required this.context,
     required this.constraints,
     required this.ayahLongClickStyle,
+    this.tafsirStyle,
   });
 
   final QuranCtrl quranCtrl;
@@ -54,6 +55,7 @@ class DefaultFontsPageBuild extends StatelessWidget {
   final BuildContext context;
   final BoxConstraints constraints;
   final AyahLongClickStyle? ayahLongClickStyle;
+  final TafsirStyle? tafsirStyle;
 
   @override
   Widget build(BuildContext context) {
@@ -157,6 +159,7 @@ class DefaultFontsPageBuild extends StatelessWidget {
                             ayahLongClickStyle: ayahLongClickStyle ??
                                 AyahLongClickStyle.defaults(
                                     isDark: isDark, context: context),
+                            tafsirStyle: tafsirStyle,
                           ),
                         ),
                       ],

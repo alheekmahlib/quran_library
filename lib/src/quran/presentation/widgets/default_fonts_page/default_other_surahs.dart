@@ -30,6 +30,7 @@ class DefaultOtherSurahs extends StatelessWidget {
     required this.secondMenuChildOnTap,
     required this.context,
     required this.ayahLongClickStyle,
+    required this.tafsirStyle,
   });
 
   final int pageIndex;
@@ -60,6 +61,7 @@ class DefaultOtherSurahs extends StatelessWidget {
   final void Function(AyahModel ayah)? secondMenuChildOnTap;
   final BuildContext context;
   final AyahLongClickStyle? ayahLongClickStyle;
+  final TafsirStyle? tafsirStyle;
 
   @override
   Widget build(BuildContext context) {
@@ -103,6 +105,7 @@ class DefaultOtherSurahs extends StatelessWidget {
                     context: context,
                     constraints: constraints,
                     ayahLongClickStyle: ayahLongClickStyle,
+                    tafsirStyle: tafsirStyle,
                   ),
                 )
               : DefaultFontsPageBuild(
@@ -130,6 +133,7 @@ class DefaultOtherSurahs extends StatelessWidget {
                   context: context,
                   constraints: constraints,
                   ayahLongClickStyle: ayahLongClickStyle,
+                  tafsirStyle: tafsirStyle,
                 ),
         );
       },

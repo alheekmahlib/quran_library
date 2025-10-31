@@ -22,6 +22,7 @@ class TextScaleRichTextBuild extends StatelessWidget {
     required this.ayahSelectedBackgroundColor,
     required this.languageCode,
     this.ayahLongClickStyle,
+    this.tafsirStyle,
   });
 
   final Color? textColor;
@@ -45,6 +46,7 @@ class TextScaleRichTextBuild extends StatelessWidget {
   final String? languageCode;
   final AyahLongClickStyle? ayahLongClickStyle;
   final quranCtrl = QuranCtrl.instance;
+  final TafsirStyle? tafsirStyle;
 
   @override
   Widget build(BuildContext context) {
@@ -145,6 +147,7 @@ class TextScaleRichTextBuild extends StatelessWidget {
                             style: ayahLongClickStyle ??
                                 AyahLongClickStyle.defaults(
                                     isDark: isDark, context: context),
+                            tafsirStyle: tafsirStyle,
                           ),
                         );
 

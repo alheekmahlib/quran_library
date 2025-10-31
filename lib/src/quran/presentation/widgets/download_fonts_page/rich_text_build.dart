@@ -25,6 +25,7 @@ class RichTextBuild extends StatelessWidget {
     required this.anotherMenuChild,
     required this.anotherMenuChildOnTap,
     this.ayahLongClickStyle,
+    this.tafsirStyle,
   });
 
   final int pageIndex;
@@ -50,6 +51,7 @@ class RichTextBuild extends StatelessWidget {
   final Widget? anotherMenuChild;
   final Function(AyahModel ayah)? anotherMenuChildOnTap;
   final AyahLongClickStyle? ayahLongClickStyle;
+  final TafsirStyle? tafsirStyle;
 
   @override
   Widget build(BuildContext context) {
@@ -160,6 +162,9 @@ class RichTextBuild extends StatelessWidget {
                             secondMenuChildOnTap: secondMenuChildOnTap,
                             style: ayahLongClickStyle ??
                                 AyahLongClickStyle.defaults(
+                                    isDark: isDark, context: context),
+                            tafsirStyle: tafsirStyle ??
+                                TafsirStyle.defaults(
                                     isDark: isDark, context: context),
                           ),
                         );

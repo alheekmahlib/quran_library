@@ -4,7 +4,7 @@ class ActualTafsirWidget extends StatelessWidget {
   const ActualTafsirWidget({
     super.key,
     required this.isDark,
-    required this.tafsirStyle,
+    this.tafsirStyle,
     required this.context,
     required this.ayahIndex,
     required this.tafsir,
@@ -20,7 +20,7 @@ class ActualTafsirWidget extends StatelessWidget {
   });
 
   final bool isDark;
-  final TafsirStyle tafsirStyle;
+  final TafsirStyle? tafsirStyle;
   final BuildContext context;
   final int ayahIndex;
   final TafsirTableData tafsir;
@@ -49,7 +49,7 @@ class ActualTafsirWidget extends StatelessWidget {
           fontsName: fontsName,
           isDark: isDark,
           pageIndex: pageIndex! + 1,
-          textColor: tafsirStyle.textColor,
+          textColor: tafsirStyle?.textColor,
           useDefaultFont: true,
         ),
         Text.rich(
@@ -57,7 +57,7 @@ class ActualTafsirWidget extends StatelessWidget {
             children: <InlineSpan>[
               WidgetSpan(
                   child: context.horizontalDivider(
-                color: tafsirStyle.dividerColor,
+                color: tafsirStyle?.dividerColor,
                 height: 1.5,
               )),
             ],
@@ -72,14 +72,14 @@ class ActualTafsirWidget extends StatelessWidget {
                   ? TextSpan(
                       children: tafsir.tafsirText.toFlutterText(isDark),
                       style: TextStyle(
-                          color: tafsirStyle.textColor,
+                          color: tafsirStyle?.textColor,
                           height: 1.5,
                           fontSize: fontSizeArabic),
                     )
                   : TextSpan(
                       children: _buildTranslationSpans(),
                       style: TextStyle(
-                          color: tafsirStyle.textColor,
+                          color: tafsirStyle?.textColor,
                           height: 1.5,
                           fontSize: fontSizeArabic),
                     ),
@@ -110,8 +110,7 @@ class ActualTafsirWidget extends StatelessWidget {
       }
       return [
         TextSpan(
-            text: tafsirStyle.tafsirIsEmptyNote ??
-                '\n\nتفسير هذه الآية في الأيات السابقة',
+            text: tafsirStyle?.tafsirIsEmptyNote,
             style: QuranLibrary().cairoStyle)
       ];
     }
@@ -130,19 +129,17 @@ class ActualTafsirWidget extends StatelessWidget {
         child: Container(
           margin: const EdgeInsets.symmetric(vertical: 8),
           height: 1,
-          color: tafsirStyle.dividerColor ??
-              (isDark ? Colors.white30 : Colors.black26),
+          color: tafsirStyle?.dividerColor,
         ),
       ));
       spans.add(const TextSpan(text: '\n'));
 
       spans.add(TextSpan(
-        text: '${tafsirStyle.footnotesName ?? 'الحواشي:'}\n',
+        text: '${tafsirStyle?.footnotesName ?? 'الحواشي:'}\n',
         style: TextStyle(
           fontWeight: FontWeight.bold,
           fontSize: fontSizeArabic * 0.95,
-          color: tafsirStyle.textColor ??
-              (isDark ? Colors.white70 : Colors.black87),
+          color: tafsirStyle?.textColor,
         ),
       ));
 
@@ -157,16 +154,14 @@ class ActualTafsirWidget extends StatelessWidget {
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: fontSizeArabic * 0.9,
-                color: tafsirStyle.textColor ??
-                    (isDark ? Colors.white70 : Colors.black87),
+                color: tafsirStyle?.textColor,
               ),
             ),
             TextSpan(
               text: '${footnoteData.value}\n\n',
               style: TextStyle(
                 fontSize: fontSizeArabic * 0.85,
-                color: tafsirStyle.textColor ??
-                    (isDark ? Colors.white60 : Colors.black54),
+                color: tafsirStyle?.textColor,
                 height: 1.4,
               ),
             ),

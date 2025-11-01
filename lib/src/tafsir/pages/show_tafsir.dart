@@ -12,7 +12,7 @@ part of '../tafsir.dart';
 class ShowTafseer extends StatelessWidget {
   late final int ayahUQNumber;
   final int pageIndex;
-  final TafsirStyle tafsirStyle;
+  final TafsirStyle? tafsirStyle;
   final BuildContext context;
   final int ayahNumber;
   final bool isDark;
@@ -22,7 +22,7 @@ class ShowTafseer extends StatelessWidget {
   ShowTafseer({
     super.key,
     required this.ayahUQNumber,
-    required this.tafsirStyle,
+    this.tafsirStyle,
     required this.ayahNumber,
     required this.pageIndex,
     required this.context,
@@ -38,12 +38,12 @@ class ShowTafseer extends StatelessWidget {
   Widget build(BuildContext context) {
     // شرح: نتأكد أن عناصر tafsirStyle غير فارغة لتجنب الخطأ
     // Explanation: Ensure tafsirStyle widgets are not null to avoid null check errors
-    final tafsirNameWidget = tafsirStyle.tafsirNameWidget ?? const SizedBox();
+    final tafsirNameWidget = tafsirStyle?.tafsirNameWidget ?? const SizedBox();
     final double deviceHeight = MediaQuery.maybeOf(context)?.size.height ?? 600;
     final double deviceWidth = MediaQuery.maybeOf(context)?.size.width ?? 400;
     final double sheetHeight =
-        tafsirStyle.heightOfBottomSheet ?? (deviceHeight * 0.9);
-    final double sheetWidth = tafsirStyle.widthOfBottomSheet ?? deviceWidth;
+        tafsirStyle?.heightOfBottomSheet ?? (deviceHeight * 0.9);
+    final double sheetWidth = tafsirStyle?.widthOfBottomSheet ?? deviceWidth;
     // تحسين الشكل: إضافة شريط علوي أنيق مع زر إغلاق واسم التفسير
     // UI Enhancement: Add a modern top bar with close button and tafsir name
     // final stored = GetStorage()
@@ -60,10 +60,10 @@ class ShowTafseer extends StatelessWidget {
             width: sheetWidth,
             padding: const EdgeInsets.only(bottom: 16.0),
             margin: EdgeInsets.symmetric(
-                horizontal: tafsirStyle.horizontalMargin ?? 0.0,
-                vertical: tafsirStyle.verticalMargin ?? 0.0),
+                horizontal: tafsirStyle?.horizontalMargin ?? 0.0,
+                vertical: tafsirStyle?.verticalMargin ?? 0.0),
             decoration: BoxDecoration(
-              color: tafsirStyle.backgroundColor ??
+              color: tafsirStyle?.backgroundColor ??
                   (isDark ? const Color(0xff1E1E1E) : Colors.white),
               borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(16),
@@ -86,7 +86,7 @@ class ShowTafseer extends StatelessWidget {
                   height: 5,
                   margin: const EdgeInsets.only(bottom: 8),
                   decoration: BoxDecoration(
-                    color: tafsirStyle.dividerColor ?? Colors.grey.shade500,
+                    color: tafsirStyle?.dividerColor ?? Colors.grey.shade500,
                     borderRadius: BorderRadius.circular(3),
                   ),
                 ),
@@ -99,7 +99,10 @@ class ShowTafseer extends StatelessWidget {
                     children: [
                       tafsirNameWidget,
                       ChangeTafsirDialog(
-                          tafsirStyle: tafsirStyle, isDark: isDark),
+                          tafsirStyle: tafsirStyle ??
+                              TafsirStyle.defaults(
+                                  isDark: isDark, context: context),
+                          isDark: isDark),
                       Row(
                         children: [
                           Container(
@@ -107,7 +110,7 @@ class ShowTafseer extends StatelessWidget {
                               height: 24,
                               color: Colors.grey.shade300),
                           const SizedBox(width: 8),
-                          tafsirStyle.fontSizeWidget ??
+                          tafsirStyle?.fontSizeWidget ??
                               fontSizeDropDown(
                                 height: 30.0,
                                 tafsirStyle: tafsirStyle,
@@ -130,7 +133,9 @@ class ShowTafseer extends StatelessWidget {
                     child: TafsirPagesBuild(
                       pageIndex: pageIndex,
                       ayahUQNumber: ayahUQNumber,
-                      tafsirStyle: tafsirStyle,
+                      tafsirStyle: tafsirStyle ??
+                          TafsirStyle.defaults(
+                              isDark: isDark, context: context),
                       isDark: isDark,
                       islocalFont: islocalFont,
                       fontsName: fontsName,

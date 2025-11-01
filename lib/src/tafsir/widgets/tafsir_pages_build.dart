@@ -3,7 +3,7 @@ part of '../tafsir.dart';
 class TafsirPagesBuild extends StatelessWidget {
   final int pageIndex;
   final int ayahUQNumber;
-  final TafsirStyle tafsirStyle;
+  final TafsirStyle? tafsirStyle;
   final bool isDark;
   final bool? islocalFont;
   final String? fontsName;
@@ -12,7 +12,7 @@ class TafsirPagesBuild extends StatelessWidget {
     super.key,
     required this.pageIndex,
     required this.ayahUQNumber,
-    required this.tafsirStyle,
+    this.tafsirStyle,
     required this.isDark,
     this.islocalFont,
     this.fontsName,
@@ -63,12 +63,11 @@ class TafsirPagesBuild extends StatelessWidget {
             return Container(
               width: width,
               margin: EdgeInsets.symmetric(
-                  vertical: tafsirStyle.verticalMargin ?? 8,
-                  horizontal: tafsirStyle.horizontalMargin ?? 8),
+                  vertical: tafsirStyle?.verticalMargin ?? 8,
+                  horizontal: tafsirStyle?.horizontalMargin ?? 8),
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: tafsirStyle.tafsirBackgroundColor ??
-                    (isDark ? const Color(0xff1E1E1E) : Colors.white),
+                color: tafsirStyle?.tafsirBackgroundColor,
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
@@ -79,8 +78,8 @@ class TafsirPagesBuild extends StatelessWidget {
                 ],
                 border: Border.symmetric(
                   horizontal: BorderSide(
-                    color: tafsirStyle.unSelectedTafsirBorderColor ??
-                        (tafsirStyle.dividerColor ??
+                    color: tafsirStyle?.unSelectedTafsirBorderColor ??
+                        (tafsirStyle?.dividerColor ??
                             Colors.grey.withValues(alpha: 0.3)),
                     width: 1.2,
                   ),
@@ -92,7 +91,9 @@ class TafsirPagesBuild extends StatelessWidget {
                   id: 'change_font_size',
                   builder: (tafsirCtrl) => ActualTafsirWidget(
                       isDark: isDark,
-                      tafsirStyle: tafsirStyle,
+                      tafsirStyle: tafsirStyle ??
+                          TafsirStyle.defaults(
+                              isDark: isDark, context: context),
                       context: context,
                       ayahIndex: ayahIndex,
                       tafsir: tafsir,

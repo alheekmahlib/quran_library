@@ -67,7 +67,7 @@ class TafsirStyle {
     const defaultTafsirName = 'التفسير';
     const defaultTranslateName = 'الترجمة';
     const defaultFootnotesName = 'الحواشي';
-    const defaultEmptyNote = 'لا يوجد تفسير متاح';
+    const defaultEmptyNote = '\n\nتفسير هذه الآية في الأيات السابقة';
 
     return TafsirStyle(
       // الألوان العامة

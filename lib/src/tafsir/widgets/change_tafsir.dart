@@ -1,13 +1,13 @@
 part of '../tafsir.dart';
 
 class ChangeTafsirDialog extends StatelessWidget {
-  final TafsirStyle tafsirStyle;
+  final TafsirStyle? tafsirStyle;
   final List<TafsirNameModel>? tafsirNameList;
   final int? pageNumber;
   final bool? isDark;
   ChangeTafsirDialog(
       {super.key,
-      required this.tafsirStyle,
+      this.tafsirStyle,
       this.tafsirNameList,
       this.pageNumber,
       this.isDark = false});
@@ -27,7 +27,8 @@ class ChangeTafsirDialog extends StatelessWidget {
               context: context,
               builder: (context) {
                 return DailogBuild(
-                  tafsirStyle: tafsirStyle,
+                  tafsirStyle: tafsirStyle ??
+                      TafsirStyle.defaults(isDark: isDark!, context: context),
                   pageNumber: pageNumber,
                   tafsirNameList: tafsirNameList,
                   isDark: isDark!,
@@ -50,7 +51,7 @@ class ChangeTafsirDialog extends StatelessWidget {
                               tafsirCtrl.radioValue.value]
                           .name,
                   style: QuranLibrary().cairoStyle.copyWith(
-                        color: tafsirStyle.currentTafsirColor ??
+                        color: tafsirStyle?.currentTafsirColor ??
                             const Color(0xffCDAD80),
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
@@ -61,7 +62,7 @@ class ChangeTafsirDialog extends StatelessWidget {
               const SizedBox(width: 6),
               Icon(Icons.keyboard_arrow_down_rounded,
                   size: 24,
-                  color: tafsirStyle.currentTafsirColor ?? Colors.grey),
+                  color: tafsirStyle?.currentTafsirColor ?? Colors.grey),
             ],
           ),
         ),
@@ -73,13 +74,13 @@ class ChangeTafsirDialog extends StatelessWidget {
 class DailogBuild extends StatelessWidget {
   const DailogBuild({
     super.key,
-    required this.tafsirStyle,
+    this.tafsirStyle,
     required this.pageNumber,
     required this.tafsirNameList,
     required this.isDark,
   });
 
-  final TafsirStyle tafsirStyle;
+  final TafsirStyle? tafsirStyle;
   final int? pageNumber;
   final List<TafsirNameModel>? tafsirNameList;
   final bool? isDark;
@@ -90,12 +91,14 @@ class DailogBuild extends StatelessWidget {
         id: 'tafsirs_menu_list',
         builder: (tafsirCtrl) {
           return Dialog(
-            backgroundColor: tafsirStyle.backgroundColor!,
+            backgroundColor: tafsirStyle?.backgroundColor!,
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             constraints: BoxConstraints(
-                maxWidth: tafsirStyle.changeTafsirDialogWidth!,
-                maxHeight: tafsirStyle.changeTafsirDialogHeight!),
+                maxWidth: tafsirStyle?.changeTafsirDialogWidth ??
+                    MediaQuery.of(context).size.width,
+                maxHeight: tafsirStyle?.changeTafsirDialogHeight ??
+                    MediaQuery.of(context).size.height * 0.9),
             child: Container(
               constraints: const BoxConstraints(maxHeight: 500),
               margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8.0),
@@ -113,7 +116,9 @@ class DailogBuild extends StatelessWidget {
                           pageNumber: pageNumber ??
                               QuranCtrl.instance.state.currentPageNumber.value,
                           tafsirNameList: tafsirNameList,
-                          tafsirStyle: tafsirStyle,
+                          tafsirStyle: tafsirStyle ??
+                              TafsirStyle.defaults(
+                                  isDark: isDark!, context: context),
                           isDark: isDark!,
                         ),
                       ],
@@ -129,21 +134,21 @@ class DailogBuild extends StatelessWidget {
   Widget tafsirOrTranslateTitle(int index, {String? title}) {
     if (index == 0 || index == TafsirCtrl.instance.translationsStartIndex) {
       title ??=
-          index == 0 ? tafsirStyle.tafsirName! : tafsirStyle.translateName!;
+          index == 0 ? tafsirStyle?.tafsirName! : tafsirStyle?.translateName!;
       return Container(
         width: double.infinity,
         padding: const EdgeInsets.symmetric(vertical: 6.0),
         margin: const EdgeInsets.symmetric(vertical: 6.0),
         decoration: BoxDecoration(
-          color: tafsirStyle.backgroundTitleColor!,
+          color: tafsirStyle?.backgroundTitleColor!,
           borderRadius: BorderRadius.circular(8),
         ),
         child: Text(
-          title,
+          title!,
           style: QuranLibrary().cairoStyle.copyWith(
               fontSize: 16,
               fontWeight: FontWeight.bold,
-              color: tafsirStyle.textTitleColor!),
+              color: tafsirStyle?.textTitleColor!),
           textAlign: TextAlign.center,
         ),
       );

@@ -27,6 +27,12 @@ class TafsirStyle {
   final double? widthOfBottomSheet;
   final double? changeTafsirDialogHeight;
   final double? changeTafsirDialogWidth;
+  final Widget? fontSizeIconWidget;
+  final Color? fontSizeBackgroundColor;
+  final Color? fontSizeThumbColor;
+  final Color? fontSizeActiveTrackColor;
+  final Color? fontSizeInactiveTrackColor;
+  final double? fontSizeIconSize;
 
   TafsirStyle({
     this.backgroundColor,
@@ -55,6 +61,12 @@ class TafsirStyle {
     this.widthOfBottomSheet,
     this.changeTafsirDialogHeight,
     this.changeTafsirDialogWidth,
+    this.fontSizeIconWidget,
+    this.fontSizeBackgroundColor,
+    this.fontSizeThumbColor,
+    this.fontSizeActiveTrackColor,
+    this.fontSizeInactiveTrackColor,
+    this.fontSizeIconSize,
   });
 
   factory TafsirStyle.defaults(
@@ -124,6 +136,22 @@ class TafsirStyle {
         height: 30.0,
         isDark: isDark,
       ),
+
+      fontSizeIconWidget: Semantics(
+        button: true,
+        enabled: true,
+        label: 'Change Font Size',
+        child: Icon(
+          Icons.text_format_outlined,
+          size: 34,
+          color: AppColors.getTextColor(isDark),
+        ),
+      ),
+      fontSizeBackgroundColor: Colors.teal,
+      fontSizeThumbColor: Colors.white,
+      fontSizeActiveTrackColor: Colors.white,
+      fontSizeInactiveTrackColor: Colors.tealAccent,
+      fontSizeIconSize: 34.0,
     );
   }
 }

@@ -10,18 +10,19 @@ extension FontSizeExtension on Widget {
     final box = GetStorage();
     return PopupMenuButton(
       position: PopupMenuPosition.under,
-      icon: Semantics(
-        button: true,
-        enabled: true,
-        label: 'Change Font Size',
-        child: Icon(
-          Icons.text_format_outlined,
-          size: 34,
-          color: AppColors.getTextColor(isDark),
-        ),
-      ),
-      color: Colors.blue.withValues(alpha: .8),
-      iconSize: height ?? 35.0,
+      icon: tafsirStyle?.fontSizeIconWidget ??
+          Semantics(
+            button: true,
+            enabled: true,
+            label: 'Change Font Size',
+            child: Icon(
+              Icons.text_format_outlined,
+              size: 34,
+              color: AppColors.getTextColor(isDark),
+            ),
+          ),
+      color: tafsirStyle?.fontSizeBackgroundColor,
+      iconSize: tafsirStyle?.fontSizeIconSize,
       itemBuilder: (context) => [
         PopupMenuItem(
           height: 30,
@@ -32,9 +33,9 @@ extension FontSizeExtension on Widget {
               child: Theme(
                 data: ThemeData(
                   sliderTheme: SliderThemeData(
-                    thumbColor: Colors.white,
-                    activeTrackColor: Colors.white,
-                    inactiveTrackColor: Colors.tealAccent,
+                    thumbColor: tafsirStyle?.fontSizeThumbColor,
+                    activeTrackColor: tafsirStyle?.fontSizeActiveTrackColor,
+                    inactiveTrackColor: tafsirStyle?.fontSizeInactiveTrackColor,
                     overlayColor: Colors.white.withValues(alpha: 0.2),
                     valueIndicatorColor: Colors.white,
                     inactiveTickMarkColor: Colors.transparent,

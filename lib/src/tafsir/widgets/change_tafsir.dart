@@ -35,7 +35,7 @@ class ChangeTafsirDialog extends StatelessWidget {
               });
         },
         child: Container(
-          width: 160.w,
+          width: 160.h,
           margin: const EdgeInsets.symmetric(horizontal: 16),
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
           child: Row(
@@ -61,7 +61,7 @@ class ChangeTafsirDialog extends StatelessWidget {
               const SizedBox(width: 6),
               Icon(Icons.keyboard_arrow_down_rounded,
                   size: 24,
-                  color: tafsirStyle.unSelectedTafsirColor ?? Colors.grey),
+                  color: tafsirStyle.currentTafsirColor ?? Colors.grey),
             ],
           ),
         ),

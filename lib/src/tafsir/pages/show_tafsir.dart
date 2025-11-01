@@ -98,11 +98,10 @@ class ShowTafseer extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       tafsirNameWidget,
+                      ChangeTafsirDialog(
+                          tafsirStyle: tafsirStyle, isDark: isDark),
                       Row(
                         children: [
-                          ChangeTafsirDialog(
-                              tafsirStyle: tafsirStyle, isDark: isDark),
-                          const SizedBox(width: 8),
                           Container(
                               width: 1,
                               height: 24,

@@ -61,7 +61,7 @@ class TafsirStyle {
       {required bool isDark, required BuildContext context}) {
     final bg = AppColors.getBackgroundColor(isDark);
     final onBg = isDark ? Colors.white : Colors.black87;
-    final titleOnBg = isDark ? Colors.white : Colors.white;
+    const titleOnBg = Colors.teal;
 
     // أسماء افتراضية نصية
     const defaultTafsirName = 'التفسير';
@@ -77,7 +77,7 @@ class TafsirStyle {
       dividerColor: isDark ? Colors.grey.shade600 : Colors.grey.shade400,
 
       // العناوين والشريط العلوي
-      textTitleColor: titleOnBg,
+      textTitleColor: Colors.white,
       backgroundTitleColor: Colors.teal,
       currentTafsirColor: Colors.teal,
 

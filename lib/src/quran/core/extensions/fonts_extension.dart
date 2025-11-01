@@ -28,6 +28,12 @@ extension FontsExtension on QuranCtrl {
   List<String> _webFontCandidateUrls(int pageIndex) {
     final id = (pageIndex + 1).toString().padLeft(3, '0');
     return [
+      // CDN أولوية أولى: jsDelivr (يدعم CORS بشكل صحيح ويُخدِّم من GitHub)
+      'https://cdn.jsdelivr.net/gh/alheekmahlib/Islamic_database@main/quran_database/Quran%20Font/qcf4_woff/QCF4${id}_X-Regular.woff',
+      'https://cdn.jsdelivr.net/gh/alheekmahlib/Islamic_database@main/quran_database/Quran%20Font/qcf4_ttf/QCF4${id}_X-Regular.ttf',
+      // githack كخيار CDN احتياطي
+      'https://rawcdn.githack.com/alheekmahlib/Islamic_database/main/quran_database/Quran%20Font/qcf4_woff/QCF4${id}_X-Regular.woff',
+      'https://rawcdn.githack.com/alheekmahlib/Islamic_database/main/quran_database/Quran%20Font/qcf4_ttf/QCF4${id}_X-Regular.ttf',
       // raw.githubusercontent.com مع main
       'https://raw.githubusercontent.com/alheekmahlib/Islamic_database/main/quran_database/Quran%20Font/qcf4_woff/QCF4${id}_X-Regular.woff',
       'https://raw.githubusercontent.com/alheekmahlib/Islamic_database/main/quran_database/Quran%20Font/qcf4_ttf/QCF4${id}_X-Regular.ttf',
@@ -50,12 +56,17 @@ extension FontsExtension on QuranCtrl {
     DioException? lastError;
     for (final url in candidates) {
       try {
-        final resp = await dio.get<List<int>>(url,
-            options: Options(responseType: ResponseType.bytes, headers: {
-              'Accept': '*/*',
-              'Connection': 'keep-alive',
-              'User-Agent': 'Flutter/Quran-Library',
-            }));
+        // ملاحظة: لا نمرّر رؤوسًا محظورة على الويب (مثل User-Agent/Connection) لتجنّب فشل CORS/Preflight
+        final resp = await dio.get<List<int>>(
+          url,
+          options: Options(
+            responseType: ResponseType.bytes,
+            followRedirects: true,
+            receiveTimeout: const Duration(seconds: 30),
+            sendTimeout: const Duration(seconds: 30),
+            validateStatus: (s) => s != null && s >= 200 && s < 400,
+          ),
+        );
         if (resp.statusCode == 200 &&
             resp.data != null &&
             resp.data!.isNotEmpty) {

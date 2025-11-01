@@ -11,6 +11,7 @@
 * **Ability to change Surah info bottom sheet height & width.**
 * **Change Surah banner.**
 * **Make the surahs playlist. When the surah ends, the next one begins.**
+* **Fix move to next page after the last Ayah in page.**
 
 ## 2.2.3+1
 

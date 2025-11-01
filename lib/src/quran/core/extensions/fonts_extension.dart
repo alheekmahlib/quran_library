@@ -121,6 +121,7 @@ extension FontsExtension on QuranCtrl {
   //   }
   // }
   Future<void> prepareFonts(int pageIndex, {bool isFontsLocal = false}) async {
+    if (state.isFontDownloaded.value == false) return;
     SchedulerBinding.instance.scheduleTask(() async {
       // QuranCtrl.instance.prepareFonts(index);
       await QuranCtrl.instance.loadFont(pageIndex);

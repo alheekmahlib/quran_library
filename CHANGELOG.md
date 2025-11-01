@@ -10,6 +10,7 @@
 * **Support for turning pages using the keyboard in the web and desktop.**
 * **Ability to change Surah info bottom sheet height & width.**
 * **Change Surah banner.**
+* **Make the surahs playlist. When the surah ends, the next one begins.**
 
 ## 2.2.3+1
 

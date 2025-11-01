@@ -85,6 +85,10 @@ extension AyahCtrlExtension on AudioCtrl {
 
     // عند هذه النقطة كل الآيات محمّلة بالكامل، يمكن إنشاء المصادر وتشغيلها
     try {
+      // أوقف أي تشغيل قائم، وألغِ جميع الاشتراكات القديمة قبل إعداد قائمة جديدة
+      await state.audioPlayer.stop();
+      state.cancelAllSubscriptions();
+
       // إنشاء مصادر الصوت / Create audio sources
       final List<AudioSource> audioSources;
       if (kIsWeb) {
@@ -119,53 +123,84 @@ extension AyahCtrlExtension on AudioCtrl {
         }
       }
 
-      final initialIndex = selectedSurahAyahsUrls.indexOf(currentAyahUrl);
+      // احسب فهرس البداية اعتمادًا على ترتيب آيات السورة الحالية لضمان الدقة
+      final computedInitialIndex = currentAyahsSurah.ayahs
+          .indexWhere((a) => a.ayahUQNumber == currentAyahUniqueNumber);
+      final initialIndex = computedInitialIndex >= 0 ? computedInitialIndex : 0;
 
-      // تعيين مصدر الصوت مع الفهرس الصحيح / Set audio source with correct index
+      // تعيين مصدر الصوت مع الفهرس الصحيح باستخدام واجهة playlist الحديثة
       await state.audioPlayer.setAudioSources(
         audioSources,
         initialIndex: initialIndex,
       );
 
+      // إعدادات قائمة التشغيل: تعطيل العشوائي والتكرار لضمان انتقال تسلسلي
+      await state.audioPlayer.setShuffleModeEnabled(false);
+      await state.audioPlayer.setLoopMode(LoopMode.off);
+
       log('${'-' * 30} player is starting.. ${'-' * 30}',
           name: 'AudioController');
 
-      // الاستماع لتغييرات الفهرس / Listen to index changes
+      // الاستماع لتغييرات الفهرس عبر sequenceStateStream (أوثق مع واجهة playlist)
+      int? lastHandledIndex;
+      int? lastHandledAyahUQ = state.currentAyahUniqueNumber;
       state._currentIndexSubscription =
-          state.audioPlayer.currentIndexStream.listen((index) async {
+          state.audioPlayer.sequenceStateStream.listen((sequenceState) async {
+        final index = sequenceState.currentIndex;
         final currentIndex = (state.audioPlayer.currentIndex ?? 0);
-        log('index: $index | currentIndex: $currentIndex', name: 'index');
-        if (index != null && index < ayahsFilesNames.length) {
-          state.currentAyahUniqueNumber =
-              currentAyahsSurah.ayahs[currentIndex].ayahUQNumber;
-
-          QuranCtrl.instance.toggleAyahSelection(state.currentAyahUniqueNumber);
-          if (isLastAyahInPageButNotInSurah) {
-            await skipNextAyah(context!, state.currentAyahUniqueNumber);
-          } else if (index > ayahsFilesNames.length + 1) {
-            state.isPlaying.value = false;
-            await state.audioPlayer.stop();
-          }
-          log('Current playing index: $index', name: 'AudioController');
+        log('seq.index: $index | player.currentIndex: $currentIndex',
+            name: 'index');
+        if (index == null || index < 0 || index >= ayahsFilesNames.length) {
+          return;
         }
+        // تجاهل التكرارات لنفس الفهرس لتقليل الضجيج
+        if (lastHandledIndex == index) {
+          return;
+        }
+        lastHandledIndex = index;
+
+        // احسب الآية الفريدة قبل وبعد للتأكد من تبدّل الصفحة
+        final prevAyahUQ = lastHandledAyahUQ;
+        final newAyahUQ = currentAyahsSurah.ayahs[index].ayahUQNumber;
+        lastHandledAyahUQ = newAyahUQ;
+
+        // حدّث رقم الآية الحالية بحسب الفهرس الجديد
+        state.currentAyahUniqueNumber = newAyahUQ;
+
+        // حدّث التحديد البصري للآية (مرة واحدة فقط عند تغيّر الآية)
+        QuranCtrl.instance.toggleAyahSelection(state.currentAyahUniqueNumber);
+
+        // إن تغيّرت الصفحة، حرّك صفحات المصحف بسلاسة
+        if (context != null && prevAyahUQ != null) {
+          final prevPage =
+              QuranCtrl.instance.getPageNumberByAyahUqNumber(prevAyahUQ);
+          final newPage = QuranCtrl.instance
+              .getPageNumberByAyahUqNumber(state.currentAyahUniqueNumber);
+          if (newPage != prevPage) {
+            log('Page changed: $prevPage -> $newPage, animating...',
+                name: 'AudioController');
+            // animateToPage يستقبل فهرسًا صفريًا
+            await QuranCtrl.instance.quranPagesController.animateToPage(
+                newPage - 1,
+                duration: const Duration(milliseconds: 600),
+                curve: Curves.easeInOut);
+          }
+        }
+        log('Current playing index: $index', name: 'AudioController');
       });
 
       state.isPlaying.value = true;
       await state.audioPlayer.play();
 
-      // استخدام subscription محدود لتجنب إنشاء listeners متعددة / Use limited subscription to avoid creating multiple listeners
-      state._playerStateSubscription ??=
+      // استخدام اشتراك واحد لإدارة اكتمال قائمة التشغيل (نهاية السورة)
+      state._playerStateSubscription =
           state.audioPlayer.playerStateStream.listen((d) async {
-        if (d.processingState == ProcessingState.completed &&
-            !state.playSingleAyahOnly &&
-            currentSurahNumber < 114) {
-          if (state.currentAyahUniqueNumber > ayahsFilesNames.length - 1) {
-            state.isPlaying.value = false;
-            await state.audioPlayer.stop();
-          } else {
-            state.currentAyahUniqueNumber++;
-            _playAyahsFile(context, state.currentAyahUniqueNumber);
-          }
+        if (d.processingState == ProcessingState.completed) {
+          // اكتملت قائمة التشغيل الحالية
+          log('Surah playlist completed. Stopping playback.',
+              name: 'AudioController');
+          state.isPlaying.value = false;
+          await state.audioPlayer.stop();
         }
       });
     } catch (e) {

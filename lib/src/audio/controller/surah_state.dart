@@ -9,7 +9,8 @@ class SurahState {
   // إدارة حالة الصوت المركزية / Central audio state management
   static bool _isAudioServiceActive = false;
   StreamSubscription<PlayerState>? _playerStateSubscription;
-  StreamSubscription<int?>? _currentIndexSubscription;
+  // قد تتغير أنواع الدفق (int? أو SequenceState) بحسب واجهة المشغّل، لذا نجعلها غير مقيّدة
+  StreamSubscription? _currentIndexSubscription;
 
   // getter وsetter للحالة النشطة / getter and setter for active state
   static bool get isAudioServiceActive => _isAudioServiceActive;
@@ -51,6 +52,8 @@ class SurahState {
   RxInt downloadProgress = 0.obs;
   RxBool audioServiceInitialized = false.obs;
   RxBool isDirectPlaying = false.obs;
+  // منع إعادة الإدخال عند الانتقال التلقائي للسورة التالية
+  bool surahAutoNextInProgress = false;
   // إشارة لإلغاء التحميل الجاري (دفعة آيات السورة)
   RxBool cancelRequested = false.obs;
   // رقم السورة الجاري تحميل آياتها حاليًا (-1 إذا لا يوجد)

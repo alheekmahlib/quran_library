@@ -63,21 +63,8 @@ class AudioCtrl extends GetxController {
     // Future.delayed(const Duration(milliseconds: 700))
     //     .then((_) => jumpToSurah(state.currentAudioListSurahNum.value - 1));
 
-    // Listen to player state changes to play the next Surah automatically
-    // استخدام subscription واحد فقط / Use only one subscription
-
-    state.audioPlayer.playerStateStream.listen((playerState) async {
-      if (playerState.processingState == ProcessingState.completed &&
-          !state.isPlayingSurahsMode) {
-        if (state.currentAyahUniqueNumber >
-            selectedSurahAyahsFileNames.length - 1) {
-          state.isPlaying.value = false;
-          await state.audioPlayer.stop();
-        } else {
-          await playNextSurah();
-        }
-      }
-    });
+    // لا ننشئ مستمعًا عامًا دائمًا هنا.
+    // سيتم تفعيل/إلغاء مستمع وضع السور عبر دوال مخصصة حسب الحاجة.
 
     // تسجيل الخدمة كنشطة / Register service as active
     SurahState.setAudioServiceActive(true);
@@ -98,6 +85,42 @@ class AudioCtrl extends GetxController {
   }
 
   /// -------- [Methods] ----------
+
+  /// تفعيل مستمع وضع السور: عند اكتمال السورة انتقل تلقائيًا للسورة التالية
+  void enableSurahAutoNextListener() {
+    // ألغِ أي مستمع سابق مشغّل على نفس الاشتراك المركزي
+    state._playerStateSubscription?.cancel();
+    state._playerStateSubscription =
+        state.audioPlayer.playerStateStream.listen((playerState) async {
+      if (playerState.processingState != ProcessingState.completed) return;
+      if (!state.isPlayingSurahsMode) return;
+      if (state.surahAutoNextInProgress) return;
+      state.surahAutoNextInProgress = true;
+      final now = DateTime.now().millisecondsSinceEpoch / 1000.0;
+      final last = state.lastTime ?? 0.0;
+      // منع التفعيل المزدوج خلال نافذة زمنية قصيرة
+      if ((now - last) < 0.3) {
+        state.surahAutoNextInProgress = false;
+        return;
+      }
+      state.lastTime = now;
+      try {
+        // أوقف أي تحميل/تشغيل قائم قبل إعداد السورة التالية لتفادي Loading interrupted
+        await state.audioPlayer.stop();
+        await playNextSurah();
+      } catch (e, s) {
+        log('Auto-next failed: $e', name: 'AudioCtrl', stackTrace: s);
+      } finally {
+        state.surahAutoNextInProgress = false;
+      }
+    });
+  }
+
+  /// تعطيل مستمع وضع السور
+  void disableSurahAutoNextListener() {
+    state._playerStateSubscription?.cancel();
+    state._playerStateSubscription = null;
+  }
 
   Future<void> initAudioService() async {
     try {

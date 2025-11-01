@@ -36,6 +36,8 @@ class PlayAyahWidget extends StatelessWidget {
               onTap: () async {
                 // اضبط وضع التشغيل للآيات فقط
                 audioCtrl.state.isPlayingSurahsMode = false;
+                // عطّل مستمع وضع السور لتجنّب التداخل مع تشغيل الآيات
+                audioCtrl.disableSurahAutoNextListener();
                 // تجنّب استدعاءات مزدوجة
                 if (!audioCtrl.state.audioPlayer.playing) {
                   await audioCtrl.playAyah(

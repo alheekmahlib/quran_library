@@ -55,12 +55,56 @@ class AyahLongClickDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     final s =
         style ?? AyahLongClickStyle.defaults(isDark: isDark, context: context);
+
     // الحصول على أبعاد الشاشة والهوامش الآمنة / Get screen dimensions and safe area
     final screenSize = MediaQuery.of(context).size;
     final padding = MediaQuery.of(context).padding;
 
     // حساب العرض الفعلي للحوار بناءً على المحتوى / Calculate actual dialog width based on content
-    int itemsCount = 0;
+    int itemsCount =
+        3; // عدد الأيقونات الأساسية (3 ألوان + نسخ + تفسير) / Basic icons count
+    if (anotherMenuChild != null) {
+      itemsCount += 1; // إضافة عنصر إضافي / Additional item
+    }
+    if (secondMenuChild != null) {
+      itemsCount += 1; // إضافة عنصر إضافي / Additional item
+    }
+    double dialogWidth = (itemsCount * 40) +
+        (itemsCount * 16) +
+        40; // عرض كل أيقونة + التباعد + الهوامش / Icon width + spacing + margins
+    double dialogHeight = 80; // ارتفاع الحوار / Dialog height
+
+    // حساب الموضع الأفقي مع التأكد من البقاء داخل الشاشة / Calculate horizontal position ensuring it stays within screen
+    double left = position.dx - (dialogWidth / 2);
+
+    // التحقق من الحواف اليسرى واليمنى / Check left and right edges
+    if (left < padding.left + 10) {
+      left = padding.left + 10; // هامش من الحافة اليسرى / Left margin
+    } else if (left + dialogWidth > screenSize.width - padding.right - 10) {
+      left = screenSize.width -
+          padding.right -
+          dialogWidth -
+          10; // هامش من الحافة اليمنى / Right margin
+    }
+
+    // حساب الموضع العمودي مع التأكد من البقاء داخل الشاشة / Calculate vertical position ensuring it stays within screen
+    double top = position.dy -
+        dialogHeight +
+        10; // زيادة المسافة إلى 10 بكسل / Increase distance to 10 pixels
+
+    // التحقق من الحافة العلوية / Check top edge
+    if (top < padding.top + 10) {
+      top = position.dy +
+          10; // إظهار الحوار تحت النقر مع مسافة أقل / Show dialog below tap with less distance
+    }
+
+    // التحقق من الحافة السفلية / Check bottom edge
+    if (top + dialogHeight > screenSize.height - padding.bottom - 10) {
+      top = screenSize.height -
+          padding.bottom -
+          dialogHeight -
+          10; // هامش من الحافة السفلى / Bottom margin
+    }
     final bookmarkCount = (s.showBookmarkButtons ?? true)
         ? (s.bookmarkColorCodes?.length ?? 3)
         : 0;
@@ -69,45 +113,6 @@ class AyahLongClickDialog extends StatelessWidget {
     if (s.showTafsirButton ?? true) itemsCount += 1;
     if (anotherMenuChild != null) itemsCount += 1;
     if (secondMenuChild != null) itemsCount += 1;
-
-    final baseWidth = s.itemBaseWidth ?? 40.0;
-    final spacing = s.itemSpacing ?? 16.0;
-    final extra = s.extraHorizontalSpace ?? 40.0;
-    double dialogWidth =
-        (itemsCount * baseWidth) + (itemsCount * spacing) + extra;
-    double dialogHeight =
-        s.dialogHeight ?? 80.0; // ارتفاع الحوار / Dialog height
-
-    // حساب الموضع الأفقي مع التأكد من البقاء داخل الشاشة / Calculate horizontal position ensuring it stays within screen
-    double left = position.dx - (dialogWidth / 2);
-
-    // التحقق من الحواف اليسرى واليمنى / Check left and right edges
-    final safe = s.edgeSafeMargin ?? 10.0;
-    if (left < padding.left + safe) {
-      left = padding.left + safe; // هامش من الحافة اليسرى / Left margin
-    } else if (left + dialogWidth > screenSize.width - padding.right - safe) {
-      left = screenSize.width -
-          padding.right -
-          dialogWidth -
-          safe; // هامش من الحافة اليمنى / Right margin
-    }
-
-    // حساب الموضع العمودي مع التأكد من البقاء داخل الشاشة / Calculate vertical position ensuring it stays within screen
-    final tapOffset = s.tapOffsetSpacing ?? 10.0;
-    double top = position.dy - dialogHeight + tapOffset; // إزاحة موضع النقر
-
-    // التحقق من الحافة العلوية / Check top edge
-    if (top < padding.top + safe) {
-      top = position.dy + tapOffset; // إظهار الحوار تحت النقر مع مسافة أقل
-    }
-
-    // التحقق من الحافة السفلية / Check bottom edge
-    if (top + dialogHeight > screenSize.height - padding.bottom - safe) {
-      top = screenSize.height -
-          padding.bottom -
-          dialogHeight -
-          safe; // هامش من الحافة السفلى / Bottom margin
-    }
 
     return Positioned(
       top: top,

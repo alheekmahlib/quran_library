@@ -2,6 +2,8 @@ part of '../../audio.dart';
 
 extension SurahCtrlExtension on AudioCtrl {
   Future<void> playPreviousSurah() async {
+    state.isPlayingSurahsMode = true;
+    enableSurahAutoNextListener();
     if (state.currentAudioListSurahNum.value > 1) {
       state.currentAudioListSurahNum.value -= 1;
       state.selectedSurahIndex.value -= 1;
@@ -14,6 +16,8 @@ extension SurahCtrlExtension on AudioCtrl {
   }
 
   Future<void> playNextSurah() async {
+    state.isPlayingSurahsMode = true;
+    enableSurahAutoNextListener();
     if (state.currentAudioListSurahNum.value < 114) {
       state.currentAudioListSurahNum.value += 1;
       state.selectedSurahIndex.value += 1;
@@ -31,6 +35,8 @@ extension SurahCtrlExtension on AudioCtrl {
       return;
     }
 
+    state.isPlayingSurahsMode = true;
+    enableSurahAutoNextListener();
     state.currentAudioListSurahNum.value = surahNumber;
     changeAudioSource();
     cancelDownload();

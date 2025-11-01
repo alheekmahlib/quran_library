@@ -168,17 +168,19 @@ TextSpan _span({
 
     var lastCharacterSpan = (ayahBookmarked.contains(ayahUQNum) ||
                 bookmarksAyahs.contains(ayahUQNum)) &&
-            showAyahBookmarkedIcon
+            showAyahBookmarkedIcon &&
+            !kIsWeb
         ? WidgetSpan(
             alignment: PlaceholderAlignment.middle,
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: SvgPicture.asset(
                 AssetsPath.assets.ayahBookmarked,
-                height: 100,
-                width: 100,
+                height: 140,
+                width: 140,
               ),
-            ))
+            ),
+          )
         : TextSpan(
             text: lastCharacter,
             style: TextStyle(

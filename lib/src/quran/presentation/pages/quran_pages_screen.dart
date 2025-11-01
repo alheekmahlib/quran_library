@@ -64,6 +64,7 @@ class QuranPagesScreen extends StatelessWidget {
     this.indexTabStyle,
     this.searchTabStyle,
     this.ayahLongClickStyle,
+    this.tafsirStyle,
   }) : assert(
           (page != null && startPage == null && endPage == null) ||
               (page == null && (startPage != null || endPage != null)),
@@ -123,6 +124,8 @@ class QuranPagesScreen extends StatelessWidget {
   ///
   /// [searchTabStyle] Search tab style customization for the Quran
   final SearchTabStyle? searchTabStyle;
+
+  final TafsirStyle? tafsirStyle;
   // تمكين تظليل/تحديد متعدد للآيات داخل هذه الشاشة فقط
   final bool enableMultiSelect;
   // قائمة أرقام الآيات الفريدة المراد تظليلها برمجياً
@@ -293,6 +296,11 @@ class QuranPagesScreen extends StatelessWidget {
                   quranCtrl: quranCtrl,
                   isFontsLocal: isFontsLocal!,
                   ayahLongClickStyle: ayahLongClickStyle,
+                  tafsirStyle: tafsirStyle ??
+                      TafsirStyle.defaults(
+                        isDark: isDark,
+                        context: parentContext,
+                      ),
                 ),
               ),
             );

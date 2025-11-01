@@ -9,6 +9,7 @@
 * **Ability to add a custom widget to tapbar.**
 * **Support for turning pages using the keyboard in the web and desktop.**
 * **Ability to change Surah info bottom sheet height & width.**
+* **Change Surah banner.**
 
 ## 2.2.3+1
 

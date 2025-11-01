@@ -229,10 +229,10 @@ class TafsirItemWidget extends StatelessWidget {
                             color: Colors.white,
                           ),
                           child: tafsirCtrl.radioValue.value == tafsirIndex
-                              ? Icon(
+                              ? const Icon(
                                   Icons.done,
                                   size: 14,
-                                  color: tafsirStyle.selectedTafsirBorderColor,
+                                  color: Colors.black,
                                 )
                               : null,
                         )

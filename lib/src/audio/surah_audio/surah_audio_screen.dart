@@ -12,10 +12,11 @@ class SurahAudioScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final surahCtrl = AudioCtrl.instance;
     final bool dark = isDark ?? Theme.of(context).brightness == Brightness.dark;
+    // استخدام نمط موحد افتراضي إذا لم يُمرر
+    final s = style ?? SurahAudioStyle.defaults(isDark: dark, context: context);
 
-    final background =
-        style?.backgroundColor ?? AppColors.getBackgroundColor(dark);
-    final textColor = style?.textColor ?? AppColors.getTextColor(dark);
+    final background = s.backgroundColor ?? AppColors.getBackgroundColor(dark);
+    final textColor = s.textColor ?? AppColors.getTextColor(dark);
     final size = MediaQuery.sizeOf(context);
 
     return Scaffold(
@@ -35,23 +36,54 @@ class SurahAudioScreen extends StatelessWidget {
         iconTheme: IconThemeData(color: textColor, size: 22),
       ),
       body: SafeArea(
-        child: SlidingPanel(
-          controller: surahCtrl.state.panelController,
-          config: SlidingPanelConfig(
-            anchorPosition: 100,
-            expandPosition: UiHelper.currentOrientation(
-                size.height * .7, size.height * .8, context),
-          ),
-          pageContent: SurahBackDropWidget(
-              style: style, isDark: dark, languageCode: languageCode),
-          panelContent: Obx(
-            () => !surahCtrl.state.isSheetOpen.value
-                ? SurahCollapsedPlayWidget(
-                    style: style, isDark: dark, languageCode: languageCode)
-                : PlaySurahsWidget(
-                    style: style, isDark: dark, languageCode: languageCode),
-          ),
-        ),
+        child: UiHelper.currentOrientation(
+            PortraitWidget(
+                surahCtrl: surahCtrl,
+                size: size,
+                style: s,
+                dark: dark,
+                languageCode: languageCode),
+            SurahBackDropWidget(
+                style: s, isDark: dark, languageCode: languageCode),
+            context),
+      ),
+    );
+  }
+}
+
+class PortraitWidget extends StatelessWidget {
+  const PortraitWidget({
+    super.key,
+    required this.surahCtrl,
+    required this.size,
+    required this.style,
+    required this.dark,
+    required this.languageCode,
+  });
+
+  final AudioCtrl surahCtrl;
+  final Size size;
+  final SurahAudioStyle? style;
+  final bool dark;
+  final String? languageCode;
+
+  @override
+  Widget build(BuildContext context) {
+    return SlidingPanel(
+      controller: surahCtrl.state.panelController,
+      config: SlidingPanelConfig(
+        anchorPosition: 100,
+        expandPosition: UiHelper.currentOrientation(
+            size.height * .7, size.height * .8, context),
+      ),
+      pageContent: SurahBackDropWidget(
+          style: style, isDark: dark, languageCode: languageCode),
+      panelContent: Obx(
+        () => !surahCtrl.state.isSheetOpen.value
+            ? SurahCollapsedPlayWidget(
+                style: style, isDark: dark, languageCode: languageCode)
+            : PlaySurahsWidget(
+                style: style, isDark: dark, languageCode: languageCode),
       ),
     );
   }

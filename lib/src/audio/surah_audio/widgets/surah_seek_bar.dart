@@ -2,7 +2,8 @@ part of '../../audio.dart';
 
 class SurahSeekBar extends StatelessWidget {
   final String? languageCode;
-  const SurahSeekBar({super.key, this.languageCode});
+  final SurahAudioStyle? style;
+  const SurahSeekBar({super.key, this.languageCode, this.style});
 
   @override
   Widget build(BuildContext context) {
@@ -30,6 +31,11 @@ class SurahSeekBar extends StatelessWidget {
                           ? Duration(
                               seconds: c.state.lastPosition.value.toInt())
                           : positionData.position,
+                      activeTrackColor:
+                          style!.seekBarActiveTrackColor ?? Colors.teal,
+                      inactiveTrackColor:
+                          style!.seekBarInactiveTrackColor ?? Colors.grey,
+                      thumbColor: style!.seekBarThumbColor ?? Colors.teal,
                       // bufferedPosition: positionData.bufferedPosition,
                       onChangeEnd: (newPosition) {
                         c.state.audioPlayer.seek(newPosition);
@@ -38,8 +44,7 @@ class SurahSeekBar extends StatelessWidget {
                             positionData.position.inSeconds;
                         c.updateControllerValues(positionData);
                       },
-                      activeTrackColor: Colors.teal,
-                      textColor: Colors.white,
+                      textColor: style?.secondaryTextColor ?? Colors.white,
                       timeShow: true,
                       languageCode: languageCode,
                     );

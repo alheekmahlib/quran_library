@@ -100,8 +100,8 @@ class SurahAudioList extends StatelessWidget {
 
     return GestureDetector(
       onTap: () async {
-        surahAudioCtrl.state.selectedSurahIndex.value = index;
-        surahAudioCtrl.changeAudioSource();
+        // اختيار السورة وضبط المصدر بأمان (من دون تشغيل تلقائي)
+        await surahAudioCtrl.selectSurahFromList(index, autoPlay: false);
       },
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),

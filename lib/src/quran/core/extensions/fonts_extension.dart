@@ -62,8 +62,8 @@ extension FontsExtension on QuranCtrl {
           options: Options(
             responseType: ResponseType.bytes,
             followRedirects: true,
+            // ملاحظة: على الويب، sendTimeout غير مدعوم لطلبات GET بدون جسم، لذا نستخدم receiveTimeout فقط
             receiveTimeout: const Duration(seconds: 30),
-            sendTimeout: const Duration(seconds: 30),
             validateStatus: (s) => s != null && s >= 200 && s < 400,
           ),
         );

@@ -151,28 +151,3 @@ class AyahChangeReader extends StatelessWidget {
     );
   }
 }
-
-class _SelectionIndicator extends StatelessWidget {
-  final bool isSelected;
-  final Color? color;
-  const _SelectionIndicator({required this.isSelected, this.color});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 20,
-      width: 20,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        border: Border.all(color: color ?? Colors.teal, width: 2),
-      ),
-      child: isSelected
-          ? Icon(
-              Icons.done,
-              size: 14,
-              color: color ?? Colors.teal,
-            )
-          : null,
-    );
-  }
-}

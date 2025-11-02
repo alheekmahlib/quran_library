@@ -52,6 +52,7 @@ part 'surah_audio/widgets/surah_collapsed_play_widget.dart';
 part 'surah_audio/widgets/surah_download_play_button.dart';
 part 'surah_audio/widgets/surah_last_listen.dart';
 part 'surah_audio/widgets/surah_online_play_button.dart';
+part 'surah_audio/widgets/surah_play_landscape_widget.dart';
 part 'surah_audio/widgets/surah_play_widget.dart';
 part 'surah_audio/widgets/surah_repeat_widget.dart';
 part 'surah_audio/widgets/surah_seek_bar.dart';

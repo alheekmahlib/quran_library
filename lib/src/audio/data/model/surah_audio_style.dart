@@ -111,6 +111,38 @@ class SurahAudioStyle {
   /// Surah name color
   final Color? surahNameColor;
 
+  /// ارتفاع نافذة اختيار القارئ
+  /// Reader dialog max height
+  final double? dialogHeight;
+
+  /// عرض نافذة اختيار القارئ
+  /// Reader dialog max width
+  final double? dialogWidth;
+
+  /// لون عنوان ترويسة نافذة القارئ
+  /// Reader dialog header title color
+  final Color? dialogHeaderTitleColor;
+
+  /// لون أيقونة الإغلاق في الترويسة
+  /// Reader dialog header close icon color
+  final Color? dialogCloseIconColor;
+
+  /// تدرج خلفية الترويسة في نافذة القارئ
+  /// Reader dialog header background gradient
+  final Gradient? dialogHeaderBackgroundGradient;
+
+  /// لون العنصر المحدد في نافذة القارئ
+  /// Selected color in reader dialog
+  final Color? dialogSelectedReaderColor;
+
+  /// لون العنصر غير المحدد في نافذة القارئ
+  /// Unselected base color in reader dialog
+  final Color? dialogUnSelectedReaderColor;
+
+  /// لون نص العنصر في نافذة القارئ
+  /// Reader text color in dialog list
+  final Color? dialogReaderTextColor;
+
   /// منشئ فئة SurahAudioStyle
   /// SurahAudioStyle class constructor
   SurahAudioStyle({
@@ -141,5 +173,84 @@ class SurahAudioStyle {
     this.iconColor,
     this.audioSliderBackgroundColor,
     this.surahNameColor,
+    this.dialogHeight,
+    this.dialogWidth,
+    this.dialogHeaderTitleColor,
+    this.dialogCloseIconColor,
+    this.dialogHeaderBackgroundGradient,
+    this.dialogSelectedReaderColor,
+    this.dialogUnSelectedReaderColor,
+    this.dialogReaderTextColor,
   });
+
+  /// القيم الافتراضية الموحدة حسب الثيم
+  /// Unified defaults based on theme
+  factory SurahAudioStyle.defaults({
+    required bool isDark,
+    required BuildContext context,
+  }) {
+    final scheme = Theme.of(context).colorScheme;
+    final bg = AppColors.getBackgroundColor(isDark);
+    final onBg = AppColors.getTextColor(isDark);
+    final primary = scheme.primary;
+
+    return SurahAudioStyle(
+      // ألوان عامة
+      backgroundColor: bg,
+      textColor: onBg,
+      primaryColor: primary,
+      iconColor: primary,
+      surahNameColor: onBg,
+      audioSliderBackgroundColor:
+          isDark ? const Color(0xFF1E1E1E) : bg.withValues(alpha: 0.98),
+
+      // الحدّ ونصف القطر
+      borderRadius: 16.0,
+      dialogBorderRadius: 12.0,
+      dialogBackgroundColor: bg,
+
+      // خصائص نافذة اختيار القارئ
+      dialogHeight: MediaQuery.of(context).size.height * 0.7,
+      dialogWidth: MediaQuery.of(context).size.width * 0.6,
+      dialogHeaderTitleColor: onBg,
+      dialogCloseIconColor: onBg,
+      dialogHeaderBackgroundGradient: LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+        colors: [
+          primary.withValues(alpha: 0.15),
+          primary.withValues(alpha: 0.05),
+        ],
+      ),
+      dialogSelectedReaderColor: primary,
+      dialogUnSelectedReaderColor: onBg,
+      dialogReaderTextColor: onBg,
+
+      // عناصر التحكم
+      playIconColor: primary,
+      pauseIconHeight: 38.0,
+      playIconHeight: 38.0,
+      previousIconHeight: 38.0,
+      nextIconHeight: 38.0,
+
+      // شريط التقدم
+      seekBarThumbColor: primary,
+      seekBarActiveTrackColor: primary,
+      seekBarInactiveTrackColor: isDark ? Colors.white24 : Colors.black12,
+      seekBarHorizontalPadding: 32.0,
+
+      // نصوص ثانوية وايقونات ثانوية
+      secondaryTextColor: onBg.withValues(alpha: 0.75),
+      secondaryIconColor: onBg.withValues(alpha: 0.70),
+      secondaryFontSize: 14.0,
+
+      // أسماء/أحجام
+      readerNameFontSize: 16.0,
+      readerNameInItemFontSize: 14.0,
+      readerNameInItemColor: onBg,
+
+      // حالات التحديد
+      selectedItemColor: primary.withValues(alpha: 0.10),
+    );
+  }
 }

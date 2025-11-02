@@ -1,22 +1,59 @@
 part of '../../audio.dart';
 
 extension SurahUi on AudioCtrl {
-  void changeAudioSource() {
-    state.isSurahDownloadedByNumber(state.currentAudioListSurahNum.value).value
-        ? state.audioPlayer.setAudioSource(AudioSource.file(
+  /// تعيين مصدر السورة الحالي بشكل آمن (يوقف المشغّل أولًا لتجنّب Loading interrupted)
+  Future<void> changeAudioSource() async {
+    try {
+      // أوقف أي تشغيل/تحميل جارٍ قبل تبديل المصدر
+      await state.audioPlayer.stop();
+      if (state
+          .isSurahDownloadedByNumber(state.currentAudioListSurahNum.value)
+          .value) {
+        await state.audioPlayer.setAudioSource(
+          AudioSource.file(
             localSurahFilePath,
             tag: mediaItem,
-          ))
-        : state.audioPlayer.setAudioSource(AudioSource.uri(
+          ),
+        );
+      } else {
+        await state.audioPlayer.setAudioSource(
+          AudioSource.uri(
             Uri.parse(urlSurahFilePath),
             tag: mediaItem,
-          ));
+          ),
+        );
+      }
+    } catch (e, s) {
+      log('changeAudioSource failed: $e', name: 'SurahUi', stackTrace: s);
+    }
+  }
+
+  /// اختيار سورة من القائمة مع ضبط الحالة المناسبة لوضع السور
+  Future<void> selectSurahFromList(int index, {bool autoPlay = false}) async {
+    // التحويل إلى وضع السور وتعطيل أي مستمعات قديمة
+    state.isPlayingSurahsMode = true;
+    disableSurahAutoNextListener();
+    state.cancelAllSubscriptions();
+
+    // عيّن الفهرس الجديد
+    state.selectedSurahIndex.value = index;
+
+    // بدّل المصدر بأمان
+    await changeAudioSource();
+
+    // شغّل تلقائيًا إذا طُلب ذلك
+    if (autoPlay) {
+      enableSurahAutoNextListener();
+      state.isPlaying.value = true;
+      await state.audioPlayer.play();
+    }
   }
 
   void changeSurahReadersOnTap(BuildContext context, int index) {
     initializeSurahDownloadStatus();
     state.box.write(StorageConstants.surahReaderIndex, index);
     state.surahReaderIndex.value = index;
+    // إعادة تعيين المصدر وفق القارئ الجديد بأمان
     changeAudioSource();
     Navigator.of(context).pop();
   }

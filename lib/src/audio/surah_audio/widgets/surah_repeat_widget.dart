@@ -1,9 +1,10 @@
 part of '../../audio.dart';
 
 class SurahRepeatWidget extends StatelessWidget {
-  SurahRepeatWidget({super.key});
+  SurahRepeatWidget({super.key, this.style});
 
   final surahAudioCtrl = AudioCtrl.instance;
+  final SurahAudioStyle? style;
 
   @override
   Widget build(BuildContext context) {
@@ -20,10 +21,12 @@ class SurahRepeatWidget extends StatelessWidget {
           LoopMode.all,
         ];
         final index = cycleModes.indexOf(loopMode);
+        final baseColor =
+            style?.playIconColor ?? style?.primaryColor ?? Colors.teal;
         return IconButton(
           iconSize: 30,
           icon: Icon(icons[index]),
-          color: index == 0 ? Colors.teal.withValues(alpha: .4) : Colors.teal,
+          color: index == 0 ? baseColor.withValues(alpha: .4) : baseColor,
           onPressed: () {
             // surahAudioCtrl.toggleSurahsMode(index == 0 ? false : true);
             surahAudioCtrl.state.audioPlayer.setLoopMode(cycleModes[

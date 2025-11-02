@@ -167,7 +167,9 @@ class SurahBackDropWidget extends StatelessWidget {
                   isDark: isDark,
                 ),
 
-                const SizedBox(height: 20.0),
+                const Spacer(),
+                SurahPlayLandscapeWidget(
+                    style: style, isDark: isDark, languageCode: languageCode),
               ],
             ),
           ),

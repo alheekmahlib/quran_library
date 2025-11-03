@@ -497,6 +497,7 @@ extension FontsExtension on QuranCtrl {
       }
       await fontLoader.load();
       state.loadedFontPages.add(pageIndex);
+      update(['_pageViewBuild_$pageIndex']);
       // حفظ القائمة لتسريع الجلسات اللاحقة
       GetStorage().write(
           _StorageConstants().loadedFontPages, state.loadedFontPages.toList());

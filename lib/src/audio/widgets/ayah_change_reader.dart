@@ -2,8 +2,10 @@ part of '../audio.dart';
 
 class AyahChangeReader extends StatelessWidget {
   final AyahAudioStyle? style;
+  final AyahDownloadManagerStyle? downloadManagerStyle;
   final bool? isDark;
-  const AyahChangeReader({super.key, this.style, this.isDark = false});
+  const AyahChangeReader(
+      {super.key, this.style, this.downloadManagerStyle, this.isDark = false});
 
   @override
   Widget build(BuildContext context) {
@@ -67,50 +69,64 @@ class AyahChangeReader extends StatelessWidget {
           const SizedBox(height: 8),
           // List
           Flexible(
-            child: ListView.separated(
-              shrinkWrap: true,
-              physics: const ClampingScrollPhysics(),
-              itemCount: ReadersConstants.ayahReaderInfo.length,
-              separatorBuilder: (_, __) => Divider(
-                height: 1,
-                color: AppColors.getTextColor(dark).withValues(alpha: 0.08),
-              ),
-              itemBuilder: (context, index) {
-                final info = ReadersConstants.ayahReaderInfo[index];
-                final bool isSelected = selectedIndex == info['index'];
-                final Color itemColor =
-                    isSelected ? activeColor : inactiveColor;
-
-                return Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 1.0),
-                  child: ListTile(
-                    minTileHeight: 44,
-                    dense: true,
-                    focusColor: itemColor.withValues(alpha: 0.12),
-                    splashColor: itemColor.withValues(alpha: 0.12),
-                    selectedColor: itemColor,
-                    selectedTileColor: itemColor.withValues(alpha: 0.12),
-                    tileColor: itemColor.withValues(alpha: 0.07),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 8),
-                    title: Text(
-                      '${info['name']}'.tr,
-                      style: QuranLibrary().cairoStyle.copyWith(
-                            color: textColor,
-                            fontSize: itemFontSize,
-                          ),
-                    ),
-                    trailing: _SelectionIndicator(
-                        isSelected: isSelected,
-                        color: effectiveStyle.dialogSelectedReaderColor ??
-                            Colors.teal),
-                    onTap: () async => await AudioCtrl.instance
-                        .changeAyahReadersOnTap(context, index),
+            child: DefaultTabController(
+              length: !kIsWeb ? 2 : 1,
+              child: Column(
+                children: [
+                  TabBar(
+                    indicatorColor:
+                        effectiveStyle.dialogSelectedReaderColor ?? Colors.teal,
+                    labelColor:
+                        effectiveStyle.dialogSelectedReaderColor ?? Colors.teal,
+                    unselectedLabelColor:
+                        effectiveStyle.dialogUnSelectedReaderColor ??
+                            AppColors.getTextColor(dark),
+                    tabs: const [
+                      Tab(text: 'القراء'),
+                      if (!kIsWeb) Tab(text: 'السور المحملة'),
+                    ],
                   ),
-                );
-              },
+                  Expanded(
+                    child: TabBarView(
+                      children: [
+                        ReaderListBuild(
+                          selectedIndex: selectedIndex,
+                          activeColor: activeColor,
+                          inactiveColor: inactiveColor,
+                          textColor: textColor,
+                          itemFontSize: itemFontSize,
+                          dark: dark,
+                          effectiveStyle: effectiveStyle,
+                        ),
+                        if (!kIsWeb)
+                          AyahDownloadManagerSheet(
+                            onRequestDownload: (surahNum) async {
+                              if (AudioCtrl
+                                  .instance.state.isDownloading.value) {
+                                return;
+                              }
+                              await AudioCtrl.instance.startDownloadAyahSurah(
+                                  surahNum,
+                                  context: context);
+                            },
+                            onRequestDelete: (surahNum) async {
+                              await AudioCtrl.instance
+                                  .deleteAyahSurahDownloads(surahNum);
+                            },
+                            isSurahDownloadedChecker: (surahNum) => AudioCtrl
+                                .instance
+                                .isAyahSurahFullyDownloaded(surahNum),
+                            initialSurahToFocus:
+                                AudioCtrl.instance.currentSurahNumber,
+                            style: downloadManagerStyle,
+                            isDark: isDark,
+                            ayahStyle: style,
+                          )
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ],
@@ -148,6 +164,74 @@ class AyahChangeReader extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+class ReaderListBuild extends StatelessWidget {
+  const ReaderListBuild({
+    super.key,
+    required this.selectedIndex,
+    required this.activeColor,
+    required this.inactiveColor,
+    required this.textColor,
+    required this.itemFontSize,
+    required this.dark,
+    required this.effectiveStyle,
+  });
+
+  final int selectedIndex;
+  final Color activeColor;
+  final Color inactiveColor;
+  final Color textColor;
+  final double itemFontSize;
+  final bool dark;
+  final AyahAudioStyle effectiveStyle;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.separated(
+      shrinkWrap: true,
+      physics: const ClampingScrollPhysics(),
+      itemCount: ReadersConstants.ayahReaderInfo.length,
+      separatorBuilder: (_, __) => Divider(
+        height: 1,
+        color: AppColors.getTextColor(dark).withValues(alpha: 0.08),
+      ),
+      itemBuilder: (context, index) {
+        final info = ReadersConstants.ayahReaderInfo[index];
+        final bool isSelected = selectedIndex == info['index'];
+        final Color itemColor = isSelected ? activeColor : inactiveColor;
+
+        return Padding(
+          padding: const EdgeInsets.symmetric(vertical: 1.0),
+          child: ListTile(
+            minTileHeight: 44,
+            dense: true,
+            focusColor: itemColor.withValues(alpha: 0.12),
+            splashColor: itemColor.withValues(alpha: 0.12),
+            selectedColor: itemColor,
+            selectedTileColor: itemColor.withValues(alpha: 0.12),
+            tileColor: itemColor.withValues(alpha: 0.07),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+            contentPadding: const EdgeInsets.symmetric(horizontal: 8),
+            title: Text(
+              '${info['name']}'.tr,
+              style: QuranLibrary().cairoStyle.copyWith(
+                    color: textColor,
+                    fontSize: itemFontSize,
+                  ),
+            ),
+            trailing: _SelectionIndicator(
+                isSelected: isSelected,
+                color: effectiveStyle.dialogSelectedReaderColor ?? Colors.teal),
+            onTap: () async =>
+                await AudioCtrl.instance.changeAyahReadersOnTap(context, index),
+          ),
+        );
+      },
     );
   }
 }

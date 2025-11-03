@@ -11,7 +11,7 @@ extension AyahCtrlExtension on AudioCtrl {
     // لا تعتمد على التخزين فقط؛ تحقق من الواقع (غير الويب)
     bool isSurahDownloaded = false;
     if (!kIsWeb) {
-      isSurahDownloaded = await _isAyahSurahFullyDownloaded(currentSurahNumber);
+      isSurahDownloaded = await isAyahSurahFullyDownloaded(currentSurahNumber);
     }
 
     try {
@@ -67,7 +67,7 @@ extension AyahCtrlExtension on AudioCtrl {
     if (!kIsWeb) {
       // إذا لم تكن آيات السورة محمّلة بالكامل، افتح bottomSheet لإدارة التحميل
       final isSurahFullyDownloaded =
-          await _isAyahSurahFullyDownloaded(currentSurahNumber);
+          await isAyahSurahFullyDownloaded(currentSurahNumber);
       if (!isSurahFullyDownloaded) {
         if (context != null) {
           await _showAyahDownloadBottomSheet(context,
@@ -75,7 +75,7 @@ extension AyahCtrlExtension on AudioCtrl {
         }
         // بعد إغلاق الـ bottomSheet، أعد التحقق
         final downloadedNow =
-            await _isAyahSurahFullyDownloaded(currentSurahNumber);
+            await isAyahSurahFullyDownloaded(currentSurahNumber);
         if (!downloadedNow) {
           // المستخدم أغلق أو لم يكتمل التحميل
           return;
@@ -324,7 +324,7 @@ extension AyahCtrlExtension on AudioCtrl {
   }
 
   /// حالة تحميل آيات السورة بالكامل حسب القارئ الحالي
-  Future<bool> _isAyahSurahFullyDownloaded(int surahNumber) async {
+  Future<bool> isAyahSurahFullyDownloaded(int surahNumber) async {
     if (kIsWeb) return false;
     final key = 'surah_$surahNumberـ${state.ayahReaderIndex.value}';
     // أولاً تحقّق من الملفات فعلياً
@@ -367,7 +367,7 @@ extension AyahCtrlExtension on AudioCtrl {
   }
 
   /// بدء تحميل آيات سورة معيّنة بالكامل (متسلسلًا) مع تحديث الحالة
-  Future<void> _startDownloadAyahSurah(int surahNumber,
+  Future<void> startDownloadAyahSurah(int surahNumber,
       {BuildContext? context}) async {
     if (kIsWeb) {
       // على الويب لا ندير تنزيلات محلية
@@ -405,7 +405,7 @@ extension AyahCtrlExtension on AudioCtrl {
       }
 
       // تحقّق نهائي قبل وضع علامة مكتمل
-      if (await _isAyahSurahFullyDownloaded(surahNumber)) {
+      if (await isAyahSurahFullyDownloaded(surahNumber)) {
         log('تم تحميل جميع آيات السورة $surahNumber بالكامل');
       }
     } catch (e) {
@@ -421,7 +421,7 @@ extension AyahCtrlExtension on AudioCtrl {
   }
 
   /// حذف جميع ملفات آيات سورة معيّنة للقارئ الحالي
-  Future<void> _deleteAyahSurahDownloads(int surahNumber) async {
+  Future<void> deleteAyahSurahDownloads(int surahNumber) async {
     if (kIsWeb) {
       // على الويب لا توجد ملفات لحذفها
       return;
@@ -466,13 +466,13 @@ extension AyahCtrlExtension on AudioCtrl {
         return AyahDownloadManagerSheet(
           onRequestDownload: (surahNum) async {
             if (state.isDownloading.value) return;
-            await _startDownloadAyahSurah(surahNum, context: ctx);
+            await startDownloadAyahSurah(surahNum, context: ctx);
           },
           onRequestDelete: (surahNum) async {
-            await _deleteAyahSurahDownloads(surahNum);
+            await deleteAyahSurahDownloads(surahNum);
           },
           isSurahDownloadedChecker: (surahNum) =>
-              _isAyahSurahFullyDownloaded(surahNum),
+              isAyahSurahFullyDownloaded(surahNum),
           initialSurahToFocus: initialSurahToDownload,
           style: style,
           isDark: isDark,

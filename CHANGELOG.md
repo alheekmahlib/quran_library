@@ -13,6 +13,7 @@
 * **Change Surah banner.**
 * **Make the surahs playlist. When the surah ends, the next one begins.**
 * **Fix move to next page after the last Ayah in page.**
+* **Display Ayah download manager with change reader.**
 
 ## 2.2.3+1
 

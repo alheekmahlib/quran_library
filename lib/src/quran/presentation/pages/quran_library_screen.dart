@@ -65,6 +65,7 @@ class QuranLibraryScreen extends StatelessWidget {
     this.searchTabStyle,
     this.ayahLongClickStyle,
     this.tafsirStyle,
+    this.ayahDownloadManagerStyle,
   });
 
   /// إذا قمت بإضافة شريط التطبيقات هنا فإنه سيحل محل شريط التطبيقات الافتراضية [appBar]
@@ -320,6 +321,10 @@ class QuranLibraryScreen extends StatelessWidget {
   /// [tafsirStyle] Tafsir style customization
   final TafsirStyle? tafsirStyle;
 
+  // تخصيص نمط التفسير
+  /// [tafsirStyle] Tafsir style customization
+  final AyahDownloadManagerStyle? ayahDownloadManagerStyle;
+
   @override
   Widget build(BuildContext context) {
     // تحديث رابط أيقونة التطبيق إذا تم تمريره / Update app icon URL if provided
@@ -570,6 +575,8 @@ class QuranLibraryScreen extends StatelessWidget {
                                                   ayahStyle ?? AyahAudioStyle(),
                                               isDark: isDark,
                                               languageCode: languageCode,
+                                              downloadManagerStyle:
+                                                  ayahDownloadManagerStyle,
                                             ),
                                           ),
                                         )

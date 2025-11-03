@@ -103,7 +103,7 @@ class PageViewBuild extends StatelessWidget {
     List<String> newSurahs = [];
     // final bookmarkCtrl = BookmarksCtrl.instance;
     return GetBuilder<QuranCtrl>(
-      id: '_pageViewBuild',
+      id: '_pageViewBuild_$pageIndex',
       init: QuranCtrl.instance,
       builder: (quranCtrl) => GestureDetector(
         onScaleStart: (details) => quranCtrl.state.baseScaleFactor.value =
@@ -111,7 +111,8 @@ class PageViewBuild extends StatelessWidget {
         onScaleUpdate: (ScaleUpdateDetails details) =>
             quranCtrl.updateTextScale(details),
         child: quranCtrl.textScale(
-          (quranCtrl.isDownloadFonts
+          ((quranCtrl.isDownloadFonts &&
+                  quranCtrl.state.getLoadedFontPages.contains(pageIndex))
               ? quranCtrl.state.allAyahs.isEmpty ||
                       quranCtrl.state.surahs.isEmpty ||
                       quranCtrl.state.pages.isEmpty

@@ -10,6 +10,7 @@ class AyahDownloadManagerSheet extends StatelessWidget {
   final bool? isDark;
   final String? language;
   final AyahAudioStyle? ayahStyle;
+  final bool? isInChangeReaderDialog;
 
   const AyahDownloadManagerSheet({
     super.key,
@@ -21,6 +22,7 @@ class AyahDownloadManagerSheet extends StatelessWidget {
     this.isDark = false,
     this.language,
     this.ayahStyle,
+    this.isInChangeReaderDialog = false,
   });
 
   @override
@@ -64,18 +66,26 @@ class AyahDownloadManagerSheet extends StatelessWidget {
       height: context.height * 0.8,
       child: Column(
         children: [
-          const SizedBox(height: 8),
-          Container(
-            width: 48,
-            height: 5,
-            decoration: BoxDecoration(
-              color: style?.handleColor ?? Colors.grey.shade300,
-              borderRadius: BorderRadius.circular(style?.handleRadius ?? 8),
-            ),
-          ),
-          const SizedBox(height: 12),
-          HeaderBuild(style: style, isDark: isDark, ayahStyle: ayahStyle),
-          const SizedBox(height: 12),
+          isInChangeReaderDialog!
+              ? const SizedBox.shrink()
+              : Column(
+                  children: [
+                    const SizedBox(height: 8),
+                    Container(
+                      width: 48,
+                      height: 5,
+                      decoration: BoxDecoration(
+                        color: style?.handleColor ?? Colors.grey.shade300,
+                        borderRadius:
+                            BorderRadius.circular(style?.handleRadius ?? 8),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    HeaderBuild(
+                        style: style, isDark: isDark, ayahStyle: ayahStyle),
+                    const SizedBox(height: 12),
+                  ],
+                ),
           Expanded(
             child: Obx(() {
               final isBusy = audioCtrl.state.isDownloading.value;

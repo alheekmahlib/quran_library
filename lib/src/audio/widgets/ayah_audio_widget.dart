@@ -2,11 +2,16 @@ part of '../audio.dart';
 
 class AyahsAudioWidget extends StatelessWidget {
   final AyahAudioStyle? style;
+  final AyahDownloadManagerStyle? downloadManagerStyle;
   final bool? isDark;
   final String? languageCode;
 
   AyahsAudioWidget(
-      {super.key, this.style, this.isDark = false, this.languageCode});
+      {super.key,
+      this.style,
+      this.downloadManagerStyle,
+      this.isDark = false,
+      this.languageCode});
   final quranCtrl = QuranCtrl.instance;
   final audioCtrl = AudioCtrl.instance;
 
@@ -36,7 +41,10 @@ class AyahsAudioWidget extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       PlayAyahWidget(style: style!),
-                      AyahChangeReader(style: style!),
+                      AyahChangeReader(
+                          style: style!,
+                          isDark: isDark,
+                          downloadManagerStyle: downloadManagerStyle),
                     ],
                   ),
                 ),
@@ -59,7 +67,10 @@ class AyahsAudioWidget extends StatelessWidget {
                                 // تقليل المسافات عند المساحة المحدودة
                                 // Reduce spacing when space is limited
                                 SizedBox(height: targetHeight > 120 ? 4 : 2),
-                                AyahChangeReader(style: style!),
+                                AyahChangeReader(
+                                    style: style!,
+                                    isDark: isDark,
+                                    downloadManagerStyle: downloadManagerStyle),
                                 // SizedBox(height: 4),
                                 // جعل الـ Slider مرن ليأخذ المساحة المتبقية
                                 // Make slider flexible to take remaining space

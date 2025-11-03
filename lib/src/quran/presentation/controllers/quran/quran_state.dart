@@ -28,6 +28,7 @@ class QuranState {
   // صفحات الخطوط التي تم تحميلها لتجنب إعادة التحميل
   // Loaded fonts pages cache to avoid reloading
   final Set<int> loadedFontPages = <int>{};
+  List<int> get getLoadedFontPages => loadedFontPages.toList();
 
   // حارس لتحضير الخط للصفحة الأولى مرة واحدة
   // Guard to prepare initial page fonts once

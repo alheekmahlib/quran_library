@@ -91,4 +91,86 @@ class AyahDownloadManagerStyle {
     this.downloadBackground,
     this.countTextBuilder,
   });
+
+  /// القيم الافتراضية الموحدة حسب الثيم
+  /// Unified defaults based on theme
+  factory AyahDownloadManagerStyle.defaults({
+    required bool isDark,
+    required BuildContext context,
+  }) {
+    final scheme = Theme.of(context).colorScheme;
+    final onBg = AppColors.getTextColor(isDark);
+    final primary = scheme.primary;
+
+    return AyahDownloadManagerStyle(
+      // Header
+      titleText: 'إدارة تحميل آيات السور',
+      titleTextStyle: QuranLibrary().cairoStyle.copyWith(
+            fontSize: 18,
+            color: onBg,
+            fontWeight: FontWeight.bold,
+            height: 1.2,
+          ),
+      surahNameSize: 30.0,
+
+      // Handle
+      handleColor: isDark ? Colors.grey.shade600 : Colors.grey.shade300,
+      handleWidth: 48.0,
+      handleHeight: 5.0,
+      handleRadius: 8.0,
+
+      // Stop/Cancel button
+      stopButtonText: 'إيقاف التحميل',
+      stopButtonIcon: Icons.stop_circle_outlined,
+      stopButtonForeground: Colors.white,
+      stopButtonBackground: primary,
+
+      // List/Item
+      separatorColor: isDark
+          ? Colors.white.withValues(alpha: 0.08)
+          : Colors.black.withValues(alpha: 0.08),
+      itemHorizontalPadding: 16.0,
+      itemVerticalPadding: 8.0,
+      surahTitleStyle: TextStyle(
+        color: onBg,
+        fontFamily: "surahName",
+        fontSize: 30.0,
+        height: 1.2,
+        package: "quran_library",
+      ),
+      surahSubtitleStyle: QuranLibrary().cairoStyle.copyWith(
+            fontSize: 14,
+            color: isDark ? Colors.grey.shade400 : Colors.grey.shade700,
+            height: 1.2,
+          ),
+
+      // Avatar
+      avatarDownloadedColor: primary,
+      avatarUndownloadedColor: primary.withValues(alpha: 0.4),
+      avatarTextStyle: const TextStyle(color: Colors.white),
+
+      // Progress
+      progressColor: primary.withValues(alpha: 0.25),
+      progressBackgroundColor:
+          isDark ? Colors.grey.shade800 : Colors.grey.shade200,
+      progressHeight: 70.0,
+      progressRadius: 8.0,
+
+      // Delete action
+      deleteTooltipText: 'حذف السورة',
+      deleteIcon: Icons.delete_outline,
+      deleteIconColor: Colors.red,
+
+      // Download action
+      downloadText: 'تحميل',
+      downloadIcon: Icons.download,
+      redownloadText: 'إعادة',
+      redownloadIcon: Icons.refresh,
+      downloadForeground: Colors.white,
+      downloadBackground: primary,
+
+      // Count text builder - يمكن تخصيصه لاحقًا
+      countTextBuilder: null,
+    );
+  }
 }

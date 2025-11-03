@@ -514,7 +514,7 @@ class AudioCtrl extends GetxController {
       log('Error updating app icon URL: $e', name: 'AudioCtrl');
       // في حالة الخطأ، استرجع الرابط الافتراضي / In case of error, revert to default URL
       state.appIconUrl.value =
-          'https://raw.githubusercontent.com/alheekmahlib/thegarlanded/master/Photos/ios-1024.png';
+          'https://github.com/alheekmahlib/thegarlanded/blob/master/Photos/Packages/quran_library/quran_library_logo.jpg?raw=true';
       await setCachedArtUri();
     }
   }

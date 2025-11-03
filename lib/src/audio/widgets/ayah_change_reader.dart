@@ -28,8 +28,8 @@ class AyahChangeReader extends StatelessWidget {
           constraints: BoxConstraints(
             maxHeight: effectiveStyle.dialogHeight ??
                 MediaQuery.of(context).size.height * 0.7,
-            maxWidth: effectiveStyle.dialogWidth ??
-                MediaQuery.of(context).size.width * 0.6,
+            maxWidth:
+                effectiveStyle.dialogWidth ?? MediaQuery.of(context).size.width,
           ),
           child: _buildDialog(context, effectiveStyle, dark),
         ),
@@ -50,30 +50,32 @@ class AyahChangeReader extends StatelessWidget {
 
     final int selectedIndex = AudioCtrl.instance.state.ayahReaderIndex.value;
 
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          // Header
-          HeaderDialogWidget(
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        // Header
+        Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: HeaderDialogWidget(
             title: 'تغيير القارئ',
             isDark: dark,
             backgroundGradient: effectiveStyle.dialogHeaderBackgroundGradient,
-            titleColor: effectiveStyle.dialogHeaderTitleColor,
             closeIconColor: effectiveStyle.dialogCloseIconColor,
           ),
-          const SizedBox(height: 8),
-          const Divider(height: 1),
-          const SizedBox(height: 8),
-          // List
-          Flexible(
-            child: DefaultTabController(
-              length: !kIsWeb ? 2 : 1,
-              child: Column(
-                children: [
-                  TabBar(
+        ),
+        const SizedBox(height: 8),
+        const Divider(height: 1),
+        const SizedBox(height: 8),
+        // List
+        Flexible(
+          child: DefaultTabController(
+            length: !kIsWeb ? 2 : 1,
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: TabBar(
                     indicatorColor:
                         effectiveStyle.dialogSelectedReaderColor ?? Colors.teal,
                     labelColor:
@@ -81,56 +83,62 @@ class AyahChangeReader extends StatelessWidget {
                     unselectedLabelColor:
                         effectiveStyle.dialogUnSelectedReaderColor ??
                             AppColors.getTextColor(dark),
+                    labelStyle: QuranLibrary().cairoStyle.copyWith(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                        ),
                     tabs: const [
                       Tab(text: 'القراء'),
                       if (!kIsWeb) Tab(text: 'السور المحملة'),
                     ],
                   ),
-                  Expanded(
-                    child: TabBarView(
-                      children: [
-                        ReaderListBuild(
-                          selectedIndex: selectedIndex,
-                          activeColor: activeColor,
-                          inactiveColor: inactiveColor,
-                          textColor: textColor,
-                          itemFontSize: itemFontSize,
-                          dark: dark,
-                          effectiveStyle: effectiveStyle,
-                        ),
-                        if (!kIsWeb)
-                          AyahDownloadManagerSheet(
-                            onRequestDownload: (surahNum) async {
-                              if (AudioCtrl
-                                  .instance.state.isDownloading.value) {
-                                return;
-                              }
-                              await AudioCtrl.instance.startDownloadAyahSurah(
-                                  surahNum,
-                                  context: context);
-                            },
-                            onRequestDelete: (surahNum) async {
-                              await AudioCtrl.instance
-                                  .deleteAyahSurahDownloads(surahNum);
-                            },
-                            isSurahDownloadedChecker: (surahNum) => AudioCtrl
-                                .instance
-                                .isAyahSurahFullyDownloaded(surahNum),
-                            initialSurahToFocus:
-                                AudioCtrl.instance.currentSurahNumber,
-                            style: downloadManagerStyle,
-                            isDark: isDark,
-                            ayahStyle: style,
-                          )
-                      ],
-                    ),
+                ),
+                Expanded(
+                  child: TabBarView(
+                    children: [
+                      ReaderListBuild(
+                        selectedIndex: selectedIndex,
+                        activeColor: activeColor,
+                        inactiveColor: inactiveColor,
+                        textColor: textColor,
+                        itemFontSize: itemFontSize,
+                        dark: dark,
+                        effectiveStyle: effectiveStyle,
+                      ),
+                      if (!kIsWeb)
+                        AyahDownloadManagerSheet(
+                          isInChangeReaderDialog: true,
+                          onRequestDownload: (surahNum) async {
+                            if (AudioCtrl.instance.state.isDownloading.value) {
+                              return;
+                            }
+                            await AudioCtrl.instance.startDownloadAyahSurah(
+                                surahNum,
+                                context: context);
+                          },
+                          onRequestDelete: (surahNum) async {
+                            await AudioCtrl.instance
+                                .deleteAyahSurahDownloads(surahNum);
+                          },
+                          isSurahDownloadedChecker: (surahNum) => AudioCtrl
+                              .instance
+                              .isAyahSurahFullyDownloaded(surahNum),
+                          initialSurahToFocus:
+                              AudioCtrl.instance.currentSurahNumber,
+                          style: downloadManagerStyle ??
+                              AyahDownloadManagerStyle.defaults(
+                                  isDark: dark, context: context),
+                          isDark: isDark,
+                          ayahStyle: style,
+                        )
+                    ],
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -194,6 +202,7 @@ class ReaderListBuild extends StatelessWidget {
       shrinkWrap: true,
       physics: const ClampingScrollPhysics(),
       itemCount: ReadersConstants.ayahReaderInfo.length,
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
       separatorBuilder: (_, __) => Divider(
         height: 1,
         color: AppColors.getTextColor(dark).withValues(alpha: 0.08),

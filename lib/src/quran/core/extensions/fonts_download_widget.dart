@@ -189,7 +189,8 @@ extension FontsDownloadWidgetExtension on QuranCtrl {
                           GetStorage()
                               .write(_StorageConstants().fontsSelected, index);
                           log('fontsSelected: ');
-                          Get.forceAppUpdate();
+                          Get.forceAppUpdate().then((_) =>
+                              prepareFonts(state.currentPageNumber.value - 1));
                         }
                       : null,
                   leading: trailingForDownload(),
@@ -234,6 +235,7 @@ extension FontsDownloadWidgetExtension on QuranCtrl {
         children: [
           // Header
           HeaderDialogWidget(
+              isDark: isDark,
               title: downloadFontsDialogStyle?.title ?? 'الخطوط'),
           const SizedBox(height: 8.0),
           context.horizontalDivider(

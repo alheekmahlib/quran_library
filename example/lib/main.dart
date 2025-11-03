@@ -64,7 +64,7 @@ class FullQuran extends StatelessWidget {
   Widget build(BuildContext context) {
     return QuranLibraryScreen(
       parentContext: context,
-      isDark: false,
+      isDark: true,
       showAyahBookmarkedIcon: true,
       // ayahIconColor: Colors.teal,
       // backgroundColor: Colors.white,

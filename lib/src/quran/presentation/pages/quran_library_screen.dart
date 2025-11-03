@@ -349,11 +349,13 @@ class QuranLibraryScreen extends StatelessWidget {
         builder: (quranCtrl) {
           // تهيئة خاملة لخطوط الصفحات المجاورة حول الصفحة الحالية بعد أول إطار
           WidgetsBinding.instance.addPostFrameCallback((_) {
-            final idx =
-                (quranCtrl.state.currentPageNumber.value - 1).clamp(0, 603);
-            QuranCtrl.instance.idlePreloadFontsAround(idx);
             // على الويب: لا تسرق التركيز من حقول الكتابة
             if (kIsWeb) {
+              if (quranCtrl.state.fontsSelected.value == 1) {
+                // final idx =
+                //     (quranCtrl.state.currentPageNumber.value - 1).clamp(0, 603);
+                // QuranCtrl.instance.idlePreloadFontsAround(idx);
+              }
               final pf = FocusManager.instance.primaryFocus;
               final isTextFieldFocused = pf?.context?.widget is EditableText;
               if (!isTextFieldFocused) {
@@ -426,12 +428,11 @@ class QuranLibraryScreen extends StatelessWidget {
                                   quranCtrl.state.currentPageNumber.value =
                                       pageIndex + 1;
                                   quranCtrl.saveLastPage(pageIndex + 1);
-                                  if (kIsWeb) {
-                                    // جدولة تحميل خامل لخطوط الصفحات المجاورة
-                                    QuranCtrl.instance
-                                        .idlePreloadFontsAround(pageIndex);
+
+                                  if (QuranLibrary().currentFontsSelected ==
+                                      1) {
+                                    await quranCtrl.prepareFonts(pageIndex);
                                   }
-                                  quranCtrl.prepareFonts(pageIndex);
                                 });
                               },
                               pageSnapping: true,

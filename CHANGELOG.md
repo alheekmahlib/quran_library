@@ -3,6 +3,7 @@
 * **Add more optinos to AyahAudioStyle.**
 * **Add more optinos to TafsirStyle.**
 * **Add more optinos to SurahAudioStyle.**
+* **Add more optinos to AyahDownloadManagerStyle.**
 * **Add AyahLongClickStyle to change Ayah menu style.**
 * **Add IndexTabStyle to change Surah & Juz list style.**
 * **Add SearchTabStyle to change search tab style.**

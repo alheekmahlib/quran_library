@@ -30,6 +30,9 @@ class AyahDownloadManagerSheet extends StatelessWidget {
     final audioCtrl = AudioCtrl.instance;
     final surahs = QuranCtrl.instance.surahs;
     final controller = ScrollController();
+    final bool dark = isDark ?? Theme.of(context).brightness == Brightness.dark;
+    final effectiveStyle = style ??
+        AyahDownloadManagerStyle.defaults(isDark: dark, context: context);
 
     // مفاتيح لكل عنصر لضمان تمرير scroll دقيق للعنصر المطلوب
     final Map<int, GlobalKey> itemKeys = {
@@ -75,14 +78,17 @@ class AyahDownloadManagerSheet extends StatelessWidget {
                       width: 48,
                       height: 5,
                       decoration: BoxDecoration(
-                        color: style?.handleColor ?? Colors.grey.shade300,
-                        borderRadius:
-                            BorderRadius.circular(style?.handleRadius ?? 8),
+                        color:
+                            effectiveStyle.handleColor ?? Colors.grey.shade300,
+                        borderRadius: BorderRadius.circular(
+                            effectiveStyle.handleRadius ?? 8),
                       ),
                     ),
                     const SizedBox(height: 12),
                     HeaderBuild(
-                        style: style, isDark: isDark, ayahStyle: ayahStyle),
+                        style: effectiveStyle,
+                        isDark: dark,
+                        ayahStyle: ayahStyle),
                     const SizedBox(height: 12),
                   ],
                 ),
@@ -96,7 +102,7 @@ class AyahDownloadManagerSheet extends StatelessWidget {
                 itemCount: surahs.length,
                 separatorBuilder: (_, __) => Divider(
                   height: 1,
-                  color: style?.separatorColor,
+                  color: effectiveStyle.separatorColor,
                 ),
                 itemBuilder: (context, index) {
                   final s = surahs[index];
@@ -125,20 +131,22 @@ class AyahDownloadManagerSheet extends StatelessWidget {
                           alignment: Alignment.center,
                           children: [
                             ProgressIndicatorWidget(
-                                style: style,
+                                style: effectiveStyle,
                                 progress: progress,
                                 fullyDownloaded: fullyDownloaded),
                             ListTile(
                               contentPadding: EdgeInsets.symmetric(
-                                horizontal: style?.itemHorizontalPadding ?? 16,
-                                vertical: style?.itemVerticalPadding ?? 8,
+                                horizontal:
+                                    effectiveStyle.itemHorizontalPadding ?? 16,
+                                vertical:
+                                    effectiveStyle.itemVerticalPadding ?? 8,
                               ),
                               leading: CircleAvatar(
                                 radius: 22,
                                 backgroundColor: fullyDownloaded
-                                    ? (style?.avatarDownloadedColor ??
+                                    ? (effectiveStyle.avatarDownloadedColor ??
                                         Colors.teal)
-                                    : (style?.avatarUndownloadedColor ??
+                                    : (effectiveStyle.avatarUndownloadedColor ??
                                             Colors.teal)
                                         .withValues(alpha: .4),
                                 child: Text(
@@ -146,7 +154,7 @@ class AyahDownloadManagerSheet extends StatelessWidget {
                                       .toString()
                                       .convertNumbersAccordingToLang(
                                           languageCode: language ?? 'ar'),
-                                  style: style?.avatarTextStyle ??
+                                  style: effectiveStyle.avatarTextStyle ??
                                       const TextStyle(color: Colors.white),
                                 ),
                               ),
@@ -156,18 +164,19 @@ class AyahDownloadManagerSheet extends StatelessWidget {
                                 children: [
                                   Text(
                                     s.surahNumber.toString(),
-                                    style: style?.surahTitleStyle ??
+                                    style: effectiveStyle.surahTitleStyle ??
                                         TextStyle(
-                                          color: AppColors.getTextColor(
-                                              isDark ?? false),
+                                          color: AppColors.getTextColor(dark),
                                           fontFamily: "surahName",
-                                          fontSize: style?.surahNameSize ?? 30,
+                                          fontSize:
+                                              effectiveStyle.surahNameSize ??
+                                                  30,
                                           height: 1.2,
                                           package: "quran_library",
                                         ),
                                   ),
                                   DownloadedTextWidget(
-                                    style: style,
+                                    style: effectiveStyle,
                                     downloaded: downloaded,
                                     total: total,
                                     language: language,
@@ -176,7 +185,7 @@ class AyahDownloadManagerSheet extends StatelessWidget {
                               ),
                               trailing: DownloadedAndDeleteWidget(
                                 fullyDownloaded: fullyDownloaded,
-                                style: style,
+                                style: effectiveStyle,
                                 isBusy: isBusy,
                                 onRequestDelete: onRequestDelete,
                                 s: s,

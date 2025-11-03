@@ -132,13 +132,14 @@ extension FontsExtension on QuranCtrl {
   //   }
   // }
   Future<void> prepareFonts(int pageIndex, {bool isFontsLocal = false}) async {
-    if (state.isFontDownloaded.value == false) return;
+    if (state.isFontDownloaded.value == false && !kIsWeb) return;
     SchedulerBinding.instance.scheduleTask(() async {
       // QuranCtrl.instance.prepareFonts(index);
+      if (state.loadedFontPages.contains(pageIndex)) return;
       await QuranCtrl.instance.loadFont(pageIndex);
 
       // الصفحات المجاورة: ±2 كتحضير مسبق أوسع لتقليل أي نتش متبقٍ
-      final neighbors = [-2, -1, 1, 2];
+      final neighbors = [-2, -1, 1, 2, 3, 4];
       final candidates = neighbors
           .map((o) => pageIndex + o)
           .where((i) => i >= 0 && i < 604)
@@ -160,33 +161,33 @@ extension FontsExtension on QuranCtrl {
   /// - على الهواتف: نطاق ±1
   /// - على الأجهزة الأخرى: نطاق ±2
   /// تُنفَّذ بوقت الخمول لتجنّب حجب واجهة المستخدم.
-  void idlePreloadFontsAround(int centerIndex) {
-    // لا تنفّذ إذا كان المتحكم مغلقًا/محرّرًا
-    if (isClosed) return;
+  // void idlePreloadFontsAround(int centerIndex) {
+  //   // لا تنفّذ إذا كان المتحكم مغلقًا/محرّرًا
+  //   if (isClosed) return;
 
-    // تحديد نصف القطر حسب الجهاز
-    final radius = isPhones ? 1 : 2;
-    final targets = <int>{};
-    for (int o = -radius; o <= radius; o++) {
-      final idx = centerIndex + o;
-      if (idx >= 0 && idx < 604) targets.add(idx);
-    }
-    // تجنّب تحميل الصفحات المسجلة بالفعل
-    targets.removeWhere((i) => state.loadedFontPages.contains(i));
-    if (targets.isEmpty) return;
+  //   // تحديد نصف القطر حسب الجهاز
+  //   final radius = isPhones ? 1 : 2;
+  //   final targets = <int>{};
+  //   for (int o = -radius; o <= radius; o++) {
+  //     final idx = centerIndex + o;
+  //     if (idx >= 0 && idx < 604) targets.add(idx);
+  //   }
+  //   // تجنّب تحميل الصفحات المسجلة بالفعل
+  //   targets.removeWhere((i) => state.loadedFontPages.contains(i));
+  //   if (targets.isEmpty) return;
 
-    // جدولة بوقت الخمول
-    SchedulerBinding.instance.scheduleTask(() async {
-      if (isClosed) return;
-      for (final t in targets) {
-        try {
-          await loadFont(t, isFontsLocal: true);
-        } catch (_) {
-          // تجاهل فشل صفحة واحدة
-        }
-      }
-    }, Priority.idle);
-  }
+  //   // جدولة بوقت الخمول
+  //   SchedulerBinding.instance.scheduleTask(() async {
+  //     if (isClosed) return;
+  //     for (final t in targets) {
+  //       try {
+  //         await loadFont(t, isFontsLocal: true);
+  //       } catch (_) {
+  //         // تجاهل فشل صفحة واحدة
+  //       }
+  //     }
+  //   }, Priority.idle);
+  // }
 
   /// Loads a font from a ZIP file for the specified page index.
   ///

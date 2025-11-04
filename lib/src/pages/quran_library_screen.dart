@@ -60,12 +60,13 @@ class QuranLibraryScreen extends StatelessWidget {
     this.isShowAudioSlider = true,
     this.appIconUrlForPlayAudioInBackground,
     this.topBarStyle,
-    required this.parentContext,
     this.indexTabStyle,
     this.searchTabStyle,
+    this.bookmarksTabStyle,
     this.ayahLongClickStyle,
     this.tafsirStyle,
     this.ayahDownloadManagerStyle,
+    required this.parentContext,
   });
 
   /// إذا قمت بإضافة شريط التطبيقات هنا فإنه سيحل محل شريط التطبيقات الافتراضية [appBar]
@@ -312,6 +313,11 @@ class QuranLibraryScreen extends StatelessWidget {
   ///
   /// [searchTabStyle] Search tab style customization for the Quran
   final SearchTabStyle? searchTabStyle;
+
+  /// تخصيص نمط تبويب الفواصل الخاص بالمصحف
+  ///
+  /// [bookmarksTabStyle] Bookmarks tab style customization for the Quran
+  final BookmarksTabStyle? bookmarksTabStyle;
 
   /// تخصيص نمط الضغط المطوّل على الآية
   /// [ayahLongClickStyle] Long press style customization for ayahs
@@ -604,6 +610,7 @@ class QuranLibraryScreen extends StatelessWidget {
                                                 context: context),
                                         indexTabStyle: indexTabStyle,
                                         searchTabStyle: searchTabStyle,
+                                        bookmarksTabStyle: bookmarksTabStyle,
                                       )
                                     : const SizedBox.shrink(),
                               ],

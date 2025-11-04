@@ -10,6 +10,7 @@ class _QuranTopBar extends StatelessWidget {
   final QuranTopBarStyle? topBarStyle;
   final IndexTabStyle? indexTabStyle;
   final SearchTabStyle? searchTabStyle;
+  final BookmarksTabStyle? bookmarksTabStyle;
 
   const _QuranTopBar(
     this.languageCode,
@@ -21,6 +22,7 @@ class _QuranTopBar extends StatelessWidget {
     this.topBarStyle,
     this.indexTabStyle,
     this.searchTabStyle,
+    this.bookmarksTabStyle,
   });
 
   @override
@@ -175,6 +177,7 @@ class _QuranTopBar extends StatelessWidget {
         style: defaults,
         indexTabStyle: indexTabStyle,
         searchTabStyle: searchTabStyle,
+        bookmarksTabStyle: bookmarksTabStyle,
       ),
     );
   }
@@ -188,6 +191,7 @@ class _MenuBottomSheet extends StatelessWidget {
   final QuranTopBarStyle style;
   final IndexTabStyle? indexTabStyle;
   final SearchTabStyle? searchTabStyle;
+  final BookmarksTabStyle? bookmarksTabStyle;
 
   const _MenuBottomSheet({
     required this.isDark,
@@ -196,6 +200,7 @@ class _MenuBottomSheet extends StatelessWidget {
     required this.style,
     required this.indexTabStyle,
     this.searchTabStyle,
+    this.bookmarksTabStyle,
   });
 
   @override
@@ -277,7 +282,11 @@ class _MenuBottomSheet extends StatelessWidget {
                             context: context,
                           ),
                     ),
-                    _BookmarksTab(isDark: isDark, languageCode: languageCode),
+                    _BookmarksTab(
+                      isDark: isDark,
+                      languageCode: languageCode,
+                      style: bookmarksTabStyle,
+                    ),
                   ],
                 ),
               ),

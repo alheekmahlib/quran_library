@@ -3,11 +3,17 @@ part of '/quran.dart';
 class _BookmarksTab extends StatelessWidget {
   final bool isDark;
   final String languageCode;
-  const _BookmarksTab({required this.isDark, required this.languageCode});
+  final BookmarksTabStyle? style;
+  const _BookmarksTab({
+    required this.isDark,
+    required this.languageCode,
+    this.style,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final Color textColor = AppColors.getTextColor(isDark);
+    final effectiveStyle =
+        style ?? BookmarksTabStyle.defaults(isDark: isDark, context: context);
 
     return SingleChildScrollView(
       child: Column(
@@ -18,52 +24,66 @@ class _BookmarksTab extends StatelessWidget {
             final bookmarks = entry.value;
 
             return Container(
-              margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              margin: EdgeInsets.symmetric(
+                  horizontal: effectiveStyle.groupHorizontalMargin!,
+                  vertical: effectiveStyle.groupVerticalMargin!),
               decoration: BoxDecoration(
                 color: groupColor.withValues(alpha: 0.06),
-                borderRadius: BorderRadius.circular(12),
+                borderRadius:
+                    BorderRadius.circular(effectiveStyle.groupBorderRadius!),
                 border: Border.all(
-                    color: groupColor.withValues(alpha: 0.25), width: 1),
+                    color: groupColor.withValues(alpha: 0.25),
+                    width: effectiveStyle.groupBorderWidth!),
               ),
               child: Theme(
                 data: Theme.of(context)
                     .copyWith(dividerColor: Colors.transparent),
                 child: ExpansionTile(
-                  tilePadding: const EdgeInsets.symmetric(horizontal: 12),
+                  tilePadding: EdgeInsets.symmetric(
+                      horizontal:
+                          effectiveStyle.expansionTilePaddingHorizontal!),
                   collapsedShape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(
+                        effectiveStyle.groupBorderRadius!),
                   ),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(
+                        effectiveStyle.groupBorderRadius!),
                   ),
-                  leading: Icon(Icons.bookmark, color: groupColor),
+                  leading: Icon(Icons.bookmark,
+                      color: groupColor,
+                      size: effectiveStyle.expansionTileIconSize!),
                   title: Text(
                     colorCode == 0xAAFFD354
-                        ? 'الفواصل الصفراء'
+                        ? effectiveStyle.yellowGroupText!
                         : colorCode == 0xAAF36077
-                            ? 'الفواصل الحمراء'
-                            : 'الفواصل الخضراء',
+                            ? effectiveStyle.redGroupText!
+                            : effectiveStyle.greenGroupText!,
                     style: QuranLibrary().cairoStyle.copyWith(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w700,
-                        color: textColor),
+                        fontSize: effectiveStyle.titleFontSize!,
+                        fontWeight: effectiveStyle.titleFontWeight!,
+                        color: effectiveStyle.textColor!),
                   ),
                   subtitle: Text(
                     'عدد: ${bookmarks.length}'.convertNumbersAccordingToLang(
                         languageCode: languageCode),
                     style: QuranLibrary().cairoStyle.copyWith(
-                        color: textColor.withValues(alpha: 0.7), fontSize: 12),
+                        color: effectiveStyle.subtitleTextColor!,
+                        fontSize: effectiveStyle.subtitleFontSize!),
                   ),
-                  childrenPadding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                  childrenPadding: EdgeInsets.symmetric(
+                      horizontal: effectiveStyle.childrenPaddingHorizontal!,
+                      vertical: effectiveStyle.childrenPaddingVertical!),
                   children: bookmarks.map((bookmark) {
                     return Padding(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 4.0, horizontal: 4.0),
+                      padding: EdgeInsets.symmetric(
+                          vertical: effectiveStyle.itemVerticalPadding!,
+                          horizontal: effectiveStyle.itemHorizontalPadding!),
                       child: Material(
                         color: Colors.transparent,
                         child: InkWell(
-                          borderRadius: BorderRadius.circular(10),
+                          borderRadius: BorderRadius.circular(
+                              effectiveStyle.itemBorderRadius!),
                           onTap: () {
                             Navigator.pop(context);
                             QuranLibrary().jumpToBookmark(bookmark);
@@ -71,32 +91,42 @@ class _BookmarksTab extends StatelessWidget {
                           child: Container(
                             decoration: BoxDecoration(
                               color: groupColor.withValues(alpha: 0.06),
-                              borderRadius: BorderRadius.circular(10),
+                              borderRadius: BorderRadius.circular(
+                                  effectiveStyle.itemBorderRadius!),
                               border: Border.all(
                                   color: groupColor.withValues(alpha: 0.2),
-                                  width: 1),
+                                  width: effectiveStyle.itemBorderWidth!),
                             ),
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 8, horizontal: 10),
+                            padding: EdgeInsets.symmetric(
+                                vertical:
+                                    effectiveStyle.itemContentVerticalPadding!,
+                                horizontal: effectiveStyle
+                                    .itemContentHorizontalPadding!),
                             child: Row(
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
                                 // Leading visual
                                 Container(
-                                  height: 36,
-                                  width: 30,
+                                  height:
+                                      effectiveStyle.leadingContainerHeight!,
+                                  width: effectiveStyle.leadingContainerWidth!,
                                   alignment: Alignment.center,
                                   decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(6),
-                                    border:
-                                        Border.all(color: groupColor, width: 1),
+                                    borderRadius: BorderRadius.circular(
+                                        effectiveStyle
+                                            .leadingContainerBorderRadius!),
+                                    border: Border.all(
+                                        color: groupColor,
+                                        width: effectiveStyle
+                                            .leadingContainerBorderWidth!),
                                   ),
                                   child: Stack(
                                     alignment: Alignment.center,
                                     children: [
                                       Icon(Icons.bookmark,
                                           color: Color(bookmark.colorCode),
-                                          size: 26),
+                                          size: effectiveStyle
+                                              .leadingBookmarkIconSize!),
                                       Text(
                                         bookmark.ayahNumber
                                             .toString()
@@ -104,12 +134,16 @@ class _BookmarksTab extends StatelessWidget {
                                                 languageCode: languageCode),
                                         style: QuranLibrary()
                                             .cairoStyle
-                                            .copyWith(fontSize: 12),
+                                            .copyWith(
+                                                fontSize: effectiveStyle
+                                                    .leadingAyahNumberFontSize!),
                                       ),
                                     ],
                                   ),
                                 ),
-                                const SizedBox(width: 10),
+                                SizedBox(
+                                    width:
+                                        effectiveStyle.leadingToTextSpacing!),
                                 // Title and chips
                                 Expanded(
                                   child: Column(
@@ -123,42 +157,54 @@ class _BookmarksTab extends StatelessWidget {
                                         style: QuranLibrary()
                                             .cairoStyle
                                             .copyWith(
-                                                fontSize: 15,
-                                                fontWeight: FontWeight.w600,
-                                                color: textColor),
+                                                fontSize: effectiveStyle
+                                                    .bookmarkNameFontSize!,
+                                                fontWeight:
+                                                    effectiveStyle
+                                                        .bookmarkNameFontWeight!,
+                                                color:
+                                                    effectiveStyle.textColor!),
                                       ),
-                                      const SizedBox(height: 4),
+                                      SizedBox(
+                                          height: effectiveStyle
+                                              .nameToChipsSpacing!),
                                       Wrap(
-                                        spacing: 6,
-                                        runSpacing: -6,
+                                        spacing: effectiveStyle.chipSpacing!,
+                                        runSpacing:
+                                            effectiveStyle.chipRunSpacing!,
                                         children: [
                                           _chip(
                                             context,
-                                            label: 'آية ${bookmark.ayahNumber}'
+                                            effectiveStyle,
+                                            'آية ${bookmark.ayahNumber}'
                                                 .convertNumbersAccordingToLang(
                                                     languageCode: languageCode),
-                                            bg: groupColor.withValues(
-                                                alpha: 0.12),
-                                            fg: textColor,
+                                            groupColor.withValues(alpha: 0.12),
+                                            effectiveStyle.textColor!,
                                           ),
                                           if (bookmark.page > 0)
                                             _chip(
                                               context,
-                                              label: 'صفحة ${bookmark.page}'
+                                              effectiveStyle,
+                                              'صفحة ${bookmark.page}'
                                                   .convertNumbersAccordingToLang(
                                                       languageCode:
                                                           languageCode),
-                                              bg: groupColor.withValues(
+                                              groupColor.withValues(
                                                   alpha: 0.12),
-                                              fg: textColor,
+                                              effectiveStyle.textColor!,
                                             ),
                                         ],
                                       ),
                                     ],
                                   ),
                                 ),
-                                const SizedBox(width: 8),
-                                Icon(Icons.chevron_left, color: textColor),
+                                SizedBox(
+                                    width:
+                                        effectiveStyle.textToChevronSpacing!),
+                                Icon(Icons.chevron_left,
+                                    color: effectiveStyle.textColor!,
+                                    size: effectiveStyle.chevronIconSize!),
                               ],
                             ),
                           ),
@@ -177,14 +223,15 @@ class _BookmarksTab extends StatelessWidget {
                 children: [
                   Icon(
                     Icons.bookmark_border,
-                    size: 48,
-                    color: textColor.withValues(alpha: 0.5),
+                    size: effectiveStyle.emptyStateIconSize!,
+                    color: effectiveStyle.emptyStateIconColor!,
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: effectiveStyle.emptyStateIconToTextSpacing!),
                   Text(
-                    'لا توجد فواصل محفوظة',
+                    effectiveStyle.emptyStateText!,
                     style: QuranLibrary().cairoStyle.copyWith(
-                          color: textColor.withValues(alpha: 0.7),
+                          color: effectiveStyle.emptyStateTextColor!,
+                          fontSize: effectiveStyle.emptyStateTextFontSize!,
                         ),
                   ),
                 ],
@@ -195,17 +242,26 @@ class _BookmarksTab extends StatelessWidget {
     );
   }
 
-  Widget _chip(BuildContext context,
-      {required String label, required Color bg, required Color fg}) {
+  Widget _chip(
+    BuildContext context,
+    BookmarksTabStyle effectiveStyle,
+    String label,
+    Color bg,
+    Color fg,
+  ) {
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 8),
+      padding: EdgeInsets.symmetric(
+          vertical: effectiveStyle.chipVerticalPadding!,
+          horizontal: effectiveStyle.chipHorizontalPadding!),
       decoration: BoxDecoration(
         color: bg,
-        borderRadius: BorderRadius.circular(999),
+        borderRadius: BorderRadius.circular(effectiveStyle.chipBorderRadius!),
       ),
       child: Text(
         label,
-        style: QuranLibrary().cairoStyle.copyWith(fontSize: 12, color: fg),
+        style: QuranLibrary()
+            .cairoStyle
+            .copyWith(fontSize: effectiveStyle.chipFontSize!, color: fg),
       ),
     );
   }

@@ -56,6 +56,7 @@ part 'src/quran/data/models/styles_models/ayah_long_click_style.dart';
 part 'src/quran/data/models/styles_models/banner_style.dart';
 part 'src/quran/data/models/styles_models/basmala_style.dart';
 part 'src/quran/data/models/styles_models/bookmark.dart';
+part 'src/quran/data/models/styles_models/bookmarks_tab_style.dart';
 part 'src/quran/data/models/styles_models/index_tab_style.dart';
 part 'src/quran/data/models/styles_models/quran_top_bar_style.dart';
 part 'src/quran/data/models/styles_models/search_tab_style.dart';

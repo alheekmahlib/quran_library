@@ -7,6 +7,7 @@
 * **Add AyahLongClickStyle to change Ayah menu style.**
 * **Add IndexTabStyle to change Surah & Juz list style.**
 * **Add SearchTabStyle to change search tab style.**
+* **Add BookmarksTabStyle to change bookmark tab style.**
 * **Add new Bismillah.**
 * **Ability to add a custom widget to tapbar.**
 * **Support for turning pages using the keyboard in the web and desktop.**

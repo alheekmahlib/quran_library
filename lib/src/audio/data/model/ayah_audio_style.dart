@@ -165,9 +165,10 @@ class AyahAudioStyle {
     required bool isDark,
     required BuildContext context,
   }) {
+    final scheme = Theme.of(context).colorScheme;
     final bg = AppColors.getBackgroundColor(isDark);
     final onBg = AppColors.getTextColor(isDark);
-    const primary = Colors.teal;
+    final primary = scheme.primary;
 
     return AyahAudioStyle(
       // ألوان عامة

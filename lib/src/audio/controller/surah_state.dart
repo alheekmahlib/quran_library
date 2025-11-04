@@ -80,7 +80,7 @@ class SurahState {
 
   // App icon URL - يمكن للمستخدم تخصيصه / User can customize the app icon URL
   RxString appIconUrl =
-      'https://github.com/alheekmahlib/thegarlanded/blob/master/Photos/Packages/quran_library/quran_library_logo.jpg?raw=true'
+      'https://raw.githubusercontent.com/alheekmahlib/thegarlanded/master/Photos/Packages/quran_library/quran_library_logo.jpg'
           .obs;
   SlidingPanelController panelController = SlidingPanelController();
   RxBool isSheetOpen = false.obs;

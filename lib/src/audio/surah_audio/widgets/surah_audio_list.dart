@@ -67,19 +67,17 @@ class SurahAudioList extends StatelessWidget {
             final surah = quranCtrl.state.surahs[index];
             int surahNumber = index + 1;
 
-            return Obx(
-              () => Container(
-                margin: const EdgeInsets.symmetric(vertical: 4.0),
-                child: BuildEnhancedSurahItem(
-                    surahAudioCtrl: surahAudioCtrl,
-                    style: style,
-                    languageCode: languageCode,
-                    context: context,
-                    surah: surah,
-                    index: index,
-                    surahNumber: surahNumber,
-                    isDark: isDark),
-              ),
+            return Container(
+              margin: const EdgeInsets.symmetric(vertical: 4.0),
+              child: BuildEnhancedSurahItem(
+                  surahAudioCtrl: surahAudioCtrl,
+                  style: style,
+                  languageCode: languageCode,
+                  context: context,
+                  surah: surah,
+                  index: index,
+                  surahNumber: surahNumber,
+                  isDark: isDark),
             );
           },
         ),
@@ -112,222 +110,230 @@ class BuildEnhancedSurahItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isSelected = surahAudioCtrl.state.selectedSurahIndex.value == index;
-    final isDownloaded =
-        surahAudioCtrl.state.isSurahDownloadedByNumber(surahNumber);
-
     return GestureDetector(
       onTap: () async {
         // اختيار السورة وضبط المصدر بأمان (من دون تشغيل تلقائي)
         await surahAudioCtrl.selectSurahFromList(index, autoPlay: false);
       },
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
-        decoration: BoxDecoration(
-          // شرح: تدرج متحرك للعنصر المحدد
-          // Explanation: Animated gradient for selected item
-          gradient: isSelected
-              ? LinearGradient(
-                  colors: [
-                    (style?.primaryColor ??
+      child: Obx(
+        () {
+          final isSelected =
+              surahAudioCtrl.state.selectedSurahIndex.value == index;
+          final isDownloaded =
+              surahAudioCtrl.state.isSurahDownloadedByNumber(surahNumber);
+          return AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
+            decoration: BoxDecoration(
+              // شرح: تدرج متحرك للعنصر المحدد
+              // Explanation: Animated gradient for selected item
+              gradient: isSelected
+                  ? LinearGradient(
+                      colors: [
+                        (style?.primaryColor ??
+                                Theme.of(context).colorScheme.primary)
+                            .withValues(alpha: 0.15),
+                        (style?.primaryColor ??
+                                Theme.of(context).colorScheme.primary)
+                            .withValues(alpha: 0.08),
+                      ],
+                      begin: Alignment.centerLeft,
+                      end: Alignment.centerRight,
+                    )
+                  : null,
+              color: !isSelected
+                  ? (isDark
+                      ? Colors.grey[800]?.withValues(alpha: 0.3)
+                      : Colors.white.withValues(alpha: 0.6))
+                  : null,
+              borderRadius: BorderRadius.circular(12.0),
+              border: Border.all(
+                color: isSelected
+                    ? (style?.primaryColor ??
                             Theme.of(context).colorScheme.primary)
-                        .withValues(alpha: 0.15),
-                    (style?.primaryColor ??
-                            Theme.of(context).colorScheme.primary)
-                        .withValues(alpha: 0.08),
-                  ],
-                  begin: Alignment.centerLeft,
-                  end: Alignment.centerRight,
-                )
-              : null,
-          color: !isSelected
-              ? (isDark
-                  ? Colors.grey[800]?.withValues(alpha: 0.3)
-                  : Colors.white.withValues(alpha: 0.6))
-              : null,
-          borderRadius: BorderRadius.circular(12.0),
-          border: Border.all(
-            color: isSelected
-                ? (style?.primaryColor ?? Theme.of(context).colorScheme.primary)
-                    .withValues(alpha: 0.4)
-                : Colors.transparent,
-            width: 1.5,
-          ),
-          boxShadow: isSelected
-              ? [
-                  BoxShadow(
-                    color: (style?.primaryColor ??
-                            Theme.of(context).colorScheme.primary)
-                        .withValues(alpha: 0.2),
-                    blurRadius: 8.0,
-                    spreadRadius: 1.0,
-                    offset: const Offset(0, 2),
-                  ),
-                ]
-              : null,
-        ),
-        child: Row(
-          children: [
-            // شرح: رقم السورة مع تصميم دائري محسن
-            // Explanation: Surah number with enhanced circular design
-            Container(
-              width: 40.0,
-              height: 40.0,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    (style?.primaryColor ??
-                            Theme.of(context).colorScheme.primary)
-                        .withValues(alpha: isSelected ? 0.8 : 0.6),
-                    (style?.primaryColor ??
-                            Theme.of(context).colorScheme.primary)
-                        .withValues(alpha: isSelected ? 0.6 : 0.4),
-                  ],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                borderRadius: BorderRadius.circular(20.0),
-                boxShadow: [
-                  BoxShadow(
-                    color: (style?.primaryColor ??
-                            Theme.of(context).colorScheme.primary)
-                        .withValues(alpha: 0.3),
-                    blurRadius: 4.0,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
+                        .withValues(alpha: 0.4)
+                    : Colors.transparent,
+                width: 1.5,
               ),
-              child: Center(
-                child: Text(
-                  surahNumber.toString().convertNumbersAccordingToLang(
-                      languageCode: languageCode ?? 'ar'),
-                  style: QuranLibrary().cairoStyle.copyWith(
-                        color: Colors.white,
-                        fontSize: 14.0,
-                        fontWeight: FontWeight.bold,
+              boxShadow: isSelected
+                  ? [
+                      BoxShadow(
+                        color: (style?.primaryColor ??
+                                Theme.of(context).colorScheme.primary)
+                            .withValues(alpha: 0.2),
+                        blurRadius: 8.0,
+                        spreadRadius: 1.0,
+                        offset: const Offset(0, 2),
                       ),
-                ),
-              ),
+                    ]
+                  : null,
             ),
-
-            const SizedBox(width: 16.0),
-
-            // شرح: معلومات السورة محسنة
-            // Explanation: Enhanced surah information
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    surah.surahNumber.toString(),
-                    style: TextStyle(
-                      color:
-                          (style?.textColor ?? AppColors.getTextColor(isDark)),
-                      fontFamily: 'surahName',
-                      fontSize: 32.sp.clamp(32, 40),
-                      package: 'quran_library',
+            child: Row(
+              children: [
+                // شرح: رقم السورة مع تصميم دائري محسن
+                // Explanation: Surah number with enhanced circular design
+                Container(
+                  width: 40.0,
+                  height: 40.0,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        (style?.primaryColor ??
+                                Theme.of(context).colorScheme.primary)
+                            .withValues(alpha: isSelected ? 0.8 : 0.6),
+                        (style?.primaryColor ??
+                                Theme.of(context).colorScheme.primary)
+                            .withValues(alpha: isSelected ? 0.6 : 0.4),
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(20.0),
+                    boxShadow: [
+                      BoxShadow(
+                        color: (style?.primaryColor ??
+                                Theme.of(context).colorScheme.primary)
+                            .withValues(alpha: 0.3),
+                        blurRadius: 4.0,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: Center(
+                    child: Text(
+                      surahNumber.toString().convertNumbersAccordingToLang(
+                          languageCode: languageCode ?? 'ar'),
+                      style: QuranLibrary().cairoStyle.copyWith(
+                            color: Colors.white,
+                            fontSize: 14.0,
+                            fontWeight: FontWeight.bold,
+                          ),
                     ),
                   ),
-                  const SizedBox(height: 4.0),
-                  Row(
+                ),
+
+                const SizedBox(width: 16.0),
+
+                // شرح: معلومات السورة محسنة
+                // Explanation: Enhanced surah information
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        surah.englishName,
-                        style: QuranLibrary().cairoStyle.copyWith(
-                              fontSize: 12.0.sp.clamp(12, 20),
-                              height: 1.3,
-                              color: (style?.textColor ??
-                                      AppColors.getTextColor(isDark))
-                                  .withValues(alpha: 0.7),
-                            ),
-                      ),
-                      const SizedBox(width: 8.0),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 8.0, vertical: 3.0),
-                        decoration: BoxDecoration(
-                          color: (style?.primaryColor ??
-                                  Theme.of(context).colorScheme.primary)
-                              .withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(8.0),
-                        ),
-                        child: Text(
-                          '${surah.ayahs.length} ${surahAudioCtrl.getAyahOrAyat(surah.ayahs.length)}'
-                              .convertNumbersAccordingToLang(
-                                  languageCode: languageCode ?? 'ar'),
-                          style: QuranLibrary().cairoStyle.copyWith(
-                                fontSize: 10.0.sp.clamp(10, 14),
-                                color: style?.primaryColor ??
-                                    AppColors.getTextColor(isDark),
-                                fontWeight: FontWeight.w600,
-                                fontFamily: "kufi",
-                              ),
+                        surah.surahNumber.toString(),
+                        style: TextStyle(
+                          color: (style?.textColor ??
+                              AppColors.getTextColor(isDark)),
+                          fontFamily: 'surahName',
+                          fontSize: 32.sp.clamp(32, 40),
+                          package: 'quran_library',
                         ),
                       ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-
-            // شرح: أيقونة التشغيل المحسنة
-            // Explanation: Enhanced play icon
-            kIsWeb
-                ? const SizedBox.shrink()
-                : Column(
-                    children: [
-                      Container(
-                        width: 36.0,
-                        height: 36.0,
-                        decoration: BoxDecoration(
-                          color: isSelected
-                              ? (style?.primaryColor ??
-                                  Theme.of(context).colorScheme.primary)
-                              : (style?.primaryColor ??
+                      const SizedBox(height: 4.0),
+                      Row(
+                        children: [
+                          Text(
+                            surah.englishName,
+                            style: QuranLibrary().cairoStyle.copyWith(
+                                  fontSize: 12.0.sp.clamp(12, 20),
+                                  height: 1.3,
+                                  color: (style?.textColor ??
+                                          AppColors.getTextColor(isDark))
+                                      .withValues(alpha: 0.7),
+                                ),
+                          ),
+                          const SizedBox(width: 8.0),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 8.0, vertical: 3.0),
+                            decoration: BoxDecoration(
+                              color: (style?.primaryColor ??
                                       Theme.of(context).colorScheme.primary)
                                   .withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(18.0),
-                        ),
-                        child: GestureDetector(
-                          onTap: () => surahAudioCtrl.downloadSurah(
-                              surahNum: surahNumber),
-                          child: Obx(
-                            () => Icon(
-                              isDownloaded.value
-                                  ? Icons.download_done
-                                  : Icons.cloud_download_outlined,
-                              color: isSelected
-                                  ? Colors.white
-                                  : (style?.primaryColor ??
-                                      Theme.of(context).colorScheme.primary),
-                              size: 20.0,
+                              borderRadius: BorderRadius.circular(8.0),
+                            ),
+                            child: Text(
+                              '${surah.ayahs.length} ${surahAudioCtrl.getAyahOrAyat(surah.ayahs.length)}'
+                                  .convertNumbersAccordingToLang(
+                                      languageCode: languageCode ?? 'ar'),
+                              style: QuranLibrary().cairoStyle.copyWith(
+                                    fontSize: 10.0.sp.clamp(10, 14),
+                                    color: style?.primaryColor ??
+                                        AppColors.getTextColor(isDark),
+                                    fontWeight: FontWeight.w600,
+                                    fontFamily: "kufi",
+                                  ),
                             ),
                           ),
-                        ),
+                        ],
                       ),
-                      Obx(
-                        () {
-                          if (index ==
-                                  surahAudioCtrl
-                                      .state.selectedSurahIndex.value &&
-                              surahAudioCtrl.state.isDownloading.value &&
-                              !isDownloaded.value) {
-                            return SizedBox(
-                              height: 10,
-                              width: 40,
-                              child: LinearProgressIndicator(
-                                value: surahAudioCtrl.state.progress.value,
-                              ),
-                            );
-                          }
-                          return const SizedBox.shrink();
-                        },
-                      )
                     ],
                   ),
-          ],
-        ),
+                ),
+
+                // شرح: أيقونة التشغيل المحسنة
+                // Explanation: Enhanced play icon
+                kIsWeb
+                    ? const SizedBox.shrink()
+                    : Column(
+                        children: [
+                          Container(
+                            width: 36.0,
+                            height: 36.0,
+                            decoration: BoxDecoration(
+                              color: isSelected
+                                  ? (style?.primaryColor ??
+                                      Theme.of(context).colorScheme.primary)
+                                  : (style?.primaryColor ??
+                                          Theme.of(context).colorScheme.primary)
+                                      .withValues(alpha: 0.1),
+                              borderRadius: BorderRadius.circular(18.0),
+                            ),
+                            child: GestureDetector(
+                              onTap: () => surahAudioCtrl.downloadSurah(
+                                  surahNum: surahNumber),
+                              child: Obx(
+                                () => Icon(
+                                  isDownloaded.value
+                                      ? Icons.download_done
+                                      : Icons.cloud_download_outlined,
+                                  color: isSelected
+                                      ? Colors.white
+                                      : (style?.primaryColor ??
+                                          Theme.of(context)
+                                              .colorScheme
+                                              .primary),
+                                  size: 20.0,
+                                ),
+                              ),
+                            ),
+                          ),
+                          Obx(
+                            () {
+                              if (index ==
+                                      surahAudioCtrl
+                                          .state.selectedSurahIndex.value &&
+                                  surahAudioCtrl.state.isDownloading.value &&
+                                  !isDownloaded.value) {
+                                return SizedBox(
+                                  height: 10,
+                                  width: 40,
+                                  child: LinearProgressIndicator(
+                                    value: surahAudioCtrl.state.progress.value,
+                                  ),
+                                );
+                              }
+                              return const SizedBox.shrink();
+                            },
+                          )
+                        ],
+                      ),
+              ],
+            ),
+          );
+        },
       ),
     );
   }

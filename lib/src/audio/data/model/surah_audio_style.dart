@@ -147,6 +147,18 @@ class SurahAudioStyle {
   /// Show app bar
   final bool? withAppBar;
 
+  /// نص "آية" المخصص
+  /// Custom "ayah" text (singular)
+  final String? ayahSingularText;
+
+  /// نص "آيات" المخصص
+  /// Custom "ayat" text (plural)
+  final String? ayahPluralText;
+
+  /// نص "آخر إستماع" المخصص
+  /// Custom "last listen" text
+  final String? lastListenText;
+
   /// منشئ فئة SurahAudioStyle
   /// SurahAudioStyle class constructor
   SurahAudioStyle({
@@ -186,6 +198,9 @@ class SurahAudioStyle {
     this.dialogUnSelectedReaderColor,
     this.dialogReaderTextColor,
     this.withAppBar,
+    this.ayahSingularText,
+    this.ayahPluralText,
+    this.lastListenText,
   });
 
   SurahAudioStyle copyWith({
@@ -225,6 +240,9 @@ class SurahAudioStyle {
     Color? dialogUnSelectedReaderColor,
     Color? dialogReaderTextColor,
     bool? withAppBar,
+    String? ayahSingularText,
+    String? ayahPluralText,
+    String? lastListenText,
   }) {
     return SurahAudioStyle(
       textColor: textColor ?? this.textColor,
@@ -275,6 +293,9 @@ class SurahAudioStyle {
       dialogReaderTextColor:
           dialogReaderTextColor ?? this.dialogReaderTextColor,
       withAppBar: withAppBar ?? this.withAppBar,
+      ayahSingularText: ayahSingularText ?? this.ayahSingularText,
+      ayahPluralText: ayahPluralText ?? this.ayahPluralText,
+      lastListenText: lastListenText ?? this.lastListenText,
     );
   }
 
@@ -347,6 +368,13 @@ class SurahAudioStyle {
       // حالات التحديد
       selectedItemColor: primary.withValues(alpha: 0.10),
       withAppBar: true,
+
+      // نصوص الآيات الافتراضية
+      ayahSingularText: 'آية',
+      ayahPluralText: 'آيات',
+
+      // نص آخر استماع الافتراضي
+      lastListenText: 'آخر إستماع',
     );
   }
 }

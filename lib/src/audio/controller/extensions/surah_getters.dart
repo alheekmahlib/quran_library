@@ -230,7 +230,13 @@ extension SurahGetters on AudioCtrl {
   String get textDurationFormatted =>
       formatDuration(Duration(seconds: state.lastPosition.value));
 
-  String getAyahOrAyat(int ayahCount) {
-    return ayahCount > 10 ? 'آية' : 'آيات';
+  /// الحصول على نص "آية" أو "آيات" بناءً على العدد
+  /// Get "ayah" or "ayat" text based on count
+  /// [ayahCount] - عدد الآيات / Number of ayahs
+  /// [style] - الستايل المخصص (اختياري) / Custom style (optional)
+  String getAyahOrAyat(int ayahCount, {SurahAudioStyle? style}) {
+    final singularText = style?.ayahSingularText ?? 'آية';
+    final pluralText = style?.ayahPluralText ?? 'آيات';
+    return ayahCount > 10 ? singularText : pluralText;
   }
 }

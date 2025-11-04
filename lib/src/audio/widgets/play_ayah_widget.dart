@@ -7,6 +7,10 @@ class PlayAyahWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final audioCtrl = AudioCtrl.instance;
+    final bool dark = Theme.of(context).brightness == Brightness.dark;
+    final AyahAudioStyle effectiveStyle =
+        style ?? AyahAudioStyle.defaults(isDark: dark, context: context);
+
     return SizedBox(
       width: 28,
       height: 28,
@@ -28,11 +32,10 @@ class PlayAyahWidget extends StatelessWidget {
           } else if (playerState != null && !playerState.playing) {
             return GestureDetector(
               child: CustomWidgets.customSvgWithColor(
-                style?.playIconPath ?? AssetsPath.assets.playArrow,
-                height: style?.playIconHeight ?? 25,
+                effectiveStyle.playIconPath ?? AssetsPath.assets.playArrow,
+                height: effectiveStyle.playIconHeight!,
                 ctx: context,
-                color: style?.playIconColor ??
-                    (Theme.of(context).colorScheme.primary),
+                color: effectiveStyle.playIconColor!,
               ),
               onTap: () async {
                 // اضبط وضع التشغيل للآيات فقط
@@ -52,11 +55,10 @@ class PlayAyahWidget extends StatelessWidget {
           }
           return GestureDetector(
             child: CustomWidgets.customSvgWithColor(
-              style?.pauseIconPath ?? AssetsPath.assets.pauseArrow,
-              height: style?.pauseIconHeight ?? 25,
+              effectiveStyle.pauseIconPath ?? AssetsPath.assets.pauseArrow,
+              height: effectiveStyle.pauseIconHeight!,
               ctx: context,
-              color: style?.playIconColor ??
-                  (Theme.of(context).colorScheme.primary),
+              color: effectiveStyle.playIconColor!,
             ),
             onTap: () async {
               // Pause only, don't auto-toggle play again

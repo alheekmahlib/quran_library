@@ -7,6 +7,10 @@ class AyahSkipToNext extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bool dark = Theme.of(context).brightness == Brightness.dark;
+    final AyahAudioStyle effectiveStyle =
+        style ?? AyahAudioStyle.defaults(isDark: dark, context: context);
+
     return SizedBox(
       height: 55,
       width: 55,
@@ -19,9 +23,8 @@ class AyahSkipToNext extends StatelessWidget {
             label: 'next'.tr,
             child: Icon(
               Icons.skip_previous,
-              color:
-                  style!.playIconColor ?? Theme.of(context).colorScheme.primary,
-              size: style!.nextIconHeight ?? 38,
+              color: effectiveStyle.playIconColor!,
+              size: effectiveStyle.nextIconHeight!,
             ),
           ),
           onTap: () async => await audioCtrl.skipNextAyah(

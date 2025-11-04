@@ -17,13 +17,16 @@ class AyahsAudioWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bool dark = isDark ?? false;
+    final AyahAudioStyle effectiveStyle =
+        style ?? AyahAudioStyle.defaults(isDark: dark, context: context);
+
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Container(
           margin: const EdgeInsets.symmetric(vertical: 8.0),
           decoration: BoxDecoration(
-            color:
-                style?.backgroundColor ?? AppColors.getBackgroundColor(isDark!),
+            color: effectiveStyle.backgroundColor!,
             borderRadius: const BorderRadius.all(Radius.circular(8)),
           ),
           child: Obx(() => AnimatedCrossFade(
@@ -40,9 +43,9 @@ class AyahsAudioWidget extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      PlayAyahWidget(style: style!),
+                      PlayAyahWidget(style: effectiveStyle),
                       AyahChangeReader(
-                          style: style!,
+                          style: effectiveStyle,
                           isDark: isDark,
                           downloadManagerStyle: downloadManagerStyle),
                     ],
@@ -68,7 +71,7 @@ class AyahsAudioWidget extends StatelessWidget {
                                 // Reduce spacing when space is limited
                                 SizedBox(height: targetHeight > 120 ? 4 : 2),
                                 AyahChangeReader(
-                                    style: style!,
+                                    style: effectiveStyle,
                                     isDark: isDark,
                                     downloadManagerStyle: downloadManagerStyle),
                                 // SizedBox(height: 4),
@@ -92,27 +95,16 @@ class AyahsAudioWidget extends StatelessWidget {
                                                   filesCount: audioCtrl
                                                       .currentAyahFileName
                                                       .length,
-                                                  activeTrackColor: style!
-                                                          .seekBarActiveTrackColor ??
-                                                      Theme.of(context)
-                                                          .colorScheme
-                                                          .primary,
-                                                  inactiveTrackColor: style!
-                                                          .seekBarInactiveTrackColor ??
-                                                      Colors.grey,
-                                                  thumbColor: style!
-                                                          .seekBarThumbColor ??
-                                                      Theme.of(context)
-                                                          .colorScheme
-                                                          .primary,
-                                                  horizontalPadding: style!
-                                                          .seekBarHorizontalPadding ??
-                                                      0,
-                                                  timeContainerColor: style!
-                                                          .seekBarTimeContainerColor ??
-                                                      Theme.of(context)
-                                                          .colorScheme
-                                                          .primary,
+                                                  activeTrackColor: effectiveStyle
+                                                      .seekBarActiveTrackColor!,
+                                                  inactiveTrackColor: effectiveStyle
+                                                      .seekBarInactiveTrackColor!,
+                                                  thumbColor: effectiveStyle
+                                                      .seekBarThumbColor!,
+                                                  horizontalPadding: effectiveStyle
+                                                      .seekBarHorizontalPadding!,
+                                                  timeContainerColor: effectiveStyle
+                                                      .seekBarTimeContainerColor!,
                                                 );
                                               })
                                             : StreamBuilder<
@@ -125,37 +117,30 @@ class AyahsAudioWidget extends StatelessWidget {
                                                         snapshot.data;
                                                     return PackageSliderWidget
                                                         .player(
-                                                      horizontalPadding: style!
-                                                              .seekBarHorizontalPadding ??
-                                                          0.0,
+                                                      horizontalPadding:
+                                                          effectiveStyle
+                                                              .seekBarHorizontalPadding!,
                                                       duration: positionData
                                                               ?.duration ??
                                                           Duration.zero,
                                                       position: positionData
                                                               ?.position ??
                                                           Duration.zero,
-                                                      activeTrackColor: style!
-                                                              .seekBarActiveTrackColor ??
-                                                          Theme.of(context)
-                                                              .colorScheme
-                                                              .primary,
-                                                      inactiveTrackColor: style!
-                                                              .seekBarInactiveTrackColor ??
-                                                          Colors.grey,
-                                                      thumbColor: style!
-                                                              .seekBarThumbColor ??
-                                                          Theme.of(context)
-                                                              .colorScheme
-                                                              .primary,
+                                                      activeTrackColor:
+                                                          effectiveStyle
+                                                              .seekBarActiveTrackColor!,
+                                                      inactiveTrackColor:
+                                                          effectiveStyle
+                                                              .seekBarInactiveTrackColor!,
+                                                      thumbColor: effectiveStyle
+                                                          .seekBarThumbColor!,
                                                       onChangeEnd: audioCtrl
                                                           .state
                                                           .audioPlayer
                                                           .seek,
-                                                      timeContainerColor: style!
-                                                              .seekBarTimeContainerColor ??
-                                                          Theme.of(context)
-                                                              .colorScheme
-                                                              .primary,
+                                                      timeContainerColor:
+                                                          effectiveStyle
+                                                              .seekBarTimeContainerColor!,
                                                       languageCode:
                                                           languageCode ?? 'ar',
                                                     );
@@ -178,9 +163,10 @@ class AyahsAudioWidget extends StatelessWidget {
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceEvenly,
                                       children: [
-                                        AyahSkipToPrevious(style: style),
-                                        PlayAyahWidget(style: style),
-                                        AyahSkipToNext(style: style),
+                                        AyahSkipToPrevious(
+                                            style: effectiveStyle),
+                                        PlayAyahWidget(style: effectiveStyle),
+                                        AyahSkipToNext(style: effectiveStyle),
                                       ],
                                     ),
                                   ),

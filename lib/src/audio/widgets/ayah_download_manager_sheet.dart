@@ -391,6 +391,10 @@ class HeaderBuild extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bool dark = isDark ?? Theme.of(context).brightness == Brightness.dark;
+    final AyahAudioStyle effectiveAyahStyle =
+        ayahStyle ?? AyahAudioStyle.defaults(isDark: dark, context: context);
+
     return Column(
       children: [
         style?.headerIcon ??
@@ -407,7 +411,10 @@ class HeaderBuild extends StatelessWidget {
                         ),
               ),
             ),
-        AyahChangeReader(style: ayahStyle ?? AyahAudioStyle()),
+        AyahChangeReader(
+            style: effectiveAyahStyle,
+            isDark: isDark,
+            downloadManagerStyle: style),
       ],
     );
   }

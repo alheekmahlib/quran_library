@@ -89,7 +89,7 @@ class PageBuild extends StatelessWidget {
                                 SurahNameStyle(
                                   surahNameSize: 120,
                                   surahNameColor:
-                                      isDark ? Colors.white : Colors.black,
+                                      AppColors.getTextColor(isDark),
                                 ),
                             surahInfoStyle: surahInfoStyle ??
                                 SurahInfoStyle.defaults(

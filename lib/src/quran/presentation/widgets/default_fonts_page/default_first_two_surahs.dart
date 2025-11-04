@@ -73,7 +73,7 @@ class DefaultFirstTwoSurahs extends StatelessWidget {
             surahNameStyle: surahNameStyle ??
                 SurahNameStyle(
                   surahNameSize: 27,
-                  surahNameColor: isDark ? Colors.white : Colors.black,
+                  surahNameColor: AppColors.getTextColor(isDark),
                 ),
             surahInfoStyle: surahInfoStyle ??
                 SurahInfoStyle.defaults(isDark: isDark, context: context),
@@ -86,7 +86,7 @@ class DefaultFirstTwoSurahs extends StatelessWidget {
                   quranCtrl.staticPages[pageIndex].ayahs[0].surahNumber!,
               basmalaStyle: basmalaStyle ??
                   BasmalaStyle(
-                    basmalaColor: isDark ? Colors.white : Colors.black,
+                    basmalaColor: AppColors.getTextColor(isDark),
                     basmalaFontSize: 25.0,
                     verticalPadding: 0.0,
                   ),
@@ -113,8 +113,8 @@ class DefaultFirstTwoSurahs extends StatelessWidget {
                             boxFit: BoxFit.scaleDown,
                             onDefaultAyahLongPress: onAyahLongPress,
                             bookmarksColor: bookmarksColor,
-                            textColor: textColor ??
-                                (isDark ? Colors.white : Colors.black),
+                            textColor:
+                                textColor ?? (AppColors.getTextColor(isDark)),
                             bookmarkList: bookmarkList,
                             pageIndex: pageIndex,
                             ayahSelectedBackgroundColor:

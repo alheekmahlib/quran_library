@@ -267,7 +267,7 @@ TextSpan _customSpan({
             fontFamily: 'hafs',
             fontSize: fontSize,
             height: 2.1,
-            color: textColor ?? (isDark ? Colors.white : Colors.black),
+            color: textColor ?? (AppColors.getTextColor(isDark)),
             backgroundColor: hasBookmark
                 ? bookmarksColor
                 : (bookmarksAyahs.contains(ayahUQNum)
@@ -307,8 +307,7 @@ TextSpan _customSpan({
                   fontFamily: 'hafs',
                   fontSize: fontSize,
                   height: 2.1,
-                  color:
-                      ayahIconColor ?? (isDark ? Colors.white : Colors.black),
+                  color: ayahIconColor ?? (AppColors.getTextColor(isDark)),
                   backgroundColor: hasBookmark
                       ? bookmarksColor
                       : (bookmarksAyahs.contains(ayahUQNum)

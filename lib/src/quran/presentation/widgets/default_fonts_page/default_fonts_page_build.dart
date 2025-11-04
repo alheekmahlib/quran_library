@@ -101,7 +101,7 @@ class DefaultFontsPageBuild extends StatelessWidget {
                                       ? 40.sp.clamp(40, 80)
                                       : 27.sp.clamp(27, 64),
                                   surahNameColor:
-                                      isDark ? Colors.white : Colors.black,
+                                      AppColors.getTextColor(isDark),
                                 ),
                             surahInfoStyle: surahInfoStyle ??
                                 SurahInfoStyle.defaults(
@@ -114,10 +114,9 @@ class DefaultFontsPageBuild extends StatelessWidget {
                             surahNumber: surahNum,
                             basmalaStyle: basmalaStyle ??
                                 BasmalaStyle(
-                                  basmalaColor:
-                                      isDark ? Colors.white : Colors.black,
-                                  basmalaFontSize: 50.0,
-                                  verticalPadding: 8.0,
+                                  basmalaColor: AppColors.getTextColor(isDark),
+                                  basmalaFontSize: 22.0,
+                                  verticalPadding: 0.0,
                                 ),
                           ),
                         SizedBox(
@@ -144,8 +143,8 @@ class DefaultFontsPageBuild extends StatelessWidget {
                                 : BoxFit.fill,
                             onDefaultAyahLongPress: onAyahLongPress,
                             bookmarksColor: bookmarksColor,
-                            textColor: textColor ??
-                                (isDark ? Colors.white : Colors.black),
+                            textColor:
+                                textColor ?? (AppColors.getTextColor(isDark)),
                             bookmarkList: bookmarkList,
                             pageIndex: pageIndex,
                             ayahSelectedBackgroundColor:

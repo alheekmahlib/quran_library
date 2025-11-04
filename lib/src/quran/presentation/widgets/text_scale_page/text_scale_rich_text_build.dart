@@ -69,7 +69,7 @@ class TextScaleRichTextBuild extends StatelessWidget {
                 height: 1.7,
                 // letterSpacing: 2,
                 fontWeight: FontWeight.bold,
-                color: textColor ?? (isDark ? Colors.white : Colors.black),
+                color: textColor ?? (AppColors.getTextColor(isDark)),
                 // shadows: [
                 //   Shadow(
                 //     blurRadius: 0.5,
@@ -159,10 +159,9 @@ class TextScaleRichTextBuild extends StatelessWidget {
                     }
                   },
                   bookmarkList: bookmarkList,
-                  textColor:
-                      textColor ?? (isDark ? Colors.white : Colors.black),
+                  textColor: textColor ?? (AppColors.getTextColor(isDark)),
                   ayahIconColor:
-                      ayahIconColor ?? (isDark ? Colors.white : Colors.black),
+                      ayahIconColor ?? (AppColors.getTextColor(isDark)),
                   showAyahBookmarkedIcon: showAyahBookmarkedIcon,
                   bookmarks: bookmarks,
                   bookmarksAyahs: bookmarksAyahs,

@@ -348,7 +348,7 @@ class TafsirItemWidget extends StatelessWidget {
                                   color: tafsirCtrl.radioValue.value ==
                                           tafsirIndex
                                       ? tafsirStyle.selectedTafsirTextColor ??
-                                          (isDark ? Colors.white : Colors.black)
+                                          (AppColors.getTextColor(isDark))
                                       : tafsirStyle.unSelectedTafsirTextColor ??
                                           (isDark
                                               ? Colors.white

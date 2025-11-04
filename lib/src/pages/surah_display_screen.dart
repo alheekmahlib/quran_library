@@ -276,12 +276,12 @@ class SurahDisplayScreen extends StatelessWidget {
                             title: Text(
                               surahCtrl.getSurahName(),
                               style: QuranLibrary().naskhStyle.copyWith(
-                                    color: isDark ? Colors.white : Colors.black,
+                                    color: AppColors.getTextColor(isDark),
                                     fontSize: 22,
                                   ),
                             ),
                             iconTheme: IconThemeData(
-                              color: isDark ? Colors.white : Colors.black,
+                              color: AppColors.getTextColor(isDark),
                             ),
                           )
                         : null),
@@ -375,7 +375,7 @@ class SurahDisplayScreen extends StatelessWidget {
         child: Text(
           'لا توجد آيات للسورة المحددة',
           style: TextStyle(
-            color: isDark ? Colors.white : Colors.black,
+            color: AppColors.getTextColor(isDark),
             fontSize: 16,
           ),
         ),
@@ -503,8 +503,8 @@ class SurahDisplayScreen extends StatelessWidget {
                                 : BoxFit.fill,
                             onDefaultAyahLongPress: onAyahLongPress,
                             bookmarksColor: bookmarksColor,
-                            textColor: textColor ??
-                                (isDark ? Colors.white : Colors.black),
+                            textColor:
+                                textColor ?? (AppColors.getTextColor(isDark)),
                             bookmarkList: bookmarkList,
                             pageIndex:
                                 surahCtrl.getRealQuranPageNumber(pageIndex),
@@ -553,7 +553,7 @@ class SurahDisplayScreen extends StatelessWidget {
       surahNameStyle: surahNameStyle ??
           SurahNameStyle(
             surahNameSize: 70,
-            surahNameColor: isDark ? Colors.white : Colors.black,
+            surahNameColor: AppColors.getTextColor(isDark),
           ),
       surahInfoStyle: surahInfoStyle ??
           SurahInfoStyle(
@@ -561,15 +561,15 @@ class SurahDisplayScreen extends StatelessWidget {
             secondTabText: 'عن السورة',
             firstTabText: 'أسماء السورة',
             backgroundColor: AppColors.getBackgroundColor(isDark),
-            closeIconColor: isDark ? Colors.white : Colors.black,
+            closeIconColor: AppColors.getTextColor(isDark),
             indicatorColor:
                 Theme.of(context).colorScheme.primary.withValues(alpha: .2),
             primaryColor:
                 Theme.of(context).colorScheme.primary.withValues(alpha: .2),
-            surahNameColor: isDark ? Colors.white : Colors.black,
-            surahNumberColor: isDark ? Colors.white : Colors.black,
-            textColor: isDark ? Colors.white : Colors.black,
-            titleColor: isDark ? Colors.white : Colors.black,
+            surahNameColor: AppColors.getTextColor(isDark),
+            surahNumberColor: AppColors.getTextColor(isDark),
+            textColor: AppColors.getTextColor(isDark),
+            titleColor: AppColors.getTextColor(isDark),
           ),
       onSurahBannerPress: onSurahBannerPress,
       isDark: isDark,
@@ -585,7 +585,7 @@ class SurahDisplayScreen extends StatelessWidget {
         surahNumber: surahNumber,
         basmalaStyle: basmalaStyle ??
             BasmalaStyle(
-              basmalaColor: isDark ? Colors.white : Colors.black,
+              basmalaColor: AppColors.getTextColor(isDark),
               basmalaFontSize: 50.0,
             ),
       ),
@@ -699,8 +699,8 @@ class SurahDisplayScreen extends StatelessWidget {
                               boxFit: BoxFit.scaleDown,
                               onDefaultAyahLongPress: onAyahLongPress,
                               bookmarksColor: bookmarksColor,
-                              textColor: textColor ??
-                                  (isDark ? Colors.white : Colors.black),
+                              textColor:
+                                  textColor ?? (AppColors.getTextColor(isDark)),
                               bookmarkList: bookmarkList,
                               pageIndex: currentPage,
                               ayahSelectedBackgroundColor:

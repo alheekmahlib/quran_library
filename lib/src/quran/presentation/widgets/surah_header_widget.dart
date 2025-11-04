@@ -91,7 +91,7 @@ class SurahHeaderWidget extends StatelessWidget {
                   surahNumber.toString(),
                   style: TextStyle(
                     color: surahNameStyle?.surahNameColor ??
-                        (isDark ? Colors.white : Colors.black),
+                        (AppColors.getTextColor(isDark)),
                     fontFamily: "surahName",
                     fontSize: surahNameStyle?.surahNameSize ?? 120.0,
                     height: 1.2,

@@ -89,8 +89,7 @@ class RichTextBuild extends StatelessWidget {
                     ? [
                         Shadow(
                           blurRadius: 0.5,
-                          color: textColor ??
-                              (isDark ? Colors.white : Colors.black),
+                          color: textColor ?? (AppColors.getTextColor(isDark)),
                           offset: const Offset(0.5, 0.5),
                         ),
                       ]
@@ -179,8 +178,7 @@ class RichTextBuild extends StatelessWidget {
                     }
                   },
                   bookmarkList: bookmarkList,
-                  textColor:
-                      textColor ?? (isDark ? Colors.white : Colors.black),
+                  textColor: textColor ?? (AppColors.getTextColor(isDark)),
                   ayahIconColor: ayahIconColor,
                   showAyahBookmarkedIcon: showAyahBookmarkedIcon,
                   bookmarks: bookmarks,

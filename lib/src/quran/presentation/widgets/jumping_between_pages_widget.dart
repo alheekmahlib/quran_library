@@ -33,8 +33,8 @@ class JumpingPageControllerWidget extends StatelessWidget {
               iconData: Icons.arrow_back_ios_new,
               onPressed: () {
                 log('Current Page: ${quranCtrl.state.currentPageNumber.value}');
-                quranCtrl
-                    .jumpToPage(quranCtrl.state.currentPageNumber.value -= 2);
+                quranCtrl.animateToPage(
+                    quranCtrl.state.currentPageNumber.value -= 2);
                 if (quranCtrl.state.currentPageNumber.value < 1) {
                   quranCtrl.state.currentPageNumber.value = 1;
                 }
@@ -49,7 +49,8 @@ class JumpingPageControllerWidget extends StatelessWidget {
               iconData: Icons.arrow_forward_ios_outlined,
               onPressed: () {
                 log('Current Page: ${quranCtrl.state.currentPageNumber.value}');
-                quranCtrl.jumpToPage(quranCtrl.state.currentPageNumber.value);
+                quranCtrl
+                    .animateToPage(quranCtrl.state.currentPageNumber.value);
               },
             ),
           ],

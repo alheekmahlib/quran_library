@@ -342,6 +342,22 @@ class QuranCtrl extends GetxController {
   // Explanation: Improved navigation for smoother scrolling
   void jumpToPage(int page) {
     if (quranPagesController.hasClients) {
+      quranPagesController.jumpToPage(
+        page,
+      );
+    } else {
+      quranPagesController = PageController(
+        initialPage: page,
+        keepPage: true,
+        viewportFraction: 1.0,
+      );
+    }
+  }
+
+  // شرح: تحسين التنقل للحصول على سكرول أكثر سلاسة
+  // Explanation: Improved navigation for smoother scrolling
+  void animateToPage(int page) {
+    if (quranPagesController.hasClients) {
       // استخدام animateToPage بدلاً من jumpToPage للحصول على انتقال أكثر سلاسة
       // Use animateToPage instead of jumpToPage for smoother transition
       quranPagesController.animateToPage(

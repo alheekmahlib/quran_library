@@ -14,7 +14,8 @@ class _IndexTab extends StatelessWidget {
     final surahs = QuranLibrary.getAllSurahs(isArabic: false);
 
     final Color textColor = style.textColor ?? AppColors.getTextColor(isDark);
-    final Color accentColor = style.accentColor ?? Colors.teal;
+    final Color accentColor =
+        style.accentColor ?? Theme.of(context).colorScheme.primary;
 
     return DefaultTabController(
       length: 2,
@@ -89,7 +90,8 @@ class _SurahsList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final Color textColor = style.textColor ?? AppColors.getTextColor(isDark);
-    final Color accentColor = style.accentColor ?? Colors.teal;
+    final Color accentColor =
+        style.accentColor ?? Theme.of(context).colorScheme.primary;
     return ListView.builder(
       itemCount: surahs.length,
       itemBuilder: (context, index) => Material(
@@ -177,7 +179,8 @@ class _JozzList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final Color textColor = style.textColor ?? AppColors.getTextColor(isDark);
-    final Color accentColor = style.accentColor ?? Colors.teal;
+    final Color accentColor =
+        style.accentColor ?? Theme.of(context).colorScheme.primary;
     return ListView.builder(
       itemCount: jozzList.length,
       itemBuilder: (context, jozzIndex) => Container(

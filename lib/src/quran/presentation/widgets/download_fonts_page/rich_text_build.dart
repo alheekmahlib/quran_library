@@ -110,6 +110,7 @@ class RichTextBuild extends StatelessWidget {
                     quranCtrl.selectedAyahsByUnequeNumber.contains(uq) ||
                         quranCtrl.externallyHighlightedAyahs.contains(uq);
                 return _span(
+                  context: context,
                   isFirstAyah: isFirstAyah,
                   text: text,
                   isDark: isDark,

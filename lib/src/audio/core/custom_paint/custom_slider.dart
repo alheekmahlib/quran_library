@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 
 class CustomSliderThumbRect extends SliderComponentShape {
+  final BuildContext childContext;
   final double thumbRadius;
   final int min;
   final int max;
   final Color? thumbColor;
 
   const CustomSliderThumbRect({
+    required this.childContext,
     required this.thumbRadius,
     required this.min,
     required this.max,
@@ -41,7 +43,8 @@ class CustomSliderThumbRect extends SliderComponentShape {
     );
 
     final paint = Paint()
-      ..color = thumbColor ?? Colors.teal //Thumb Background Color
+      ..color = thumbColor ??
+          Theme.of(childContext).colorScheme.primary //Thumb Background Color
       ..style = PaintingStyle.fill;
 
     canvas.drawRRect(rRect, paint);

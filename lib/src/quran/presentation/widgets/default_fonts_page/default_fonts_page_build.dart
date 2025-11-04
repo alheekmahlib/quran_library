@@ -85,9 +85,8 @@ class DefaultFontsPageBuild extends StatelessWidget {
                             bannerStyle: bannerStyle ??
                                 BannerStyle(
                                   isImage: false,
-                                  bannerSvgPath: isDark
-                                      ? AssetsPath.assets.surahSvgBannerDark
-                                      : AssetsPath.assets.surahSvgBanner,
+                                  bannerSvgPath:
+                                      AssetsPath.assets.surahSvgBanner,
                                   bannerSvgHeight: Responsive.isDesktop(context)
                                       ? 90.0.h.clamp(90, 150)
                                       : 35.0.h.clamp(35, 90),

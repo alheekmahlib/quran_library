@@ -422,7 +422,8 @@ class QuranPagesScreen extends StatelessWidget {
                                       downloadFontsDialogStyle,
                                   isFontsLocal: isFontsLocal,
                                   topBarStyle: topBarStyle ??
-                                      QuranTopBarStyle.defaults(isDark: isDark),
+                                      QuranTopBarStyle.defaults(
+                                          isDark: isDark, context: context),
                                   indexTabStyle: indexTabStyle,
                                   searchTabStyle: searchTabStyle,
                                 )

@@ -17,56 +17,23 @@ class SurahBackDropWidget extends StatelessWidget {
     final background =
         style?.backgroundColor ?? AppColors.getBackgroundColor(dark);
 
-    return Container(
-      // شرح: تطبيق خلفية متدرجة جميلة مع ظلال
-      // Explanation: Apply beautiful gradient background with shadows
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            background.withValues(alpha: 0.85),
-            background.withValues(alpha: 0.45),
-          ],
-        ),
-        borderRadius: BorderRadius.circular(
-          style?.borderRadius ?? 16.0,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: background.withValues(alpha: 0.25),
-            blurRadius: 20.0,
-            spreadRadius: 2.0,
-            offset: const Offset(0, 8),
-          ),
-          BoxShadow(
-            color:
-                const Color(0xfffaf7f3).withValues(alpha: dark ? 0.35 : 0.12),
-            blurRadius: 15.0,
-            spreadRadius: 1.0,
-            offset: const Offset(0, 4),
-          ),
-        ],
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(
+        style?.borderRadius ?? 16.0,
       ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(
-          style?.borderRadius ?? 16.0,
+      child: Container(
+        decoration: BoxDecoration(
+          border: Border.all(
+            color: background.withValues(alpha: 0.22),
+            width: 1.5,
+          ),
         ),
-        child: Container(
-          decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: dark ? 0.05 : 0.12),
-            border: Border.all(
-              color: background.withValues(alpha: 0.22),
-              width: 1.5,
-            ),
-          ),
-          child: UiHelper.currentOrientation(
-            // الوضع العمودي - Portrait Mode
-            _buildPortraitLayout(context, size, dark),
-            // الوضع الأفقي - Landscape Mode
-            _buildLandscapeLayout(context, size, dark),
-            context,
-          ),
+        child: UiHelper.currentOrientation(
+          // الوضع العمودي - Portrait Mode
+          _buildPortraitLayout(context, size, dark),
+          // الوضع الأفقي - Landscape Mode
+          _buildLandscapeLayout(context, size, dark),
+          context,
         ),
       ),
     );
@@ -156,20 +123,27 @@ class SurahBackDropWidget extends StatelessWidget {
 
                 // شرح: كارد آخر استماع
                 // Explanation: Last listen card
-                _buildEnhancedCard(
-                  child: SurahLastListen(
-                    style: style,
+                Expanded(
+                  child: _buildEnhancedCard(
+                    child: Column(
+                      children: [
+                        SurahLastListen(
+                          style: style,
+                          isDark: isDark,
+                          languageCode: languageCode,
+                        ),
+                        const Spacer(),
+                        SurahPlayLandscapeWidget(
+                            style: style,
+                            isDark: isDark,
+                            languageCode: languageCode),
+                      ],
+                    ),
+                    context: context,
+                    elevation: 10.0,
                     isDark: isDark,
-                    languageCode: languageCode,
                   ),
-                  context: context,
-                  elevation: 10.0,
-                  isDark: isDark,
                 ),
-
-                const Spacer(),
-                SurahPlayLandscapeWidget(
-                    style: style, isDark: isDark, languageCode: languageCode),
               ],
             ),
           ),

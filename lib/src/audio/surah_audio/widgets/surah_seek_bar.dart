@@ -31,11 +31,12 @@ class SurahSeekBar extends StatelessWidget {
                           ? Duration(
                               seconds: c.state.lastPosition.value.toInt())
                           : positionData.position,
-                      activeTrackColor:
-                          style!.seekBarActiveTrackColor ?? Colors.teal,
+                      activeTrackColor: style!.seekBarActiveTrackColor ??
+                          Theme.of(context).colorScheme.primary,
                       inactiveTrackColor:
                           style!.seekBarInactiveTrackColor ?? Colors.grey,
-                      thumbColor: style!.seekBarThumbColor ?? Colors.teal,
+                      thumbColor: style!.seekBarThumbColor ??
+                          Theme.of(context).colorScheme.primary,
                       // bufferedPosition: positionData.bufferedPosition,
                       onChangeEnd: (newPosition) {
                         c.state.audioPlayer.seek(newPosition);

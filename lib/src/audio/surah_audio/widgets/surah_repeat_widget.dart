@@ -21,8 +21,9 @@ class SurahRepeatWidget extends StatelessWidget {
           LoopMode.all,
         ];
         final index = cycleModes.indexOf(loopMode);
-        final baseColor =
-            style?.playIconColor ?? style?.primaryColor ?? Colors.teal;
+        final baseColor = style?.playIconColor ??
+            style?.primaryColor ??
+            Theme.of(context).colorScheme.primary;
         return IconButton(
           iconSize: 30,
           icon: Icon(icons[index]),

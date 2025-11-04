@@ -132,7 +132,11 @@ class AyahLongClickDialog extends StatelessWidget {
                   BorderRadius.all(Radius.circular(s.borderRadius ?? 6.0)),
               border: Border.all(
                   width: s.borderWidth ?? 2.0,
-                  color: s.borderColor ?? Colors.teal.shade100)),
+                  color: s.borderColor ??
+                      Theme.of(context)
+                          .colorScheme
+                          .primary
+                          .withValues(alpha: 0.1))),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -140,7 +144,11 @@ class AyahLongClickDialog extends StatelessWidget {
               final List<Widget> widgets = [];
               Widget divider() => context.verticalDivider(
                     height: s.dividerHeight ?? 30.0,
-                    color: s.dividerColor ?? Colors.teal.shade100,
+                    color: s.dividerColor ??
+                        Theme.of(context)
+                            .colorScheme
+                            .primary
+                            .withValues(alpha: 0.1),
                   );
 
               void addDividerIfNeeded() {
@@ -228,7 +236,8 @@ class AyahLongClickDialog extends StatelessWidget {
                     },
                     child: Icon(
                       s.tafsirIconData ?? Icons.text_snippet_rounded,
-                      color: s.tafsirIconColor ?? Colors.teal,
+                      color: s.tafsirIconColor ??
+                          Theme.of(context).colorScheme.primary,
                       size: s.iconSize,
                     ),
                   ),
@@ -264,7 +273,8 @@ class AyahLongClickDialog extends StatelessWidget {
                     },
                     child: Icon(
                       s.copyIconData ?? Icons.copy_rounded,
-                      color: s.copyIconColor ?? Colors.teal,
+                      color: s.copyIconColor ??
+                          Theme.of(context).colorScheme.primary,
                       size: s.iconSize,
                     ),
                   ),

@@ -31,16 +31,50 @@ class SurahInfoStyle {
     this.bottomSheetHeight,
   });
 
+  SurahInfoStyle copyWith({
+    Color? backgroundColor,
+    Color? closeIconColor,
+    Color? surahNameColor,
+    Color? surahNumberColor,
+    Color? primaryColor,
+    Color? titleColor,
+    Color? indicatorColor,
+    Color? textColor,
+    String? ayahCount,
+    String? secondTabText,
+    String? firstTabText,
+    double? bottomSheetWidth,
+    double? bottomSheetHeight,
+  }) {
+    return SurahInfoStyle(
+      backgroundColor: backgroundColor ?? this.backgroundColor,
+      closeIconColor: closeIconColor ?? this.closeIconColor,
+      surahNameColor: surahNameColor ?? this.surahNameColor,
+      surahNumberColor: surahNumberColor ?? this.surahNumberColor,
+      primaryColor: primaryColor ?? this.primaryColor,
+      titleColor: titleColor ?? this.titleColor,
+      indicatorColor: indicatorColor ?? this.indicatorColor,
+      textColor: textColor ?? this.textColor,
+      ayahCount: ayahCount ?? this.ayahCount,
+      secondTabText: secondTabText ?? this.secondTabText,
+      firstTabText: firstTabText ?? this.firstTabText,
+      bottomSheetWidth: bottomSheetWidth ?? this.bottomSheetWidth,
+      bottomSheetHeight: bottomSheetHeight ?? this.bottomSheetHeight,
+    );
+  }
+
   factory SurahInfoStyle.defaults(
       {required bool isDark, required BuildContext context}) {
+    final scheme = Theme.of(context).colorScheme;
+    final primary = scheme.primary;
     return SurahInfoStyle(
       ayahCount: 'عدد الآيات',
       secondTabText: 'عن السورة',
       firstTabText: 'أسماء السورة',
       backgroundColor: AppColors.getBackgroundColor(isDark),
       closeIconColor: isDark ? Colors.white : Colors.black,
-      indicatorColor: Colors.teal.withValues(alpha: .2),
-      primaryColor: Colors.teal.withValues(alpha: .2),
+      indicatorColor: primary.withValues(alpha: .2),
+      primaryColor: primary.withValues(alpha: .2),
       surahNameColor: isDark ? Colors.white : Colors.black,
       surahNumberColor: isDark ? Colors.white : Colors.black,
       textColor: isDark ? Colors.white : Colors.black,

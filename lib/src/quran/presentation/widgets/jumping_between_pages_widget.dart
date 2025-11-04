@@ -18,39 +18,42 @@ class JumpingPageControllerWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Align(
       alignment: Alignment.center,
-      child: Row(
+      child: Directionality(
         textDirection: TextDirection.rtl,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          CurvyArrowButton(
-            height: 55,
-            isLeft: true,
-            backgroundColor:
-                backgroundColor ?? AppColors.getBackgroundColor(isDark),
-            iconColor: textColor ?? AppColors.getTextColor(isDark),
-            iconData: Icons.arrow_back_ios_new,
-            onPressed: () {
-              log('Current Page: ${quranCtrl.state.currentPageNumber.value}');
-              quranCtrl
-                  .jumpToPage(quranCtrl.state.currentPageNumber.value -= 2);
-              if (quranCtrl.state.currentPageNumber.value < 1) {
-                quranCtrl.state.currentPageNumber.value = 1;
-              }
-            },
-          ),
-          CurvyArrowButton(
-            height: 55,
-            isLeft: false,
-            backgroundColor:
-                backgroundColor ?? AppColors.getBackgroundColor(isDark),
-            iconColor: textColor ?? AppColors.getTextColor(isDark),
-            iconData: Icons.arrow_forward_ios_outlined,
-            onPressed: () {
-              log('Current Page: ${quranCtrl.state.currentPageNumber.value}');
-              quranCtrl.jumpToPage(quranCtrl.state.currentPageNumber.value);
-            },
-          ),
-        ],
+        child: Row(
+          textDirection: TextDirection.rtl,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            CurvyArrowButton(
+              height: 55,
+              isLeft: true,
+              backgroundColor:
+                  backgroundColor ?? AppColors.getBackgroundColor(isDark),
+              iconColor: textColor ?? AppColors.getTextColor(isDark),
+              iconData: Icons.arrow_back_ios_new,
+              onPressed: () {
+                log('Current Page: ${quranCtrl.state.currentPageNumber.value}');
+                quranCtrl
+                    .jumpToPage(quranCtrl.state.currentPageNumber.value -= 2);
+                if (quranCtrl.state.currentPageNumber.value < 1) {
+                  quranCtrl.state.currentPageNumber.value = 1;
+                }
+              },
+            ),
+            CurvyArrowButton(
+              height: 55,
+              isLeft: false,
+              backgroundColor:
+                  backgroundColor ?? AppColors.getBackgroundColor(isDark),
+              iconColor: textColor ?? AppColors.getTextColor(isDark),
+              iconData: Icons.arrow_forward_ios_outlined,
+              onPressed: () {
+                log('Current Page: ${quranCtrl.state.currentPageNumber.value}');
+                quranCtrl.jumpToPage(quranCtrl.state.currentPageNumber.value);
+              },
+            ),
+          ],
+        ),
       ),
     );
   }

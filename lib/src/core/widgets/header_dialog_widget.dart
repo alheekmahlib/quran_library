@@ -32,8 +32,14 @@ class HeaderDialogWidget extends StatelessWidget {
                   begin: AlignmentDirectional.centerStart,
                   end: AlignmentDirectional.centerEnd,
                   colors: [
-                    Colors.teal.withValues(alpha: .12),
-                    Colors.teal.withValues(alpha: .04),
+                    Theme.of(context)
+                        .colorScheme
+                        .primary
+                        .withValues(alpha: .12),
+                    Theme.of(context)
+                        .colorScheme
+                        .primary
+                        .withValues(alpha: .04),
                   ],
                 ),
           ),

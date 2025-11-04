@@ -125,14 +125,81 @@ class AyahLongClickStyle {
     this.copySuccessMessage,
   });
 
+  AyahLongClickStyle copyWith({
+    Color? backgroundColor,
+    Color? borderColor,
+    double? borderWidth,
+    double? borderRadius,
+    double? outerBorderRadius,
+    List<int>? bookmarkColorCodes,
+    Color? copyIconColor,
+    Color? tafsirIconColor,
+    Color? dividerColor,
+    List<BoxShadow>? boxShadow,
+    EdgeInsetsGeometry? padding,
+    EdgeInsetsGeometry? margin,
+    double? dialogHeight,
+    double? iconSize,
+    double? iconHorizontalPadding,
+    double? itemBaseWidth,
+    double? itemSpacing,
+    double? extraHorizontalSpace,
+    double? dividerHeight,
+    double? dividerThickness,
+    bool? showBookmarkButtons,
+    bool? showCopyButton,
+    bool? showTafsirButton,
+    IconData? bookmarkIconData,
+    IconData? copyIconData,
+    IconData? tafsirIconData,
+    double? tapOffsetSpacing,
+    double? edgeSafeMargin,
+    String? copySuccessMessage,
+  }) {
+    return AyahLongClickStyle(
+      backgroundColor: backgroundColor ?? this.backgroundColor,
+      borderColor: borderColor ?? this.borderColor,
+      borderWidth: borderWidth ?? this.borderWidth,
+      borderRadius: borderRadius ?? this.borderRadius,
+      outerBorderRadius: outerBorderRadius ?? this.outerBorderRadius,
+      bookmarkColorCodes: bookmarkColorCodes ?? this.bookmarkColorCodes,
+      copyIconColor: copyIconColor ?? this.copyIconColor,
+      tafsirIconColor: tafsirIconColor ?? this.tafsirIconColor,
+      dividerColor: dividerColor ?? this.dividerColor,
+      boxShadow: boxShadow ?? this.boxShadow,
+      padding: padding ?? this.padding,
+      margin: margin ?? this.margin,
+      dialogHeight: dialogHeight ?? this.dialogHeight,
+      iconSize: iconSize ?? this.iconSize,
+      iconHorizontalPadding:
+          iconHorizontalPadding ?? this.iconHorizontalPadding,
+      itemBaseWidth: itemBaseWidth ?? this.itemBaseWidth,
+      itemSpacing: itemSpacing ?? this.itemSpacing,
+      extraHorizontalSpace: extraHorizontalSpace ?? this.extraHorizontalSpace,
+      dividerHeight: dividerHeight ?? this.dividerHeight,
+      dividerThickness: dividerThickness ?? this.dividerThickness,
+      showBookmarkButtons: showBookmarkButtons ?? this.showBookmarkButtons,
+      showCopyButton: showCopyButton ?? this.showCopyButton,
+      showTafsirButton: showTafsirButton ?? this.showTafsirButton,
+      bookmarkIconData: bookmarkIconData ?? this.bookmarkIconData,
+      copyIconData: copyIconData ?? this.copyIconData,
+      tafsirIconData: tafsirIconData ?? this.tafsirIconData,
+      tapOffsetSpacing: tapOffsetSpacing ?? this.tapOffsetSpacing,
+      edgeSafeMargin: edgeSafeMargin ?? this.edgeSafeMargin,
+      copySuccessMessage: copySuccessMessage ?? this.copySuccessMessage,
+    );
+  }
+
   /// القيم الافتراضية للنمط بحسب الوضع الليلي/النهاري.
   factory AyahLongClickStyle.defaults({
     required bool isDark,
     required BuildContext context,
   }) {
+    final scheme = Theme.of(context).colorScheme;
+    final primary = scheme.primary;
     return AyahLongClickStyle(
       backgroundColor: AppColors.getBackgroundColor(isDark),
-      borderColor: Colors.teal.shade100,
+      borderColor: primary.withValues(alpha: 0.1),
       borderWidth: 2.0,
       borderRadius: 6.0,
       outerBorderRadius: 8.0,
@@ -141,9 +208,9 @@ class AyahLongClickStyle {
         0xAAF36077, // وردي داكن
         0xAA00CD00, // أخضر
       ],
-      copyIconColor: Colors.teal,
-      tafsirIconColor: Colors.teal,
-      dividerColor: Colors.teal.shade100,
+      copyIconColor: primary,
+      tafsirIconColor: primary,
+      dividerColor: primary.withValues(alpha: 0.1),
       boxShadow: [
         BoxShadow(
           color: Colors.grey.withValues(alpha: 0.3),

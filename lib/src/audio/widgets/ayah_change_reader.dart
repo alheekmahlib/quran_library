@@ -41,7 +41,7 @@ class AyahChangeReader extends StatelessWidget {
   Widget _buildDialog(
       BuildContext context, AyahAudioStyle effectiveStyle, bool dark) {
     final Color activeColor = effectiveStyle.dialogSelectedReaderColor ??
-        Colors.teal.withValues(alpha: 0.05);
+        Theme.of(context).colorScheme.primary.withValues(alpha: 0.05);
     final Color inactiveColor = effectiveStyle.dialogUnSelectedReaderColor ??
         AppColors.getTextColor(dark);
     final double itemFontSize = effectiveStyle.readerNameInItemFontSize ?? 14;
@@ -76,10 +76,10 @@ class AyahChangeReader extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: TabBar(
-                    indicatorColor:
-                        effectiveStyle.dialogSelectedReaderColor ?? Colors.teal,
-                    labelColor:
-                        effectiveStyle.dialogSelectedReaderColor ?? Colors.teal,
+                    indicatorColor: effectiveStyle.dialogSelectedReaderColor ??
+                        Theme.of(context).colorScheme.primary,
+                    labelColor: effectiveStyle.dialogSelectedReaderColor ??
+                        Theme.of(context).colorScheme.primary,
                     unselectedLabelColor:
                         effectiveStyle.dialogUnSelectedReaderColor ??
                             AppColors.getTextColor(dark),
@@ -235,7 +235,8 @@ class ReaderListBuild extends StatelessWidget {
             ),
             trailing: _SelectionIndicator(
                 isSelected: isSelected,
-                color: effectiveStyle.dialogSelectedReaderColor ?? Colors.teal),
+                color: effectiveStyle.dialogSelectedReaderColor ??
+                    Theme.of(context).colorScheme.primary),
             onTap: () async =>
                 await AudioCtrl.instance.changeAyahReadersOnTap(context, index),
           ),

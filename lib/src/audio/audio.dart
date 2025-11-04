@@ -3,7 +3,6 @@ import 'dart:developer' show log;
 import 'dart:io' show Directory, File, HttpHeaders, Platform;
 
 import 'package:connectivity_plus/connectivity_plus.dart';
-// import 'package:dio/dio.dart' as d;
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -30,6 +29,7 @@ export 'package:audio_service/audio_service.dart';
 export 'package:just_audio/just_audio.dart';
 export 'package:just_audio_media_kit/just_audio_media_kit.dart';
 
+part '../pages/surah_audio_screen.dart';
 part 'constants/readers_constants.dart';
 part 'constants/storage_constants.dart';
 part 'controller/audio_ctrl.dart';
@@ -44,7 +44,6 @@ part 'core/utils/custom_widgets.dart';
 part 'data/model/ayah_audio_style.dart';
 part 'data/model/ayah_download_manager_style.dart';
 part 'data/model/surah_audio_style.dart';
-part 'surah_audio/surah_audio_screen.dart';
 part 'surah_audio/widgets/surah_audio_list.dart';
 part 'surah_audio/widgets/surah_back_drop_widget.dart';
 part 'surah_audio/widgets/surah_change_reader.dart';

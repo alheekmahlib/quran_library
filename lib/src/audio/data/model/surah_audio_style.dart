@@ -143,6 +143,10 @@ class SurahAudioStyle {
   /// Reader text color in dialog list
   final Color? dialogReaderTextColor;
 
+  /// إظهار شريط التطبيق
+  /// Show app bar
+  final bool? withAppBar;
+
   /// منشئ فئة SurahAudioStyle
   /// SurahAudioStyle class constructor
   SurahAudioStyle({
@@ -181,7 +185,98 @@ class SurahAudioStyle {
     this.dialogSelectedReaderColor,
     this.dialogUnSelectedReaderColor,
     this.dialogReaderTextColor,
+    this.withAppBar,
   });
+
+  SurahAudioStyle copyWith({
+    Color? textColor,
+    String? playIconPath,
+    double? playIconHeight,
+    Color? playIconColor,
+    String? pauseIconPath,
+    double? pauseIconHeight,
+    Color? readerNameInItemColor,
+    double? readerNameInItemFontSize,
+    double? readerNameFontSize,
+    Color? seekBarThumbColor,
+    Color? seekBarActiveTrackColor,
+    Color? seekBarInactiveTrackColor,
+    double? seekBarHorizontalPadding,
+    double? previousIconHeight,
+    double? nextIconHeight,
+    Color? backgroundColor,
+    double? borderRadius,
+    Color? dialogBackgroundColor,
+    double? dialogBorderRadius,
+    Color? selectedItemColor,
+    Color? secondaryIconColor,
+    double? secondaryFontSize,
+    Color? secondaryTextColor,
+    Color? primaryColor,
+    Color? iconColor,
+    Color? audioSliderBackgroundColor,
+    Color? surahNameColor,
+    double? dialogHeight,
+    double? dialogWidth,
+    Color? dialogHeaderTitleColor,
+    Color? dialogCloseIconColor,
+    Gradient? dialogHeaderBackgroundGradient,
+    Color? dialogSelectedReaderColor,
+    Color? dialogUnSelectedReaderColor,
+    Color? dialogReaderTextColor,
+    bool? withAppBar,
+  }) {
+    return SurahAudioStyle(
+      textColor: textColor ?? this.textColor,
+      playIconPath: playIconPath ?? this.playIconPath,
+      playIconHeight: playIconHeight ?? this.playIconHeight,
+      playIconColor: playIconColor ?? this.playIconColor,
+      pauseIconPath: pauseIconPath ?? this.pauseIconPath,
+      pauseIconHeight: pauseIconHeight ?? this.pauseIconHeight,
+      readerNameInItemColor:
+          readerNameInItemColor ?? this.readerNameInItemColor,
+      readerNameInItemFontSize:
+          readerNameInItemFontSize ?? this.readerNameInItemFontSize,
+      readerNameFontSize: readerNameFontSize ?? this.readerNameFontSize,
+      seekBarThumbColor: seekBarThumbColor ?? this.seekBarThumbColor,
+      seekBarActiveTrackColor:
+          seekBarActiveTrackColor ?? this.seekBarActiveTrackColor,
+      seekBarInactiveTrackColor:
+          seekBarInactiveTrackColor ?? this.seekBarInactiveTrackColor,
+      seekBarHorizontalPadding:
+          seekBarHorizontalPadding ?? this.seekBarHorizontalPadding,
+      previousIconHeight: previousIconHeight ?? this.previousIconHeight,
+      nextIconHeight: nextIconHeight ?? this.nextIconHeight,
+      backgroundColor: backgroundColor ?? this.backgroundColor,
+      borderRadius: borderRadius ?? this.borderRadius,
+      dialogBackgroundColor:
+          dialogBackgroundColor ?? this.dialogBackgroundColor,
+      dialogBorderRadius: dialogBorderRadius ?? this.dialogBorderRadius,
+      selectedItemColor: selectedItemColor ?? this.selectedItemColor,
+      secondaryIconColor: secondaryIconColor ?? this.secondaryIconColor,
+      secondaryFontSize: secondaryFontSize ?? this.secondaryFontSize,
+      secondaryTextColor: secondaryTextColor ?? this.secondaryTextColor,
+      primaryColor: primaryColor ?? this.primaryColor,
+      iconColor: iconColor ?? this.iconColor,
+      audioSliderBackgroundColor:
+          audioSliderBackgroundColor ?? this.audioSliderBackgroundColor,
+      surahNameColor: surahNameColor ?? this.surahNameColor,
+      dialogHeight: dialogHeight ?? this.dialogHeight,
+      dialogWidth: dialogWidth ?? this.dialogWidth,
+      dialogHeaderTitleColor:
+          dialogHeaderTitleColor ?? this.dialogHeaderTitleColor,
+      dialogCloseIconColor: dialogCloseIconColor ?? this.dialogCloseIconColor,
+      dialogHeaderBackgroundGradient:
+          dialogHeaderBackgroundGradient ?? this.dialogHeaderBackgroundGradient,
+      dialogSelectedReaderColor:
+          dialogSelectedReaderColor ?? this.dialogSelectedReaderColor,
+      dialogUnSelectedReaderColor:
+          dialogUnSelectedReaderColor ?? this.dialogUnSelectedReaderColor,
+      dialogReaderTextColor:
+          dialogReaderTextColor ?? this.dialogReaderTextColor,
+      withAppBar: withAppBar ?? this.withAppBar,
+    );
+  }
 
   /// القيم الافتراضية الموحدة حسب الثيم
   /// Unified defaults based on theme
@@ -251,6 +346,7 @@ class SurahAudioStyle {
 
       // حالات التحديد
       selectedItemColor: primary.withValues(alpha: 0.10),
+      withAppBar: true,
     );
   }
 }

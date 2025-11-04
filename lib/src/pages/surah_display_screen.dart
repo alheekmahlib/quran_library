@@ -290,7 +290,8 @@ class SurahDisplayScreen extends StatelessWidget {
                         languageCode ?? 'ar',
                         isDark,
                         backgroundColor: backgroundColor,
-                        topBarStyle: QuranTopBarStyle.defaults(isDark: isDark),
+                        topBarStyle: QuranTopBarStyle.defaults(
+                            isDark: isDark, context: context),
                         indexTabStyle: indexTabStyle,
                         searchTabStyle: searchTabStyle,
                       )
@@ -466,7 +467,7 @@ class SurahDisplayScreen extends StatelessWidget {
           children: [
             // شرح: عرض شعار السورة في الصفحة الأولى فقط
             // Explanation: Display surah banner only on first page
-            if (isFirstPage) _buildSurahHeader(),
+            if (isFirstPage) _buildSurahHeader(context),
 
             // شرح: عرض البسملة في الصفحة الأولى إذا لم تكن سورة التوبة
             // Explanation: Display Basmala on first page if not Surah At-Tawbah
@@ -530,7 +531,7 @@ class SurahDisplayScreen extends StatelessWidget {
 
   /// بناء شعار السورة
   /// Build surah header
-  Widget _buildSurahHeader() {
+  Widget _buildSurahHeader(BuildContext context) {
     return SurahHeaderWidget(
       surahNumber,
       bannerStyle: bannerStyle ??
@@ -557,8 +558,10 @@ class SurahDisplayScreen extends StatelessWidget {
             firstTabText: 'أسماء السورة',
             backgroundColor: AppColors.getBackgroundColor(isDark),
             closeIconColor: isDark ? Colors.white : Colors.black,
-            indicatorColor: Colors.teal.withValues(alpha: .2),
-            primaryColor: Colors.teal.withValues(alpha: .2),
+            indicatorColor:
+                Theme.of(context).colorScheme.primary.withValues(alpha: .2),
+            primaryColor:
+                Theme.of(context).colorScheme.primary.withValues(alpha: .2),
             surahNameColor: isDark ? Colors.white : Colors.black,
             surahNumberColor: isDark ? Colors.white : Colors.black,
             textColor: isDark ? Colors.white : Colors.black,
@@ -666,7 +669,7 @@ class SurahDisplayScreen extends StatelessWidget {
         children: [
           // شرح: عرض شعار السورة في الصفحة الأولى فقط
           // Explanation: Display surah banner only on first page
-          if (isFirstPage) _buildSurahHeader(),
+          if (isFirstPage) _buildSurahHeader(context),
 
           // شرح: عرض البسملة في الصفحة الأولى إذا لم تكن سورة التوبة
           // Explanation: Display Basmala on first page if not Surah At-Tawbah

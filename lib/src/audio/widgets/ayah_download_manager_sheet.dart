@@ -145,9 +145,11 @@ class AyahDownloadManagerSheet extends StatelessWidget {
                                 radius: 22,
                                 backgroundColor: fullyDownloaded
                                     ? (effectiveStyle.avatarDownloadedColor ??
-                                        Colors.teal)
+                                        Theme.of(context).colorScheme.primary)
                                     : (effectiveStyle.avatarUndownloadedColor ??
-                                            Colors.teal)
+                                            Theme.of(context)
+                                                .colorScheme
+                                                .primary)
                                         .withValues(alpha: .4),
                                 child: Text(
                                   s.surahNumber
@@ -260,7 +262,8 @@ class DownloadedAndDeleteWidget extends StatelessWidget {
                 },
                 style: ButtonStyle(
                   backgroundColor: WidgetStatePropertyAll(
-                      style?.stopButtonBackground ?? Colors.teal),
+                      style?.stopButtonBackground ??
+                          Theme.of(context).colorScheme.primary),
                   foregroundColor: WidgetStatePropertyAll(
                       style?.stopButtonForeground ?? Colors.white),
                 ),
@@ -275,9 +278,11 @@ class DownloadedAndDeleteWidget extends StatelessWidget {
                   isDownloading ? null : () => onRequestDownload(s.surahNumber),
               style: ButtonStyle(
                 backgroundColor: WidgetStatePropertyAll(
-                    style?.downloadBackground ?? Colors.teal),
+                    style?.downloadBackground ??
+                        Theme.of(context).colorScheme.primary),
                 foregroundColor: WidgetStatePropertyAll(
-                    style?.downloadForeground ?? Colors.teal),
+                    style?.downloadForeground ??
+                        Theme.of(context).colorScheme.primary),
               ),
               icon: Icon(
                 fullyDownloaded
@@ -364,7 +369,8 @@ class ProgressIndicatorWidget extends StatelessWidget {
                 backgroundColor:
                     style?.progressBackgroundColor ?? Colors.grey.shade200,
                 valueColor: AlwaysStoppedAnimation<Color>(
-                    (style?.progressColor ?? Colors.teal)
+                    (style?.progressColor ??
+                            Theme.of(context).colorScheme.primary)
                         .withValues(alpha: .25)),
               )),
     );

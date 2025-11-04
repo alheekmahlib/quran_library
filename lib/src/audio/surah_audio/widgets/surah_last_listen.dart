@@ -17,7 +17,8 @@ class SurahLastListen extends StatelessWidget {
     final bool dark = isDark;
     final bg = style?.backgroundColor ?? AppColors.getBackgroundColor(dark);
     final textColor = style?.textColor ?? AppColors.getTextColor(dark);
-    final primary = style?.primaryColor ?? Colors.teal;
+    final primary =
+        style?.primaryColor ?? Theme.of(context).colorScheme.primary;
     final numberColor = style?.surahNameColor ?? textColor;
 
     return Semantics(

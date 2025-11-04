@@ -37,11 +37,14 @@ class _MyAppState extends State<MyApp> {
         Locale('en'),
         Locale('ar'),
       ],
-      locale: const Locale('ar'),
+      locale: const Locale('en'),
       // useInheritedMediaQuery: true,
       // locale: DevicePreview.locale(context),
       // builder: DevicePreview.appBuilder,
       theme: ThemeData(
+        colorScheme: const ColorScheme.light(
+          primary: Colors.teal,
+        ),
         primaryColor: Colors.teal,
         useMaterial3: false,
       ),
@@ -64,7 +67,7 @@ class FullQuran extends StatelessWidget {
   Widget build(BuildContext context) {
     return QuranLibraryScreen(
       parentContext: context,
-      isDark: true,
+      isDark: false,
       showAyahBookmarkedIcon: true,
       // ayahIconColor: Colors.teal,
       // backgroundColor: Colors.white,

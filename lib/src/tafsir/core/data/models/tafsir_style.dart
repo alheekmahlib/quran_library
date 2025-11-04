@@ -69,11 +69,94 @@ class TafsirStyle {
     this.fontSizeIconSize,
   });
 
+  TafsirStyle copyWith({
+    Widget? tafsirNameWidget,
+    Widget? fontSizeWidget,
+    String? translateName,
+    String? tafsirName,
+    Color? currentTafsirColor,
+    Color? textTitleColor,
+    Color? backgroundTitleColor,
+    Color? selectedTafsirColor,
+    Color? unSelectedTafsirColor,
+    Color? selectedTafsirTextColor,
+    Color? unSelectedTafsirTextColor,
+    Color? selectedTafsirBorderColor,
+    Color? unSelectedTafsirBorderColor,
+    Color? backgroundColor,
+    Color? textColor,
+    Color? tafsirBackgroundColor,
+    Color? dividerColor,
+    double? fontSize,
+    String? footnotesName,
+    double? horizontalMargin,
+    double? verticalMargin,
+    String? tafsirIsEmptyNote,
+    double? heightOfBottomSheet,
+    double? widthOfBottomSheet,
+    double? changeTafsirDialogHeight,
+    double? changeTafsirDialogWidth,
+    Widget? fontSizeIconWidget,
+    Color? fontSizeBackgroundColor,
+    Color? fontSizeThumbColor,
+    Color? fontSizeActiveTrackColor,
+    Color? fontSizeInactiveTrackColor,
+    double? fontSizeIconSize,
+  }) {
+    return TafsirStyle(
+      tafsirNameWidget: tafsirNameWidget ?? this.tafsirNameWidget,
+      fontSizeWidget: fontSizeWidget ?? this.fontSizeWidget,
+      translateName: translateName ?? this.translateName,
+      tafsirName: tafsirName ?? this.tafsirName,
+      currentTafsirColor: currentTafsirColor ?? this.currentTafsirColor,
+      textTitleColor: textTitleColor ?? this.textTitleColor,
+      backgroundTitleColor: backgroundTitleColor ?? this.backgroundTitleColor,
+      selectedTafsirColor: selectedTafsirColor ?? this.selectedTafsirColor,
+      unSelectedTafsirColor:
+          unSelectedTafsirColor ?? this.unSelectedTafsirColor,
+      selectedTafsirTextColor:
+          selectedTafsirTextColor ?? this.selectedTafsirTextColor,
+      unSelectedTafsirTextColor:
+          unSelectedTafsirTextColor ?? this.unSelectedTafsirTextColor,
+      selectedTafsirBorderColor:
+          selectedTafsirBorderColor ?? this.selectedTafsirBorderColor,
+      unSelectedTafsirBorderColor:
+          unSelectedTafsirBorderColor ?? this.unSelectedTafsirBorderColor,
+      backgroundColor: backgroundColor ?? this.backgroundColor,
+      textColor: textColor ?? this.textColor,
+      tafsirBackgroundColor:
+          tafsirBackgroundColor ?? this.tafsirBackgroundColor,
+      dividerColor: dividerColor ?? this.dividerColor,
+      fontSize: fontSize ?? this.fontSize,
+      footnotesName: footnotesName ?? this.footnotesName,
+      horizontalMargin: horizontalMargin ?? this.horizontalMargin,
+      verticalMargin: verticalMargin ?? this.verticalMargin,
+      tafsirIsEmptyNote: tafsirIsEmptyNote ?? this.tafsirIsEmptyNote,
+      heightOfBottomSheet: heightOfBottomSheet ?? this.heightOfBottomSheet,
+      widthOfBottomSheet: widthOfBottomSheet ?? this.widthOfBottomSheet,
+      changeTafsirDialogHeight:
+          changeTafsirDialogHeight ?? this.changeTafsirDialogHeight,
+      changeTafsirDialogWidth:
+          changeTafsirDialogWidth ?? this.changeTafsirDialogWidth,
+      fontSizeIconWidget: fontSizeIconWidget ?? this.fontSizeIconWidget,
+      fontSizeBackgroundColor:
+          fontSizeBackgroundColor ?? this.fontSizeBackgroundColor,
+      fontSizeThumbColor: fontSizeThumbColor ?? this.fontSizeThumbColor,
+      fontSizeActiveTrackColor:
+          fontSizeActiveTrackColor ?? this.fontSizeActiveTrackColor,
+      fontSizeInactiveTrackColor:
+          fontSizeInactiveTrackColor ?? this.fontSizeInactiveTrackColor,
+      fontSizeIconSize: fontSizeIconSize ?? this.fontSizeIconSize,
+    );
+  }
+
   factory TafsirStyle.defaults(
       {required bool isDark, required BuildContext context}) {
     final bg = AppColors.getBackgroundColor(isDark);
+    final scheme = Theme.of(context).colorScheme;
+    final primary = scheme.primary;
     final onBg = isDark ? Colors.white : Colors.black87;
-    const titleOnBg = Colors.teal;
+    final titleOnBg = primary;
 
     // أسماء افتراضية نصية
     const defaultTafsirName = 'التفسير';
@@ -90,17 +173,17 @@ class TafsirStyle {
 
       // العناوين والشريط العلوي
       textTitleColor: Colors.white,
-      backgroundTitleColor: Colors.teal,
-      currentTafsirColor: Colors.teal,
+      backgroundTitleColor: primary,
+      currentTafsirColor: primary,
 
       // ألوان عناصر الاختيار للقوائم/الأزرار داخل شاشة التفسير
-      selectedTafsirColor: Colors.teal.withValues(alpha: .10),
+      selectedTafsirColor: primary.withValues(alpha: .10),
       unSelectedTafsirColor:
           isDark ? const Color(0xFF1F1F1F) : Colors.transparent,
       selectedTafsirTextColor: onBg,
       unSelectedTafsirTextColor: onBg,
-      selectedTafsirBorderColor: Colors.teal,
-      unSelectedTafsirBorderColor: Colors.teal.withValues(alpha: 0.3),
+      selectedTafsirBorderColor: primary,
+      unSelectedTafsirBorderColor: primary.withValues(alpha: 0.3),
       changeTafsirDialogHeight: MediaQuery.of(context).size.height * 0.7,
       changeTafsirDialogWidth: MediaQuery.of(context).size.width * 0.9,
 
@@ -147,10 +230,10 @@ class TafsirStyle {
           color: AppColors.getTextColor(isDark),
         ),
       ),
-      fontSizeBackgroundColor: Colors.teal,
+      fontSizeBackgroundColor: primary,
       fontSizeThumbColor: Colors.white,
       fontSizeActiveTrackColor: Colors.white,
-      fontSizeInactiveTrackColor: Colors.tealAccent,
+      fontSizeInactiveTrackColor: primary.withValues(alpha: 0.5),
       fontSizeIconSize: 34.0,
     );
   }

@@ -92,6 +92,84 @@ class AyahDownloadManagerStyle {
     this.countTextBuilder,
   });
 
+  AyahDownloadManagerStyle copyWith({
+    String? titleText,
+    TextStyle? titleTextStyle,
+    Widget? headerIcon,
+    double? surahNameSize,
+    Color? handleColor,
+    double? handleWidth,
+    double? handleHeight,
+    double? handleRadius,
+    String? stopButtonText,
+    IconData? stopButtonIcon,
+    Color? stopButtonForeground,
+    Color? stopButtonBackground,
+    Color? separatorColor,
+    double? itemHorizontalPadding,
+    double? itemVerticalPadding,
+    TextStyle? surahTitleStyle,
+    TextStyle? surahSubtitleStyle,
+    Color? avatarDownloadedColor,
+    Color? avatarUndownloadedColor,
+    TextStyle? avatarTextStyle,
+    Color? progressColor,
+    Color? progressBackgroundColor,
+    double? progressHeight,
+    double? progressRadius,
+    String? deleteTooltipText,
+    IconData? deleteIcon,
+    Color? deleteIconColor,
+    String? downloadText,
+    IconData? downloadIcon,
+    String? redownloadText,
+    IconData? redownloadIcon,
+    Color? downloadForeground,
+    Color? downloadBackground,
+    AyahCountTextBuilder? countTextBuilder,
+  }) {
+    return AyahDownloadManagerStyle(
+      titleText: titleText ?? this.titleText,
+      titleTextStyle: titleTextStyle ?? this.titleTextStyle,
+      headerIcon: headerIcon ?? this.headerIcon,
+      surahNameSize: surahNameSize ?? this.surahNameSize,
+      handleColor: handleColor ?? this.handleColor,
+      handleWidth: handleWidth ?? this.handleWidth,
+      handleHeight: handleHeight ?? this.handleHeight,
+      handleRadius: handleRadius ?? this.handleRadius,
+      stopButtonText: stopButtonText ?? this.stopButtonText,
+      stopButtonIcon: stopButtonIcon ?? this.stopButtonIcon,
+      stopButtonForeground: stopButtonForeground ?? this.stopButtonForeground,
+      stopButtonBackground: stopButtonBackground ?? this.stopButtonBackground,
+      separatorColor: separatorColor ?? this.separatorColor,
+      itemHorizontalPadding:
+          itemHorizontalPadding ?? this.itemHorizontalPadding,
+      itemVerticalPadding: itemVerticalPadding ?? this.itemVerticalPadding,
+      surahTitleStyle: surahTitleStyle ?? this.surahTitleStyle,
+      surahSubtitleStyle: surahSubtitleStyle ?? this.surahSubtitleStyle,
+      avatarDownloadedColor:
+          avatarDownloadedColor ?? this.avatarDownloadedColor,
+      avatarUndownloadedColor:
+          avatarUndownloadedColor ?? this.avatarUndownloadedColor,
+      avatarTextStyle: avatarTextStyle ?? this.avatarTextStyle,
+      progressColor: progressColor ?? this.progressColor,
+      progressBackgroundColor:
+          progressBackgroundColor ?? this.progressBackgroundColor,
+      progressHeight: progressHeight ?? this.progressHeight,
+      progressRadius: progressRadius ?? this.progressRadius,
+      deleteTooltipText: deleteTooltipText ?? this.deleteTooltipText,
+      deleteIcon: deleteIcon ?? this.deleteIcon,
+      deleteIconColor: deleteIconColor ?? this.deleteIconColor,
+      downloadText: downloadText ?? this.downloadText,
+      downloadIcon: downloadIcon ?? this.downloadIcon,
+      redownloadText: redownloadText ?? this.redownloadText,
+      redownloadIcon: redownloadIcon ?? this.redownloadIcon,
+      downloadForeground: downloadForeground ?? this.downloadForeground,
+      downloadBackground: downloadBackground ?? this.downloadBackground,
+      countTextBuilder: countTextBuilder ?? this.countTextBuilder,
+    );
+  }
+
   /// القيم الافتراضية الموحدة حسب الثيم
   /// Unified defaults based on theme
   factory AyahDownloadManagerStyle.defaults({
@@ -99,8 +177,8 @@ class AyahDownloadManagerStyle {
     required BuildContext context,
   }) {
     final scheme = Theme.of(context).colorScheme;
-    final onBg = AppColors.getTextColor(isDark);
     final primary = scheme.primary;
+    final onBg = AppColors.getTextColor(isDark);
 
     return AyahDownloadManagerStyle(
       // Header

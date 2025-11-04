@@ -14,7 +14,8 @@ class SurahPlayLandscapeWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final size = MediaQuery.sizeOf(context);
     final numberColor = style?.surahNameColor ?? AppColors.getTextColor(isDark);
-    final accent = style?.playIconColor ?? Colors.teal;
+    final accent =
+        style?.playIconColor ?? Theme.of(context).colorScheme.primary;
     return Align(
       alignment: AlignmentDirectional.centerEnd,
       child: Container(
@@ -59,14 +60,14 @@ class SurahPlayLandscapeWidget extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 32.0),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   textDirection: TextDirection.rtl,
                   children: [
                     Row(
                       textDirection: TextDirection.rtl,
                       children: [
                         SurahSkipToNext(style: style),
-                        const SizedBox(width: 8),
+                        const SizedBox(width: 16.0),
                         SizedBox(
                           height: 25,
                           width: 25,
@@ -108,7 +109,7 @@ class SurahPlayLandscapeWidget extends StatelessWidget {
                             ),
                           ),
                         ),
-                        const SizedBox(width: 8),
+                        const SizedBox(width: 16.0),
                         SurahSkipToPrevious(style: style),
                       ],
                     ),

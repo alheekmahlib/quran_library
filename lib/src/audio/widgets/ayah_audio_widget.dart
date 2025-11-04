@@ -94,19 +94,25 @@ class AyahsAudioWidget extends StatelessWidget {
                                                       .length,
                                                   activeTrackColor: style!
                                                           .seekBarActiveTrackColor ??
-                                                      Colors.teal,
+                                                      Theme.of(context)
+                                                          .colorScheme
+                                                          .primary,
                                                   inactiveTrackColor: style!
                                                           .seekBarInactiveTrackColor ??
                                                       Colors.grey,
                                                   thumbColor: style!
                                                           .seekBarThumbColor ??
-                                                      Colors.teal,
+                                                      Theme.of(context)
+                                                          .colorScheme
+                                                          .primary,
                                                   horizontalPadding: style!
                                                           .seekBarHorizontalPadding ??
                                                       0,
                                                   timeContainerColor: style!
                                                           .seekBarTimeContainerColor ??
-                                                      Colors.teal,
+                                                      Theme.of(context)
+                                                          .colorScheme
+                                                          .primary,
                                                 );
                                               })
                                             : StreamBuilder<
@@ -130,20 +136,26 @@ class AyahsAudioWidget extends StatelessWidget {
                                                           Duration.zero,
                                                       activeTrackColor: style!
                                                               .seekBarActiveTrackColor ??
-                                                          Colors.teal,
+                                                          Theme.of(context)
+                                                              .colorScheme
+                                                              .primary,
                                                       inactiveTrackColor: style!
                                                               .seekBarInactiveTrackColor ??
                                                           Colors.grey,
                                                       thumbColor: style!
                                                               .seekBarThumbColor ??
-                                                          Colors.teal,
+                                                          Theme.of(context)
+                                                              .colorScheme
+                                                              .primary,
                                                       onChangeEnd: audioCtrl
                                                           .state
                                                           .audioPlayer
                                                           .seek,
                                                       timeContainerColor: style!
                                                               .seekBarTimeContainerColor ??
-                                                          Colors.teal,
+                                                          Theme.of(context)
+                                                              .colorScheme
+                                                              .primary,
                                                       languageCode:
                                                           languageCode ?? 'ar',
                                                     );

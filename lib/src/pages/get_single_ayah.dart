@@ -1,4 +1,4 @@
-part of '../../../../quran.dart';
+part of '../../quran.dart';
 
 class GetSingleAyah extends StatelessWidget {
   final int surahNumber;

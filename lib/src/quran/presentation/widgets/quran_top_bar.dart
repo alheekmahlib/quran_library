@@ -26,13 +26,14 @@ class _QuranTopBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Centralized theming
-    final QuranTopBarStyle defaults =
-        topBarStyle ?? QuranTopBarStyle.defaults(isDark: isDark);
+    final QuranTopBarStyle defaults = topBarStyle ??
+        QuranTopBarStyle.defaults(isDark: isDark, context: context);
     final Color textColor =
         (defaults.textColor ?? AppColors.getTextColor(isDark));
     final Color bgColor = backgroundColor ??
         (defaults.backgroundColor ?? AppColors.getBackgroundColor(isDark));
-    final Color accentColor = defaults.accentColor ?? Colors.teal;
+    final Color accentColor =
+        defaults.accentColor ?? Theme.of(context).colorScheme.primary;
     final Color linearBg = accentColor is MaterialColor
         ? accentColor.shade100
         : accentColor.withValues(alpha: 0.15);
@@ -64,7 +65,9 @@ class _QuranTopBar extends StatelessWidget {
                     defaults.backIconPath ?? AssetsPath.assets.backArrow,
                     height: defaults.iconSize,
                     colorFilter: ColorFilter.mode(
-                        defaults.iconColor ?? Colors.teal, BlendMode.srcIn)),
+                        defaults.iconColor ??
+                            Theme.of(context).colorScheme.primary,
+                        BlendMode.srcIn)),
                 onPressed: () {
                   Navigator.pop(context);
                 },
@@ -75,7 +78,9 @@ class _QuranTopBar extends StatelessWidget {
                     defaults.menuIconPath ?? AssetsPath.assets.buttomSheet,
                     height: defaults.iconSize,
                     colorFilter: ColorFilter.mode(
-                        defaults.iconColor ?? Colors.teal, BlendMode.srcIn)),
+                        defaults.iconColor ??
+                            Theme.of(context).colorScheme.primary,
+                        BlendMode.srcIn)),
                 onPressed: () {
                   QuranCtrl.instance.searchFocusNode.requestFocus();
                   _showMenuBottomSheet(
@@ -94,7 +99,8 @@ class _QuranTopBar extends StatelessWidget {
                         defaults.audioIconPath ?? AssetsPath.assets.surahsAudio,
                         height: defaults.iconSize,
                         colorFilter: ColorFilter.mode(
-                            defaults.iconColor ?? Colors.teal,
+                            defaults.iconColor ??
+                                Theme.of(context).colorScheme.primary,
                             BlendMode.srcIn)),
                     onPressed: () async {
                       await AudioCtrl.instance.state.audioPlayer.stop();
@@ -105,7 +111,9 @@ class _QuranTopBar extends StatelessWidget {
                           MaterialPageRoute(
                             builder: (_) => SurahAudioScreen(
                               isDark: isDark,
-                              style: style,
+                              style: style ??
+                                  SurahAudioStyle.defaults(
+                                      isDark: isDark, context: context),
                               languageCode: languageCode,
                             ),
                           ),
@@ -193,7 +201,8 @@ class _MenuBottomSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final Color textColor = style.textColor ?? AppColors.getTextColor(isDark);
-    final Color accentColor = style.accentColor ?? Colors.teal;
+    final Color accentColor =
+        style.accentColor ?? Theme.of(context).colorScheme.primary;
 
     return DefaultTabController(
       length: 3,

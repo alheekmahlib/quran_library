@@ -36,8 +36,9 @@ class SurahChangeSurahReader extends StatelessWidget {
   }
 
   Widget _buildDialog(BuildContext context, SurahAudioStyle s, bool dark) {
-    final Color activeColor =
-        s.dialogSelectedReaderColor ?? s.primaryColor ?? Colors.teal;
+    final Color activeColor = s.dialogSelectedReaderColor ??
+        s.primaryColor ??
+        Theme.of(context).colorScheme.primary;
     final Color inactiveColor =
         s.dialogUnSelectedReaderColor ?? AppColors.getTextColor(dark);
     final double itemFontSize = s.readerNameInItemFontSize ?? 14;
@@ -161,13 +162,14 @@ class _SelectionIndicator extends StatelessWidget {
       width: 20,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        border: Border.all(color: color ?? Colors.teal, width: 2),
+        border: Border.all(
+            color: color ?? Theme.of(context).colorScheme.primary, width: 2),
       ),
       child: isSelected
           ? Icon(
               Icons.done,
               size: 14,
-              color: color ?? Colors.teal,
+              color: color ?? Theme.of(context).colorScheme.primary,
             )
           : null,
     );

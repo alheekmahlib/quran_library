@@ -60,9 +60,11 @@ class SearchTabStyle {
     required BuildContext context,
   }) {
     final text = AppColors.getTextColor(isDark);
+    final scheme = Theme.of(context).colorScheme;
+    final primary = scheme.primary;
     return SearchTabStyle(
       textColor: text,
-      accentColor: Colors.teal,
+      accentColor: primary,
       searchHintText: 'بحث في القرآن',
       searchHintStyle: QuranLibrary().cairoStyle.copyWith(
             color: text.withValues(alpha: 0.6),

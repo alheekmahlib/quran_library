@@ -20,7 +20,8 @@ class PlaySurahsWidget extends StatelessWidget {
             .withValues(alpha: 0.15);
     final handleColor = Colors.grey.withValues(alpha: .6);
     final numberColor = style?.surahNameColor ?? AppColors.getTextColor(isDark);
-    final accent = style?.playIconColor ?? Colors.teal;
+    final accent =
+        style?.playIconColor ?? Theme.of(context).colorScheme.primary;
     return Align(
       alignment: AlignmentDirectional.centerEnd,
       child: Container(

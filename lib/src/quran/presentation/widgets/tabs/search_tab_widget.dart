@@ -49,7 +49,8 @@ class _SearchTabState extends State<_SearchTab> {
         SearchTabStyle.defaults(isDark: widget.isDark, context: context);
     final Color textColor =
         s.textColor ?? AppColors.getTextColor(widget.isDark);
-    final Color accentColor = s.accentColor ?? Colors.teal;
+    final Color accentColor =
+        s.accentColor ?? Theme.of(context).colorScheme.primary;
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Padding(

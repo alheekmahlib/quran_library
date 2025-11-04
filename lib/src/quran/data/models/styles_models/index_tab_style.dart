@@ -53,9 +53,11 @@ class IndexTabStyle {
     required BuildContext context,
   }) {
     final text = AppColors.getTextColor(isDark);
+    final scheme = Theme.of(context).colorScheme;
+    final primary = scheme.primary;
     return IndexTabStyle(
       textColor: text,
-      accentColor: Colors.teal,
+      accentColor: primary,
       tabBarHeight: 35.0,
       tabBarRadius: 12.0,
       indicatorRadius: 10.0,

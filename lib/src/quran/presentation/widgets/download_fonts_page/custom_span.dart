@@ -1,6 +1,7 @@
 part of '/quran.dart';
 
 TextSpan _span({
+  required BuildContext context,
   required String text,
   required int pageIndex,
   required bool isSelected,
@@ -198,7 +199,7 @@ TextSpan _span({
               //         pageIndex == 498)
               // ? 20
               // : null,
-              color: ayahIconColor ?? Colors.teal,
+              color: ayahIconColor ?? Theme.of(context).colorScheme.primary,
               backgroundColor: ayahBookmarked.contains(ayahUQNum)
                   ? bookmarksColor
                   : (bookmarksAyahs.contains(ayahUQNum)

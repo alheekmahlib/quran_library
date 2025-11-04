@@ -145,14 +145,18 @@ class _PackageSliderWidgetState extends State<PackageSliderWidget> {
             padding: EdgeInsets.symmetric(horizontal: widget.horizontalPadding),
             child: SliderTheme(
               data: SliderTheme.of(context).copyWith(
-                activeTrackColor: widget.activeTrackColor ?? Colors.teal,
+                activeTrackColor: widget.activeTrackColor ??
+                    Theme.of(context).colorScheme.primary,
                 inactiveTrackColor: widget.inactiveTrackColor ?? Colors.grey,
-                thumbColor: widget.thumbColor ?? Colors.teal,
+                thumbColor:
+                    widget.thumbColor ?? Theme.of(context).colorScheme.primary,
                 thumbShape: CustomSliderThumbRect(
+                  childContext: context,
                   thumbRadius: 20,
                   min: widget.min,
                   max: widget.max,
-                  thumbColor: widget.thumbColor ?? Colors.teal,
+                  thumbColor: widget.thumbColor ??
+                      Theme.of(context).colorScheme.primary,
                 ),
                 overlayShape:
                     const RoundSliderOverlayShape(overlayRadius: 10.0),
@@ -185,7 +189,8 @@ class _PackageSliderWidgetState extends State<PackageSliderWidget> {
                     padding: const EdgeInsets.symmetric(
                         horizontal: 8.0, vertical: 2.0),
                     decoration: BoxDecoration(
-                      color: widget.timeContainerColor ?? Colors.teal,
+                      color: widget.timeContainerColor ??
+                          Theme.of(context).colorScheme.primary,
                       borderRadius: const BorderRadius.all(
                         Radius.circular(4),
                       ),
@@ -207,7 +212,8 @@ class _PackageSliderWidgetState extends State<PackageSliderWidget> {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 8.0, vertical: 2.0),
                         decoration: BoxDecoration(
-                          color: widget.timeContainerColor ?? Colors.teal,
+                          color: widget.timeContainerColor ??
+                              Theme.of(context).colorScheme.primary,
                           borderRadius: const BorderRadius.only(
                             topLeft: Radius.circular(4),
                             bottomLeft: Radius.circular(4),
@@ -232,7 +238,8 @@ class _PackageSliderWidgetState extends State<PackageSliderWidget> {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 8.0, vertical: 2.0),
                         decoration: BoxDecoration(
-                          color: widget.timeContainerColor ?? Colors.teal,
+                          color: widget.timeContainerColor ??
+                              Theme.of(context).colorScheme.primary,
                           borderRadius: const BorderRadius.only(
                             topRight: Radius.circular(4),
                             bottomRight: Radius.circular(4),

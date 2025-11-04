@@ -351,33 +351,29 @@ class QuranLibraryScreen extends StatelessWidget {
           WidgetsBinding.instance.addPostFrameCallback((_) {
             // على الويب: لا تسرق التركيز من حقول الكتابة
             if (kIsWeb) {
-              if (quranCtrl.state.fontsSelected.value == 1) {
-                // final idx =
-                //     (quranCtrl.state.currentPageNumber.value - 1).clamp(0, 603);
-                // QuranCtrl.instance.idlePreloadFontsAround(idx);
-              }
               final pf = FocusManager.instance.primaryFocus;
               final isTextFieldFocused = pf?.context?.widget is EditableText;
               if (!isTextFieldFocused) {
                 FocusScope.of(context)
                     .requestFocus(quranCtrl.state.quranPageRLFocusNode);
               }
-            } else {
-              // على المنصات الأخرى أبقِ السلوك كما هو
-              FocusScope.of(context)
-                  .requestFocus(quranCtrl.state.quranPageRLFocusNode);
             }
+            // } else {
+            //   // على المنصات الأخرى أبقِ السلوك كما هو
+            //   FocusScope.of(context)
+            //       .requestFocus(quranCtrl.state.quranPageRLFocusNode);
+            // }
           });
-          return Directionality(
-            textDirection: TextDirection.rtl,
-            child: Scaffold(
-              backgroundColor:
-                  backgroundColor ?? AppColors.getBackgroundColor(isDark),
-              body: SafeArea(
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    withPageView
+          return Scaffold(
+            backgroundColor:
+                backgroundColor ?? AppColors.getBackgroundColor(isDark),
+            body: SafeArea(
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  Directionality(
+                    textDirection: TextDirection.rtl,
+                    child: withPageView
                         ? Focus(
                             focusNode: quranCtrl.state.quranPageRLFocusNode,
                             // على الويب، إيقاف الـ autofocus لتجنّب سرقة التركيز
@@ -539,83 +535,83 @@ class QuranLibraryScreen extends StatelessWidget {
                             ayahLongClickStyle: ayahLongClickStyle,
                             tafsirStyle: tafsirStyle,
                           ),
-                    GetBuilder<QuranCtrl>(
-                      id: 'isShowControl',
-                      builder: (quranCtrl) {
-                        final visible = quranCtrl.isShowControl.value;
-                        return RepaintBoundary(
-                          child: IgnorePointer(
-                            ignoring: !visible,
-                            child: AnimatedOpacity(
-                              opacity: visible ? 1.0 : 0.0,
-                              duration: const Duration(milliseconds: 150),
-                              curve: Curves.easeInOut,
-                              child: Stack(
-                                alignment: Alignment.center,
-                                children: [
-                                  // السلايدر السفلي - يظهر من الأسفل للأعلى
-                                  // Bottom slider - appears from bottom to top
-                                  isShowAudioSlider!
-                                      ? BottomSlider(
-                                          isVisible: visible,
-                                          onClose: () {
-                                            QuranCtrl.instance.isShowControl
-                                                .value = false;
-                                            SliderController.instance
-                                                .hideBottomContent();
-                                          },
-                                          isDark: isDark,
-                                          sliderHeight:
-                                              UiHelper.currentOrientation(
-                                                  0.0, 40.0, context),
-                                          style: ayahStyle ?? AyahAudioStyle(),
-                                          contentChild: const SizedBox.shrink(),
-                                          child: Flexible(
-                                            child: AyahsAudioWidget(
-                                              style:
-                                                  ayahStyle ?? AyahAudioStyle(),
-                                              isDark: isDark,
-                                              languageCode: languageCode,
-                                              downloadManagerStyle:
-                                                  ayahDownloadManagerStyle,
-                                            ),
+                  ),
+                  GetBuilder<QuranCtrl>(
+                    id: 'isShowControl',
+                    builder: (quranCtrl) {
+                      final visible = quranCtrl.isShowControl.value;
+                      return RepaintBoundary(
+                        child: IgnorePointer(
+                          ignoring: !visible,
+                          child: AnimatedOpacity(
+                            opacity: visible ? 1.0 : 0.0,
+                            duration: const Duration(milliseconds: 150),
+                            curve: Curves.easeInOut,
+                            child: Stack(
+                              alignment: Alignment.center,
+                              children: [
+                                // السلايدر السفلي - يظهر من الأسفل للأعلى
+                                // Bottom slider - appears from bottom to top
+                                isShowAudioSlider!
+                                    ? BottomSlider(
+                                        isVisible: visible,
+                                        onClose: () {
+                                          QuranCtrl.instance.isShowControl
+                                              .value = false;
+                                          SliderController.instance
+                                              .hideBottomContent();
+                                        },
+                                        isDark: isDark,
+                                        sliderHeight:
+                                            UiHelper.currentOrientation(
+                                                0.0, 40.0, context),
+                                        style: ayahStyle ?? AyahAudioStyle(),
+                                        contentChild: const SizedBox.shrink(),
+                                        child: Flexible(
+                                          child: AyahsAudioWidget(
+                                            style:
+                                                ayahStyle ?? AyahAudioStyle(),
+                                            isDark: isDark,
+                                            languageCode: languageCode,
+                                            downloadManagerStyle:
+                                                ayahDownloadManagerStyle,
                                           ),
-                                        )
-                                      : const SizedBox.shrink(),
-                                  kIsWeb
-                                      ? JumpingPageControllerWidget(
-                                          backgroundColor: backgroundColor,
-                                          isDark: isDark,
-                                          textColor: textColor,
-                                          quranCtrl: quranCtrl,
-                                        )
-                                      : const SizedBox.shrink(),
-                                  appBar == null && useDefaultAppBar && visible
-                                      ? _QuranTopBar(
-                                          languageCode ?? 'ar',
-                                          isDark,
-                                          style:
-                                              surahStyle ?? SurahAudioStyle(),
-                                          backgroundColor: backgroundColor,
-                                          downloadFontsDialogStyle:
-                                              downloadFontsDialogStyle,
-                                          isFontsLocal: isFontsLocal,
-                                          topBarStyle: topBarStyle ??
-                                              QuranTopBarStyle.defaults(
-                                                  isDark: isDark),
-                                          indexTabStyle: indexTabStyle,
-                                          searchTabStyle: searchTabStyle,
-                                        )
-                                      : const SizedBox.shrink(),
-                                ],
-                              ),
+                                        ),
+                                      )
+                                    : const SizedBox.shrink(),
+                                kIsWeb
+                                    ? JumpingPageControllerWidget(
+                                        backgroundColor: backgroundColor,
+                                        isDark: isDark,
+                                        textColor: textColor,
+                                        quranCtrl: quranCtrl,
+                                      )
+                                    : const SizedBox.shrink(),
+                                appBar == null && useDefaultAppBar && visible
+                                    ? _QuranTopBar(
+                                        languageCode ?? 'ar',
+                                        isDark,
+                                        style: surahStyle ?? SurahAudioStyle(),
+                                        backgroundColor: backgroundColor,
+                                        downloadFontsDialogStyle:
+                                            downloadFontsDialogStyle,
+                                        isFontsLocal: isFontsLocal,
+                                        topBarStyle: topBarStyle ??
+                                            QuranTopBarStyle.defaults(
+                                                isDark: isDark,
+                                                context: context),
+                                        indexTabStyle: indexTabStyle,
+                                        searchTabStyle: searchTabStyle,
+                                      )
+                                    : const SizedBox.shrink(),
+                              ],
                             ),
                           ),
-                        );
-                      },
-                    ),
-                  ],
-                ),
+                        ),
+                      );
+                    },
+                  ),
+                ],
               ),
             ),
           );

@@ -141,12 +141,15 @@ class QuranTopBarStyle {
       );
 
   /// Provide sensible defaults based on theme (isDark)
-  factory QuranTopBarStyle.defaults({required bool isDark}) {
+  factory QuranTopBarStyle.defaults(
+      {required bool isDark, required BuildContext context}) {
+    final scheme = Theme.of(context).colorScheme;
+    final primary = scheme.primary;
     return QuranTopBarStyle(
       backIconPath: AssetsPath.assets.backArrow,
       backgroundColor: AppColors.getBackgroundColor(isDark),
       textColor: AppColors.getTextColor(isDark),
-      accentColor: Colors.teal,
+      accentColor: primary,
       shadowColor: Colors.black.withValues(alpha: .2),
       handleColor: AppColors.getTextColor(isDark).withValues(alpha: 0.25),
       elevation: 5,

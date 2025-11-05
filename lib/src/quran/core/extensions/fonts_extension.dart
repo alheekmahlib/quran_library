@@ -185,7 +185,7 @@ extension FontsExtension on QuranCtrl {
   /// **الدالة المعدلة:** تحضير الخطوط للصفحة الحالية والصفحات المجاورة
   Future<void> prepareFonts(int pageIndex, {bool isFontsLocal = false}) async {
     if (state.loadedFontPages.contains(pageIndex) &&
-        QuranLibrary().currentFontsSelected == 0 &&
+            QuranLibrary().currentFontsSelected == 0 ||
         isFontsLocal) {
       return;
     }

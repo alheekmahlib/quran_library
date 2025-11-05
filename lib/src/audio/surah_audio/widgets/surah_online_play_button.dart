@@ -12,7 +12,7 @@ class SurahOnlinePlayButton extends StatelessWidget {
         style?.primaryColor ?? Theme.of(context).colorScheme.primary;
     return Container(
       height: 60,
-      width: 70,
+      width: 60,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         gradient: LinearGradient(
@@ -44,6 +44,10 @@ class SurahOnlinePlayButton extends StatelessWidget {
                   width: 20,
                   height: 20,
                   child: CircularProgressIndicator(
+                    constraints: BoxConstraints(
+                      maxHeight: 20,
+                      maxWidth: 20,
+                    ),
                     strokeWidth: 2,
                   ));
             } else if (playerState != null && !playerState.playing) {

@@ -48,14 +48,15 @@ class QuranCtrl extends GetxController {
   // final int _lastPrefetchedForPage = -1;
 
   QuranState state = QuranState();
-  Timer? _savePageDebounce;
 
   @override
   void onInit() async {
     super.onInit();
     if (!kIsWeb) {
       _dir = await getApplicationDocumentsDirectory();
+      await initFontLoader();
     }
+    await prepareFonts(state.currentPageNumber.value - 1);
     searchFocusNode = FocusNode();
     searchTextController = TextEditingController();
   }
@@ -76,6 +77,9 @@ class QuranCtrl extends GetxController {
     super.onClose();
     searchFocusNode.dispose();
     searchTextController.dispose();
+    if (!kIsWeb) {
+      disposeFontLoader();
+    }
   }
 
   /// -------- [Methods] ----------
@@ -331,11 +335,9 @@ class QuranCtrl extends GetxController {
 
   void saveLastPage(int lastPage) {
     this.lastPage = lastPage;
-    // Debounce الكتابة لتقليل I/O
-    _savePageDebounce?.cancel();
-    _savePageDebounce = Timer(const Duration(milliseconds: 400), () {
+    SchedulerBinding.instance.scheduleTask(() async {
       _quranRepository.saveLastPage(lastPage);
-    });
+    }, Priority.idle);
   }
 
   // شرح: تحسين التنقل للحصول على سكرول أكثر سلاسة

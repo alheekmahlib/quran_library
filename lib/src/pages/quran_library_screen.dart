@@ -430,11 +430,7 @@ class QuranLibraryScreen extends StatelessWidget {
                                   quranCtrl.state.currentPageNumber.value =
                                       pageIndex + 1;
                                   quranCtrl.saveLastPage(pageIndex + 1);
-
-                                  if (QuranLibrary().currentFontsSelected ==
-                                      1) {
-                                    await quranCtrl.prepareFonts(pageIndex);
-                                  }
+                                  await quranCtrl.prepareFonts(pageIndex);
                                 });
                               },
                               pageSnapping: true,

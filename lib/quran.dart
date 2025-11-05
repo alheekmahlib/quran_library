@@ -1,7 +1,8 @@
-import 'dart:async' show Timer;
+import 'dart:async' show Completer, Timer;
 import 'dart:convert' show jsonDecode, jsonEncode;
 import 'dart:developer' show log;
 import 'dart:io' show File, Platform, Directory;
+import 'dart:isolate';
 import 'dart:math' as math show max;
 
 import 'package:archive/archive.dart' show ZipDecoder;

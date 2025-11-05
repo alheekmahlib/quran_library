@@ -177,12 +177,15 @@ class SliderController extends GetxController with GetTickerProviderStateMixin {
   // تحديث حالة ظهور السلايدر السفلي مع تنظيف البيانات
   // Update bottom slider visibility state with data cleanup
   void updateBottomHandleVisibility(bool visible) {
-    if (visible) {
-      bottomController.forward();
-    } else {
-      bottomController.reverse();
+    if (bottomController.isDismissed) {
+      if (visible) {
+        bottomController.forward();
+      } else {
+        bottomController.reverse();
+      }
+      log('Bottom slider visibility updated: $visible',
+          name: 'SliderController');
     }
-    log('Bottom slider visibility updated: $visible', name: 'SliderController');
   }
 
   // إخفاء السلايدر مع أنيميشن وانتظار الانتهاء

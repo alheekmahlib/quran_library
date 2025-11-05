@@ -35,6 +35,12 @@ class QuranState {
   bool didPrepareInitialFonts = false;
 
   final FocusNode quranPageRLFocusNode = FocusNode();
+  // متغير لتتبع رقم الجيل الحالي لطلبات التحميل المسبق
+  int _fontPreloadGeneration = 0;
+  // متغير لتجميع تحديثات الواجهة
+  bool _needsUpdate = false;
+  // المؤقت الخاص بالـ Debouncing
+  Timer? _debounceTimer;
 
   // ملاحظة: تم إزالة GlobalKey<ScaffoldState> لتجنب التعارض مع التطبيقات الأخرى
   // Note: GlobalKey<ScaffoldState> has been removed to avoid conflicts with other applications

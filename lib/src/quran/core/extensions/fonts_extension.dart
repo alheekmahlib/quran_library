@@ -192,6 +192,8 @@ extension FontsExtension on QuranCtrl {
     if (!state.loadedFontPages.contains(pageIndex) && !kIsWeb) {
       final currentGeneration = ++state._fontPreloadGeneration;
       _sendFontLoadRequest(pageIndex, isFontsLocal, currentGeneration);
+    } else if (kIsWeb) {
+      await loadFont(pageIndex);
     }
 
     state._debounceTimer?.cancel();
@@ -538,6 +540,8 @@ extension FontsExtension on QuranCtrl {
       }
       final fontLoader = FontLoader(getFontPath(pageIndex));
       if (kIsWeb) {
+        log('Loading font for page ${pageIndex + 1} from web...',
+            name: 'FontsLoad');
         fontLoader.addFont(_getWebFontBytes(pageIndex));
       } else {
         // التحميل من التخزين المحلي (سواء كانت isFontsLocal true أم false)
@@ -550,7 +554,7 @@ extension FontsExtension on QuranCtrl {
       }
       await fontLoader.load();
       state.loadedFontPages.add(pageIndex);
-      update(['_pageViewBuild_$pageIndex']);
+      update();
       // حفظ القائمة لتسريع الجلسات اللاحقة
       GetStorage().write(
           _StorageConstants().loadedFontPages, state.loadedFontPages.toList());

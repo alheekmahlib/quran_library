@@ -31,6 +31,8 @@ class QuranLibraryScreen extends StatelessWidget {
     this.circularProgressWidget,
     this.downloadFontsDialogStyle,
     this.isDark = false,
+    @Deprecated(
+        'In versions after 2.2.4 this parameter will be removed. Please use juzName in TopBottomQuranStyle instead.')
     this.juzName,
     this.languageCode = 'ar',
     this.onAyahLongPress,
@@ -38,6 +40,8 @@ class QuranLibraryScreen extends StatelessWidget {
     this.onPagePress,
     this.onSurahBannerPress,
     this.pageIndex = 0,
+    @Deprecated(
+        'In versions after 2.2.4 this parameter will be removed. Please use sajdaName in TopBottomQuranStyle instead.')
     this.sajdaName,
     this.showAyahBookmarkedIcon = true,
     this.surahInfoStyle,
@@ -45,6 +49,8 @@ class QuranLibraryScreen extends StatelessWidget {
     this.surahNumber,
     this.textColor,
     this.singleAyahTextColors,
+    @Deprecated(
+        'In versions after 2.2.4 this parameter will be removed. Please use topTitleChild in TopBottomQuranStyle instead.')
     this.topTitleChild,
     this.useDefaultAppBar = true,
     this.withPageView = true,
@@ -151,6 +157,8 @@ class QuranLibraryScreen extends StatelessWidget {
   ///
   /// If you want to change the word “الجزء” to another word or translate it just pass it to [juzName].
   ///
+  @Deprecated(
+      'In versions after 2.2.4 this parameter will be removed. Please use juzName in TopBottomQuranStyle instead.')
   final String? juzName;
 
   /// إذا تم توفيره فسيتم استدعاؤه عند تغيير صفحة القرآن [onPageChanged]
@@ -186,6 +194,8 @@ class QuranLibraryScreen extends StatelessWidget {
   ///
   /// If you want to change the word “سجدة” to another word or translate it just pass it to [sajdaName].
   ///
+  @Deprecated(
+      'In versions after 2.2.4 this parameter will be removed. Please use sajdaName in TopBottomQuranStyle instead.')
   final String? sajdaName;
 
   /// يمكنك تمكين أو تعطيل عرض أيقونة الإشارة المرجعية للآية [showAyahBookmarkedIcon]
@@ -212,6 +222,8 @@ class QuranLibraryScreen extends StatelessWidget {
   ///
   /// If you want to add a widget next to the surah name [topTitleChild]
   ///
+  @Deprecated(
+      'In versions after 2.2.4 this parameter will be removed. Please use topTitleChild in TopBottomQuranStyle instead.')
   final Widget? topTitleChild;
 
   /// يمكنك تمرير لون نص القرآن [textColor]

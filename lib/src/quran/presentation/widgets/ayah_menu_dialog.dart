@@ -222,7 +222,7 @@ class AyahMenuDialog extends StatelessWidget {
               }
 
               // زر تشغيل جميع الآيات
-              if (s.showPlayAllButton ?? true) {
+              if (s.showPlayAllButton ?? true && !kIsWeb) {
                 addDividerIfNeeded();
                 widgets.add(
                   GestureDetector(

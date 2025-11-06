@@ -1,5 +1,3 @@
-// ignore_for_file: deprecated_member_use_from_same_package
-
 part of '/quran.dart';
 
 /// شاشة لعرض سورة واحدة باستخدام SurahCtrl و _QuranLinePage

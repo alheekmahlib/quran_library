@@ -158,7 +158,7 @@ class _SearchTabState extends State<_SearchTab> {
                             final rl =
                                 QuranCtrl.instance.state.quranPageRLFocusNode;
                             rl.canRequestFocus = true;
-                            FocusScope.of(context).requestFocus(rl);
+                            rl.requestFocus();
                           }
                         },
                         child: Container(
@@ -244,7 +244,7 @@ class _SearchTabState extends State<_SearchTab> {
                           final rl =
                               QuranCtrl.instance.state.quranPageRLFocusNode;
                           rl.canRequestFocus = true;
-                          FocusScope.of(context).requestFocus(rl);
+                          rl.requestFocus();
                         }
                       },
                     );

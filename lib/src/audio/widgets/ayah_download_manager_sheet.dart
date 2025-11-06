@@ -142,7 +142,7 @@ class AyahDownloadManagerSheet extends StatelessWidget {
                                     effectiveStyle.itemVerticalPadding ?? 8,
                               ),
                               leading: CircleAvatar(
-                                radius: 22,
+                                radius: 18,
                                 backgroundColor: fullyDownloaded
                                     ? (effectiveStyle.avatarDownloadedColor ??
                                         Theme.of(context).colorScheme.primary)
@@ -157,7 +157,9 @@ class AyahDownloadManagerSheet extends StatelessWidget {
                                       .convertNumbersAccordingToLang(
                                           languageCode: language ?? 'ar'),
                                   style: effectiveStyle.avatarTextStyle ??
-                                      const TextStyle(color: Colors.white),
+                                      QuranLibrary().cairoStyle.copyWith(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold),
                                 ),
                               ),
                               title: Column(
@@ -237,15 +239,15 @@ class DownloadedAndDeleteWidget extends StatelessWidget {
       builder: (audioCtrl) => Wrap(
         spacing: 8,
         children: [
-          if (fullyDownloaded)
-            IconButton(
-              tooltip: style?.deleteTooltipText ?? 'حذف السورة',
-              icon: Icon(
-                style?.deleteIcon ?? Icons.delete_outline,
-                color: style?.deleteIconColor ?? Colors.red,
-              ),
-              onPressed: isBusy ? null : () => onRequestDelete(s.surahNumber),
-            ),
+          // if (fullyDownloaded)
+          //   IconButton(
+          //     tooltip: style?.deleteTooltipText ?? 'حذف السورة',
+          //     icon: Icon(
+          //       style?.deleteIcon ?? Icons.delete_outline,
+          //       color: style?.deleteIconColor ?? Colors.red,
+          //     ),
+          //     onPressed: isBusy ? null : () => onRequestDelete(s.surahNumber),
+          //   ),
           Obx(() {
             final isDownloading = audioCtrl.state.isDownloading.value;
             final currentDownloadingSurah =
@@ -255,7 +257,7 @@ class DownloadedAndDeleteWidget extends StatelessWidget {
 
             if (isThisItemDownloading) {
               // زر الإيقاف يظهر فقط للسورة الجاري تحميلها الآن
-              return FilledButton.icon(
+              return FilledButton(
                 onPressed: () {
                   audioCtrl.state.cancelRequested.value = true;
                   AudioCtrl.instance.cancelDownload();
@@ -267,39 +269,32 @@ class DownloadedAndDeleteWidget extends StatelessWidget {
                   foregroundColor: WidgetStatePropertyAll(
                       style?.stopButtonForeground ?? Colors.white),
                 ),
-                icon: Icon(style?.stopButtonIcon ?? Icons.stop_circle_outlined),
-                label: Text(style?.stopButtonText ?? 'إيقاف التحميل'),
+                child:
+                    Icon(style?.stopButtonIcon ?? Icons.stop_circle_outlined),
               );
             }
 
             // إذا لم يكن هذا العنصر هو الجاري تحميله حاليًا، أظهر زر تحميل/إعادة
-            return FilledButton.icon(
-              onPressed:
-                  isDownloading ? null : () => onRequestDownload(s.surahNumber),
+            return FilledButton(
+              onPressed: isDownloading
+                  ? null
+                  : () => fullyDownloaded
+                      ? onRequestDelete(s.surahNumber)
+                      : onRequestDownload(s.surahNumber),
               style: ButtonStyle(
-                backgroundColor: WidgetStatePropertyAll(
-                    style?.downloadBackground ??
-                        Theme.of(context).colorScheme.primary),
+                backgroundColor: WidgetStatePropertyAll(fullyDownloaded
+                    ? (style?.deleteIconColor ?? Colors.red)
+                    : (style?.downloadBackground ??
+                        Theme.of(context).colorScheme.primary)),
                 foregroundColor: WidgetStatePropertyAll(
                     style?.downloadForeground ??
                         Theme.of(context).colorScheme.primary),
               ),
-              icon: Icon(
+              child: Icon(
                 fullyDownloaded
-                    ? (style?.redownloadIcon ?? Icons.refresh)
+                    ? (style?.deleteIcon ?? Icons.delete_outline)
                     : (style?.downloadIcon ?? Icons.download),
                 color: Colors.white,
-              ),
-              label: Text(
-                fullyDownloaded
-                    ? (style?.redownloadText ?? 'إعادة')
-                    : (style?.downloadText ?? 'تحميل'),
-                style: QuranLibrary().cairoStyle.copyWith(
-                      fontSize: 14,
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      height: 1.2,
-                    ),
               ),
             );
           }),

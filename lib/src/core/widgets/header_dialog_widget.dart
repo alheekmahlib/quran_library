@@ -19,7 +19,7 @@ class HeaderDialogWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Stack(
-      alignment: AlignmentDirectional.centerStart,
+      alignment: AlignmentDirectional.centerEnd,
       children: [
         Container(
           height: 45,
@@ -29,8 +29,8 @@ class HeaderDialogWidget extends StatelessWidget {
             borderRadius: BorderRadius.circular(12),
             gradient: backgroundGradient ??
                 LinearGradient(
-                  begin: AlignmentDirectional.centerStart,
-                  end: AlignmentDirectional.centerEnd,
+                  begin: AlignmentDirectional.centerEnd,
+                  end: AlignmentDirectional.centerStart,
                   colors: [
                     Theme.of(context)
                         .colorScheme

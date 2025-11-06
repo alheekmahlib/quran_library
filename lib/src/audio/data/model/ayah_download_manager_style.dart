@@ -16,7 +16,6 @@ class AyahDownloadManagerStyle {
   final double? handleRadius;
 
   // Stop/Cancel button
-  final String? stopButtonText;
   final IconData? stopButtonIcon;
   final Color? stopButtonForeground;
   final Color? stopButtonBackground;
@@ -40,12 +39,10 @@ class AyahDownloadManagerStyle {
   final double? progressRadius;
 
   // Delete action
-  final String? deleteTooltipText;
   final IconData? deleteIcon;
   final Color? deleteIconColor;
 
   // Download action
-  final String? downloadText;
   final IconData? downloadIcon;
   final String? redownloadText;
   final IconData? redownloadIcon;
@@ -64,7 +61,6 @@ class AyahDownloadManagerStyle {
     this.handleWidth,
     this.handleHeight,
     this.handleRadius,
-    this.stopButtonText,
     this.stopButtonIcon,
     this.stopButtonForeground,
     this.stopButtonBackground,
@@ -80,10 +76,8 @@ class AyahDownloadManagerStyle {
     this.progressBackgroundColor,
     this.progressHeight,
     this.progressRadius,
-    this.deleteTooltipText,
     this.deleteIcon,
     this.deleteIconColor,
-    this.downloadText,
     this.downloadIcon,
     this.redownloadText,
     this.redownloadIcon,
@@ -137,7 +131,6 @@ class AyahDownloadManagerStyle {
       handleWidth: handleWidth ?? this.handleWidth,
       handleHeight: handleHeight ?? this.handleHeight,
       handleRadius: handleRadius ?? this.handleRadius,
-      stopButtonText: stopButtonText ?? this.stopButtonText,
       stopButtonIcon: stopButtonIcon ?? this.stopButtonIcon,
       stopButtonForeground: stopButtonForeground ?? this.stopButtonForeground,
       stopButtonBackground: stopButtonBackground ?? this.stopButtonBackground,
@@ -157,10 +150,8 @@ class AyahDownloadManagerStyle {
           progressBackgroundColor ?? this.progressBackgroundColor,
       progressHeight: progressHeight ?? this.progressHeight,
       progressRadius: progressRadius ?? this.progressRadius,
-      deleteTooltipText: deleteTooltipText ?? this.deleteTooltipText,
       deleteIcon: deleteIcon ?? this.deleteIcon,
       deleteIconColor: deleteIconColor ?? this.deleteIconColor,
-      downloadText: downloadText ?? this.downloadText,
       downloadIcon: downloadIcon ?? this.downloadIcon,
       redownloadText: redownloadText ?? this.redownloadText,
       redownloadIcon: redownloadIcon ?? this.redownloadIcon,
@@ -198,7 +189,6 @@ class AyahDownloadManagerStyle {
       handleRadius: 8.0,
 
       // Stop/Cancel button
-      stopButtonText: 'إيقاف التحميل',
       stopButtonIcon: Icons.stop_circle_outlined,
       stopButtonForeground: Colors.white,
       stopButtonBackground: primary,
@@ -225,7 +215,9 @@ class AyahDownloadManagerStyle {
       // Avatar
       avatarDownloadedColor: primary,
       avatarUndownloadedColor: primary.withValues(alpha: 0.4),
-      avatarTextStyle: const TextStyle(color: Colors.white),
+      avatarTextStyle: QuranLibrary()
+          .cairoStyle
+          .copyWith(color: Colors.white, fontWeight: FontWeight.bold),
 
       // Progress
       progressColor: primary.withValues(alpha: 0.25),
@@ -235,12 +227,10 @@ class AyahDownloadManagerStyle {
       progressRadius: 8.0,
 
       // Delete action
-      deleteTooltipText: 'حذف السورة',
       deleteIcon: Icons.delete_outline,
       deleteIconColor: Colors.red,
 
       // Download action
-      downloadText: 'تحميل',
       downloadIcon: Icons.download,
       redownloadText: 'إعادة',
       redownloadIcon: Icons.refresh,

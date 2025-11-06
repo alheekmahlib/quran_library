@@ -51,9 +51,17 @@ class QuranLibraryScreen extends StatelessWidget {
     this.isFontsLocal = false,
     this.fontsName = '',
     this.ayahBookmarked = const [],
+    @Deprecated(
+        'In versions after 2.2.4 this parameter will be removed. Please use customMenuItems in AyahMenuStyle instead.')
     this.anotherMenuChild,
+    @Deprecated(
+        'In versions after 2.2.4 this parameter will be removed. Please use customMenuItems in AyahMenuStyle instead.')
     this.anotherMenuChildOnTap,
+    @Deprecated(
+        'In versions after 2.2.4 this parameter will be removed. Please use customMenuItems in AyahMenuStyle instead.')
     this.secondMenuChild,
+    @Deprecated(
+        'In versions after 2.2.4 this parameter will be removed. Please use customMenuItems in AyahMenuStyle instead.')
     this.secondMenuChildOnTap,
     this.ayahStyle,
     this.surahStyle,
@@ -242,28 +250,28 @@ class QuranLibraryScreen extends StatelessWidget {
   ///
   /// [anotherMenuChild] First additional button for ayah options menu - you can add custom icon or text
   @Deprecated(
-      'In versions after 2.2.4 this parameter will be removed. Please use anotherMenuChild in AyahMenuStyle instead.')
+      'In versions after 2.2.4 this parameter will be removed. Please use customMenuItems in AyahMenuStyle instead.')
   final Widget? anotherMenuChild;
 
   /// دالة يتم استدعاؤها عند الضغط على الزر الإضافي الأول في قائمة خيارات الآية [anotherMenuChildOnTap]
   ///
   /// [anotherMenuChildOnTap] Function called when pressing the first additional button in ayah options menu
   @Deprecated(
-      'In versions after 2.2.4 this parameter will be removed. Please use anotherMenuChild in AyahMenuStyle instead.')
+      'In versions after 2.2.4 this parameter will be removed. Please use customMenuItems in AyahMenuStyle instead.')
   final void Function(AyahModel ayah)? anotherMenuChildOnTap;
 
   /// زر إضافي ثاني لقائمة خيارات الآية - يمكن إضافة أيقونة أو نص مخصص [secondMenuChild]
   ///
   /// [secondMenuChild] Second additional button for ayah options menu - you can add custom icon or text
   @Deprecated(
-      'In versions after 2.2.4 this parameter will be removed. Please use anotherMenuChild in AyahMenuStyle instead.')
+      'In versions after 2.2.4 this parameter will be removed. Please use customMenuItems in AyahMenuStyle instead.')
   final Widget? secondMenuChild;
 
   /// دالة يتم استدعاؤها عند الضغط على الزر الإضافي الثاني في قائمة خيارات الآية [secondMenuChildOnTap]
   ///
   /// [secondMenuChildOnTap] Function called when pressing the second additional button in ayah options menu
   @Deprecated(
-      'In versions after 2.2.4 this parameter will be removed. Please use anotherMenuChild in AyahMenuStyle instead.')
+      'In versions after 2.2.4 this parameter will be removed. Please use customMenuItems in AyahMenuStyle instead.')
   final void Function(AyahModel ayah)? secondMenuChildOnTap;
 
   /// نمط تخصيص مظهر المشغل الصوتي للآيات - يتحكم في الألوان والخطوط والأيقونات [ayahStyle]

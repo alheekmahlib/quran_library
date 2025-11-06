@@ -28,9 +28,17 @@ class TopAndBottomWidget extends StatelessWidget {
     required this.isRight,
     required this.child,
     this.languageCode,
+    @Deprecated(
+        'In versions after 2.2.4 this parameter will be removed. Please use juzName in TopBottomQuranStyle instead.')
     this.juzName,
+    @Deprecated(
+        'In versions after 2.2.4 this parameter will be removed. Please use sajdaName in TopBottomQuranStyle instead.')
     this.sajdaName,
+    @Deprecated(
+        'In versions after 2.2.4 this parameter will be removed. Please use topTitleChild in TopBottomQuranStyle instead.')
     this.topTitleChild,
+    @Deprecated(
+        'In versions after 2.2.4 this parameter will be removed. Please use surahName in TopBottomQuranStyle instead.')
     this.surahName,
     this.isSurah = false,
     this.surahNumber,

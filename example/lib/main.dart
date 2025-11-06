@@ -73,24 +73,24 @@ class FullQuran extends StatelessWidget {
       // backgroundColor: Colors.white,
       // textColor: Colors.black,
       isFontsLocal: false,
-      anotherMenuChild:
-          const Icon(Icons.play_arrow_outlined, size: 28, color: Colors.teal),
-      anotherMenuChildOnTap: (ayah) {
-        // SurahAudioController.instance.state.currentAyahUnequeNumber =
-        //     ayah.ayahUQNumber;
-        AudioCtrl.instance
-            .playAyah(context, ayah.ayahUQNumber, playSingleAyah: true);
-        log('Another Menu Child Tapped: ${ayah.ayahUQNumber}');
-      },
-      secondMenuChild:
-          const Icon(Icons.playlist_play, size: 28, color: Colors.teal),
-      secondMenuChildOnTap: (ayah) {
-        // SurahAudioController.instance.state.currentAyahUnequeNumber =
-        //     ayah.ayahUQNumber;
-        AudioCtrl.instance
-            .playAyah(context, ayah.ayahUQNumber, playSingleAyah: false);
-        log('Second Menu Child Tapped: ${ayah.ayahUQNumber}');
-      },
+      // anotherMenuChild:
+      //     const Icon(Icons.play_arrow_outlined, size: 28, color: Colors.teal),
+      // anotherMenuChildOnTap: (ayah) {
+      //   // SurahAudioController.instance.state.currentAyahUnequeNumber =
+      //   //     ayah.ayahUQNumber;
+      //   AudioCtrl.instance
+      //       .playAyah(context, ayah.ayahUQNumber, playSingleAyah: true);
+      //   log('Another Menu Child Tapped: ${ayah.ayahUQNumber}');
+      // },
+      // secondMenuChild:
+      //     const Icon(Icons.playlist_play, size: 28, color: Colors.teal),
+      // secondMenuChildOnTap: (ayah) {
+      //   // SurahAudioController.instance.state.currentAyahUnequeNumber =
+      //   //     ayah.ayahUQNumber;
+      //   AudioCtrl.instance
+      //       .playAyah(context, ayah.ayahUQNumber, playSingleAyah: false);
+      //   log('Second Menu Child Tapped: ${ayah.ayahUQNumber}');
+      // },
     );
   }
 }

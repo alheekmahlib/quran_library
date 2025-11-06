@@ -7,7 +7,6 @@ class _QuranTextScale extends StatelessWidget {
     this.bookmarkList,
     this.basmalaStyle,
     this.surahNumber,
-    this.surahInfoStyle,
     this.surahNameStyle,
     this.bannerStyle,
     this.onSurahBannerPress,
@@ -28,8 +27,6 @@ class _QuranTextScale extends StatelessWidget {
     this.anotherMenuChildOnTap,
     this.secondMenuChild,
     this.secondMenuChildOnTap,
-    this.ayahLongClickStyle,
-    this.tafsirStyle,
   });
 
   final quranCtrl = QuranCtrl.instance;
@@ -38,7 +35,6 @@ class _QuranTextScale extends StatelessWidget {
   final List? bookmarkList;
   final BasmalaStyle? basmalaStyle;
   final int? surahNumber;
-  final SurahInfoStyle? surahInfoStyle;
   final SurahNameStyle? surahNameStyle;
   final BannerStyle? bannerStyle;
   final List<int> ayahBookmarked;
@@ -60,8 +56,6 @@ class _QuranTextScale extends StatelessWidget {
   final void Function(AyahModel ayah)? anotherMenuChildOnTap;
   final Widget? secondMenuChild;
   final void Function(AyahModel ayah)? secondMenuChildOnTap;
-  final AyahLongClickStyle? ayahLongClickStyle;
-  final TafsirStyle? tafsirStyle;
 
   @override
   Widget build(BuildContext context) {
@@ -122,9 +116,6 @@ class _QuranTextScale extends StatelessWidget {
                                                 ? Colors.white
                                                 : Colors.black,
                                           ),
-                                      surahInfoStyle: surahInfoStyle ??
-                                          SurahInfoStyle.defaults(
-                                              isDark: isDark, context: context),
                                       onSurahBannerPress: onSurahBannerPress,
                                       isDark: isDark,
                                     )
@@ -167,8 +158,8 @@ class _QuranTextScale extends StatelessWidget {
                                 ayahSelectedBackgroundColor:
                                     ayahSelectedBackgroundColor,
                                 languageCode: languageCode,
-                                ayahLongClickStyle: ayahLongClickStyle,
-                                tafsirStyle: tafsirStyle,
+                                // ayahLongClickStyle: ayahLongClickStyle,
+                                // tafsirStyle: tafsirStyle,
                               ),
 
                               // context.surahBannerLastPlace(pageIndex, i),

@@ -36,14 +36,17 @@ class ShowTafseer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // حلّ النمط: استخدام الممرّر ثم Theme ثم الافتراضي
+    final TafsirStyle s = tafsirStyle ??
+        (TafsirTheme.of(context)?.style ??
+            TafsirStyle.defaults(isDark: isDark, context: context));
     // شرح: نتأكد أن عناصر tafsirStyle غير فارغة لتجنب الخطأ
     // Explanation: Ensure tafsirStyle widgets are not null to avoid null check errors
-    final tafsirNameWidget = tafsirStyle?.tafsirNameWidget ?? const SizedBox();
+    final tafsirNameWidget = s.tafsirNameWidget ?? const SizedBox();
     final double deviceHeight = MediaQuery.maybeOf(context)?.size.height ?? 600;
     final double deviceWidth = MediaQuery.maybeOf(context)?.size.width ?? 400;
-    final double sheetHeight =
-        tafsirStyle?.heightOfBottomSheet ?? (deviceHeight * 0.9);
-    final double sheetWidth = tafsirStyle?.widthOfBottomSheet ?? deviceWidth;
+    final double sheetHeight = s.heightOfBottomSheet ?? (deviceHeight * 0.9);
+    final double sheetWidth = s.widthOfBottomSheet ?? deviceWidth;
     // تحسين الشكل: إضافة شريط علوي أنيق مع زر إغلاق واسم التفسير
     // UI Enhancement: Add a modern top bar with close button and tafsir name
     // final stored = GetStorage()
@@ -63,7 +66,7 @@ class ShowTafseer extends StatelessWidget {
                 horizontal: tafsirStyle?.horizontalMargin ?? 0.0,
                 vertical: tafsirStyle?.verticalMargin ?? 0.0),
             decoration: BoxDecoration(
-              color: tafsirStyle?.backgroundColor ??
+              color: s.backgroundColor ??
                   (isDark ? const Color(0xff1E1E1E) : Colors.white),
               borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(16),
@@ -86,7 +89,7 @@ class ShowTafseer extends StatelessWidget {
                   height: 5,
                   margin: const EdgeInsets.only(bottom: 8),
                   decoration: BoxDecoration(
-                    color: tafsirStyle?.dividerColor ?? Colors.grey.shade500,
+                    color: s.dividerColor ?? Colors.grey.shade500,
                     borderRadius: BorderRadius.circular(3),
                   ),
                 ),
@@ -98,11 +101,7 @@ class ShowTafseer extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       tafsirNameWidget,
-                      ChangeTafsirDialog(
-                          tafsirStyle: tafsirStyle ??
-                              TafsirStyle.defaults(
-                                  isDark: isDark, context: context),
-                          isDark: isDark),
+                      ChangeTafsirDialog(tafsirStyle: s, isDark: isDark),
                       Row(
                         children: [
                           Container(
@@ -110,10 +109,10 @@ class ShowTafseer extends StatelessWidget {
                               height: 24,
                               color: Colors.grey.shade300),
                           const SizedBox(width: 8),
-                          tafsirStyle?.fontSizeWidget ??
+                          s.fontSizeWidget ??
                               fontSizeDropDown(
                                 height: 30.0,
-                                tafsirStyle: tafsirStyle,
+                                tafsirStyle: s,
                                 isDark: isDark,
                               ),
                         ],
@@ -133,9 +132,7 @@ class ShowTafseer extends StatelessWidget {
                     child: TafsirPagesBuild(
                       pageIndex: pageIndex,
                       ayahUQNumber: ayahUQNumber,
-                      tafsirStyle: tafsirStyle ??
-                          TafsirStyle.defaults(
-                              isDark: isDark, context: context),
+                      tafsirStyle: s,
                       isDark: isDark,
                       islocalFont: islocalFont,
                       fontsName: fontsName,

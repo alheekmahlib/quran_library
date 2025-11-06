@@ -5,7 +5,7 @@ part of '/quran.dart';
 /// يتيح تخصيص الألوان والأبعاد والهوامش وقائمة ألوان العلامات المرجعية
 /// بالإضافة إلى خصائص الأيقونات والفواصل والظل. استخدم المصنع [defaults]
 /// للحصول على قيم افتراضية متناسقة مع الوضع الليلي/النهاري.
-class AyahLongClickStyle {
+class AyahMenuStyle {
   /// لون خلفية الحاوية الأساسية للحوار.
   final Color? backgroundColor;
 
@@ -29,6 +29,12 @@ class AyahLongClickStyle {
 
   /// لون أيقونة عرض التفسير.
   final Color? tafsirIconColor;
+
+  /// لون أيقونة تشغيل جميع الآيات.
+  final Color? playAllIconColor;
+
+  /// لون أيقونة تشغيل الآية.
+  final Color? playIconColor;
 
   /// لون فواصل الخطوط العمودية بين العناصر.
   final Color? dividerColor;
@@ -75,6 +81,12 @@ class AyahLongClickStyle {
   /// إظهار/إخفاء زر التفسير.
   final bool? showTafsirButton;
 
+  /// إظهار/إخفاء زر التشغيل.
+  final bool? showPlayButton;
+
+  /// إظهار/إخفاء زر تشغيل جميع الآيات.
+  final bool? showPlayAllButton;
+
   /// الأيقونة المستخدمة لعنصر العلامة المرجعية.
   final IconData? bookmarkIconData;
 
@@ -83,6 +95,12 @@ class AyahLongClickStyle {
 
   /// الأيقونة المستخدمة لزر التفسير.
   final IconData? tafsirIconData;
+
+  /// الأيقونة المستخدمة لزر تشغيل جميع الآيات.
+  final IconData? playAllIconData;
+
+  /// الأيقونة المستخدمة لزر تشغيل الآية.
+  final IconData? playIconData;
 
   /// مسافة الإزاحة من موضع النقر لحساب موضع الحوار عموديًا.
   final double? tapOffsetSpacing;
@@ -93,7 +111,13 @@ class AyahLongClickStyle {
   /// رسالة نجاح النسخ (مستحسن ربطها بـ i18n/intl).
   final String? copySuccessMessage;
 
-  const AyahLongClickStyle({
+  /// عناصر إضافية مخصّصة لعرضها ضمن قائمة الضغط المطوّل.
+  ///
+  /// تسمح بحقن Widgets (أزرار/أيقونات/نصوص) ضمن الشريط، قبل العناصر الافتراضية.
+  /// إن أردت إغلاق الـ Overlay بعد النقر، لفّ العنصر بـ GestureDetector ونفّذ إزالة الـ Overlay.
+  final List<Widget>? customMenuItems;
+
+  const AyahMenuStyle({
     this.backgroundColor,
     this.borderColor,
     this.borderWidth,
@@ -123,9 +147,16 @@ class AyahLongClickStyle {
     this.tapOffsetSpacing,
     this.edgeSafeMargin,
     this.copySuccessMessage,
+    this.customMenuItems,
+    this.showPlayAllButton,
+    this.showPlayButton,
+    this.playIconData,
+    this.playAllIconData,
+    this.playIconColor,
+    this.playAllIconColor,
   });
 
-  AyahLongClickStyle copyWith({
+  AyahMenuStyle copyWith({
     Color? backgroundColor,
     Color? borderColor,
     double? borderWidth,
@@ -155,8 +186,15 @@ class AyahLongClickStyle {
     double? tapOffsetSpacing,
     double? edgeSafeMargin,
     String? copySuccessMessage,
+    List<Widget>? customMenuItems,
+    bool? showPlayAllButton,
+    bool? showPlayButton,
+    IconData? playIconData,
+    IconData? playAllIconData,
+    Color? playIconColor,
+    Color? playAllIconColor,
   }) {
-    return AyahLongClickStyle(
+    return AyahMenuStyle(
       backgroundColor: backgroundColor ?? this.backgroundColor,
       borderColor: borderColor ?? this.borderColor,
       borderWidth: borderWidth ?? this.borderWidth,
@@ -187,17 +225,24 @@ class AyahLongClickStyle {
       tapOffsetSpacing: tapOffsetSpacing ?? this.tapOffsetSpacing,
       edgeSafeMargin: edgeSafeMargin ?? this.edgeSafeMargin,
       copySuccessMessage: copySuccessMessage ?? this.copySuccessMessage,
+      customMenuItems: customMenuItems ?? this.customMenuItems,
+      showPlayAllButton: showPlayAllButton ?? this.showPlayAllButton,
+      showPlayButton: showPlayButton ?? this.showPlayButton,
+      playIconData: playIconData ?? this.playIconData,
+      playAllIconData: playAllIconData ?? this.playAllIconData,
+      playIconColor: playIconColor ?? this.playIconColor,
+      playAllIconColor: playAllIconColor ?? this.playAllIconColor,
     );
   }
 
   /// القيم الافتراضية للنمط بحسب الوضع الليلي/النهاري.
-  factory AyahLongClickStyle.defaults({
+  factory AyahMenuStyle.defaults({
     required bool isDark,
     required BuildContext context,
   }) {
     final scheme = Theme.of(context).colorScheme;
     final primary = scheme.primary;
-    return AyahLongClickStyle(
+    return AyahMenuStyle(
       backgroundColor: AppColors.getBackgroundColor(isDark),
       borderColor: primary.withValues(alpha: 0.1),
       borderWidth: 2.0,
@@ -238,6 +283,13 @@ class AyahLongClickStyle {
       tapOffsetSpacing: 10.0,
       edgeSafeMargin: 10.0,
       copySuccessMessage: 'تم النسخ الى الحافظة',
+      customMenuItems: null,
+      showPlayAllButton: true,
+      showPlayButton: true,
+      playIconData: Icons.play_arrow,
+      playAllIconData: Icons.playlist_play,
+      playIconColor: primary,
+      playAllIconColor: primary,
     );
   }
 }

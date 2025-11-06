@@ -3,17 +3,15 @@ part of '/quran.dart';
 class _BookmarksTab extends StatelessWidget {
   final bool isDark;
   final String languageCode;
-  final BookmarksTabStyle? style;
   const _BookmarksTab({
     required this.isDark,
     required this.languageCode,
-    this.style,
   });
 
   @override
   Widget build(BuildContext context) {
-    final effectiveStyle =
-        style ?? BookmarksTabStyle.defaults(isDark: isDark, context: context);
+    final effectiveStyle = (BookmarksTabTheme.of(context)?.style ??
+        BookmarksTabStyle.defaults(isDark: isDark, context: context));
 
     return SingleChildScrollView(
       child: Column(

@@ -56,7 +56,7 @@ class QuranCtrl extends GetxController {
       _dir = await getApplicationDocumentsDirectory();
       await initFontLoader();
     }
-    await prepareFonts(state.currentPageNumber.value - 2);
+    await prepareFonts(state.currentPageNumber.value - 1);
     searchFocusNode = FocusNode();
     searchTextController = TextEditingController();
   }

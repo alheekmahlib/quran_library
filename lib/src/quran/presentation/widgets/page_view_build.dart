@@ -34,7 +34,6 @@ class PageViewBuild extends StatelessWidget {
     required this.showAyahBookmarkedIcon,
     required this.onAyahLongPress,
     required this.bookmarksColor,
-    required this.surahInfoStyle,
     required this.surahNameStyle,
     required this.bannerStyle,
     required this.basmalaStyle,
@@ -53,8 +52,6 @@ class PageViewBuild extends StatelessWidget {
     required this.pageIndex,
     required this.quranCtrl,
     required this.isFontsLocal,
-    this.ayahLongClickStyle,
-    this.tafsirStyle,
   });
 
   final Widget? circularProgressWidget;
@@ -70,7 +67,6 @@ class PageViewBuild extends StatelessWidget {
   final void Function(LongPressStartDetails details, AyahModel ayah)?
       onAyahLongPress;
   final Color? bookmarksColor;
-  final SurahInfoStyle? surahInfoStyle;
   final SurahNameStyle? surahNameStyle;
   final BannerStyle? bannerStyle;
   final BasmalaStyle? basmalaStyle;
@@ -89,8 +85,6 @@ class PageViewBuild extends StatelessWidget {
   final int pageIndex;
   final QuranCtrl quranCtrl;
   final bool isFontsLocal;
-  final AyahLongClickStyle? ayahLongClickStyle;
-  final TafsirStyle? tafsirStyle;
 
   @override
   Widget build(BuildContext context) {
@@ -138,7 +132,6 @@ class PageViewBuild extends StatelessWidget {
                           bookmarks: bookmarksMap,
                           onAyahLongPress: onAyahLongPress,
                           bookmarksColor: bookmarksColor,
-                          surahInfoStyle: surahInfoStyle,
                           surahNameStyle: surahNameStyle,
                           bannerStyle: bannerStyle,
                           basmalaStyle: basmalaStyle,
@@ -156,8 +149,6 @@ class PageViewBuild extends StatelessWidget {
                           anotherMenuChildOnTap: anotherMenuChildOnTap,
                           secondMenuChild: secondMenuChild,
                           secondMenuChildOnTap: secondMenuChildOnTap,
-                          ayahLongClickStyle: ayahLongClickStyle,
-                          tafsirStyle: tafsirStyle,
                         ),
                       ))
               : quranCtrl.staticPages.isEmpty || quranCtrl.isLoading.value
@@ -172,7 +163,6 @@ class PageViewBuild extends StatelessWidget {
                       languageCode: languageCode,
                       onAyahLongPress: onAyahLongPress,
                       bookmarksColor: bookmarksColor,
-                      surahInfoStyle: surahInfoStyle,
                       surahNameStyle: surahNameStyle,
                       bannerStyle: bannerStyle,
                       basmalaStyle: basmalaStyle,
@@ -190,8 +180,6 @@ class PageViewBuild extends StatelessWidget {
                       anotherMenuChildOnTap: anotherMenuChildOnTap,
                       secondMenuChild: secondMenuChild,
                       secondMenuChildOnTap: secondMenuChildOnTap,
-                      ayahLongClickStyle: ayahLongClickStyle,
-                      tafsirStyle: tafsirStyle,
                     )),
           quranCtrl.staticPages.isEmpty || quranCtrl.isLoading.value
               ? Center(
@@ -214,7 +202,6 @@ class PageViewBuild extends StatelessWidget {
                     bookmarks: bookmarksMap,
                     onAyahLongPress: onAyahLongPress,
                     bookmarksColor: bookmarksColor,
-                    surahInfoStyle: surahInfoStyle,
                     surahNameStyle: surahNameStyle,
                     bannerStyle: bannerStyle,
                     basmalaStyle: basmalaStyle,
@@ -231,8 +218,6 @@ class PageViewBuild extends StatelessWidget {
                     anotherMenuChildOnTap: anotherMenuChildOnTap,
                     secondMenuChild: secondMenuChild,
                     secondMenuChildOnTap: secondMenuChildOnTap,
-                    ayahLongClickStyle: ayahLongClickStyle,
-                    tafsirStyle: tafsirStyle,
                   ),
                 ),
         ),

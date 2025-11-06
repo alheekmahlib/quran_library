@@ -24,8 +24,6 @@ class RichTextBuild extends StatelessWidget {
     required this.ayahBookmarked,
     required this.anotherMenuChild,
     required this.anotherMenuChildOnTap,
-    this.ayahLongClickStyle,
-    this.tafsirStyle,
   });
 
   final int pageIndex;
@@ -50,8 +48,6 @@ class RichTextBuild extends StatelessWidget {
   final List<int> ayahBookmarked;
   final Widget? anotherMenuChild;
   final Function(AyahModel ayah)? anotherMenuChildOnTap;
-  final AyahLongClickStyle? ayahLongClickStyle;
-  final TafsirStyle? tafsirStyle;
 
   @override
   Widget build(BuildContext context) {
@@ -149,7 +145,7 @@ class RichTextBuild extends StatelessWidget {
                         // إنشاء OverlayEntry جديد
                         final overlay = Overlay.of(context);
                         final newOverlayEntry = OverlayEntry(
-                          builder: (context) => AyahLongClickDialog(
+                          builder: (context) => AyahMenuDialog(
                             context: context,
                             isDark: isDark,
                             ayah: ayah,
@@ -160,12 +156,6 @@ class RichTextBuild extends StatelessWidget {
                             anotherMenuChildOnTap: anotherMenuChildOnTap,
                             secondMenuChild: secondMenuChild,
                             secondMenuChildOnTap: secondMenuChildOnTap,
-                            style: ayahLongClickStyle ??
-                                AyahLongClickStyle.defaults(
-                                    isDark: isDark, context: context),
-                            tafsirStyle: tafsirStyle ??
-                                TafsirStyle.defaults(
-                                    isDark: isDark, context: context),
                           ),
                         );
 

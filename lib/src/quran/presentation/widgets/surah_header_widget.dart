@@ -7,7 +7,6 @@ class SurahHeaderWidget extends StatelessWidget {
     this.bannerStyle,
     this.surahNameStyle,
     this.onSurahBannerPress,
-    this.surahInfoStyle,
     required this.isDark,
   });
 
@@ -15,13 +14,16 @@ class SurahHeaderWidget extends StatelessWidget {
   final BannerStyle? bannerStyle;
   final SurahNameStyle? surahNameStyle;
   final void Function(SurahNamesModel surah)? onSurahBannerPress;
-  final SurahInfoStyle? surahInfoStyle;
   final bool isDark;
 
   final quranCtrl = QuranCtrl.instance;
 
   @override
   Widget build(BuildContext context) {
+    // حلّ النمط: استخدام النمط الممرّر إن وجد، وإلا القراءة من الـ Theme، ثم الافتراضي
+    final SurahInfoStyle resolvedInfoStyle =
+        (SurahInfoTheme.of(context)?.style ??
+            SurahInfoStyle.defaults(isDark: isDark, context: context));
     final deviceWidth = MediaQuery.sizeOf(context);
     if (bannerStyle?.isImage ?? false) {
       return GestureDetector(
@@ -30,7 +32,7 @@ class SurahHeaderWidget extends StatelessWidget {
             onSurahBannerPress!(quranCtrl.surahsList[surahNumber - 1]);
           } else {
             surahInfoBottomSheetWidget(context, surahNumber - 1,
-                surahStyle: surahInfoStyle!,
+                surahStyle: resolvedInfoStyle,
                 deviceWidth: deviceWidth,
                 isDark: isDark);
           }
@@ -70,7 +72,7 @@ class SurahHeaderWidget extends StatelessWidget {
                 onSurahBannerPress!(quranCtrl.surahsList[surahNumber - 1]);
               } else {
                 surahInfoBottomSheetWidget(context, surahNumber - 1,
-                    surahStyle: surahInfoStyle!,
+                    surahStyle: resolvedInfoStyle,
                     deviceWidth: deviceWidth,
                     isDark: isDark);
               }

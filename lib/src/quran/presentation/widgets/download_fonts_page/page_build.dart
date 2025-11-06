@@ -8,7 +8,6 @@ class PageBuild extends StatelessWidget {
     required this.bannerStyle,
     required this.isDark,
     required this.surahNameStyle,
-    required this.surahInfoStyle,
     required this.onSurahBannerPress,
     required this.basmalaStyle,
     required this.textColor,
@@ -29,8 +28,6 @@ class PageBuild extends StatelessWidget {
     required this.anotherMenuChildOnTap,
     required this.context,
     required this.quranCtrl,
-    this.ayahLongClickStyle,
-    this.tafsirStyle,
   });
 
   final int pageIndex;
@@ -38,7 +35,6 @@ class PageBuild extends StatelessWidget {
   final BannerStyle? bannerStyle;
   final bool isDark;
   final SurahNameStyle? surahNameStyle;
-  final SurahInfoStyle? surahInfoStyle;
   final Function(SurahNamesModel surah)? onSurahBannerPress;
   final BasmalaStyle? basmalaStyle;
   final Color? textColor;
@@ -60,8 +56,6 @@ class PageBuild extends StatelessWidget {
   final void Function(AyahModel ayah)? anotherMenuChildOnTap;
   final BuildContext context;
   final QuranCtrl quranCtrl;
-  final AyahLongClickStyle? ayahLongClickStyle;
-  final TafsirStyle? tafsirStyle;
 
   @override
   Widget build(BuildContext context) {
@@ -91,9 +85,6 @@ class PageBuild extends StatelessWidget {
                                   surahNameColor:
                                       AppColors.getTextColor(isDark),
                                 ),
-                            surahInfoStyle: surahInfoStyle ??
-                                SurahInfoStyle.defaults(
-                                    isDark: isDark, context: context),
                             onSurahBannerPress: onSurahBannerPress,
                             isDark: isDark,
                           )
@@ -141,10 +132,6 @@ class PageBuild extends StatelessWidget {
                         ayahBookmarked: ayahBookmarked,
                         anotherMenuChild: anotherMenuChild,
                         anotherMenuChildOnTap: anotherMenuChildOnTap,
-                        ayahLongClickStyle: ayahLongClickStyle,
-                        tafsirStyle: tafsirStyle ??
-                            TafsirStyle.defaults(
-                                isDark: isDark, context: context),
                       ),
                     ),
                   ],

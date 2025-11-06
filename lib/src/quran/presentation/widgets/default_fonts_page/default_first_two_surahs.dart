@@ -9,7 +9,6 @@ class DefaultFirstTwoSurahs extends StatelessWidget {
     required this.bannerStyle,
     required this.isDark,
     required this.surahNameStyle,
-    required this.surahInfoStyle,
     required this.onSurahBannerPress,
     required this.basmalaStyle,
     required this.deviceSize,
@@ -24,8 +23,6 @@ class DefaultFirstTwoSurahs extends StatelessWidget {
     required this.secondMenuChild,
     required this.secondMenuChildOnTap,
     required this.context,
-    required this.ayahLongClickStyle,
-    this.tafsirStyle,
   });
 
   final int? surahNumber;
@@ -34,7 +31,6 @@ class DefaultFirstTwoSurahs extends StatelessWidget {
   final BannerStyle? bannerStyle;
   final bool isDark;
   final SurahNameStyle? surahNameStyle;
-  final SurahInfoStyle? surahInfoStyle;
   final Function(SurahNamesModel surah)? onSurahBannerPress;
   final BasmalaStyle? basmalaStyle;
   final Size deviceSize;
@@ -50,8 +46,6 @@ class DefaultFirstTwoSurahs extends StatelessWidget {
   final Widget? secondMenuChild;
   final void Function(AyahModel ayah)? secondMenuChildOnTap;
   final BuildContext context;
-  final AyahLongClickStyle? ayahLongClickStyle;
-  final TafsirStyle? tafsirStyle;
 
   @override
   Widget build(BuildContext context) {
@@ -75,8 +69,6 @@ class DefaultFirstTwoSurahs extends StatelessWidget {
                   surahNameSize: 27,
                   surahNameColor: AppColors.getTextColor(isDark),
                 ),
-            surahInfoStyle: surahInfoStyle ??
-                SurahInfoStyle.defaults(isDark: isDark, context: context),
             onSurahBannerPress: onSurahBannerPress,
             isDark: isDark,
           ),
@@ -124,10 +116,6 @@ class DefaultFirstTwoSurahs extends StatelessWidget {
                             anotherMenuChildOnTap: anotherMenuChildOnTap,
                             secondMenuChild: secondMenuChild,
                             secondMenuChildOnTap: secondMenuChildOnTap,
-                            ayahLongClickStyle: ayahLongClickStyle ??
-                                AyahLongClickStyle.defaults(
-                                    isDark: isDark, context: context),
-                            tafsirStyle: tafsirStyle,
                           ),
                         ),
                       ],

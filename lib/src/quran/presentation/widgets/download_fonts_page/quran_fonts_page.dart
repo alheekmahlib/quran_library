@@ -8,7 +8,6 @@ class _QuranFontsPage extends StatelessWidget {
   final List? bookmarkList;
   final BasmalaStyle? basmalaStyle;
   final int? surahNumber;
-  final SurahInfoStyle? surahInfoStyle;
   final SurahNameStyle? surahNameStyle;
   final BannerStyle? bannerStyle;
   final Function(SurahNamesModel surah)? onSurahBannerPress;
@@ -31,8 +30,6 @@ class _QuranFontsPage extends StatelessWidget {
   final void Function(AyahModel ayah)? anotherMenuChildOnTap;
   final Widget? secondMenuChild;
   final void Function(AyahModel ayah)? secondMenuChildOnTap;
-  final AyahLongClickStyle? ayahLongClickStyle;
-  final TafsirStyle? tafsirStyle;
 
   const _QuranFontsPage({
     required this.context,
@@ -40,7 +37,6 @@ class _QuranFontsPage extends StatelessWidget {
     this.bookmarkList,
     this.basmalaStyle,
     this.surahNumber,
-    this.surahInfoStyle,
     this.surahNameStyle,
     this.bannerStyle,
     this.onSurahBannerPress,
@@ -61,8 +57,6 @@ class _QuranFontsPage extends StatelessWidget {
     this.anotherMenuChildOnTap,
     this.secondMenuChild,
     this.secondMenuChildOnTap,
-    this.ayahLongClickStyle,
-    this.tafsirStyle,
   });
 
   @override
@@ -96,7 +90,6 @@ class _QuranFontsPage extends StatelessWidget {
                           bannerStyle: bannerStyle,
                           isDark: isDark,
                           surahNameStyle: surahNameStyle,
-                          surahInfoStyle: surahInfoStyle,
                           onSurahBannerPress: onSurahBannerPress,
                           basmalaStyle: basmalaStyle,
                           textColor: textColor,
@@ -118,8 +111,6 @@ class _QuranFontsPage extends StatelessWidget {
                           anotherMenuChildOnTap: anotherMenuChildOnTap,
                           context: context,
                           quranCtrl: quranCtrl,
-                          ayahLongClickStyle: ayahLongClickStyle,
-                          tafsirStyle: tafsirStyle,
                         ),
                       )
                     : PageBuild(
@@ -128,7 +119,6 @@ class _QuranFontsPage extends StatelessWidget {
                         bannerStyle: bannerStyle,
                         isDark: isDark,
                         surahNameStyle: surahNameStyle,
-                        surahInfoStyle: surahInfoStyle,
                         onSurahBannerPress: onSurahBannerPress,
                         basmalaStyle: basmalaStyle,
                         textColor: textColor,
@@ -150,8 +140,6 @@ class _QuranFontsPage extends StatelessWidget {
                         anotherMenuChildOnTap: anotherMenuChildOnTap,
                         context: context,
                         quranCtrl: quranCtrl,
-                        ayahLongClickStyle: ayahLongClickStyle,
-                        tafsirStyle: tafsirStyle,
                       )
                 : PageBuild(
                     pageIndex: pageIndex,
@@ -159,7 +147,6 @@ class _QuranFontsPage extends StatelessWidget {
                     bannerStyle: bannerStyle,
                     isDark: isDark,
                     surahNameStyle: surahNameStyle,
-                    surahInfoStyle: surahInfoStyle,
                     onSurahBannerPress: onSurahBannerPress,
                     basmalaStyle: basmalaStyle,
                     textColor: textColor,
@@ -180,8 +167,6 @@ class _QuranFontsPage extends StatelessWidget {
                     anotherMenuChildOnTap: anotherMenuChildOnTap,
                     context: context,
                     quranCtrl: quranCtrl,
-                    ayahLongClickStyle: ayahLongClickStyle,
-                    tafsirStyle: tafsirStyle,
                   ),
       ),
     );

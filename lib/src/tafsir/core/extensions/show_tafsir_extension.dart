@@ -132,10 +132,11 @@ extension ShowTafsirExtension on void {
             islocalFont: islocalFont,
             fontsName: fontsName,
             tafsirStyle: tafsirStyle ??
-                TafsirStyle.defaults(
-                  isDark: isDarkMode,
-                  context: validContext,
-                ),
+                (TafsirTheme.of(validContext)?.style ??
+                    TafsirStyle.defaults(
+                      isDark: isDarkMode,
+                      context: validContext,
+                    )),
           );
         },
       );

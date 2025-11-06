@@ -14,7 +14,6 @@ class DefaultOtherSurahs extends StatelessWidget {
     required this.bannerStyle,
     required this.isDark,
     required this.surahNameStyle,
-    required this.surahInfoStyle,
     required this.onSurahBannerPress,
     required this.basmalaStyle,
     required this.deviceSize,
@@ -29,8 +28,6 @@ class DefaultOtherSurahs extends StatelessWidget {
     required this.secondMenuChild,
     required this.secondMenuChildOnTap,
     required this.context,
-    required this.ayahLongClickStyle,
-    required this.tafsirStyle,
   });
 
   final int pageIndex;
@@ -44,7 +41,6 @@ class DefaultOtherSurahs extends StatelessWidget {
   final BannerStyle? bannerStyle;
   final bool isDark;
   final SurahNameStyle? surahNameStyle;
-  final SurahInfoStyle? surahInfoStyle;
   final Function(SurahNamesModel surah)? onSurahBannerPress;
   final BasmalaStyle? basmalaStyle;
   final Size deviceSize;
@@ -60,8 +56,6 @@ class DefaultOtherSurahs extends StatelessWidget {
   final Widget? secondMenuChild;
   final void Function(AyahModel ayah)? secondMenuChildOnTap;
   final BuildContext context;
-  final AyahLongClickStyle? ayahLongClickStyle;
-  final TafsirStyle? tafsirStyle;
 
   @override
   Widget build(BuildContext context) {
@@ -88,7 +82,6 @@ class DefaultOtherSurahs extends StatelessWidget {
                     bannerStyle: bannerStyle,
                     isDark: isDark,
                     surahNameStyle: surahNameStyle,
-                    surahInfoStyle: surahInfoStyle,
                     onSurahBannerPress: onSurahBannerPress,
                     basmalaStyle: basmalaStyle,
                     deviceSize: deviceSize,
@@ -104,8 +97,6 @@ class DefaultOtherSurahs extends StatelessWidget {
                     secondMenuChildOnTap: secondMenuChildOnTap,
                     context: context,
                     constraints: constraints,
-                    ayahLongClickStyle: ayahLongClickStyle,
-                    tafsirStyle: tafsirStyle,
                   ),
                 )
               : DefaultFontsPageBuild(
@@ -116,7 +107,6 @@ class DefaultOtherSurahs extends StatelessWidget {
                   bannerStyle: bannerStyle,
                   isDark: isDark,
                   surahNameStyle: surahNameStyle,
-                  surahInfoStyle: surahInfoStyle,
                   onSurahBannerPress: onSurahBannerPress,
                   basmalaStyle: basmalaStyle,
                   deviceSize: deviceSize,
@@ -132,8 +122,6 @@ class DefaultOtherSurahs extends StatelessWidget {
                   secondMenuChildOnTap: secondMenuChildOnTap,
                   context: context,
                   constraints: constraints,
-                  ayahLongClickStyle: ayahLongClickStyle,
-                  tafsirStyle: tafsirStyle,
                 ),
         );
       },

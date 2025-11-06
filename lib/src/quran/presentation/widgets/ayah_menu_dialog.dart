@@ -4,12 +4,12 @@ part of '/quran.dart';
 ///
 /// This widget shows a dialog at a specified position with options to bookmark the Ayah in different colors
 /// or copy the Ayah text to the clipboard. The appearance and behavior are influenced by the state of QuranCtrl.
-class AyahLongClickDialog extends StatelessWidget {
+class AyahMenuDialog extends StatelessWidget {
   /// Creates a dialog displayed on long click of an Ayah to provide options like bookmarking and copying text.
   ///
   /// This widget shows a dialog at a specified position with options to bookmark the Ayah in different colors
   /// or copy the Ayah text to the clipboard. The appearance and behavior are influenced by the state of QuranCtrl.
-  const AyahLongClickDialog({
+  const AyahMenuDialog({
     required this.context,
     super.key,
     this.ayah,
@@ -22,7 +22,6 @@ class AyahLongClickDialog extends StatelessWidget {
     required this.isDark,
     this.secondMenuChild,
     this.secondMenuChildOnTap,
-    this.style,
     this.tafsirStyle,
   });
 
@@ -48,27 +47,27 @@ class AyahLongClickDialog extends StatelessWidget {
   final void Function(AyahModel ayah)? secondMenuChildOnTap;
   final BuildContext context;
   final bool isDark;
-  final AyahLongClickStyle? style;
   final TafsirStyle? tafsirStyle;
 
   @override
   Widget build(BuildContext context) {
+    final themed = AyahLongClickTheme.of(context)?.style;
     final s =
-        style ?? AyahLongClickStyle.defaults(isDark: isDark, context: context);
+        themed ?? AyahMenuStyle.defaults(isDark: isDark, context: context);
+
+    final List<Widget> customMenuItems = s.customMenuItems ?? const [];
 
     // الحصول على أبعاد الشاشة والهوامش الآمنة / Get screen dimensions and safe area
     final screenSize = MediaQuery.of(context).size;
     final padding = MediaQuery.of(context).padding;
 
     // حساب العرض الفعلي للحوار بناءً على المحتوى / Calculate actual dialog width based on content
-    int itemsCount =
-        3; // عدد الأيقونات الأساسية (3 ألوان + نسخ + تفسير) / Basic icons count
-    if (anotherMenuChild != null) {
-      itemsCount += 1; // إضافة عنصر إضافي / Additional item
-    }
-    if (secondMenuChild != null) {
-      itemsCount += 1; // إضافة عنصر إضافي / Additional item
-    }
+    int itemsCount = 5 +
+        customMenuItems
+            .length; // عدد الأيقونات الأساسية (3 ألوان + نسخ + تفسير) / Basic icons count
+    if (anotherMenuChild != null) itemsCount += 1;
+    if (secondMenuChild != null) itemsCount += 1;
+    if (customMenuItems.isNotEmpty) itemsCount += customMenuItems.length;
     double dialogWidth = (itemsCount * 40) +
         (itemsCount * 16) +
         40; // عرض كل أيقونة + التباعد + الهوامش / Icon width + spacing + margins
@@ -111,8 +110,7 @@ class AyahLongClickDialog extends StatelessWidget {
     itemsCount += bookmarkCount;
     if (s.showCopyButton ?? true) itemsCount += 1;
     if (s.showTafsirButton ?? true) itemsCount += 1;
-    if (anotherMenuChild != null) itemsCount += 1;
-    if (secondMenuChild != null) itemsCount += 1;
+    // لا نعيد إضافة عناصر custom ثانيةً لتجنّب مضاعفة الحساب
 
     return Positioned(
       top: top,
@@ -128,34 +126,47 @@ class AyahLongClickDialog extends StatelessWidget {
               const EdgeInsets.symmetric(horizontal: 6.0, vertical: 2.0),
           margin: s.margin ?? const EdgeInsets.all(4.0),
           decoration: BoxDecoration(
-              borderRadius:
-                  BorderRadius.all(Radius.circular(s.borderRadius ?? 6.0)),
-              border: Border.all(
-                  width: s.borderWidth ?? 2.0,
-                  color: s.borderColor ??
-                      Theme.of(context)
-                          .colorScheme
-                          .primary
-                          .withValues(alpha: 0.1))),
+            borderRadius:
+                BorderRadius.all(Radius.circular(s.borderRadius ?? 6.0)),
+            border: Border.all(
+              width: s.borderWidth ?? 2.0,
+              color: s.borderColor ??
+                  Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+            ),
+          ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: () {
               final List<Widget> widgets = [];
               Widget divider() => context.verticalDivider(
-                    height: s.dividerHeight ?? 30.0,
-                    color: s.dividerColor ??
-                        Theme.of(context)
-                            .colorScheme
-                            .primary
-                            .withValues(alpha: 0.1),
+                    height: s.dividerHeight,
+                    color: s.dividerColor,
                   );
 
               void addDividerIfNeeded() {
                 if (widgets.isNotEmpty) widgets.add(divider());
               }
 
-              // عنصر إضافي أول
+              // عناصر إضافية مخصّصة (من الستايل ثم الاستدعاء)
+              if (customMenuItems.isNotEmpty) {
+                for (final item in customMenuItems) {
+                  addDividerIfNeeded();
+                  widgets.add(
+                    GestureDetector(
+                      behavior: HitTestBehavior.translucent,
+                      onTap: () {
+                        // إزالة الـ Overlay بعد النقر لضمان سلوك موحّد
+                        QuranCtrl.instance.state.overlayEntry?.remove();
+                        QuranCtrl.instance.state.overlayEntry = null;
+                      },
+                      child: item,
+                    ),
+                  );
+                }
+              }
+
+              // عنصر إضافي أول (للتوافق مع الماضي)
               if (anotherMenuChild != null) {
                 addDividerIfNeeded();
                 widgets.add(
@@ -172,7 +183,7 @@ class AyahLongClickDialog extends StatelessWidget {
                 );
               }
 
-              // عنصر إضافي ثانٍ
+              // عنصر إضافي ثانٍ (للتوافق مع الماضي)
               if (secondMenuChild != null) {
                 addDividerIfNeeded();
                 widgets.add(
@@ -185,6 +196,48 @@ class AyahLongClickDialog extends StatelessWidget {
                       QuranCtrl.instance.state.overlayEntry = null;
                     },
                     child: secondMenuChild!,
+                  ),
+                );
+              }
+
+              // زر تشغيل جميع الآيات
+              if (s.showPlayButton ?? true) {
+                addDividerIfNeeded();
+                widgets.add(
+                  GestureDetector(
+                    onTap: () {
+                      AudioCtrl.instance.playAyah(context, ayah!.ayahUQNumber,
+                          playSingleAyah: true);
+                      log('Second Menu Child Tapped: ${ayah!.ayahUQNumber}');
+                      QuranCtrl.instance.state.overlayEntry?.remove();
+                      QuranCtrl.instance.state.overlayEntry = null;
+                    },
+                    child: Icon(
+                      s.playIconData,
+                      color: s.playIconColor,
+                      size: s.iconSize,
+                    ),
+                  ),
+                );
+              }
+
+              // زر تشغيل جميع الآيات
+              if (s.showPlayAllButton ?? true) {
+                addDividerIfNeeded();
+                widgets.add(
+                  GestureDetector(
+                    onTap: () {
+                      AudioCtrl.instance.playAyah(context, ayah!.ayahUQNumber,
+                          playSingleAyah: false);
+                      log('Second Menu Child Tapped: ${ayah!.ayahUQNumber}');
+                      QuranCtrl.instance.state.overlayEntry?.remove();
+                      QuranCtrl.instance.state.overlayEntry = null;
+                    },
+                    child: Icon(
+                      s.playAllIconData,
+                      color: s.playAllIconColor,
+                      size: s.iconSize,
+                    ),
                   ),
                 );
               }
@@ -228,16 +281,16 @@ class AyahLongClickDialog extends StatelessWidget {
                                 ? ayah!.ayahNumber
                                 : ayah!.ayahNumber,
                         tafsirStyle: tafsirStyle ??
-                            TafsirStyle.defaults(
-                                isDark: isDark, context: context),
+                            (TafsirTheme.of(context)?.style ??
+                                TafsirStyle.defaults(
+                                    isDark: isDark, context: context)),
                       );
                       QuranCtrl.instance.state.overlayEntry?.remove();
                       QuranCtrl.instance.state.overlayEntry = null;
                     },
                     child: Icon(
-                      s.tafsirIconData ?? Icons.text_snippet_rounded,
-                      color: s.tafsirIconColor ??
-                          Theme.of(context).colorScheme.primary,
+                      s.tafsirIconData,
+                      color: s.tafsirIconColor,
                       size: s.iconSize,
                     ),
                   ),
@@ -272,9 +325,8 @@ class AyahLongClickDialog extends StatelessWidget {
                       QuranCtrl.instance.state.overlayEntry = null;
                     },
                     child: Icon(
-                      s.copyIconData ?? Icons.copy_rounded,
-                      color: s.copyIconColor ??
-                          Theme.of(context).colorScheme.primary,
+                      s.copyIconData,
+                      color: s.copyIconColor,
                       size: s.iconSize,
                     ),
                   ),
@@ -324,7 +376,7 @@ class AyahLongClickDialog extends StatelessWidget {
                           QuranCtrl.instance.state.overlayEntry = null;
                         },
                         child: Icon(
-                          s.bookmarkIconData ?? Icons.bookmark,
+                          s.bookmarkIconData,
                           color: Color(colorCode),
                           size: s.iconSize,
                         ),

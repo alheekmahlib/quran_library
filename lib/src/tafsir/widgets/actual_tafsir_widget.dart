@@ -36,6 +36,10 @@ class ActualTafsirWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // حلّ النمط: استخدام النمط الممرّر إن وجد، ثم القراءة من الـ Theme، ثم الافتراضي
+    final TafsirStyle s = tafsirStyle ??
+        (TafsirTheme.of(context)?.style ??
+            TafsirStyle.defaults(isDark: isDark, context: context));
     return Column(
       children: [
         GetSingleAyah(
@@ -49,7 +53,7 @@ class ActualTafsirWidget extends StatelessWidget {
           fontsName: fontsName,
           isDark: isDark,
           pageIndex: pageIndex! + 1,
-          textColor: tafsirStyle?.textColor,
+          textColor: s.textColor,
           useDefaultFont: true,
         ),
         Text.rich(
@@ -57,7 +61,7 @@ class ActualTafsirWidget extends StatelessWidget {
             children: <InlineSpan>[
               WidgetSpan(
                   child: context.horizontalDivider(
-                color: tafsirStyle?.dividerColor,
+                color: s.dividerColor,
                 height: 1.5,
               )),
             ],
@@ -72,14 +76,14 @@ class ActualTafsirWidget extends StatelessWidget {
                   ? TextSpan(
                       children: tafsir.tafsirText.toFlutterText(isDark),
                       style: TextStyle(
-                          color: tafsirStyle?.textColor,
+                          color: s.textColor,
                           height: 1.5,
                           fontSize: fontSizeArabic),
                     )
                   : TextSpan(
                       children: _buildTranslationSpans(),
                       style: TextStyle(
-                          color: tafsirStyle?.textColor,
+                          color: s.textColor,
                           height: 1.5,
                           fontSize: fontSizeArabic),
                     ),
@@ -108,10 +112,11 @@ class ActualTafsirWidget extends StatelessWidget {
         print(
             'No translation found for Surah: ${ayahs.surahNumber}, Ayah: ${ayahs.ayahNumber}, Index: $ayahIndex, Total translations: ${translationList.length}');
       }
+      final s = tafsirStyle ??
+          (TafsirTheme.of(context)?.style ??
+              TafsirStyle.defaults(isDark: isDark, context: context));
       return [
-        TextSpan(
-            text: tafsirStyle?.tafsirIsEmptyNote,
-            style: QuranLibrary().cairoStyle)
+        TextSpan(text: s.tafsirIsEmptyNote, style: QuranLibrary().cairoStyle)
       ];
     }
     final spans = <InlineSpan>[
@@ -129,17 +134,24 @@ class ActualTafsirWidget extends StatelessWidget {
         child: Container(
           margin: const EdgeInsets.symmetric(vertical: 8),
           height: 1,
-          color: tafsirStyle?.dividerColor,
+          color: (tafsirStyle ??
+                  (TafsirTheme.of(context)?.style ??
+                      TafsirStyle.defaults(isDark: isDark, context: context)))
+              .dividerColor,
         ),
       ));
       spans.add(const TextSpan(text: '\n'));
 
       spans.add(TextSpan(
-        text: '${tafsirStyle?.footnotesName ?? 'الحواشي:'}\n',
+        text:
+            '${(tafsirStyle ?? (TafsirTheme.of(context)?.style ?? TafsirStyle.defaults(isDark: isDark, context: context))).footnotesName ?? 'الحواشي:'}\n',
         style: TextStyle(
           fontWeight: FontWeight.bold,
           fontSize: fontSizeArabic * 0.95,
-          color: tafsirStyle?.textColor,
+          color: (tafsirStyle ??
+                  (TafsirTheme.of(context)?.style ??
+                      TafsirStyle.defaults(isDark: isDark, context: context)))
+              .textColor,
         ),
       ));
 
@@ -154,14 +166,22 @@ class ActualTafsirWidget extends StatelessWidget {
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: fontSizeArabic * 0.9,
-                color: tafsirStyle?.textColor,
+                color: (tafsirStyle ??
+                        (TafsirTheme.of(context)?.style ??
+                            TafsirStyle.defaults(
+                                isDark: isDark, context: context)))
+                    .textColor,
               ),
             ),
             TextSpan(
               text: '${footnoteData.value}\n\n',
               style: TextStyle(
                 fontSize: fontSizeArabic * 0.85,
-                color: tafsirStyle?.textColor,
+                color: (tafsirStyle ??
+                        (TafsirTheme.of(context)?.style ??
+                            TafsirStyle.defaults(
+                                isDark: isDark, context: context)))
+                    .textColor,
                 height: 1.4,
               ),
             ),

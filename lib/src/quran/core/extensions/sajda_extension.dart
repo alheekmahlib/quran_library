@@ -17,7 +17,8 @@ extension SajdaExtension on Widget {
   ///   - sajdaName: The name of the Sajda to be displayed.
   ///
   /// - Returns: A widget that displays the Sajda.
-  Widget showSajda(BuildContext context, int pageIndex, String sajdaName) {
+  Widget showSajda(BuildContext context, int pageIndex, String sajdaName,
+      Color sajdaNameColor) {
     // log('checking sajda posision');
     final hasSajda = QuranCtrl.instance.isThereAnySajdaInPage(pageIndex);
     return hasSajda
@@ -30,14 +31,14 @@ extension SajdaExtension on Widget {
                 children: [
                   SvgPicture.asset(AssetsPath.assets.sajdaIcon,
                       height: 15,
-                      colorFilter: const ColorFilter.mode(
-                          Color(0xff77554B), BlendMode.srcIn)),
+                      colorFilter:
+                          ColorFilter.mode(sajdaNameColor, BlendMode.srcIn)),
                   const SizedBox(width: 8.0),
                   Text(
                     sajdaName,
                     style: TextStyle(
-                      color: const Color(0xff77554B),
-                      fontFamily: 'kufi',
+                      color: sajdaNameColor,
+                      fontFamily: 'naskh',
                       fontSize: MediaQuery.orientationOf(context) ==
                               Orientation.portrait
                           ? 13.0

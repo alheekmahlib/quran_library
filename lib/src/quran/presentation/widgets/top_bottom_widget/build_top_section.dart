@@ -25,26 +25,40 @@ class BuildTopSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
+    final topBottomStyle = TopBottomTheme.of(context)?.style ??
+        TopBottomQuranStyle.defaults(isDark: isDark, context: context);
+    final Color juzColor =
+        topBottomStyle.juzTextColor ?? const Color(0xff77554B);
+    final Color surahColor =
+        topBottomStyle.surahNameColor ?? const Color(0xff77554B);
+
+    final Widget? effectiveTopTitleChild =
+        topTitleChild ?? topBottomStyle.customChild;
+    final String effectiveJuzName =
+        (juzName ?? topBottomStyle.juzName) ?? 'الجزء';
+    final String? effectiveSurahName = surahName ?? topBottomStyle.surahName;
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: isRight
           ? Row(
               children: [
-                topTitleChild ?? const SizedBox.shrink(),
-                topTitleChild != null
+                effectiveTopTitleChild ?? const SizedBox.shrink(),
+                effectiveTopTitleChild != null
                     ? const SizedBox(width: 16)
                     : const SizedBox.shrink(),
                 Text(
-                  '${juzName ?? 'الجزء'}: ${quranCtrl.getJuzByPage(pageIndex).juz}'
+                  '$effectiveJuzName: ${quranCtrl.getJuzByPage(pageIndex).juz}'
                       .convertNumbersAccordingToLang(
                           languageCode: languageCode),
-                  style: _getTextStyle(context),
+                  style: _getTextStyle(context, juzColor),
                 ),
                 const Spacer(),
-                surahName != null
+                effectiveSurahName != null
                     ? Text(
-                        surahName!,
-                        style: _getTextStyle(context),
+                        effectiveSurahName,
+                        style: _getTextStyle(context, surahColor),
                       )
                     : quranCtrl.getSurahsByPageNumber(pageIndex + 1).isNotEmpty
                         ? Row(
@@ -59,7 +73,7 @@ class BuildTopSection extends StatelessWidget {
                                               18.0, 22.0, context),
                                           // fontWeight: FontWeight.bold,
                                           fontFamily: 'naskh',
-                                          color: const Color(0xff77554B)),
+                                          color: surahColor),
                                     )),
                           )
                         : const SizedBox.shrink(),
@@ -67,10 +81,10 @@ class BuildTopSection extends StatelessWidget {
             )
           : Row(
               children: [
-                surahName != null
+                effectiveSurahName != null
                     ? Text(
-                        surahName!,
-                        style: _getTextStyle(context),
+                        effectiveSurahName,
+                        style: _getTextStyle(context, surahColor),
                       )
                     : quranCtrl.getSurahsByPageNumber(pageIndex + 1).isNotEmpty
                         ? Row(
@@ -91,15 +105,15 @@ class BuildTopSection extends StatelessWidget {
                         : const SizedBox.shrink(),
                 const Spacer(),
                 Text(
-                  '${juzName ?? 'الجزء'}: ${quranCtrl.getJuzByPage(pageIndex).juz}'
+                  '$effectiveJuzName: ${quranCtrl.getJuzByPage(pageIndex).juz}'
                       .convertNumbersAccordingToLang(
                           languageCode: languageCode),
-                  style: _getTextStyle(context),
+                  style: _getTextStyle(context, juzColor),
                 ),
-                topTitleChild != null
+                effectiveTopTitleChild != null
                     ? const SizedBox(width: 16)
                     : const SizedBox.shrink(),
-                topTitleChild ?? const SizedBox.shrink(),
+                effectiveTopTitleChild ?? const SizedBox.shrink(),
               ],
             ),
     );
@@ -107,11 +121,11 @@ class BuildTopSection extends StatelessWidget {
 
   /// الحصول على نمط النص
   /// Get text style
-  TextStyle _getTextStyle(BuildContext context) {
+  TextStyle _getTextStyle(BuildContext context, Color color) {
     return TextStyle(
       fontSize: UiHelper.currentOrientation(18.0, 22.0, context),
       fontFamily: 'naskh',
-      color: const Color(0xff77554B),
+      color: color,
       package: 'quran_library',
     );
   }

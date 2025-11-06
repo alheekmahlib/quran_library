@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use_from_same_package
+
 part of '/quran.dart';
 
 /// شاشة لعرض سورة واحدة باستخدام SurahCtrl و _QuranLinePage
@@ -45,6 +47,7 @@ class SurahDisplayScreen extends StatelessWidget {
     this.indexTabStyle,
     this.searchTabStyle,
     this.ayahLongClickStyle,
+    this.tafsirStyle,
   });
 
   /// رقم السورة المراد عرضها
@@ -152,21 +155,29 @@ class SurahDisplayScreen extends StatelessWidget {
   /// زر إضافي أول لقائمة خيارات الآية - يمكن إضافة أيقونة أو نص مخصص [anotherMenuChild]
   ///
   /// [anotherMenuChild] First additional button for ayah options menu - you can add custom icon or text
+  @Deprecated(
+      'In versions after 2.2.4 this parameter will be removed. Please use anotherMenuChild in AyahMenuStyle instead.')
   final Widget? anotherMenuChild;
 
   /// دالة يتم استدعاؤها عند الضغط على الزر الإضافي الأول في قائمة خيارات الآية [anotherMenuChildOnTap]
   ///
   /// [anotherMenuChildOnTap] Function called when pressing the first additional button in ayah options menu
+  @Deprecated(
+      'In versions after 2.2.4 this parameter will be removed. Please use anotherMenuChild in AyahMenuStyle instead.')
   final void Function(AyahModel ayah)? anotherMenuChildOnTap;
 
   /// زر إضافي ثاني لقائمة خيارات الآية - يمكن إضافة أيقونة أو نص مخصص [secondMenuChild]
   ///
   /// [secondMenuChild] Second additional button for ayah options menu - you can add custom icon or text
+  @Deprecated(
+      'In versions after 2.2.4 this parameter will be removed. Please use anotherMenuChild in AyahMenuStyle instead.')
   final Widget? secondMenuChild;
 
   /// دالة يتم استدعاؤها عند الضغط على الزر الإضافي الثاني في قائمة خيارات الآية [secondMenuChildOnTap]
   ///
   /// [secondMenuChildOnTap] Function called when pressing the second additional button in ayah options menu
+  @Deprecated(
+      'In versions after 2.2.4 this parameter will be removed. Please use anotherMenuChild in AyahMenuStyle instead.')
   final void Function(AyahModel ayah)? secondMenuChildOnTap;
 
   /// نمط تخصيص مظهر المشغل الصوتي للآيات - يتحكم في الألوان والخطوط والأيقونات [ayahStyle]
@@ -222,7 +233,15 @@ class SurahDisplayScreen extends StatelessWidget {
   /// [searchTabStyle] Search tab style customization for the Quran
   final SearchTabStyle? searchTabStyle;
 
-  final AyahLongClickStyle? ayahLongClickStyle;
+  /// تخصيص نمط التفسير الخاص بالمصحف
+  ///
+  /// [tafsirStyle] Tafsir style customization for the Quran
+  final TafsirStyle? tafsirStyle;
+
+  /// تخصيص نمط الضغط المطول على الآية
+  ///
+  /// [ayahLongClickStyle] Ayah long click style customization for the Quran
+  final AyahMenuStyle? ayahLongClickStyle;
 
   final quranCtrl = QuranCtrl.instance;
 
@@ -245,111 +264,126 @@ class SurahDisplayScreen extends StatelessWidget {
       minTextAdapt: true,
       splitScreenMode: true,
       builder: (_, child) {
-        return GetBuilder<SurahCtrl>(
-          init: SurahCtrl.instance,
-          initState: (state) {
-            // شرح: تحميل السورة عند بناء الشاشة
-            // Explanation: Load surah when building screen
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              final ctrl = state.controller!;
-              // شرح: إعادة تحميل السورة إذا تغير رقمها
-              // Explanation: Reload surah if its number changed
-              AudioCtrl.instance;
-              if (ctrl.surahNumber != surahNumber) {
-                ctrl.loadSurah(surahNumber);
-              }
-            });
-          },
-          builder: (surahCtrl) {
-            return Directionality(
-              textDirection: TextDirection.rtl,
-              child: Scaffold(
-                backgroundColor:
-                    backgroundColor ?? AppColors.getBackgroundColor(isDark),
-                appBar: appBar ??
-                    (useDefaultAppBar
-                        ? AppBar(
-                            backgroundColor: backgroundColor ??
-                                AppColors.getBackgroundColor(isDark),
-                            elevation: 0,
-                            centerTitle: true,
-                            title: Text(
-                              surahCtrl.getSurahName(),
-                              style: QuranLibrary().naskhStyle.copyWith(
-                                    color: AppColors.getTextColor(isDark),
-                                    fontSize: 22,
-                                  ),
-                            ),
-                            iconTheme: IconThemeData(
-                              color: AppColors.getTextColor(isDark),
-                            ),
-                          )
-                        : null),
-                drawer: appBar == null && useDefaultAppBar
-                    ? _QuranTopBar(
-                        languageCode ?? 'ar',
-                        isDark,
-                        backgroundColor: backgroundColor,
-                        topBarStyle: QuranTopBarStyle.defaults(
-                            isDark: isDark, context: context),
-                        indexTabStyle: indexTabStyle,
-                        searchTabStyle: searchTabStyle,
-                      )
-                    : null,
-                body: SafeArea(
-                    child: InkWell(
-                  onTap: () {
-                    if (onPagePress != null) {
-                      onPagePress!();
-                    } else {
-                      quranCtrl.showControlToggle();
-                      quranCtrl.state.overlayEntry?.remove();
-                      quranCtrl.state.overlayEntry = null;
-                    }
-                  },
-                  focusColor: Colors.transparent,
-                  splashColor: Colors.transparent,
-                  highlightColor: Colors.transparent,
-                  child: Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      _buildSurahBody(parentContext, surahCtrl,
-                          ayahLongClickStyle: ayahLongClickStyle),
-
-                      // السلايدر السفلي - يظهر من الأسفل للأعلى
-                      // Bottom slider - appears from bottom to top
-                      isShowAudioSlider!
-                          ? Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 16.0),
-                              child: Obx(() => BottomSlider(
-                                    isVisible:
-                                        QuranCtrl.instance.isShowControl.value,
-                                    onClose: () {
-                                      QuranCtrl.instance.isShowControl.value =
-                                          false;
-                                      SliderController.instance
-                                          .hideBottomContent();
-                                    },
-                                    style: ayahStyle ?? AyahAudioStyle(),
-                                    contentChild: const SizedBox.shrink(),
-                                    child: Flexible(
-                                      child: AyahsAudioWidget(
-                                        style: ayahStyle ??
-                                            AyahAudioStyle.defaults(
-                                                isDark: isDark,
-                                                context: context),
-                                      ),
+        return QuranLibraryTheme(
+          snackBarStyle:
+              SnackBarStyle.defaults(isDark: isDark, context: parentContext),
+          ayahLongClickStyle: ayahLongClickStyle ??
+              AyahMenuStyle.defaults(isDark: isDark, context: parentContext),
+          indexTabStyle: indexTabStyle ??
+              IndexTabStyle.defaults(isDark: isDark, context: parentContext),
+          topBarStyle:
+              QuranTopBarStyle.defaults(isDark: isDark, context: parentContext),
+          searchTabStyle: searchTabStyle ??
+              SearchTabStyle.defaults(isDark: isDark, context: parentContext),
+          surahInfoStyle: surahInfoStyle ??
+              SurahInfoStyle.defaults(isDark: isDark, context: parentContext),
+          tafsirStyle: tafsirStyle ??
+              TafsirStyle.defaults(isDark: isDark, context: parentContext),
+          bookmarksTabStyle: BookmarksTabStyle.defaults(
+              isDark: isDark, context: parentContext),
+          topBottomQuranStyle: TopBottomQuranStyle.defaults(
+              isDark: isDark, context: parentContext),
+          child: GetBuilder<SurahCtrl>(
+            init: SurahCtrl.instance,
+            initState: (state) {
+              // شرح: تحميل السورة عند بناء الشاشة
+              // Explanation: Load surah when building screen
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                final ctrl = state.controller!;
+                // شرح: إعادة تحميل السورة إذا تغير رقمها
+                // Explanation: Reload surah if its number changed
+                AudioCtrl.instance;
+                if (ctrl.surahNumber != surahNumber) {
+                  ctrl.loadSurah(surahNumber);
+                }
+              });
+            },
+            builder: (surahCtrl) {
+              return Directionality(
+                textDirection: TextDirection.rtl,
+                child: Scaffold(
+                  backgroundColor:
+                      backgroundColor ?? AppColors.getBackgroundColor(isDark),
+                  appBar: appBar ??
+                      (useDefaultAppBar
+                          ? AppBar(
+                              backgroundColor: backgroundColor ??
+                                  AppColors.getBackgroundColor(isDark),
+                              elevation: 0,
+                              centerTitle: true,
+                              title: Text(
+                                surahCtrl.getSurahName(),
+                                style: QuranLibrary().naskhStyle.copyWith(
+                                      color: AppColors.getTextColor(isDark),
+                                      fontSize: 22,
                                     ),
-                                  )),
+                              ),
+                              iconTheme: IconThemeData(
+                                color: AppColors.getTextColor(isDark),
+                              ),
                             )
-                          : const SizedBox.shrink(),
-                    ],
-                  ),
-                )),
-              ),
-            );
-          },
+                          : null),
+                  drawer: appBar == null && useDefaultAppBar
+                      ? _QuranTopBar(
+                          languageCode ?? 'ar',
+                          isDark,
+                          backgroundColor: backgroundColor,
+                        )
+                      : null,
+                  body: SafeArea(
+                      child: InkWell(
+                    onTap: () {
+                      if (onPagePress != null) {
+                        onPagePress!();
+                      } else {
+                        quranCtrl.showControlToggle();
+                        quranCtrl.state.overlayEntry?.remove();
+                        quranCtrl.state.overlayEntry = null;
+                      }
+                    },
+                    focusColor: Colors.transparent,
+                    splashColor: Colors.transparent,
+                    highlightColor: Colors.transparent,
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        _buildSurahBody(parentContext, surahCtrl),
+
+                        // السلايدر السفلي - يظهر من الأسفل للأعلى
+                        // Bottom slider - appears from bottom to top
+                        isShowAudioSlider!
+                            ? Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 16.0),
+                                child: Obx(() => BottomSlider(
+                                      isVisible: QuranCtrl
+                                          .instance.isShowControl.value,
+                                      onClose: () {
+                                        QuranCtrl.instance.isShowControl.value =
+                                            false;
+                                        SliderController.instance
+                                            .hideBottomContent();
+                                      },
+                                      style: ayahStyle ?? AyahAudioStyle(),
+                                      contentChild: const SizedBox.shrink(),
+                                      child: Flexible(
+                                        child: AyahsAudioWidget(
+                                          style: ayahStyle ??
+                                              AyahAudioStyle.defaults(
+                                                  isDark: isDark,
+                                                  context: context),
+                                        ),
+                                      ),
+                                    )),
+                              )
+                            : const SizedBox.shrink(),
+                      ],
+                    ),
+                  )),
+                ),
+              );
+            },
+          ),
         );
       },
     );
@@ -357,8 +391,7 @@ class SurahDisplayScreen extends StatelessWidget {
 
   /// بناء محتوى السورة
   /// Build surah content
-  Widget _buildSurahBody(BuildContext context, SurahCtrl surahCtrl,
-      {AyahLongClickStyle? ayahLongClickStyle}) {
+  Widget _buildSurahBody(BuildContext context, SurahCtrl surahCtrl) {
     // شرح: التحقق من تحميل البيانات
     // Explanation: Check if data is loaded
     if (surahCtrl.isLoading.value) {
@@ -395,7 +428,6 @@ class SurahDisplayScreen extends StatelessWidget {
             surahCtrl.surahPages[pageIndex],
             pageIndex,
             surahCtrl,
-            ayahLongClickStyle,
           );
         },
       ),
@@ -404,12 +436,8 @@ class SurahDisplayScreen extends StatelessWidget {
 
   /// بناء صفحة السورة
   /// Build surah page
-  Widget _buildSurahPage(
-      BuildContext context,
-      QuranPageModel surahPage,
-      int pageIndex,
-      SurahCtrl surahCtrl,
-      AyahLongClickStyle? ayahLongClickStyle) {
+  Widget _buildSurahPage(BuildContext context, QuranPageModel surahPage,
+      int pageIndex, SurahCtrl surahCtrl) {
     final deviceSize = MediaQuery.of(context).size;
     final isFirstPage = surahCtrl.isFirstPage(pageIndex);
     final isFirstPageInFirstOrSecondSurah =
@@ -441,20 +469,14 @@ class SurahDisplayScreen extends StatelessWidget {
           : isLandscape
               ? SingleChildScrollView(
                   child: _pageBuild(isFirstPage, surahCtrl, context, surahPage,
-                      deviceSize, pageIndex, ayahLongClickStyle))
+                      deviceSize, pageIndex))
               : _pageBuild(isFirstPage, surahCtrl, context, surahPage,
-                  deviceSize, pageIndex, ayahLongClickStyle),
+                  deviceSize, pageIndex),
     );
   }
 
-  Widget _pageBuild(
-      bool isFirstPage,
-      SurahCtrl surahCtrl,
-      BuildContext context,
-      QuranPageModel surahPage,
-      Size deviceSize,
-      int pageIndex,
-      AyahLongClickStyle? ayahLongClickStyle) {
+  Widget _pageBuild(bool isFirstPage, SurahCtrl surahCtrl, BuildContext context,
+      QuranPageModel surahPage, Size deviceSize, int pageIndex) {
     final currentPage = surahCtrl.getRealQuranPageNumber(pageIndex);
     return TopAndBottomWidget(
       pageIndex: currentPage - 1,
@@ -516,9 +538,6 @@ class SurahDisplayScreen extends StatelessWidget {
                             ayahSelectedFontColor: ayahSelectedFontColor,
                             secondMenuChild: secondMenuChild,
                             secondMenuChildOnTap: secondMenuChildOnTap,
-                            ayahLongClickStyle: ayahLongClickStyle ??
-                                AyahLongClickStyle.defaults(
-                                    isDark: isDark, context: context),
                           ),
                         );
                       }).toList(),
@@ -554,22 +573,6 @@ class SurahDisplayScreen extends StatelessWidget {
           SurahNameStyle(
             surahNameSize: 70,
             surahNameColor: AppColors.getTextColor(isDark),
-          ),
-      surahInfoStyle: surahInfoStyle ??
-          SurahInfoStyle(
-            ayahCount: 'عدد الآيات',
-            secondTabText: 'عن السورة',
-            firstTabText: 'أسماء السورة',
-            backgroundColor: AppColors.getBackgroundColor(isDark),
-            closeIconColor: AppColors.getTextColor(isDark),
-            indicatorColor:
-                Theme.of(context).colorScheme.primary.withValues(alpha: .2),
-            primaryColor:
-                Theme.of(context).colorScheme.primary.withValues(alpha: .2),
-            surahNameColor: AppColors.getTextColor(isDark),
-            surahNumberColor: AppColors.getTextColor(isDark),
-            textColor: AppColors.getTextColor(isDark),
-            titleColor: AppColors.getTextColor(isDark),
           ),
       onSurahBannerPress: onSurahBannerPress,
       isDark: isDark,

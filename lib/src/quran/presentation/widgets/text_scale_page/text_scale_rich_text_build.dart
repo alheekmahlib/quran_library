@@ -21,8 +21,6 @@ class TextScaleRichTextBuild extends StatelessWidget {
     required this.bookmarksColor,
     required this.ayahSelectedBackgroundColor,
     required this.languageCode,
-    this.ayahLongClickStyle,
-    this.tafsirStyle,
   });
 
   final Color? textColor;
@@ -44,9 +42,7 @@ class TextScaleRichTextBuild extends StatelessWidget {
   final Color? bookmarksColor;
   final Color? ayahSelectedBackgroundColor;
   final String? languageCode;
-  final AyahLongClickStyle? ayahLongClickStyle;
   final quranCtrl = QuranCtrl.instance;
-  final TafsirStyle? tafsirStyle;
 
   @override
   Widget build(BuildContext context) {
@@ -133,7 +129,7 @@ class TextScaleRichTextBuild extends StatelessWidget {
                         // إنشاء OverlayEntry جديد
                         final overlay = Overlay.of(context);
                         final newOverlayEntry = OverlayEntry(
-                          builder: (context) => AyahLongClickDialog(
+                          builder: (context) => AyahMenuDialog(
                             context: context,
                             isDark: isDark,
                             ayah: ayahs[ayahIndex],
@@ -144,10 +140,6 @@ class TextScaleRichTextBuild extends StatelessWidget {
                             anotherMenuChildOnTap: anotherMenuChildOnTap,
                             secondMenuChild: secondMenuChild,
                             secondMenuChildOnTap: secondMenuChildOnTap,
-                            style: ayahLongClickStyle ??
-                                AyahLongClickStyle.defaults(
-                                    isDark: isDark, context: context),
-                            tafsirStyle: tafsirStyle,
                           ),
                         );
 

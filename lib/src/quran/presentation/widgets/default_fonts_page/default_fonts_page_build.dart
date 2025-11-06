@@ -10,7 +10,6 @@ class DefaultFontsPageBuild extends StatelessWidget {
     required this.bannerStyle,
     required this.isDark,
     required this.surahNameStyle,
-    required this.surahInfoStyle,
     required this.onSurahBannerPress,
     required this.basmalaStyle,
     required this.deviceSize,
@@ -26,8 +25,6 @@ class DefaultFontsPageBuild extends StatelessWidget {
     required this.secondMenuChildOnTap,
     required this.context,
     required this.constraints,
-    required this.ayahLongClickStyle,
-    this.tafsirStyle,
   });
 
   final QuranCtrl quranCtrl;
@@ -37,7 +34,6 @@ class DefaultFontsPageBuild extends StatelessWidget {
   final BannerStyle? bannerStyle;
   final bool isDark;
   final SurahNameStyle? surahNameStyle;
-  final SurahInfoStyle? surahInfoStyle;
   final Function(SurahNamesModel surah)? onSurahBannerPress;
   final BasmalaStyle? basmalaStyle;
   final Size deviceSize;
@@ -54,8 +50,6 @@ class DefaultFontsPageBuild extends StatelessWidget {
   final void Function(AyahModel ayah)? secondMenuChildOnTap;
   final BuildContext context;
   final BoxConstraints constraints;
-  final AyahLongClickStyle? ayahLongClickStyle;
-  final TafsirStyle? tafsirStyle;
 
   @override
   Widget build(BuildContext context) {
@@ -103,9 +97,6 @@ class DefaultFontsPageBuild extends StatelessWidget {
                                   surahNameColor:
                                       AppColors.getTextColor(isDark),
                                 ),
-                            surahInfoStyle: surahInfoStyle ??
-                                SurahInfoStyle.defaults(
-                                    isDark: isDark, context: context),
                             onSurahBannerPress: onSurahBannerPress,
                             isDark: isDark,
                           ),
@@ -154,10 +145,6 @@ class DefaultFontsPageBuild extends StatelessWidget {
                             anotherMenuChildOnTap: anotherMenuChildOnTap,
                             secondMenuChild: secondMenuChild,
                             secondMenuChildOnTap: secondMenuChildOnTap,
-                            ayahLongClickStyle: ayahLongClickStyle ??
-                                AyahLongClickStyle.defaults(
-                                    isDark: isDark, context: context),
-                            tafsirStyle: tafsirStyle,
                           ),
                         ),
                       ],

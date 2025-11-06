@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use_from_same_package
+
 part of '/quran.dart';
 
 /// ويدجت لعرض محتوى السورة المخصصة مع المعلومات المطلوبة
@@ -8,10 +10,18 @@ class TopAndBottomWidget extends StatelessWidget {
   final bool? isSurah;
   final int? surahNumber;
   final String? languageCode;
+  @Deprecated(
+      'In versions after 2.2.4 this parameter will be removed. Please use juzName in TopBottomQuranStyle instead.')
   final String? juzName;
+  @Deprecated(
+      'In versions after 2.2.4 this parameter will be removed. Please use sajdaName in TopBottomQuranStyle instead.')
   final String? sajdaName;
+  @Deprecated(
+      'In versions after 2.2.4 this parameter will be removed. Please use surahName in TopBottomQuranStyle instead.')
   final String? surahName;
   final Widget child;
+  @Deprecated(
+      'In versions after 2.2.4 this parameter will be removed. Please use topTitleChild in TopBottomQuranStyle instead.')
   final Widget? topTitleChild;
 
   TopAndBottomWidget({

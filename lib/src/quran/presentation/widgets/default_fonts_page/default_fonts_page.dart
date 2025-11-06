@@ -6,7 +6,6 @@ class _DefaultFontsPage extends StatelessWidget {
   final int? surahNumber;
   final BannerStyle? bannerStyle;
   final SurahNameStyle? surahNameStyle;
-  final SurahInfoStyle? surahInfoStyle;
   final Function(SurahNamesModel surah)? onSurahBannerPress;
   final BasmalaStyle? basmalaStyle;
   final Size deviceSize;
@@ -27,8 +26,6 @@ class _DefaultFontsPage extends StatelessWidget {
   final void Function(AyahModel ayah)? anotherMenuChildOnTap;
   final Widget? secondMenuChild;
   final void Function(AyahModel ayah)? secondMenuChildOnTap;
-  final AyahLongClickStyle? ayahLongClickStyle;
-  final TafsirStyle? tafsirStyle;
 
   _DefaultFontsPage({
     required this.context,
@@ -36,7 +33,6 @@ class _DefaultFontsPage extends StatelessWidget {
     this.surahNumber,
     this.bannerStyle,
     this.surahNameStyle,
-    this.surahInfoStyle,
     this.onSurahBannerPress,
     this.basmalaStyle,
     required this.deviceSize,
@@ -56,8 +52,6 @@ class _DefaultFontsPage extends StatelessWidget {
     this.anotherMenuChildOnTap,
     this.secondMenuChild,
     this.secondMenuChildOnTap,
-    this.ayahLongClickStyle,
-    this.tafsirStyle,
   });
 
   final quranCtrl = QuranCtrl.instance;
@@ -90,7 +84,6 @@ class _DefaultFontsPage extends StatelessWidget {
                             bannerStyle: bannerStyle,
                             isDark: isDark,
                             surahNameStyle: surahNameStyle,
-                            surahInfoStyle: surahInfoStyle,
                             onSurahBannerPress: onSurahBannerPress,
                             basmalaStyle: basmalaStyle,
                             deviceSize: deviceSize,
@@ -106,8 +99,6 @@ class _DefaultFontsPage extends StatelessWidget {
                             secondMenuChild: secondMenuChild,
                             secondMenuChildOnTap: secondMenuChildOnTap,
                             context: context,
-                            ayahLongClickStyle: ayahLongClickStyle,
-                            tafsirStyle: tafsirStyle,
                           ),
                         )
                       : DefaultFirstTwoSurahs(
@@ -117,7 +108,6 @@ class _DefaultFontsPage extends StatelessWidget {
                           bannerStyle: bannerStyle,
                           isDark: isDark,
                           surahNameStyle: surahNameStyle,
-                          surahInfoStyle: surahInfoStyle,
                           onSurahBannerPress: onSurahBannerPress,
                           basmalaStyle: basmalaStyle,
                           deviceSize: deviceSize,
@@ -133,8 +123,6 @@ class _DefaultFontsPage extends StatelessWidget {
                           secondMenuChild: secondMenuChild,
                           secondMenuChildOnTap: secondMenuChildOnTap,
                           context: context,
-                          ayahLongClickStyle: ayahLongClickStyle,
-                          tafsirStyle: tafsirStyle,
                         )
                   : DefaultFirstTwoSurahs(
                       surahNumber: surahNumber,
@@ -143,7 +131,6 @@ class _DefaultFontsPage extends StatelessWidget {
                       bannerStyle: bannerStyle,
                       isDark: isDark,
                       surahNameStyle: surahNameStyle,
-                      surahInfoStyle: surahInfoStyle,
                       onSurahBannerPress: onSurahBannerPress,
                       basmalaStyle: basmalaStyle,
                       deviceSize: deviceSize,
@@ -158,8 +145,6 @@ class _DefaultFontsPage extends StatelessWidget {
                       secondMenuChild: secondMenuChild,
                       secondMenuChildOnTap: secondMenuChildOnTap,
                       context: context,
-                      ayahLongClickStyle: ayahLongClickStyle,
-                      tafsirStyle: tafsirStyle,
                     ),
             )
           : DefaultOtherSurahs(
@@ -174,7 +159,6 @@ class _DefaultFontsPage extends StatelessWidget {
               bannerStyle: bannerStyle,
               isDark: isDark,
               surahNameStyle: surahNameStyle,
-              surahInfoStyle: surahInfoStyle,
               onSurahBannerPress: onSurahBannerPress,
               basmalaStyle: basmalaStyle,
               deviceSize: deviceSize,
@@ -189,8 +173,6 @@ class _DefaultFontsPage extends StatelessWidget {
               secondMenuChild: secondMenuChild,
               secondMenuChildOnTap: secondMenuChildOnTap,
               context: context,
-              ayahLongClickStyle: ayahLongClickStyle,
-              tafsirStyle: tafsirStyle,
             ),
     );
   }

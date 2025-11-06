@@ -1,13 +1,16 @@
 ## 2.2.4
 
-* **Add more optinos to AyahAudioStyle.**
-* **Add more optinos to TafsirStyle.**
-* **Add more optinos to SurahAudioStyle.**
-* **Add more optinos to AyahDownloadManagerStyle.**
-* **Add AyahLongClickStyle to change Ayah menu style.**
-* **Add IndexTabStyle to change Surah & Juz list style.**
-* **Add SearchTabStyle to change search tab style.**
-* **Add BookmarksTabStyle to change bookmark tab style.**
+* **Add more optinos to `AyahAudioStyle`.**
+* **Add more optinos to `TafsirStyle`.**
+* **Add more optinos to `SurahAudioStyle`.**
+* **Add more optinos to `AyahDownloadManagerStyle`.**
+* **Add `AyahMenuStyle` to customization Ayah menu style.**
+* **Add `IndexTabStyle` to customization Surah & Juz list style.**
+* **Add `SearchTabStyle` to customization search tab style.**
+* **Add `BookmarksTabStyle` to customization bookmark tab style.**
+* **Add `SnackBarStyle` to customization SnackBar style.**
+* **Add `AyahDownloadManagerStyle` to customization Ayah download manager style.**
+* **Add `TopBottomQuranStyle` to customization top/bottom style for the Quran.**
 * **Add new Bismillah.**
 * **Ability to add a custom widget to tapbar.**
 * **Support for turning pages using the keyboard in the web and desktop.**

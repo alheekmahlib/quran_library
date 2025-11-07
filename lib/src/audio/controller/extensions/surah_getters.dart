@@ -65,19 +65,27 @@ extension SurahGetters on AudioCtrl {
     final newMediaItem = mediaItem;
     AudioHandler.instance.mediaItem.add(newMediaItem);
     await state.audioPlayer
-        .setAudioSource(state
-                .isSurahDownloadedByNumber(state.currentAudioListSurahNum.value)
-                .value
-            ? AudioSource.file(
-                localSurahFilePath,
-                tag: newMediaItem,
-              )
-            : AudioSource.uri(
-                Uri.parse(urlSurahFilePath),
-                tag: newMediaItem,
-              ))
-        .then((_) async => await state.audioPlayer
-            .seek(Duration(seconds: state.lastPosition.value.toInt())));
+        .setAudioSource(
+          state
+                  .isSurahDownloadedByNumber(
+                      state.currentAudioListSurahNum.value)
+                  .value
+              ? AudioSource.file(
+                  localSurahFilePath,
+                  tag: newMediaItem,
+                )
+              : AudioSource.uri(
+                  Uri.parse(urlSurahFilePath),
+                  tag: newMediaItem,
+                ),
+        )
+        .then(
+          (_) async => await state.audioPlayer.seek(
+            Duration(
+              seconds: state.lastPosition.value.toInt(),
+            ),
+          ),
+        );
   }
 
   Stream<PackagePositionData> get positionDataStream =>

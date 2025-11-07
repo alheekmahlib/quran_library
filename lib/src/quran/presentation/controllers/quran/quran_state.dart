@@ -57,6 +57,14 @@ class QuranState {
     fontsSelected.close();
     fontsDownloadProgress.close();
     isPreparingDownload.close();
-    overlayEntry?.remove();
+    // تنظيف آمن للـ OverlayEntry
+    try {
+      overlayEntry?.remove();
+      overlayEntry = null;
+    } catch (e) {
+      // تجاهل الأخطاء إذا كان الـ Overlay قد تم التخلص منه بالفعل
+    }
+    quranPageRLFocusNode.dispose();
+    _debounceTimer?.cancel();
   }
 }

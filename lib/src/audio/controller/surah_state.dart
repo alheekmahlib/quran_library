@@ -20,7 +20,6 @@ class SurahState {
   RxBool isPlaying = false.obs;
   RxString progressString = "0".obs;
   RxDouble progress = 0.0.obs;
-  RxInt get currentAudioListSurahNum => (selectedSurahIndex.value + 1).obs;
   var cancelToken = CancelToken();
   Uri? cachedArtUri;
   TextEditingController textController = TextEditingController();
@@ -84,6 +83,7 @@ class SurahState {
           .obs;
   SlidingPanelController panelController = SlidingPanelController();
   RxBool isSheetOpen = false.obs;
+  RxInt get currentAudioListSurahNum => (selectedSurahIndex.value + 1).obs;
 
   /// إيقاف جميع الاشتراكات / Cancel all subscriptions
   void cancelAllSubscriptions() {

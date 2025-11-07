@@ -95,12 +95,11 @@ class PlaySurahsWidget extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 32.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  textDirection: TextDirection.rtl,
                   children: [
                     Row(
-                      textDirection: TextDirection.rtl,
                       children: [
-                        SurahSkipToNext(style: style),
+                        SurahSkipToNext(
+                            style: style, languageCode: languageCode ?? 'ar'),
                         const SizedBox(width: 8),
                         SizedBox(
                           height: 25,
@@ -144,7 +143,8 @@ class PlaySurahsWidget extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(width: 8),
-                        SurahSkipToPrevious(style: style),
+                        SurahSkipToPrevious(
+                            style: style, languageCode: languageCode ?? 'ar'),
                       ],
                     ),
                   ],

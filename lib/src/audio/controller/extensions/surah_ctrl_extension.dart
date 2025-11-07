@@ -9,7 +9,9 @@ extension SurahCtrlExtension on AudioCtrl {
       state.selectedSurahIndex.value -= 1;
       state.isPlaying.value = true;
       saveLastSurahListen();
-      await updateMediaItemAndPlay().then((_) => state.audioPlayer.play());
+      await updateMediaItemAndPlay();
+      await changeAudioSource()
+          .then((_) async => await state.audioPlayer.play());
     } else {
       await state.audioPlayer.pause();
     }
@@ -23,7 +25,9 @@ extension SurahCtrlExtension on AudioCtrl {
       state.selectedSurahIndex.value += 1;
       state.isPlaying.value = true;
       saveLastSurahListen();
-      await updateMediaItemAndPlay().then((_) => state.audioPlayer.play());
+      await updateMediaItemAndPlay();
+      await changeAudioSource()
+          .then((_) async => await state.audioPlayer.play());
     } else {
       await state.audioPlayer.pause();
     }

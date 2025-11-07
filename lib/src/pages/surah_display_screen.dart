@@ -19,7 +19,7 @@ class SurahDisplayScreen extends StatelessWidget {
     this.bookmarksColor,
     this.circularProgressWidget,
     this.isDark = false,
-    this.languageCode = 'ar',
+    this.appLanguageCode,
     this.onAyahLongPress,
     this.onPageChanged,
     this.onPagePress,
@@ -95,7 +95,7 @@ class SurahDisplayScreen extends StatelessWidget {
 
   /// كود اللغة
   /// Language code
-  final String? languageCode;
+  final String? appLanguageCode;
 
   /// دالة عند الضغط المطول على الآية
   /// Function when long pressing on ayah
@@ -251,10 +251,14 @@ class SurahDisplayScreen extends StatelessWidget {
     if (appIconUrlForPlayAudioInBackground != null &&
         appIconUrlForPlayAudioInBackground!.isNotEmpty) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        AudioCtrl.instance
-            .updateAppIconUrl(appIconUrlForPlayAudioInBackground!);
+        if (context.mounted) {
+          AudioCtrl.instance
+              .updateAppIconUrl(appIconUrlForPlayAudioInBackground!);
+        }
       });
     }
+    final String deviceLocale = Localizations.localeOf(context).languageCode;
+    final String languageCode = appLanguageCode ?? deviceLocale;
     // شرح: تهيئة الشاشة وإعداد المقاييس
     // Explanation: Initialize screen and setup dimensions
     return ScreenUtilInit(
@@ -287,6 +291,7 @@ class SurahDisplayScreen extends StatelessWidget {
               // شرح: تحميل السورة عند بناء الشاشة
               // Explanation: Load surah when building screen
               WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (!context.mounted) return;
                 final ctrl = state.controller!;
                 // شرح: إعادة تحميل السورة إذا تغير رقمها
                 // Explanation: Reload surah if its number changed
@@ -323,7 +328,7 @@ class SurahDisplayScreen extends StatelessWidget {
                           : null),
                   drawer: appBar == null && useDefaultAppBar
                       ? _QuranTopBar(
-                          languageCode ?? 'ar',
+                          languageCode,
                           isDark,
                           backgroundColor: backgroundColor,
                         )
@@ -478,7 +483,7 @@ class SurahDisplayScreen extends StatelessWidget {
     final currentPage = surahCtrl.getRealQuranPageNumber(pageIndex);
     return TopAndBottomWidget(
       pageIndex: currentPage - 1,
-      languageCode: languageCode,
+      languageCode: appLanguageCode,
       juzName: juzName,
       sajdaName: sajdaName,
       isRight: pageIndex.isEven ? true : false,
@@ -608,7 +613,7 @@ class SurahDisplayScreen extends StatelessWidget {
     final currentPageNumber = surahCtrl.getRealQuranPageNumber(pageIndex);
     return TopAndBottomWidget(
         pageIndex: currentPageNumber - 1,
-        languageCode: languageCode,
+        languageCode: appLanguageCode,
         juzName: juzName,
         sajdaName: sajdaName,
         isRight: pageIndex.isEven ? true : false,

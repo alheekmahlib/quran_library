@@ -19,6 +19,7 @@ class SurahAudioScreen extends StatelessWidget {
     final textColor = s.textColor ?? AppColors.getTextColor(dark);
     final size = MediaQuery.sizeOf(context);
 
+    surahCtrl.loadLastSurahAndPosition();
     return Scaffold(
       backgroundColor: background,
       body: SafeArea(

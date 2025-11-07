@@ -52,9 +52,11 @@ class SurahCollapsedPlayWidget extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     textDirection: TextDirection.rtl,
                     children: [
-                      SurahSkipToPrevious(style: style),
+                      SurahSkipToPrevious(
+                          style: style, languageCode: languageCode ?? 'ar'),
                       SurahOnlinePlayButton(style: style),
-                      SurahSkipToNext(style: style),
+                      SurahSkipToNext(
+                          style: style, languageCode: languageCode ?? 'ar'),
                     ].reversed.toList(),
                   ),
                   Obx(

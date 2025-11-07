@@ -34,7 +34,7 @@ class QuranLibraryScreen extends StatelessWidget {
     @Deprecated(
         'In versions after 2.2.4 this parameter will be removed. Please use juzName in TopBottomQuranStyle instead.')
     this.juzName,
-    this.languageCode = 'ar',
+    this.appLanguageCode,
     this.onAyahLongPress,
     this.onPageChanged,
     this.onPagePress,
@@ -151,7 +151,7 @@ class QuranLibraryScreen extends StatelessWidget {
   ///
   /// [languageCode] If you want to pass the application's language code to change the numbers according to the language,
   /// the default language code is 'ar'
-  final String? languageCode;
+  final String? appLanguageCode;
 
   /// إذا كنت تريد تغيير كلمة "الجزء" إلى كلمة أخرى أو ترجمتها فقط قم بتمريرها لـ [juzName]
   ///
@@ -376,8 +376,10 @@ class QuranLibraryScreen extends StatelessWidget {
     if (appIconUrlForPlayAudioInBackground != null &&
         appIconUrlForPlayAudioInBackground!.isNotEmpty) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        AudioCtrl.instance
-            .updateAppIconUrl(appIconUrlForPlayAudioInBackground!);
+        if (context.mounted) {
+          AudioCtrl.instance
+              .updateAppIconUrl(appIconUrlForPlayAudioInBackground!);
+        }
       });
     }
 
@@ -385,6 +387,8 @@ class QuranLibraryScreen extends StatelessWidget {
     //   QuranCtrl.instance.state.isTajweed.value = 1;
     //   GetStorage().write(StorageConstants().isTajweed, 1);
     // }
+    final String deviceLocale = Localizations.localeOf(context).languageCode;
+    final String languageCode = appLanguageCode ?? deviceLocale;
     return ScreenUtilInit(
       designSize: const Size(392.72727272727275, 800.7272727272727),
       minTextAdapt: true,
@@ -412,6 +416,7 @@ class QuranLibraryScreen extends StatelessWidget {
             builder: (quranCtrl) {
               // تهيئة خاملة لخطوط الصفحات المجاورة حول الصفحة الحالية بعد أول إطار
               WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (!context.mounted) return;
                 // على الويب: لا تسرق التركيز من حقول الكتابة
                 if (kIsWeb) {
                   final pf = FocusManager.instance.primaryFocus;
@@ -476,6 +481,7 @@ class QuranLibraryScreen extends StatelessWidget {
                                     // Run operations in background to avoid UI freeze
                                     WidgetsBinding.instance
                                         .addPostFrameCallback((_) async {
+                                      if (!context.mounted) return;
                                       if (onPageChanged != null) {
                                         // لا تلمس الـ Overlay إذا كان المستخدم يدير الحدث بنفسه
                                         onPageChanged!(pageIndex);
@@ -654,7 +660,7 @@ class QuranLibraryScreen extends StatelessWidget {
                                             useDefaultAppBar &&
                                             visible
                                         ? _QuranTopBar(
-                                            languageCode ?? 'ar',
+                                            languageCode,
                                             isDark,
                                             style:
                                                 surahStyle ?? SurahAudioStyle(),

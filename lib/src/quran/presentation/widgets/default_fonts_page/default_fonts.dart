@@ -100,6 +100,7 @@ class DefaultFontsBuild extends StatelessWidget {
                             quranCtrl.state.overlayEntry = null;
 
                             // إنشاء OverlayEntry جديد
+                            if (!context.mounted) return;
                             final overlay = Overlay.of(context);
                             final newOverlayEntry = OverlayEntry(
                               builder: (context) => AyahMenuDialog(

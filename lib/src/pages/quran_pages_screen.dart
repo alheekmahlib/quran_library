@@ -23,7 +23,7 @@ class QuranPagesScreen extends StatelessWidget {
     this.downloadFontsDialogStyle,
     this.isDark = false,
     this.juzName,
-    this.languageCode = 'ar',
+    this.appLanguageCode,
     this.onAyahLongPress,
     this.onPageChanged,
     this.onPagePress,
@@ -84,7 +84,7 @@ class QuranPagesScreen extends StatelessWidget {
   final Widget? circularProgressWidget;
   final DownloadFontsDialogStyle? downloadFontsDialogStyle;
   final bool isDark;
-  final String? languageCode;
+  final String? appLanguageCode;
   final String? juzName;
   final Function(int pageNumber)? onPageChanged;
   final VoidCallback? onPagePress;
@@ -181,13 +181,16 @@ class QuranPagesScreen extends StatelessWidget {
     if (appIconUrlForPlayAudioInBackground != null &&
         appIconUrlForPlayAudioInBackground!.isNotEmpty) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        AudioCtrl.instance
-            .updateAppIconUrl(appIconUrlForPlayAudioInBackground!);
+        if (context.mounted) {
+          AudioCtrl.instance
+              .updateAppIconUrl(appIconUrlForPlayAudioInBackground!);
+        }
       });
     }
 
     // إعداد وضع التحديد المتعدد والتظليل الخارجي (بدون Stateful)
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!context.mounted) return;
       final ctrl = QuranCtrl.instance;
       ctrl.setMultiSelectMode(enableMultiSelect);
       final combined = <int>{};
@@ -247,6 +250,8 @@ class QuranPagesScreen extends StatelessWidget {
     //   Future.microtask(() => QuranCtrl.instance
     //       .prepareFonts(startIndex, isFontsLocal: isFontsLocal!));
     // }
+    final String deviceLocale = Localizations.localeOf(context).languageCode;
+    final String languageCode = appLanguageCode ?? deviceLocale;
     return ScreenUtilInit(
       designSize: const Size(392.72727272727275, 800.7272727272727),
       minTextAdapt: true,
@@ -357,6 +362,7 @@ class QuranPagesScreen extends StatelessWidget {
                   onPageChanged: (localIndex) {
                     final globalIndex = startIndex + localIndex;
                     WidgetsBinding.instance.addPostFrameCallback((_) async {
+                      if (!context.mounted) return;
                       if (onPageChanged != null) {
                         onPageChanged!(globalIndex);
                       } else {
@@ -437,7 +443,7 @@ class QuranPagesScreen extends StatelessWidget {
                                     useDefaultAppBar &&
                                     quranCtrl.isShowControl.value
                                 ? _QuranTopBar(
-                                    languageCode ?? 'ar',
+                                    languageCode,
                                     isDark,
                                     style: surahStyle ?? SurahAudioStyle(),
                                     backgroundColor: backgroundColor,

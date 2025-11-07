@@ -61,36 +61,14 @@ class SurahPlayLandscapeWidget extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 32.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  textDirection: TextDirection.rtl,
+                  // textDirection: TextDirection.rtl,
                   children: [
                     Row(
-                      textDirection: TextDirection.rtl,
+                      // textDirection: TextDirection.rtl,
                       children: [
-                        SurahSkipToNext(style: style),
+                        SurahSkipToNext(
+                            style: style, languageCode: languageCode ?? 'ar'),
                         const SizedBox(width: 16.0),
-                        SizedBox(
-                          height: 25,
-                          width: 25,
-                          child: GestureDetector(
-                            onTap: () => surahCtrl.state.audioPlayer.seek(
-                                Duration(
-                                    seconds: surahCtrl
-                                        .state.seekNextSeconds.value += 5)),
-                            child: SvgPicture.asset(
-                              AssetsPath.assets.rewind,
-                              colorFilter:
-                                  ColorFilter.mode(accent, BlendMode.srcIn),
-                              height: 30,
-                              width: 30,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    SurahOnlinePlayButton(style: style),
-                    Row(
-                      textDirection: TextDirection.rtl,
-                      children: [
                         SizedBox(
                           height: 25,
                           width: 25,
@@ -109,8 +87,32 @@ class SurahPlayLandscapeWidget extends StatelessWidget {
                             ),
                           ),
                         ),
+                      ],
+                    ),
+                    SurahOnlinePlayButton(style: style),
+                    Row(
+                      // textDirection: TextDirection.rtl,
+                      children: [
+                        SizedBox(
+                          height: 25,
+                          width: 25,
+                          child: GestureDetector(
+                            onTap: () => surahCtrl.state.audioPlayer.seek(
+                                Duration(
+                                    seconds: surahCtrl
+                                        .state.seekNextSeconds.value += 5)),
+                            child: SvgPicture.asset(
+                              AssetsPath.assets.rewind,
+                              colorFilter:
+                                  ColorFilter.mode(accent, BlendMode.srcIn),
+                              height: 30,
+                              width: 30,
+                            ),
+                          ),
+                        ),
                         const SizedBox(width: 16.0),
-                        SurahSkipToPrevious(style: style),
+                        SurahSkipToPrevious(
+                            style: style, languageCode: languageCode ?? 'ar'),
                       ],
                     ),
                   ],

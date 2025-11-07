@@ -27,7 +27,7 @@ class SurahLastListen extends StatelessWidget {
       label: 'lastListen'.tr,
       child: GestureDetector(
         onTap: () {
-          surahAudioCtrl.lastAudioSource().then((_) {
+          surahAudioCtrl.loadLastSurahAndPosition().then((_) {
             surahAudioCtrl.state.audioPlayer.play();
             surahAudioCtrl.state.panelController.expand();
           });

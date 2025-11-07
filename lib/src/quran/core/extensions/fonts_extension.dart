@@ -46,9 +46,6 @@ extension FontsExtension on QuranCtrl {
     ];
   }
 
-  // Deprecated: استخدم _getWebFontBytes بدلاً من ذلك
-  // Future<ByteData> _getFontLoaderBytesFromNetwork(String url) async { ... }
-
   /// يحاول تحميل الخط من عدة روابط مرشّحة حتى ينجح
   Future<ByteData> _getWebFontBytes(int pageIndex) async {
     final dio = Dio();
@@ -89,45 +86,6 @@ extension FontsExtension on QuranCtrl {
         'Failed to fetch web font for page ${(pageIndex + 1).toString().padLeft(3, '0')}. Last error: ${lastError?.message ?? 'unknown'}');
   }
 
-  /// يقوم بتحميل وتسجيل جميع الصفحات المحفوظة دفعة واحدة (Bulk)
-  /// - يقرأ القائمة من GetStorage.loadedFontPages
-  /// - يتخطّى الصفحات المسجّلة في الذاكرة state.loadedFontPages
-  /// - يعمل على دفعات صغيرة لتجنّب حجب واجهة المستخدم
-  // Future<void> loadPersistedFontsBulk({
-  //   List<int>? pages,
-  //   int batchSize = 24,
-  // }) async {
-  //   try {
-  //     final storage = GetStorage();
-  //     final stored = (pages ??
-  //             (storage
-  //                     .read<List<dynamic>>(_StorageConstants().loadedFontPages)
-  //                     ?.cast<int>() ??
-  //                 []))
-  //         .where((p) => p >= 0 && p < 604)
-  //         .toSet()
-  //         .toList()
-  //       ..sort();
-
-  //     if (stored.isEmpty) return;
-
-  //     // تحميل على دفعات صغيرة لتجنّب الجانك
-  //     for (int i = 0; i < stored.length; i += batchSize) {
-  //       final chunk =
-  //           stored.sublist(i, (i + batchSize).clamp(0, stored.length));
-  //       for (final page in chunk) {
-  //         // سيقوم loadFont بتخطّي الصفحة إذا كانت محمّلة مسبقًا
-  //         await loadFont(page, isFontsLocal: true);
-  //       }
-  //       // بعد كل دفعة على المنصات غير الويب: أعد بناء الواجهة كي تنعكس الخطوط
-  //       // On non-web, a chunk-level rebuild is sufficient; web already rebuilds per page load
-  //       if (!kIsWeb && !isClosed) {
-  //         try {
-  //           update();
-  //         } catch (_) {}
-  //       }
-  //       // فسح المجال للإطار التالي
-  // تحديد المسار الذي سيتم حفظ الملف فيه
   /// إرسال طلب تحميل خط إلى Isolate
   void _sendFontLoadRequest(
       int pageIndex, bool isFontsLocal, int generation) async {
@@ -241,21 +199,6 @@ extension FontsExtension on QuranCtrl {
     state._debounceTimer?.cancel();
     FontLoaderIsolateManager.dispose();
   }
-  //   targets.removeWhere((i) => state.loadedFontPages.contains(i));
-  //   if (targets.isEmpty) return;
-
-  //   // جدولة بوقت الخمول
-  //   SchedulerBinding.instance.scheduleTask(() async {
-  //     if (isClosed) return;
-  //     for (final t in targets) {
-  //       try {
-  //         await loadFont(t, isFontsLocal: true);
-  //       } catch (_) {
-  //         // تجاهل فشل صفحة واحدة
-  //       }
-  //     }
-  //   }, Priority.idle);
-  // }
 
   /// Loads a font from a ZIP file for the specified page index.
   ///
@@ -338,6 +281,7 @@ extension FontsExtension on QuranCtrl {
       final urls = (!kIsWeb &&
               (Platform.isAndroid || Platform.isIOS || Platform.isFuchsia))
           ? [
+              'https://github.com/alheekmahlib/Islamic_database/releases/download/fonts/qcf4_woff.zip',
               // مرايا WOFF
               'https://cdn.jsdelivr.net/gh/alheekmahlib/Islamic_database@main/quran_database/Quran%20Font/qcf4_woff.zip',
               'https://rawcdn.githack.com/alheekmahlib/Islamic_database/main/quran_database/Quran%20Font/qcf4_woff.zip',
@@ -345,6 +289,7 @@ extension FontsExtension on QuranCtrl {
               'https://github.com/alheekmahlib/Islamic_database/raw/refs/heads/main/quran_database/Quran%20Font/qcf4_woff.zip',
             ]
           : [
+              'https://github.com/alheekmahlib/Islamic_database/releases/download/fonts/qcf4_ttf.zip',
               // مرايا TTF
               'https://cdn.jsdelivr.net/gh/alheekmahlib/Islamic_database@main/quran_database/Quran%20Font/qcf4_ttf.zip',
               'https://rawcdn.githack.com/alheekmahlib/Islamic_database/main/quran_database/Quran%20Font/qcf4_ttf.zip',

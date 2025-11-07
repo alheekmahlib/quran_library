@@ -6,36 +6,6 @@ final GlobalKey<NavigatorState> tafsirNavigatorKey =
     GlobalKey<NavigatorState>(debugLabel: 'tafsirNavigatorKey');
 
 extension ShowTafsirExtension on void {
-  /// دالة مساعدة للحصول على سياق صالح
-  /// Helper function to get valid context
-  BuildContext? _getValidContext(BuildContext originalContext) {
-    // التحقق من السياق الأصلي أولاً
-    // Check original context first
-    if (originalContext.mounted) {
-      log('استخدام السياق الأصلي', name: 'TafsirUi');
-      return originalContext;
-    }
-
-    // محاولة استخدام Get.context
-    // Try using Get.context
-    if (Get.context != null && Get.context!.mounted) {
-      log('استخدام Get.context كبديل', name: 'TafsirUi');
-      return Get.context!;
-    }
-
-    // محاولة استخدام GlobalKey كحل أخير
-    // Try using GlobalKey as last resort
-    if (tafsirNavigatorKey.currentContext != null &&
-        tafsirNavigatorKey.currentContext!.mounted) {
-      log('استخدام tafsirNavigatorKey.currentContext كحل أخير',
-          name: 'TafsirUi');
-      return tafsirNavigatorKey.currentContext!;
-    }
-
-    log('لا يوجد سياق صالح متاح', name: 'TafsirUi');
-    return null;
-  }
-
   /// دالة مساعدة لتهيئة بيانات التفسير
   /// Helper function to initialize tafsir data
   Future<void> _initializeTafsirData({
@@ -85,34 +55,34 @@ extension ShowTafsirExtension on void {
     // تحديد قيمة isDark مبدئيًا إذا لم يتم تمريرها
     // Set default value for isDark if not passed
     final bool isDarkMode = isDark ?? false;
-
-    // التحقق من صحة السياق
-    // Check context validity
-    BuildContext? validContext = _getValidContext(context);
-    if (validContext == null) {
-      log('لا يوجد سياق صالح لعرض التفسير، يُرجى التأكد من تمرير سياق من شاشة نشطة',
-          name: 'TafsirUi');
-      return;
-    }
-
-    log('تم العثور على سياق صالح، بدء عملية التفسير', name: 'TafsirUi');
+    // حل الـ tafsirStyle النهائي قبل عرض النافذة المنبثقة
+    // Resolve final tafsirStyle before showing bottom sheet
+    final TafsirStyle resolvedTafsirStyle = tafsirStyle ??
+        (TafsirTheme.of(context)?.style ??
+            TafsirStyle.defaults(
+              isDark: isDarkMode,
+              context: context,
+            ));
 
     // عرض النافذة المنبثقة فوراً مع تحميل البيانات داخلها
     // Show bottom sheet immediately with data loading inside
     try {
       log('عرض نافذة التفسير مع تحميل البيانات بالتوازي', name: 'TafsirUi');
 
+      log('resolvedTafsirStyle.widthOfBottomSheet = ${resolvedTafsirStyle.widthOfBottomSheet}',
+          name: 'TafsirUi');
+
       await showModalBottomSheet(
-        context: validContext,
+        context: context,
         isScrollControlled: true,
         backgroundColor: Colors.transparent,
         enableDrag: true,
         isDismissible: true,
         constraints: BoxConstraints(
-          maxHeight: tafsirStyle?.heightOfBottomSheet ??
-              MediaQuery.of(validContext).size.height * 0.9,
-          maxWidth: tafsirStyle?.widthOfBottomSheet ??
-              MediaQuery.of(validContext).size.width,
+          maxHeight: resolvedTafsirStyle.heightOfBottomSheet ??
+              MediaQuery.of(context).size.height * 0.9,
+          maxWidth: resolvedTafsirStyle.widthOfBottomSheet ??
+              MediaQuery.of(context).size.width,
         ),
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
@@ -131,12 +101,7 @@ extension ShowTafsirExtension on void {
             isDark: isDarkMode,
             islocalFont: islocalFont,
             fontsName: fontsName,
-            tafsirStyle: tafsirStyle ??
-                (TafsirTheme.of(validContext)?.style ??
-                    TafsirStyle.defaults(
-                      isDark: isDarkMode,
-                      context: validContext,
-                    )),
+            tafsirStyle: resolvedTafsirStyle,
           );
         },
       );

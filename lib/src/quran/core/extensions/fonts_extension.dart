@@ -172,10 +172,12 @@ extension FontsExtension on QuranCtrl {
       }
 
       for (final i in candidates) {
-        if (!state.loadedFontPages.contains(pageIndex)) {
-          if (kIsWeb) {
+        if (kIsWeb) {
+          if (!state.loadedFontPages.contains(i)) {
             loadFont(i);
-          } else {
+          }
+        } else {
+          if (!state.loadedFontPages.contains(pageIndex)) {
             _sendFontLoadRequest(i, isFontsLocal, currentGeneration);
             state.loadedFontPages.add(i);
           }

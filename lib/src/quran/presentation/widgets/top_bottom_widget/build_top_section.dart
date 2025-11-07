@@ -68,12 +68,7 @@ class BuildTopSection extends StatelessWidget {
                                     .length,
                                 (i) => Text(
                                       ' ${quranCtrl.getSurahsByPageNumber(pageIndex + 1)[i].arabicName.replaceAll('سُورَةُ ', '')} ',
-                                      style: TextStyle(
-                                          fontSize: UiHelper.currentOrientation(
-                                              18.0, 22.0, context),
-                                          // fontWeight: FontWeight.bold,
-                                          fontFamily: 'naskh',
-                                          color: surahColor),
+                                      style: _getTextStyle(context, surahColor),
                                     )),
                           )
                         : const SizedBox.shrink(),
@@ -89,18 +84,14 @@ class BuildTopSection extends StatelessWidget {
                     : quranCtrl.getSurahsByPageNumber(pageIndex + 1).isNotEmpty
                         ? Row(
                             children: List.generate(
-                                quranCtrl
-                                    .getSurahsByPageNumber(pageIndex + 1)
-                                    .length,
-                                (i) => Text(
-                                      ' ${quranCtrl.getSurahsByPageNumber(pageIndex + 1)[i].arabicName.replaceAll('سُورَةُ ', '')} ',
-                                      style: TextStyle(
-                                          fontSize: UiHelper.currentOrientation(
-                                              18.0, 22.0, context),
-                                          // fontWeight: FontWeight.bold,
-                                          fontFamily: 'naskh',
-                                          color: const Color(0xff77554B)),
-                                    )),
+                              quranCtrl
+                                  .getSurahsByPageNumber(pageIndex + 1)
+                                  .length,
+                              (i) => Text(
+                                ' ${quranCtrl.getSurahsByPageNumber(pageIndex + 1)[i].arabicName.replaceAll('سُورَةُ ', '')} ',
+                                style: _getTextStyle(context, surahColor),
+                              ),
+                            ),
                           )
                         : const SizedBox.shrink(),
                 const Spacer(),

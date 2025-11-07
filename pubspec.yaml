@@ -78,6 +78,7 @@ flutter:
     - assets/fonts/UthmanicHafs_V20.ttf
     - assets/jsons/
     - assets/svg/
+    - assets/images/
     - assets/saadi.json
     - assets/en.json
 

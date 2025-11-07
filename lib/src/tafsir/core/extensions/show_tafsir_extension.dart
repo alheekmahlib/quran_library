@@ -44,9 +44,9 @@ extension ShowTafsirExtension on void {
     required int ayahUQNum,
     required int ayahNumber,
     bool? isDark,
-    TafsirStyle? tafsirStyle,
     bool? islocalFont,
     String? fontsName,
+    TafsirStyle? externalTafsirStyle,
   }) async {
     // شرح: هذا السطر لطباعة رسالة عند استدعاء الدالة للتأكد من تنفيذها
     // Explanation: This line logs when the function is called for debugging
@@ -57,12 +57,18 @@ extension ShowTafsirExtension on void {
     final bool isDarkMode = isDark ?? false;
     // حل الـ tafsirStyle النهائي قبل عرض النافذة المنبثقة
     // Resolve final tafsirStyle before showing bottom sheet
-    final TafsirStyle resolvedTafsirStyle = tafsirStyle ??
+    final TafsirStyle resolvedTafsirStyle = externalTafsirStyle ??
         (TafsirTheme.of(context)?.style ??
             TafsirStyle.defaults(
               isDark: isDarkMode,
               context: context,
             ));
+
+    final String styleSource = externalTafsirStyle != null
+        ? 'passed'
+        : (TafsirTheme.of(context)?.style != null ? 'theme' : 'defaults');
+    log('TafsirStyle source=$styleSource width=${resolvedTafsirStyle.widthOfBottomSheet} height=${resolvedTafsirStyle.heightOfBottomSheet}',
+        name: 'TafsirUi');
 
     // عرض النافذة المنبثقة فوراً مع تحميل البيانات داخلها
     // Show bottom sheet immediately with data loading inside

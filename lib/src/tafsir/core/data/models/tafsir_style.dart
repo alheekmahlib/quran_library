@@ -198,7 +198,7 @@ class TafsirStyle {
 
       // الحجم المقترح للـ BottomSheet
       heightOfBottomSheet: MediaQuery.of(context).size.height * 0.9,
-      widthOfBottomSheet: MediaQuery.of(context).size.width,
+      widthOfBottomSheet: null, // MediaQuery.of(context).size.width,
 
       // الأسماء
       translateName: defaultTranslateName,

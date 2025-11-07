@@ -102,6 +102,9 @@ class DefaultFontsBuild extends StatelessWidget {
                             // إنشاء OverlayEntry جديد
                             if (!context.mounted) return;
                             final overlay = Overlay.of(context);
+                            // التقاط النمط مبكرًا من سياق تحت QuranLibraryTheme
+                            final themedTafsirStyle =
+                                TafsirTheme.of(context)?.style;
                             final newOverlayEntry = OverlayEntry(
                               builder: (context) => AyahMenuDialog(
                                 context: context,
@@ -114,6 +117,7 @@ class DefaultFontsBuild extends StatelessWidget {
                                 anotherMenuChildOnTap: anotherMenuChildOnTap,
                                 secondMenuChild: secondMenuChild,
                                 secondMenuChildOnTap: secondMenuChildOnTap,
+                                externalTafsirStyle: themedTafsirStyle,
                               ),
                             );
 

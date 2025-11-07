@@ -134,7 +134,7 @@ extension FontsExtension on QuranCtrl {
     SchedulerBinding.instance.addPostFrameCallback((_) {
       if (state._needsUpdate && !isClosed) {
         state._needsUpdate = false;
-        update();
+        update(['_pageViewBuild']);
         log('UI updated after batch font registration.', name: 'FontsLoad');
       }
     });
@@ -172,7 +172,7 @@ extension FontsExtension on QuranCtrl {
       }
 
       for (final i in candidates) {
-        if (!state.loadedFontPages.contains(i)) {
+        if (!state.loadedFontPages.contains(pageIndex)) {
           if (kIsWeb) {
             loadFont(i);
           } else {

@@ -454,6 +454,13 @@ extension AyahCtrlExtension on AudioCtrl {
       AyahAudioStyle? ayahStyle,
       AyahDownloadManagerStyle? style,
       bool? isDark = false}) async {
+    // التقاط النمط مبكرًا من الأعلى (لو تم تمريره عبر QuranLibraryScreen)
+    final inheritedStyle = style;
+    final AyahDownloadManagerStyle resolvedStyle = inheritedStyle ??
+        AyahDownloadManagerStyle.defaults(
+            isDark: isDark ?? false, context: context);
+    log('AyahDownloadManagerStyle source=${inheritedStyle != null ? 'passed' : 'defaults'}',
+        name: 'AudioController');
     // ابدأ تحميل السورة المطلوبة تلقائياً بعد فتح الـ sheet
     await showModalBottomSheet(
       context: context,
@@ -461,24 +468,21 @@ extension AyahCtrlExtension on AudioCtrl {
       backgroundColor: AppColors.getBackgroundColor(isDark!),
       shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(top: Radius.circular(16))),
-      builder: (ctx) {
-        // لا تبدأ تحميل تلقائيًا؛ اجعل التحميل بيد المستخدم فقط
-        return AyahDownloadManagerSheet(
-          onRequestDownload: (surahNum) async {
-            if (state.isDownloading.value) return;
-            await startDownloadAyahSurah(surahNum, context: ctx);
-          },
-          onRequestDelete: (surahNum) async {
-            await deleteAyahSurahDownloads(surahNum);
-          },
-          isSurahDownloadedChecker: (surahNum) =>
-              isAyahSurahFullyDownloaded(surahNum),
-          initialSurahToFocus: initialSurahToDownload,
-          style: style,
-          isDark: isDark,
-          ayahStyle: ayahStyle,
-        );
-      },
+      builder: (ctx) => AyahDownloadManagerSheet(
+        onRequestDownload: (surahNum) async {
+          if (state.isDownloading.value) return;
+          await startDownloadAyahSurah(surahNum, context: ctx);
+        },
+        onRequestDelete: (surahNum) async {
+          await deleteAyahSurahDownloads(surahNum);
+        },
+        isSurahDownloadedChecker: (surahNum) =>
+            isAyahSurahFullyDownloaded(surahNum),
+        initialSurahToFocus: initialSurahToDownload,
+        style: resolvedStyle,
+        isDark: isDark,
+        ayahStyle: ayahStyle,
+      ),
     );
   }
 }

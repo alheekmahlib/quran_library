@@ -146,6 +146,14 @@ class _QuranTopBar extends StatelessWidget {
   }
 
   void _showMenuBottomSheet(BuildContext context, QuranTopBarStyle defaults) {
+    // التقط الأنماط من الـ Theme قبل الدخول لحدود bottom sheet
+    final indexTabStyle = IndexTabTheme.of(context)?.style ??
+        IndexTabStyle.defaults(isDark: isDark, context: context);
+    final searchTabStyle = SearchTabTheme.of(context)?.style ??
+        SearchTabStyle.defaults(isDark: isDark, context: context);
+    final bookmarksTabStyle = BookmarksTabTheme.of(context)?.style ??
+        BookmarksTabStyle.defaults(isDark: isDark, context: context);
+
     showModalBottomSheet(
       context: context,
       backgroundColor: backgroundColor ??
@@ -165,6 +173,9 @@ class _QuranTopBar extends StatelessWidget {
         languageCode: languageCode,
         backgroundColor: backgroundColor,
         style: defaults,
+        indexTabStyle: indexTabStyle,
+        searchTabStyle: searchTabStyle,
+        bookmarksTabStyle: bookmarksTabStyle,
       ),
     );
   }
@@ -176,12 +187,18 @@ class _MenuBottomSheet extends StatelessWidget {
   final String languageCode;
   final Color? backgroundColor;
   final QuranTopBarStyle style;
+  final IndexTabStyle indexTabStyle;
+  final SearchTabStyle searchTabStyle;
+  final BookmarksTabStyle bookmarksTabStyle;
 
   const _MenuBottomSheet({
     required this.isDark,
     required this.languageCode,
     this.backgroundColor,
     required this.style,
+    required this.indexTabStyle,
+    required this.searchTabStyle,
+    required this.bookmarksTabStyle,
   });
 
   @override
@@ -249,24 +266,17 @@ class _MenuBottomSheet extends StatelessWidget {
                     _IndexTab(
                       isDark: isDark,
                       languageCode: languageCode,
-                      style: IndexTabTheme.of(context)?.style ??
-                          IndexTabStyle.defaults(
-                            isDark: isDark,
-                            context: context,
-                          ),
+                      style: indexTabStyle,
                     ),
                     _SearchTab(
                       isDark: isDark,
                       languageCode: languageCode,
-                      style: SearchTabTheme.of(context)?.style ??
-                          SearchTabStyle.defaults(
-                            isDark: isDark,
-                            context: context,
-                          ),
+                      style: searchTabStyle,
                     ),
                     _BookmarksTab(
                       isDark: isDark,
                       languageCode: languageCode,
+                      style: bookmarksTabStyle,
                     ),
                   ],
                 ),

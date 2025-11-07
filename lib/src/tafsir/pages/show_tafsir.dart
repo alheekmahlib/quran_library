@@ -12,23 +12,23 @@ part of '../tafsir.dart';
 class ShowTafseer extends StatelessWidget {
   late final int ayahUQNumber;
   final int pageIndex;
-  final TafsirStyle? tafsirStyle;
   final BuildContext context;
   final int ayahNumber;
   final bool isDark;
   final bool? islocalFont;
   final String? fontsName;
+  final TafsirStyle? tafsirStyle;
 
   ShowTafseer({
     super.key,
     required this.ayahUQNumber,
-    this.tafsirStyle,
     required this.ayahNumber,
     required this.pageIndex,
     required this.context,
     required this.isDark,
     this.islocalFont,
     this.fontsName,
+    this.tafsirStyle,
   });
 
   final tafsirCtrl = TafsirCtrl.instance;
@@ -63,8 +63,8 @@ class ShowTafseer extends StatelessWidget {
             width: sheetWidth,
             padding: const EdgeInsets.only(bottom: 16.0),
             margin: EdgeInsets.symmetric(
-                horizontal: tafsirStyle?.horizontalMargin ?? 0.0,
-                vertical: tafsirStyle?.verticalMargin ?? 0.0),
+                horizontal: s.horizontalMargin ?? 0.0,
+                vertical: s.verticalMargin ?? 0.0),
             decoration: BoxDecoration(
               color: s.backgroundColor ??
                   (isDark ? const Color(0xff1E1E1E) : Colors.white),

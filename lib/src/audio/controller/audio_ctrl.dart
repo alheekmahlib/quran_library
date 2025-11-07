@@ -470,7 +470,8 @@ class AudioCtrl extends GetxController {
     try {
       log('Setting cached art URI from asset', name: 'AudioCtrl');
 
-      const assetPath = 'assets/images/quran_library_logo.png';
+      const assetPath =
+          'packages/quran_library/assets/images/quran_library_logo.png';
       // 1. تحميل الصورة من مجلد assets
       final byteData = await rootBundle.load(assetPath);
 
@@ -484,6 +485,7 @@ class AudioCtrl extends GetxController {
       // 4. إرجاع URI صالح للاستخدام في MediaItem
 
       state.cachedArtUri = Uri.file(file.path);
+      log('Cached art URI set from asset successfully', name: 'AudioCtrl');
     } catch (e) {
       log('Exception in setCachedArtUri: $e', name: 'AudioCtrl');
     }

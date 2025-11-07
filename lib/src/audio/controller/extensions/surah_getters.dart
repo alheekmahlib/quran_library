@@ -53,10 +53,7 @@ extension SurahGetters on AudioCtrl {
         artist:
             '${ReadersConstants.surahReaderInfo[state.surahReaderIndex.value]['name']}'
                 .tr,
-
-        /// TODO: Review artUri usage
-        artUri: Uri.parse(
-            'asset:///assets/images/quran_library_logo.png'), // state.cachedArtUri,
+        artUri: state.cachedArtUri, // state.cachedArtUri,
       );
 
   Future<void> lastAudioSource() async {

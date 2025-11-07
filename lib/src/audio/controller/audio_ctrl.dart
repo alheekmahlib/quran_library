@@ -452,12 +452,41 @@ class AudioCtrl extends GetxController {
   }
 
   Future<void> setCachedArtUri() async {
-    final file =
-        await DefaultCacheManager().getSingleFile(state.appIconUrl.value);
-    final uri =
-        await file.exists() ? file.uri : Uri.parse(state.appIconUrl.value);
-    state.cachedArtUri = uri;
-    return;
+    try {
+      final file =
+          await DefaultCacheManager().getSingleFile(state.appIconUrl.value);
+      final uri =
+          await file.exists() ? file.uri : Uri.parse(state.appIconUrl.value);
+      state.cachedArtUri = uri;
+
+      log('App icon URL updated successfully', name: 'AudioCtrl');
+    } catch (e) {
+      log('Error updating app icon URL: $e', name: 'AudioCtrl');
+      await resetAppIconToDefault();
+    }
+  }
+
+  Future<void> setCachedArtUriFromAsset() async {
+    try {
+      log('Setting cached art URI from asset', name: 'AudioCtrl');
+
+      const assetPath = 'assets/images/quran_library_logo.png';
+      // 1. تحميل الصورة من مجلد assets
+      final byteData = await rootBundle.load(assetPath);
+
+      // 2. إنشاء مسار مؤقت (احرص أن يكون الاسم فريدًا عشان ما يطغى على ملفات أخرى)
+      final tempDir = await getTemporaryDirectory();
+      final file = File('${tempDir.path}/${assetPath.split('/').last}');
+
+      // 3. كتابة البيانات في الملف المؤقت
+      await file.writeAsBytes(byteData.buffer.asUint8List(), flush: true);
+
+      // 4. إرجاع URI صالح للاستخدام في MediaItem
+
+      state.cachedArtUri = Uri.file(file.path);
+    } catch (e) {
+      log('Exception in setCachedArtUri: $e', name: 'AudioCtrl');
+    }
   }
 
   Future<void> pausePlayer() async {
@@ -500,23 +529,13 @@ class AudioCtrl extends GetxController {
   /// تحديث رابط أيقونة التطبيق / Update app icon URL
   /// [iconUrl] - الرابط الجديد لأيقونة التطبيق / New URL for app icon
   Future<void> updateAppIconUrl(String iconUrl) async {
-    try {
-      log('Updating app icon URL to: $iconUrl', name: 'AudioCtrl');
+    log('Updating app icon URL to: $iconUrl', name: 'AudioCtrl');
 
-      // تحديث الرابط / Update the URL
-      state.appIconUrl.value = iconUrl;
+    // تحديث الرابط / Update the URL
+    state.appIconUrl.value = iconUrl;
 
-      // تحديث الأيقونة المخزنة مؤقتاً / Update cached icon
-      await setCachedArtUri();
-
-      log('App icon URL updated successfully', name: 'AudioCtrl');
-    } catch (e) {
-      log('Error updating app icon URL: $e', name: 'AudioCtrl');
-      // في حالة الخطأ، استرجع الرابط الافتراضي / In case of error, revert to default URL
-      state.appIconUrl.value =
-          'https://github.com/alheekmahlib/thegarlanded/blob/master/Photos/Packages/quran_library/quran_library_logo.jpg?raw=true';
-      await setCachedArtUri();
-    }
+    // تحديث الأيقونة المخزنة مؤقتاً / Update cached icon
+    await setCachedArtUri();
   }
 
   /// الحصول على رابط أيقونة التطبيق الحالي / Get current app icon URL
@@ -524,8 +543,7 @@ class AudioCtrl extends GetxController {
 
   /// إعادة تعيين أيقونة التطبيق للرابط الافتراضي / Reset app icon to default URL
   Future<void> resetAppIconToDefault() async {
-    await updateAppIconUrl(
-        'https://raw.githubusercontent.com/alheekmahlib/thegarlanded/master/Photos/Packages/quran_library/quran_library_logo.jpg');
+    await setCachedArtUriFromAsset();
   }
 
   void didChangeAppLifecycleState(AppLifecycleState states) {

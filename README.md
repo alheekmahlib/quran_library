@@ -132,28 +132,95 @@ class MyQuranPage extends StatelessWidget {
 
 ```dart
 QuranLibraryScreen(
-    /// **Required** - Pass context from parent widget [parentContext]
-    parentContext: context,
-    
-    /// [appBar] if provided it will replace the default app bar
-    appBar: ...,
-    /// [useDefaultAppBar] is a bool to disable or enable the default app bar widget
-    useDefaultAppBar: // true or false,
-    /// [onPageChanged] if provided it will be called when a quran page changed
-    onPageChanged: (int pageIndex) => print("Page changed: $pageIndex"),
-    /// [BasmalaStyle] Change the style of Basmala by BasmalaStyle class
-    basmalaStyle: // BasmalaStyle(),
-    /// [BannerStyle] Change the style of banner by BannerStyle class
-    bannerStyle: // BannerStyle(),
-    /// [SurahNameStyle] Change the style of surah name by SurahNameStyle class
-    surahNameStyle: // SurahNameStyle(),
-    /// [SurahInfoStyle] Change the style of surah information by SurahInfoStyle class
-    surahInfoStyle: // SurahInfoStyle(),
-    /// [DownloadFontsDialogStyle] Change the style of Download fonts dialog by DownloadFontsDialogStyle class
-    downloadFontsDialogStyle: // DownloadFontsDialogStyle(),
-    
-    /// and more ................
-),
+            parentContext: context,
+            withPageView: true,
+            useDefaultAppBar: true,
+            isShowAudioSlider: true,
+            showAyahBookmarkedIcon: false,
+            isDark: isDark,
+            appLanguageCode: Get.locale!.languageCode,
+            backgroundColor: context.theme.colorScheme.surface,
+            textColor: context.textDarkColor,
+            ayahSelectedBackgroundColor:
+                context.theme.colorScheme.primary.withValues(alpha: .2),
+            ayahIconColor: context.theme.colorScheme.primary,
+            surahInfoStyle:
+                SurahInfoStyle.defaults(isDark: isDark, context: context)
+                    .copyWith(
+              ayahCount: 'aya_count'.tr,
+              firstTabText: 'surahNames'.tr,
+              secondTabText: 'aboutSurah'.tr,
+              bottomSheetWidth: 500,
+            ),
+            basmalaStyle: BasmalaStyle(
+              verticalPadding: 0.0,
+              basmalaColor: context.textDarkColor.withValues(alpha: .8),
+              basmalaFontSize: isLoadedFont ? 120.0 : 25.0,
+            ),
+            ayahStyle: AyahAudioStyle.defaults(isDark: isDark, context: context)
+                .copyWith(
+              dialogWidth: 300,
+              readersTabText: 'readers'.tr,
+            ),
+            topBarStyle:
+                QuranTopBarStyle.defaults(isDark: isDark, context: context)
+                    .copyWith(
+              showAudioButton: false,
+              showFontsButton: false,
+              tabIndexLabel: 'index'.tr,
+              tabBookmarksLabel: 'bookmarks'.tr,
+              tabSearchLabel: 'search'.tr,
+            ),
+            indexTabStyle:
+                IndexTabStyle.defaults(isDark: isDark, context: context)
+                    .copyWith(
+              tabSurahsLabel: 'surahs'.tr,
+              tabJozzLabel: 'juzz'.tr,
+            ),
+            searchTabStyle:
+                SearchTabStyle.defaults(isDark: isDark, context: context)
+                    .copyWith(
+              searchHintText: 'search'.tr,
+            ),
+            bookmarksTabStyle:
+                BookmarksTabStyle.defaults(isDark: isDark, context: context)
+                    .copyWith(
+              emptyStateText: 'no_bookmarks_yet'.tr,
+              greenGroupText: 'greenBookmarks'.tr,
+              yellowGroupText: 'yellowBookmarks'.tr,
+              redGroupText: 'redBookmarks'.tr,
+            ),
+            ayahMenuStyle:
+                AyahMenuStyle.defaults(isDark: isDark, context: context)
+                    .copyWith(
+              copySuccessMessage: 'ayah_copied'.tr,
+              showPlayAllButton: false,
+            ),
+            tafsirStyle:
+                TafsirStyle.defaults(isDark: isDark, context: context).copyWith(
+              widthOfBottomSheet: 500,
+              heightOfBottomSheet: MediaQuery.sizeOf(context).height * 0.9,
+              changeTafsirDialogHeight: MediaQuery.sizeOf(context).height * 0.9,
+              changeTafsirDialogWidth: 400,
+              tafsirNameWidget: customSvgWithCustomColor(
+                'assets/svg/tafseer_white.svg',
+                color: context.theme.colorScheme.primary,
+                height: 24,
+              ),
+              tafsirName: 'tafsir'.tr,
+              translateName: 'translate'.tr,
+              tafsirIsEmptyNote: 'tafsirIsEmptyNote'.tr,
+              footnotesName: 'footnotes'.tr,
+            ),
+            topBottomQuranStyle: TopBottomQuranStyle.defaults(
+              isDark: isDark,
+              context: context,
+            ).copyWith(
+              hizbName: 'hizb'.tr,
+              juzName: 'juz'.tr,
+              sajdaName: 'sajda'.tr,
+            ),
+          ),
 ```
 
 ### Individual Surah Display
@@ -172,13 +239,19 @@ SurahDisplayScreen(
   /// [isDark] enable or disable dark mode
   isDark: false,
   /// [basmalaStyle] Change the style of Basmala
-  basmalaStyle: BasmalaStyle(
+  basmalaStyle: BasmalaStyle.defaults(
+              isDark: isDark,
+              context: context,
+            ).copyWith(
     basmalaColor: Colors.black,
     basmalaWidth: 160.0,
     basmalaHeight: 30.0,
   ),
   /// [bannerStyle] Change the style of banner
-  bannerStyle: BannerStyle(
+  bannerStyle: BannerStyle.defaults(
+              isDark: isDark,
+              context: context,
+            ).copyWith(
     isImage: false,
     bannerSvgHeight: 40.0,
     bannerSvgWidth: 150.0,

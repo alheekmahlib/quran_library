@@ -24,6 +24,7 @@ class AyahAudioStyle {
   final double? dialogHeight;
   final Gradient? dialogHeaderBackgroundGradient;
   final Color? dialogHeaderTitleColor;
+  final String? dialogHeaderTitle;
   final Color? dialogCloseIconColor;
   final Color? dialogSelectedReaderColor;
   final Color? dialogUnSelectedReaderColor;
@@ -71,6 +72,7 @@ class AyahAudioStyle {
     this.tabLabelStyle,
     this.readersTabText,
     this.downloadedSurahsTabText,
+    this.dialogHeaderTitle,
   });
 
   AyahAudioStyle copyWith({
@@ -108,6 +110,7 @@ class AyahAudioStyle {
     TextStyle? tabLabelStyle,
     String? readersTabText,
     String? downloadedSurahsTabText,
+    String? dialogHeaderTitle,
   }) {
     return AyahAudioStyle(
       textColor: textColor ?? this.textColor,
@@ -158,6 +161,7 @@ class AyahAudioStyle {
       readersTabText: readersTabText ?? this.readersTabText,
       downloadedSurahsTabText:
           downloadedSurahsTabText ?? this.downloadedSurahsTabText,
+      dialogHeaderTitle: dialogHeaderTitle ?? this.dialogHeaderTitle,
     );
   }
 
@@ -226,6 +230,7 @@ class AyahAudioStyle {
           ),
       readersTabText: 'القراء',
       downloadedSurahsTabText: 'السور المحملة',
+      dialogHeaderTitle: 'تغيير القارئ',
     );
   }
 }

@@ -55,7 +55,7 @@ class SurahChangeSurahReader extends StatelessWidget {
         children: [
           // Header
           HeaderDialogWidget(
-            title: 'تغيير القارئ',
+            title: s.dialogHeaderTitle ?? 'تغيير القارئ',
             isDark: dark,
             backgroundGradient: s.dialogHeaderBackgroundGradient,
             titleColor: s.dialogHeaderTitleColor,

@@ -15,10 +15,10 @@ class SurahAudioList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ScreenUtilInit(
-      designSize: const Size(392.72727272727275, 800.7272727272727),
-      minTextAdapt: true,
-      splitScreenMode: true,
+    return ScaleKitBuilder(
+      designWidth: 375,
+      designHeight: 812,
+      designType: DeviceType.mobile,
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 12.0),
         padding: const EdgeInsets.symmetric(vertical: 4.0),

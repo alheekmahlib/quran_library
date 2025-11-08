@@ -92,62 +92,68 @@ class PlaySurahsWidget extends StatelessWidget {
               ),
               // const SizedBox(height: 16),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 32.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    Row(
-                      children: [
-                        SurahSkipToNext(
-                            style: style, languageCode: languageCode ?? 'ar'),
-                        const SizedBox(width: 8),
-                        SizedBox(
-                          height: 25,
-                          width: 25,
-                          child: GestureDetector(
-                            onTap: () => surahCtrl.state.audioPlayer.seek(
-                                Duration(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                // إزالة Expanded لأنه ليس ابن مباشر لـ Flex مما سبب الخطأ.
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      Row(
+                        children: [
+                          SurahSkipToNext(
+                              style: style, languageCode: languageCode ?? 'ar'),
+                          const SizedBox(width: 24),
+                          SizedBox(
+                            height: 25,
+                            width: 25,
+                            child: GestureDetector(
+                              onTap: () => surahCtrl.state.audioPlayer.seek(
+                                  Duration(
+                                      seconds: surahCtrl
+                                          .state.seekNextSeconds.value += 5)),
+                              child: SvgPicture.asset(
+                                AssetsPath.assets.rewind,
+                                colorFilter:
+                                    ColorFilter.mode(accent, BlendMode.srcIn),
+                                height: 30,
+                                width: 30,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(width: 24),
+                      SurahOnlinePlayButton(style: style),
+                      const SizedBox(width: 24),
+                      Row(
+                        textDirection: TextDirection.rtl,
+                        children: [
+                          SizedBox(
+                            height: 25,
+                            width: 25,
+                            child: GestureDetector(
+                              onTap: () {
+                                surahCtrl.state.audioPlayer.seek(Duration(
                                     seconds: surahCtrl
-                                        .state.seekNextSeconds.value += 5)),
-                            child: SvgPicture.asset(
-                              AssetsPath.assets.rewind,
-                              colorFilter:
-                                  ColorFilter.mode(accent, BlendMode.srcIn),
-                              height: 30,
-                              width: 30,
+                                        .state.seekNextSeconds.value -= 5));
+                              },
+                              child: SvgPicture.asset(
+                                AssetsPath.assets.backward,
+                                colorFilter:
+                                    ColorFilter.mode(accent, BlendMode.srcIn),
+                                height: 30,
+                                width: 30,
+                              ),
                             ),
                           ),
-                        ),
-                      ],
-                    ),
-                    SurahOnlinePlayButton(style: style),
-                    Row(
-                      textDirection: TextDirection.rtl,
-                      children: [
-                        SizedBox(
-                          height: 25,
-                          width: 25,
-                          child: GestureDetector(
-                            onTap: () {
-                              surahCtrl.state.audioPlayer.seek(Duration(
-                                  seconds: surahCtrl
-                                      .state.seekNextSeconds.value -= 5));
-                            },
-                            child: SvgPicture.asset(
-                              AssetsPath.assets.backward,
-                              colorFilter:
-                                  ColorFilter.mode(accent, BlendMode.srcIn),
-                              height: 30,
-                              width: 30,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        SurahSkipToPrevious(
-                            style: style, languageCode: languageCode ?? 'ar'),
-                      ],
-                    ),
-                  ],
+                          const SizedBox(width: 24),
+                          SurahSkipToPrevious(
+                              style: style, languageCode: languageCode ?? 'ar'),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ],
@@ -171,37 +177,15 @@ class AudioSurahNameWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Obx(
-      () => Stack(
-        alignment: Alignment.center,
-        children: [
-          UiHelper.currentOrientation(
-              Opacity(
-                opacity: .1,
-                child: Text(
-                  AudioCtrl.instance.state.currentAudioListSurahNum.value
-                      .toString(),
-                  style: TextStyle(
-                    color: numberColor,
-                    fontFamily: "surahName",
-                    fontSize: size.height * 0.18,
-                    package: "quran_library",
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              ),
-              const SizedBox.shrink(),
-              context),
-          Text(
-            AudioCtrl.instance.state.currentAudioListSurahNum.value.toString(),
-            style: TextStyle(
-              color: numberColor,
-              fontFamily: "surahName",
-              fontSize: size.height * 0.1,
-              package: "quran_library",
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ],
+      () => Text(
+        AudioCtrl.instance.state.currentAudioListSurahNum.value.toString(),
+        style: TextStyle(
+          color: numberColor,
+          fontFamily: "surahName",
+          fontSize: size.height * 0.1,
+          package: "quran_library",
+        ),
+        textAlign: TextAlign.center,
       ),
     );
   }

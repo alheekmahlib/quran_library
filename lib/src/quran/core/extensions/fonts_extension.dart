@@ -94,17 +94,16 @@ extension FontsExtension on QuranCtrl {
     // يجب أن يكون _dir متاحًا في QuranCtrl
     final fontsDir = Directory(_dir.path);
     final fontPath = getFontFullPath(fontsDir, pageIndex);
-
+    final localExists = await File(fontPath).exists();
     final message = FontLoadMessage(
-      pageIndex: pageIndex,
-      fontPath: fontPath,
-      fontName: fontName,
-      url: url,
-      isWeb: kIsWeb || !isFontsLocal,
-      candidateUrls: _webFontCandidateUrls(pageIndex),
-      generation: generation,
-    );
-
+        pageIndex: pageIndex,
+        fontPath: fontPath,
+        fontName: fontName,
+        url: url,
+        // لا نحاول الشبكة إذا الملف موجود محليًا (للعمل أوفلاين)
+        isWeb: (kIsWeb || !isFontsLocal) && !localExists,
+        candidateUrls: _webFontCandidateUrls(pageIndex),
+        generation: generation);
     FontLoaderIsolateManager.sendRequest(message);
   }
 
@@ -142,45 +141,32 @@ extension FontsExtension on QuranCtrl {
 
   /// **الدالة المعدلة:** تحضير الخطوط للصفحة الحالية والصفحات المجاورة
   Future<void> prepareFonts(int pageIndex, {bool isFontsLocal = false}) async {
-    if (state.loadedFontPages.contains(pageIndex) &&
-            QuranLibrary().currentFontsSelected == 0 ||
-        isFontsLocal) {
-      return;
-    }
-    if (!state.loadedFontPages.contains(pageIndex) && !kIsWeb) {
-      final currentGeneration = ++state._fontPreloadGeneration;
+    // إذا كان محمّلًا بالفعل محليًا لا نعيد الإرسال
+    if (state.loadedFontPages.contains(pageIndex)) return;
+
+    final currentGeneration = ++state._fontPreloadGeneration;
+    if (!kIsWeb) {
       _sendFontLoadRequest(pageIndex, isFontsLocal, currentGeneration);
-    } else if (kIsWeb) {
+    } else {
       await loadFont(pageIndex);
     }
 
+    // جدولة الصفحات المجاورة بعد تأخير بسيط
     state._debounceTimer?.cancel();
     state._debounceTimer = Timer(const Duration(milliseconds: 300), () {
-      final currentGeneration = ++state._fontPreloadGeneration;
-
+      final gen = ++state._fontPreloadGeneration;
       final neighbors = [-2, -1, 1, 2, 3, 4];
       final candidates = neighbors
           .map((o) => pageIndex + o)
           .where((i) => i >= 0 && i < 604)
           .toList();
-      if (!kIsWeb) {
-        if (state._fontPreloadGeneration != currentGeneration) {
-          log('Preload for page ${pageIndex + 1} (Gen $currentGeneration) cancelled, new page loaded.',
-              name: 'FontsLoad');
-          return;
-        }
-      }
-
+      if (!kIsWeb && state._fontPreloadGeneration != gen) return;
       for (final i in candidates) {
+        if (state.loadedFontPages.contains(i)) continue;
         if (kIsWeb) {
-          if (!state.loadedFontPages.contains(i)) {
-            loadFont(i);
-          }
+          loadFont(i);
         } else {
-          if (!state.loadedFontPages.contains(pageIndex)) {
-            _sendFontLoadRequest(i, isFontsLocal, currentGeneration);
-            state.loadedFontPages.add(i);
-          }
+          _sendFontLoadRequest(i, isFontsLocal, gen);
         }
       }
     });
@@ -627,13 +613,19 @@ void fontLoaderIsolate(SendPort sendPort) {
               : [message.url];
           fontBytes = await _getWebFontBytesFromCandidatesIsolate(urls);
         } else {
-          // تحميل من الملف المحلي
+          // تحميل من الملف المحلي أولاً، وفي حال عدم توفره جرّب الشبكي كملاذ أخير
           final fontFile = File(message.fontPath);
-          if (!await fontFile.exists()) {
-            throw Exception('Local font file not found: ${message.fontPath}');
+          if (await fontFile.exists()) {
+            final bytes = await fontFile.readAsBytes();
+            fontBytes = ByteData.view(Uint8List.fromList(bytes).buffer);
+          } else {
+            // fallback إلى الشبكة إذا توفرت مرايا
+            final urls = (message.candidateUrls != null &&
+                    message.candidateUrls!.isNotEmpty)
+                ? message.candidateUrls!
+                : [message.url];
+            fontBytes = await _getWebFontBytesFromCandidatesIsolate(urls);
           }
-          final bytes = await fontFile.readAsBytes();
-          fontBytes = ByteData.view(Uint8List.fromList(bytes).buffer);
         }
 
         // إرسال البيانات مرة أخرى إلى Isolate الرئيسي

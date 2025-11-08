@@ -80,76 +80,67 @@ class AyahsAudioWidget extends StatelessWidget {
                                 Flexible(
                                   child: Directionality(
                                     textDirection: TextDirection.rtl,
-                                    child: SizedBox(
-                                      height: 61.h,
-                                      width: double.infinity,
-                                      child: SingleChildScrollView(
-                                        child: c.state.isDownloading.value
-                                            ? GetX<AudioCtrl>(builder: (c) {
-                                                final data = c.state
-                                                    .tmpDownloadedAyahsCount;
-                                                log('$data => REBUILDING  ${audioCtrl.state.tmpDownloadedAyahsCount}');
-                                                return PackageSliderWidget
-                                                    .downloading(
-                                                  currentPosition: data,
-                                                  filesCount: audioCtrl
-                                                      .currentAyahFileName
-                                                      .length,
-                                                  activeTrackColor: effectiveStyle
-                                                      .seekBarActiveTrackColor!,
-                                                  inactiveTrackColor: effectiveStyle
-                                                      .seekBarInactiveTrackColor!,
-                                                  thumbColor: effectiveStyle
-                                                      .seekBarThumbColor!,
-                                                  horizontalPadding: effectiveStyle
-                                                      .seekBarHorizontalPadding!,
-                                                  timeContainerColor: effectiveStyle
-                                                      .seekBarTimeContainerColor!,
-                                                );
-                                              })
-                                            : StreamBuilder<
-                                                PackagePositionData>(
-                                                stream: audioCtrl
-                                                    .positionDataStream,
-                                                builder: (context, snapshot) {
-                                                  if (snapshot.hasData) {
-                                                    final positionData =
-                                                        snapshot.data;
-                                                    return PackageSliderWidget
-                                                        .player(
-                                                      horizontalPadding:
-                                                          effectiveStyle
-                                                              .seekBarHorizontalPadding!,
-                                                      duration: positionData
-                                                              ?.duration ??
-                                                          Duration.zero,
-                                                      position: positionData
-                                                              ?.position ??
-                                                          Duration.zero,
-                                                      activeTrackColor:
-                                                          effectiveStyle
-                                                              .seekBarActiveTrackColor!,
-                                                      inactiveTrackColor:
-                                                          effectiveStyle
-                                                              .seekBarInactiveTrackColor!,
-                                                      thumbColor: effectiveStyle
-                                                          .seekBarThumbColor!,
-                                                      onChangeEnd: audioCtrl
-                                                          .state
-                                                          .audioPlayer
-                                                          .seek,
-                                                      timeContainerColor:
-                                                          effectiveStyle
-                                                              .seekBarTimeContainerColor!,
-                                                      languageCode:
-                                                          languageCode ?? 'ar',
-                                                    );
-                                                  }
-                                                  return const SizedBox
-                                                      .shrink();
-                                                },
-                                              ),
-                                      ),
+                                    child: SingleChildScrollView(
+                                      child: c.state.isDownloading.value
+                                          ? GetX<AudioCtrl>(builder: (c) {
+                                              final data = c.state
+                                                  .tmpDownloadedAyahsCount;
+                                              log('$data => REBUILDING  ${audioCtrl.state.tmpDownloadedAyahsCount}');
+                                              return PackageSliderWidget
+                                                  .downloading(
+                                                currentPosition: data,
+                                                filesCount: audioCtrl
+                                                    .currentAyahFileName.length,
+                                                activeTrackColor: effectiveStyle
+                                                    .seekBarActiveTrackColor!,
+                                                inactiveTrackColor: effectiveStyle
+                                                    .seekBarInactiveTrackColor!,
+                                                thumbColor: effectiveStyle
+                                                    .seekBarThumbColor!,
+                                                horizontalPadding: effectiveStyle
+                                                    .seekBarHorizontalPadding!,
+                                                timeContainerColor: effectiveStyle
+                                                    .seekBarTimeContainerColor!,
+                                              );
+                                            })
+                                          : StreamBuilder<PackagePositionData>(
+                                              stream:
+                                                  audioCtrl.positionDataStream,
+                                              builder: (context, snapshot) {
+                                                if (snapshot.hasData) {
+                                                  final positionData =
+                                                      snapshot.data;
+                                                  return PackageSliderWidget
+                                                      .player(
+                                                    horizontalPadding:
+                                                        effectiveStyle
+                                                            .seekBarHorizontalPadding!,
+                                                    duration: positionData
+                                                            ?.duration ??
+                                                        Duration.zero,
+                                                    position: positionData
+                                                            ?.position ??
+                                                        Duration.zero,
+                                                    activeTrackColor: effectiveStyle
+                                                        .seekBarActiveTrackColor!,
+                                                    inactiveTrackColor:
+                                                        effectiveStyle
+                                                            .seekBarInactiveTrackColor!,
+                                                    thumbColor: effectiveStyle
+                                                        .seekBarThumbColor!,
+                                                    onChangeEnd: audioCtrl
+                                                        .state.audioPlayer.seek,
+                                                    timeContainerColor:
+                                                        effectiveStyle
+                                                            .seekBarTimeContainerColor!,
+                                                    languageCode:
+                                                        languageCode ?? 'ar',
+                                                    sliderHeight: 20,
+                                                  );
+                                                }
+                                                return const SizedBox.shrink();
+                                              },
+                                            ),
                                     ),
                                   ),
                                 ),

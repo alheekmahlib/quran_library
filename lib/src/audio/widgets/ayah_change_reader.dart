@@ -56,8 +56,9 @@ class AyahChangeReader extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.all(16.0),
           child: HeaderDialogWidget(
-            title: 'تغيير القارئ',
+            title: effectiveStyle.dialogHeaderTitle ?? 'تغيير القارئ',
             isDark: dark,
+            titleColor: effectiveStyle.dialogHeaderTitleColor,
             backgroundGradient: effectiveStyle.dialogHeaderBackgroundGradient,
             closeIconColor: effectiveStyle.dialogCloseIconColor,
           ),

@@ -72,7 +72,7 @@ class QuranLibraryScreen extends StatelessWidget {
     this.ayahStyle,
     this.surahStyle,
     this.isShowAudioSlider = true,
-    this.appIconUrlForPlayAudioInBackground,
+    this.appIconPathForPlayAudioInBackground,
     this.topBarStyle,
     this.indexTabStyle,
     this.searchTabStyle,
@@ -301,10 +301,10 @@ class QuranLibraryScreen extends StatelessWidget {
   /// [isShowAudioSlider] Show or hide the bottom audio control slider
   final bool? isShowAudioSlider;
 
-  /// رابط أيقونة التطبيق للمشغل الصوتي / App icon URL for audio player
-  /// [appIconUrlForPlayAudioInBackground] يمكن تمرير رابط مخصص لأيقونة التطبيق في المشغل الصوتي
-  /// [appIconUrlForPlayAudioInBackground] You can pass a custom URL for the app icon in the audio player
-  final String? appIconUrlForPlayAudioInBackground;
+  /// مسار أيقونة التطبيق للمشغل الصوتي / App icon path for audio player
+  /// [appIconPathForPlayAudioInBackground] يمكن تمرير مسار مخصص لأيقونة التطبيق في المشغل الصوتي
+  /// [appIconPathForPlayAudioInBackground] You can pass a custom path for the app icon in the audio player
+  final String? appIconPathForPlayAudioInBackground;
 
   /// تخصيص نمط شريط الأعلى الخاص بالمصحف
   ///
@@ -373,12 +373,12 @@ class QuranLibraryScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     // تحديث رابط أيقونة التطبيق إذا تم تمريره / Update app icon URL if provided
     // Update app icon URL if provided
-    if (appIconUrlForPlayAudioInBackground != null &&
-        appIconUrlForPlayAudioInBackground!.isNotEmpty) {
+    if (appIconPathForPlayAudioInBackground != null &&
+        appIconPathForPlayAudioInBackground!.isNotEmpty) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (context.mounted) {
           AudioCtrl.instance
-              .updateAppIconUrl(appIconUrlForPlayAudioInBackground!);
+              .updateAppIconUrl(appIconPathForPlayAudioInBackground!);
         }
       });
     }
@@ -389,11 +389,11 @@ class QuranLibraryScreen extends StatelessWidget {
     // }
     final String deviceLocale = Localizations.localeOf(context).languageCode;
     final String languageCode = appLanguageCode ?? deviceLocale;
-    return ScreenUtilInit(
-      designSize: const Size(392.72727272727275, 800.7272727272727),
-      minTextAdapt: true,
-      splitScreenMode: true,
-      builder: (_, __) => QuranLibraryTheme(
+    return ScaleKitBuilder(
+      designWidth: 375,
+      designHeight: 812,
+      designType: DeviceType.mobile,
+      child: QuranLibraryTheme(
           snackBarStyle: snackBarStyle ??
               SnackBarStyle.defaults(isDark: isDark, context: context),
           ayahLongClickStyle: ayahMenuStyle ??
@@ -629,7 +629,7 @@ class QuranLibraryScreen extends StatelessWidget {
                                             isDark: isDark,
                                             sliderHeight:
                                                 UiHelper.currentOrientation(
-                                                    0.0, 40.0, context),
+                                                    40.0, 40.0, context),
                                             style:
                                                 ayahStyle ?? AyahAudioStyle(),
                                             contentChild:

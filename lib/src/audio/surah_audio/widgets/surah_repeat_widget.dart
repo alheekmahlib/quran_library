@@ -25,7 +25,7 @@ class SurahRepeatWidget extends StatelessWidget {
             style?.primaryColor ??
             Theme.of(context).colorScheme.primary;
         return IconButton(
-          iconSize: 30,
+          iconSize: 30.w.clamp(16, 30),
           icon: Icon(icons[index]),
           color: index == 0 ? baseColor.withValues(alpha: .4) : baseColor,
           onPressed: () {

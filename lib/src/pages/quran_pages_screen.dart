@@ -252,11 +252,11 @@ class QuranPagesScreen extends StatelessWidget {
     // }
     final String deviceLocale = Localizations.localeOf(context).languageCode;
     final String languageCode = appLanguageCode ?? deviceLocale;
-    return ScreenUtilInit(
-      designSize: const Size(392.72727272727275, 800.7272727272727),
-      minTextAdapt: true,
-      splitScreenMode: true,
-      builder: (_, __) => QuranLibraryTheme(
+    return ScaleKitBuilder(
+      designWidth: 375,
+      designHeight: 812,
+      designType: DeviceType.mobile,
+      child: QuranLibraryTheme(
         snackBarStyle:
             SnackBarStyle.defaults(isDark: isDark, context: parentContext),
         ayahLongClickStyle: ayahLongClickStyle ??

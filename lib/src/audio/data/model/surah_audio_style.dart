@@ -119,6 +119,10 @@ class SurahAudioStyle {
   /// Reader dialog max width
   final double? dialogWidth;
 
+  /// عنوان ترويسة نافذة القارئ
+  /// Reader dialog header title
+  final String? dialogHeaderTitle;
+
   /// لون عنوان ترويسة نافذة القارئ
   /// Reader dialog header title color
   final Color? dialogHeaderTitleColor;
@@ -201,6 +205,7 @@ class SurahAudioStyle {
     this.ayahSingularText,
     this.ayahPluralText,
     this.lastListenText,
+    this.dialogHeaderTitle,
   });
 
   SurahAudioStyle copyWith({
@@ -243,6 +248,7 @@ class SurahAudioStyle {
     String? ayahSingularText,
     String? ayahPluralText,
     String? lastListenText,
+    String? dialogHeaderTitle,
   }) {
     return SurahAudioStyle(
       textColor: textColor ?? this.textColor,
@@ -296,6 +302,7 @@ class SurahAudioStyle {
       ayahSingularText: ayahSingularText ?? this.ayahSingularText,
       ayahPluralText: ayahPluralText ?? this.ayahPluralText,
       lastListenText: lastListenText ?? this.lastListenText,
+      dialogHeaderTitle: dialogHeaderTitle ?? this.dialogHeaderTitle,
     );
   }
 
@@ -375,6 +382,7 @@ class SurahAudioStyle {
 
       // نص آخر استماع الافتراضي
       lastListenText: 'آخر إستماع',
+      dialogHeaderTitle: 'تغيير القارئ',
     );
   }
 }

@@ -29,8 +29,6 @@ class AudioCtrl extends GetxController {
       _addDownloadedSurahToPlaylist(),
       _updateDownloadedAyahsMap(),
       loadLastSurahAndPosition(),
-      setCachedArtUri(),
-      lastAudioSource(),
     ]);
 
     super.onInit();
@@ -50,14 +48,21 @@ class AudioCtrl extends GetxController {
         if (!QuranCtrl.instance.state.isQuranLoaded) {
           await QuranCtrl.instance.loadQuranDataV1().then((_) async {
             await initAudioService();
+            await setCachedArtUri();
+            await lastAudioSource();
           });
         } else {
           await initAudioService();
+          await setCachedArtUri();
+          await lastAudioSource();
         }
       } else {
         await QuranCtrl.instance.loadQuranDataV1();
         log("Audio service already initialized",
             name: 'surah_audio_controller');
+        // ضمن حالة التهيئة المسبقة، احرص على مزامنة صورة الغلاف وMediaItem
+        await setCachedArtUri();
+        await lastAudioSource();
       }
     }
     // Future.delayed(const Duration(milliseconds: 700))
@@ -243,12 +248,15 @@ class AudioCtrl extends GetxController {
         log('Error creating directory: $e', name: 'AudioCtrl');
       }
 
-      if (showSnakbars && !state.snackBarShownForBatch) {
-        if (!connectivity.contains(ConnectivityResult.none)) {
-          // UiHelper.showCustomErrorSnackBar('noInternet'.tr, context);
-        } else if (connectivity.contains(ConnectivityResult.mobile)) {
-          state.snackBarShownForBatch = true; // Set the flag to true
-          // UiHelper.customMobileNoteSnackBar('mobileDataAyat'.tr, context);
+      if (context!.mounted) {
+        if (showSnakbars && !state.snackBarShownForBatch) {
+          if (connectivity.contains(ConnectivityResult.none)) {
+            ToastUtils().showToast(context, 'لا يوجد اتصال بالإنترنت');
+          } else if (connectivity.contains(ConnectivityResult.mobile)) {
+            state.snackBarShownForBatch = true; // Set the flag to true
+            ToastUtils()
+                .showToast(context, 'تنبيه: أنت تستخدم بيانات الجوال للتحميل');
+          }
         }
       }
 
@@ -265,7 +273,7 @@ class AudioCtrl extends GetxController {
       } else {
         // إزالة استخدام BuildContext عبر async gap - استخدام Get.context بدلاً من ذلك
         // Avoid using BuildContext across async gap - use Get.context instead
-        if (context != null && context.mounted) {
+        if (context.mounted) {
           ToastUtils().showToast(context, 'لا يوجد اتصال بالإنترنت');
         }
       }
@@ -452,24 +460,15 @@ class AudioCtrl extends GetxController {
   }
 
   Future<void> setCachedArtUri() async {
-    try {
-      final file =
-          await DefaultCacheManager().getSingleFile(state.appIconUrl.value);
-      final uri =
-          await file.exists() ? file.uri : Uri.parse(state.appIconUrl.value);
-      state.cachedArtUri = uri;
-
-      log('App icon URL updated successfully', name: 'AudioCtrl');
-    } catch (e) {
-      log('Error updating app icon URL: $e', name: 'AudioCtrl');
-      await resetAppIconToDefault();
-    }
+    await resetAppIconToDefault();
+    return;
   }
 
   Future<void> setCachedArtUriFromAsset() async {
     try {
       log('Setting cached art URI from asset', name: 'AudioCtrl');
 
+      // ضمن نفس الحزمة يُفضّل استخدام مسار الأصل مباشرة كما هو مُعلن في pubspec.yaml
       const assetPath =
           'packages/quran_library/assets/images/quran_library_logo.png';
       // 1. تحميل الصورة من مجلد assets
@@ -486,6 +485,8 @@ class AudioCtrl extends GetxController {
 
       state.cachedArtUri = Uri.file(file.path);
       log('Cached art URI set from asset successfully', name: 'AudioCtrl');
+      // أعِد بث MediaItem الحالي ليتم تحديث صورة الغلاف فورًا
+      await _refreshCurrentMediaItemArt();
     } catch (e) {
       log('Exception in setCachedArtUri: $e', name: 'AudioCtrl');
     }
@@ -552,6 +553,18 @@ class AudioCtrl extends GetxController {
     if (states == AppLifecycleState.paused) {
       state.audioPlayer.stop();
       state.isPlaying.value = false;
+    }
+  }
+
+  /// إعادة بث MediaItem الحالي ليعكس artUri المحدث
+  Future<void> _refreshCurrentMediaItemArt() async {
+    if (!state.audioServiceInitialized.value) return;
+    try {
+      final updated = mediaItem; // سيحمل artUri الحالي
+      AudioHandler.instance.mediaItem.add(updated);
+    } catch (e, s) {
+      log('Failed to refresh MediaItem art: $e',
+          name: 'AudioCtrl', stackTrace: s);
     }
   }
 }

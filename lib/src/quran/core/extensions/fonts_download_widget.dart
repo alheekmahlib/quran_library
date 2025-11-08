@@ -50,8 +50,6 @@ extension FontsDownloadWidgetExtension on QuranCtrl {
       final bool isDownloadOption = index == 1;
 
       Widget trailingForDownload() {
-        if (!isDownloadOption) return const SizedBox.shrink();
-        if (fontsLocal || kIsWeb) return const SizedBox.shrink();
         return Obx(() {
           final preparing = ctrl.state.isPreparingDownload.value;
           final downloading = ctrl.state.isDownloadingFonts.value;
@@ -86,14 +84,13 @@ extension FontsDownloadWidgetExtension on QuranCtrl {
                       }
                       log('fontIndex: $index');
                     },
-                    icon: downloadFontsDialogStyle?.iconWidget ??
-                        Icon(
-                          downloaded
-                              ? Icons.delete_forever
-                              : Icons.download_outlined,
-                          color: downloadFontsDialogStyle?.iconColor ?? accent,
-                          size: downloadFontsDialogStyle?.iconSize,
-                        ),
+                    icon: Icon(
+                      downloaded
+                          ? Icons.delete_forever
+                          : Icons.download_outlined,
+                      color: downloadFontsDialogStyle?.iconColor ?? accent,
+                      size: downloadFontsDialogStyle?.iconSize,
+                    ),
                   ),
               ],
             ),
@@ -193,29 +190,40 @@ extension FontsDownloadWidgetExtension on QuranCtrl {
                               prepareFonts(state.currentPageNumber.value - 1));
                         }
                       : null,
-                  leading: trailingForDownload(),
+                  leading: (fontsLocal || kIsWeb || !isDownloadOption)
+                      ? null
+                      : trailingForDownload(),
                   title: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        downloading && isDownloadOption
-                            ? '${downloadFontsDialogStyle?.downloadingText ?? 'جاري التحميل'} ${progress.toStringAsFixed(1)}%'
-                                .convertNumbersAccordingToLang(
-                                    languageCode: languageCode ?? 'ar')
-                            : titleList[index],
-                        style: downloadFontsDialogStyle?.fontNameStyle ??
-                            TextStyle(
-                              fontSize: 16,
-                              fontFamily: 'cairo',
-                              color: textColor,
-                              package: 'quran_library',
-                            ),
+                      Expanded(
+                        flex: 9,
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Text(
+                            downloading && isDownloadOption
+                                ? '${downloadFontsDialogStyle?.downloadingText ?? 'جاري التحميل'} ${progress.toStringAsFixed(1)}%'
+                                    .convertNumbersAccordingToLang(
+                                        languageCode: languageCode ?? 'ar')
+                                : titleList[index],
+                            style: downloadFontsDialogStyle?.fontNameStyle ??
+                                TextStyle(
+                                  fontSize: 16,
+                                  fontFamily: 'cairo',
+                                  color: textColor,
+                                  package: 'quran_library',
+                                ),
+                          ),
+                        ),
                       ),
-                      Icon(
-                        isSelected
-                            ? Icons.radio_button_checked
-                            : Icons.radio_button_unchecked,
-                        color: accent,
+                      Expanded(
+                        flex: 1,
+                        child: Icon(
+                          isSelected
+                              ? Icons.radio_button_checked
+                              : Icons.radio_button_unchecked,
+                          color: accent,
+                        ),
                       ),
                     ],
                   ),
@@ -235,8 +243,12 @@ extension FontsDownloadWidgetExtension on QuranCtrl {
         children: [
           // Header
           HeaderDialogWidget(
-              isDark: isDark,
-              title: downloadFontsDialogStyle?.title ?? 'الخطوط'),
+            isDark: isDark,
+            title: downloadFontsDialogStyle?.headerTitle ?? 'الخطوط',
+            titleColor: downloadFontsDialogStyle?.titleColor,
+            closeIconColor: downloadFontsDialogStyle?.closeIconColor,
+            backgroundGradient: downloadFontsDialogStyle?.backgroundGradient,
+          ),
           const SizedBox(height: 8.0),
           context.horizontalDivider(
             width: MediaQuery.sizeOf(context).width * .5,

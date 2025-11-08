@@ -17,7 +17,8 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_cache_manager: ^3.4.1
-  flutter_screenutil: ^5.9.3
+  flutter_scale_kit: ^1.0.13
+  # flutter_screenutil: ^5.9.3
   flutter_sliding_panel: ^0.0.5
   flutter_svg: ^2.2.1
   get: ^4.7.2

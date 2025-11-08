@@ -1,6 +1,17 @@
 part of '../../audio.dart';
 
 extension SurahGetters on AudioCtrl {
+  /// التحقق من وجود اتصال فعّال بالشبكة (ليست None)
+  Future<bool> _hasConnectivity() async {
+    try {
+      final result = await Connectivity().checkConnectivity();
+      return !result.contains(ConnectivityResult.none);
+    } catch (_) {
+      // في حال حدوث خطأ غير متوقع اعتبر عدم وجود اتصال لتفادي محاولة الشبكة
+      return false;
+    }
+  }
+
   /// -------- [Getters] ----------
   String get localSurahFilePath {
     if (kIsWeb) {
@@ -64,28 +75,45 @@ extension SurahGetters on AudioCtrl {
   Future<void> updateMediaItemAndPlay() async {
     final newMediaItem = mediaItem;
     AudioHandler.instance.mediaItem.add(newMediaItem);
-    await state.audioPlayer
-        .setAudioSource(
-          state
-                  .isSurahDownloadedByNumber(
-                      state.currentAudioListSurahNum.value)
-                  .value
-              ? AudioSource.file(
-                  localSurahFilePath,
-                  tag: newMediaItem,
-                )
-              : AudioSource.uri(
-                  Uri.parse(urlSurahFilePath),
-                  tag: newMediaItem,
-                ),
-        )
-        .then(
-          (_) async => await state.audioPlayer.seek(
-            Duration(
-              seconds: state.lastPosition.value.toInt(),
-            ),
-          ),
-        );
+
+    final isDownloaded = state
+        .isSurahDownloadedByNumber(state.currentAudioListSurahNum.value)
+        .value;
+    // إذا لم تكن السورة محمّلة وتبين عدم وجود اتصال، لا نحاول تحميل الشبكة
+    if (!isDownloaded && !await _hasConnectivity()) {
+      if (Get.context != null) {
+        ToastUtils().showToast(
+            Get.context!, 'لا يوجد اتصال بالإنترنت والسورة غير محمّلة محليًا');
+      }
+      log('Skipped setting audio source: offline and file not downloaded',
+          name: 'AudioCtrl');
+      return;
+    }
+    try {
+      final audioSource = isDownloaded
+          ? AudioSource.file(
+              localSurahFilePath,
+              tag: newMediaItem,
+            )
+          : AudioSource.uri(
+              Uri.parse(urlSurahFilePath),
+              tag: newMediaItem,
+            );
+      await state.audioPlayer.setAudioSource(audioSource);
+      await state.audioPlayer.seek(
+        Duration(seconds: state.lastPosition.value.toInt()),
+      );
+    } on PlatformException catch (e, s) {
+      log('PlatformException while setting audio source: ${e.message}',
+          name: 'AudioCtrl', stackTrace: s, error: e);
+      if (Get.context != null) {
+        ToastUtils().showToast(
+            Get.context!, 'تعذّر تحميل السورة. تحقّق من الاتصال وحاول مجددًا');
+      }
+    } catch (e, s) {
+      log('Unexpected error setting audio source: $e',
+          name: 'AudioCtrl', stackTrace: s);
+    }
   }
 
   Stream<PackagePositionData> get positionDataStream =>
@@ -153,10 +181,12 @@ extension SurahGetters on AudioCtrl {
           }
 
           /// check if file is downloaded or add it as uri
-          if (state.ayahsDownloadStatus[currentAyah.ayahUQNumber + i] ==
-              false) {
+          final ayahUq = currentAyahsSurah.ayahs[i].ayahUQNumber;
+          final isDownloaded = state.ayahsDownloadStatus[ayahUq] == true;
+          if (!isDownloaded) {
+            // عند عدم التحميل استخدم رابط الشبكة الصحيح بدل المسار المحلي غير الموجود
             return AudioSource.uri(
-              Uri.parse(join(state._dir!.path, selectedSurahAyahsFileNames[i])),
+              Uri.parse(selectedSurahAyahsUrls[i]),
               tag: mediaItemsForCurrentSurah[i],
             );
           }

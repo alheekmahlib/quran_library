@@ -56,12 +56,15 @@ class HeaderDialogWidget extends StatelessWidget {
             textAlign: TextAlign.center,
           ),
         ),
-        IconButton(
-          tooltip: 'إغلاق',
-          icon: Icon(Icons.close,
-              color: closeIconColor ?? AppColors.getTextColor(isDark!),
-              size: 20),
-          onPressed: () => Navigator.of(context).maybePop(),
+        Align(
+          alignment: AlignmentDirectional.centerStart,
+          child: IconButton(
+            tooltip: 'إغلاق',
+            icon: Icon(Icons.close,
+                color: closeIconColor ?? AppColors.getTextColor(isDark!),
+                size: 20),
+            onPressed: () => Navigator.of(context).maybePop(),
+          ),
         ),
       ],
     );

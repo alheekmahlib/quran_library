@@ -79,6 +79,7 @@ class AppBarWidget extends StatelessWidget {
               onPressed: () => Navigator.pop(context),
               icon: const Icon(Icons.arrow_back_ios_new_outlined),
               color: s.iconColor,
+              iconSize: 24,
             ),
           ),
           Text(
@@ -87,6 +88,7 @@ class AppBarWidget extends StatelessWidget {
                   fontSize: 20,
                   fontWeight: FontWeight.w600,
                   color: textColor,
+                  height: 1.7,
                 ),
           ),
         ],

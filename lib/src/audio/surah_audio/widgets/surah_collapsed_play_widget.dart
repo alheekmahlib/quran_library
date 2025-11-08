@@ -41,35 +41,43 @@ class SurahCollapsedPlayWidget extends StatelessWidget {
           children: [
             const SizedBox(height: 8.0),
             _PanelHandle(color: handleColor),
+            const SizedBox(height: 8.0),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 32.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    textDirection: TextDirection.rtl,
-                    children: [
-                      SurahSkipToPrevious(
-                          style: style, languageCode: languageCode ?? 'ar'),
-                      SurahOnlinePlayButton(style: style),
-                      SurahSkipToNext(
-                          style: style, languageCode: languageCode ?? 'ar'),
-                    ].reversed.toList(),
-                  ),
-                  Obx(
-                    () => Text(
-                      AudioCtrl.instance.state.currentAudioListSurahNum.value
-                          .toString(),
-                      style: TextStyle(
-                        color: textColor,
-                        fontFamily: "surahName",
-                        fontSize: 42,
-                        package: "quran_library",
+                  Expanded(
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        textDirection: TextDirection.rtl,
+                        children: [
+                          SurahSkipToPrevious(
+                              style: style, languageCode: languageCode ?? 'ar'),
+                          SurahOnlinePlayButton(style: style),
+                          SurahSkipToNext(
+                              style: style, languageCode: languageCode ?? 'ar'),
+                        ].reversed.toList(),
                       ),
-                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  Expanded(
+                    child: Obx(
+                      () => Text(
+                        AudioCtrl.instance.state.currentAudioListSurahNum.value
+                            .toString(),
+                        style: TextStyle(
+                          color: textColor,
+                          fontFamily: "surahName",
+                          fontSize: 42.sp.clamp(32, 42),
+                          package: "quran_library",
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
                     ),
                   ),
                 ],

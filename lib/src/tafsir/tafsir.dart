@@ -6,7 +6,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart' show kDebugMode, kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_scale_kit/flutter_scale_kit.dart';
 import 'package:get/get.dart' hide Response;
 import 'package:get_storage/get_storage.dart';
 import 'package:path/path.dart';

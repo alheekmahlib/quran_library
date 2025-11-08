@@ -22,15 +22,8 @@ class _QuranTopBar extends StatelessWidget {
     // Centralized theming (read from theme or fallback to defaults)
     final QuranTopBarStyle defaults = QuranTopBarTheme.of(context)?.style ??
         QuranTopBarStyle.defaults(isDark: isDark, context: context);
-    final Color textColor =
-        (defaults.textColor ?? AppColors.getTextColor(isDark));
     final Color bgColor = backgroundColor ??
         (defaults.backgroundColor ?? AppColors.getBackgroundColor(isDark));
-    final Color accentColor =
-        defaults.accentColor ?? Theme.of(context).colorScheme.primary;
-    final Color linearBg = accentColor is MaterialColor
-        ? accentColor.shade100
-        : accentColor.withValues(alpha: 0.15);
 
     return Align(
       alignment: Alignment.topCenter,
@@ -117,22 +110,7 @@ class _QuranTopBar extends StatelessWidget {
                 if (defaults.showFontsButton ?? true)
                   FontsDownloadDialog(
                     downloadFontsDialogStyle: downloadFontsDialogStyle ??
-                        DownloadFontsDialogStyle(
-                          title: defaults.fontsDialogTitle ?? 'الخطوط',
-                          titleColor: textColor,
-                          notes: defaults.fontsDialogNotes ??
-                              'لجعل مظهر المصحف مشابه لمصحف المدينة يمكنك تحميل خطوط المصحف',
-                          notesColor: textColor,
-                          linearProgressBackgroundColor: linearBg,
-                          linearProgressColor: accentColor,
-                          downloadButtonBackgroundColor: accentColor,
-                          downloadingText:
-                              defaults.fontsDialogDownloadingText ??
-                                  'جارِ التحميل',
-                          backgroundColor: isDark
-                              ? const Color(0xff1E1E1E)
-                              : const Color(0xFFF7EFE0),
-                        ),
+                        DownloadFontsDialogStyle.defaults(isDark, context),
                     languageCode: languageCode,
                     isFontsLocal: isFontsLocal,
                     isDark: isDark,

@@ -104,8 +104,7 @@ class TafsirPagesBuild extends StatelessWidget {
                       pageIndex: pageIndex,
                       isTafsir: tafsirCtrl.selectedTafsir.isTafsir,
                       translationList: tafsirCtrl.translationList,
-                      fontSizeArabic: tafsirStyle!.fontSize ??
-                          tafsirCtrl.fontSizeArabic.value,
+                      fontSizeArabic: tafsirCtrl.fontSizeArabic.value,
                       language: tafsirCtrl
                           .tafsirAndTranslationsItems[
                               tafsirCtrl.radioValue.value]

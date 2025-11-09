@@ -1,3 +1,7 @@
+## 2.2.4+1
+
+* **Fix Tafsir font size.**
+
 ## 2.2.4
 
 * **Add more optinos to `AyahAudioStyle`.**

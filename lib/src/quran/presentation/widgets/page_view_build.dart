@@ -105,8 +105,9 @@ class PageViewBuild extends StatelessWidget {
         onScaleUpdate: (ScaleUpdateDetails details) =>
             quranCtrl.updateTextScale(details),
         child: quranCtrl.textScale(
-          ((quranCtrl.isDownloadFonts &&
-                  quranCtrl.state.loadedFontPages.contains(pageIndex))
+          (((quranCtrl.isDownloadFonts &&
+                      quranCtrl.state.loadedFontPages.contains(pageIndex)) ||
+                  isFontsLocal)
               ? quranCtrl.state.allAyahs.isEmpty ||
                       quranCtrl.state.surahs.isEmpty ||
                       quranCtrl.state.pages.isEmpty

@@ -53,6 +53,11 @@ class DefaultFontsPageBuild extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bookmarkCtrl = BookmarksCtrl.instance;
+
+    // Set محلية لتتبع السور المعروضة في هذه الصفحة فقط
+    final Set<String> displayedSurahsInThisPage = {};
+
     return RepaintBoundary(
       child: FittedBox(
         fit: BoxFit.fitWidth,
@@ -60,22 +65,36 @@ class DefaultFontsPageBuild extends StatelessWidget {
           children: [
             ...quranCtrl.staticPages[pageIndex].lines.map(
               (line) {
-                bool firstAyah = false;
-                if (line.ayahs[0].ayahNumber == 1 &&
-                    !newSurahs.contains(line.ayahs[0].arabicName)) {
-                  newSurahs.add(line.ayahs[0].arabicName!);
-                  firstAyah = true;
-                }
                 final surahNum = quranCtrl
-                    .getSurahDataByAyahUQ(line.ayahs[0].ayahUQNumber)
+                    .getSurahDataByAyahUQ(line.ayahs.first.ayahUQNumber)
                     .surahNumber;
-                return GetBuilder<BookmarksCtrl>(
-                  builder: (bookmarkCtrl) {
+
+                // تحديد ما إذا كانت هذه أول آية في سورة جديدة
+                final bool isFirstAyahInSurah =
+                    line.ayahs.first.ayahNumber == 1;
+                final String? ayahSurahName = line.ayahs.first.arabicName;
+
+                // الفحص: هل هذه أول مرة نرى هذه السورة في هذه الصفحة؟
+                final bool isNewSurah = isFirstAyahInSurah &&
+                    ayahSurahName != null &&
+                    !displayedSurahsInThisPage.contains(ayahSurahName);
+
+                // إضافة السورة للـ Set المحلية
+                if (isNewSurah) {
+                  displayedSurahsInThisPage.add(ayahSurahName);
+                  // تحديث القائمة الخارجية أيضاً للحسابات الأخرى
+                  if (!newSurahs.contains(ayahSurahName)) {
+                    newSurahs.add(ayahSurahName);
+                  }
+                }
+
+                return Obx(
+                  () {
                     return Column(
                       children: [
-                        if (firstAyah)
+                        if (isNewSurah)
                           SurahHeaderWidget(
-                            surahNumber ?? line.ayahs[0].surahNumber!,
+                            surahNumber ?? line.ayahs.first.surahNumber!,
                             bannerStyle: bannerStyle ??
                                 BannerStyle(
                                   isImage: false,
@@ -100,7 +119,7 @@ class DefaultFontsPageBuild extends StatelessWidget {
                             onSurahBannerPress: onSurahBannerPress,
                             isDark: isDark,
                           ),
-                        if (firstAyah && (line.ayahs[0].surahNumber != 9))
+                        if (isNewSurah && (line.ayahs[0].surahNumber != 9))
                           BasmallahWidget(
                             surahNumber: surahNum,
                             basmalaStyle: basmalaStyle ??

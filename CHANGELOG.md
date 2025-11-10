@@ -1,6 +1,7 @@
 ## 2.2.4+1
 
 * **Fix Tafsir font size.**
+* **Fix isFontsLocal.**
 
 ## 2.2.4
 

@@ -26,13 +26,15 @@ class AyahChangeReader extends StatelessWidget {
           alignment: Alignment.center,
           insetPadding:
               const EdgeInsets.symmetric(horizontal: 24.0, vertical: 24.0),
-          constraints: BoxConstraints(
-            maxHeight: effectiveStyle.dialogHeight ??
-                MediaQuery.of(context).size.height * 0.7,
-            maxWidth:
-                effectiveStyle.dialogWidth ?? MediaQuery.of(context).size.width,
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxHeight: effectiveStyle.dialogHeight ??
+                  MediaQuery.of(context).size.height * 0.7,
+              maxWidth: effectiveStyle.dialogWidth ??
+                  MediaQuery.of(context).size.width,
+            ),
+            child: _buildDialog(context, effectiveStyle, dark),
           ),
-          child: _buildDialog(context, effectiveStyle, dark),
         ),
       ),
       child: _buildTitle(effectiveStyle, dark),

@@ -23,12 +23,14 @@ class SurahChangeSurahReader extends StatelessWidget {
           alignment: Alignment.center,
           insetPadding:
               const EdgeInsets.symmetric(horizontal: 24.0, vertical: 24.0),
-          constraints: BoxConstraints(
-            maxHeight:
-                s.dialogHeight ?? MediaQuery.of(context).size.height * 0.7,
-            maxWidth: s.dialogWidth ?? MediaQuery.of(context).size.width * 0.6,
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxHeight:
+                  s.dialogHeight ?? MediaQuery.of(context).size.height * 0.7,
+              maxWidth: s.dialogWidth ?? MediaQuery.of(context).size.width * 0.6,
+            ),
+            child: _buildDialog(context, s, dark),
           ),
-          child: _buildDialog(context, s, dark),
         ),
       ),
       child: _buildTitle(s, dark),

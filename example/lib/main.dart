@@ -75,7 +75,7 @@ class FullQuran extends StatelessWidget {
       // textColor: Colors.black,
       isFontsLocal: false,
       tafsirStyle:
-          TafsirStyle.defaults(isDark: false, context: context).copyWith(
+          TafsirStyle.defaults(isDark: true, context: context).copyWith(
         widthOfBottomSheet: 500,
         heightOfBottomSheet: MediaQuery.sizeOf(context).height * 0.9,
         changeTafsirDialogHeight: MediaQuery.sizeOf(context).height * 0.9,

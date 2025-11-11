@@ -94,36 +94,42 @@ class DailogBuild extends StatelessWidget {
             backgroundColor: tafsirStyle?.backgroundColor!,
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-            constraints: BoxConstraints(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
                 maxWidth: tafsirStyle?.changeTafsirDialogWidth ??
                     MediaQuery.of(context).size.width,
                 maxHeight: tafsirStyle?.changeTafsirDialogHeight ??
-                    MediaQuery.of(context).size.height * 0.9),
-            child: Container(
-              constraints: const BoxConstraints(maxHeight: 500),
-              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8.0),
-              padding: const EdgeInsets.symmetric(vertical: 8),
-              child: SingleChildScrollView(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: List.generate(
-                      tafsirCtrl.tafsirAndTranslationsItems.length, (index) {
-                    return Column(
-                      children: [
-                        tafsirOrTranslateTitle(index),
-                        TafsirItemWidget(
-                          tafsirIndex: index,
-                          pageNumber: pageNumber ??
-                              QuranCtrl.instance.state.currentPageNumber.value,
-                          tafsirNameList: tafsirNameList,
-                          tafsirStyle: tafsirStyle ??
-                              TafsirStyle.defaults(
-                                  isDark: isDark!, context: context),
-                          isDark: isDark!,
-                        ),
-                      ],
-                    );
-                  }),
+                    MediaQuery.of(context).size.height * 0.9,
+              ),
+              child: Container(
+                margin:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8.0),
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: List.generate(
+                      tafsirCtrl.tafsirAndTranslationsItems.length,
+                      (index) {
+                        return Column(
+                          children: [
+                            tafsirOrTranslateTitle(index),
+                            TafsirItemWidget(
+                              tafsirIndex: index,
+                              pageNumber: pageNumber ??
+                                  QuranCtrl
+                                      .instance.state.currentPageNumber.value,
+                              tafsirNameList: tafsirNameList,
+                              tafsirStyle: tafsirStyle ??
+                                  TafsirStyle.defaults(
+                                      isDark: isDark!, context: context),
+                              isDark: isDark!,
+                            ),
+                          ],
+                        );
+                      },
+                    ),
+                  ),
                 ),
               ),
             ),

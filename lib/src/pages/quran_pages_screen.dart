@@ -105,16 +105,16 @@ class QuranPagesScreen extends StatelessWidget {
   final String? fontsName;
   final List<int>? ayahBookmarked;
   @Deprecated(
-      'In versions after 2.2.4 this parameter will be removed. Please use customMenuItems in AyahMenuStyle instead.')
+      'In versions after 2.2.5 this parameter will be removed. Please use customMenuItems in AyahMenuStyle instead.')
   final Widget? anotherMenuChild;
   @Deprecated(
-      'In versions after 2.2.4 this parameter will be removed. Please use customMenuItems in AyahMenuStyle instead.')
+      'In versions after 2.2.5 this parameter will be removed. Please use customMenuItems in AyahMenuStyle instead.')
   final void Function(AyahModel ayah)? anotherMenuChildOnTap;
   @Deprecated(
-      'In versions after 2.2.4 this parameter will be removed. Please use customMenuItems in AyahMenuStyle instead.')
+      'In versions after 2.2.5 this parameter will be removed. Please use customMenuItems in AyahMenuStyle instead.')
   final Widget? secondMenuChild;
   @Deprecated(
-      'In versions after 2.2.4 this parameter will be removed. Please use customMenuItems in AyahMenuStyle instead.')
+      'In versions after 2.2.5 this parameter will be removed. Please use customMenuItems in AyahMenuStyle instead.')
   final void Function(AyahModel ayah)? secondMenuChildOnTap;
   final AyahAudioStyle? ayahStyle;
   final SurahAudioStyle? surahStyle;

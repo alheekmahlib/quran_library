@@ -32,7 +32,7 @@ class QuranLibraryScreen extends StatelessWidget {
     this.downloadFontsDialogStyle,
     this.isDark = false,
     @Deprecated(
-        'In versions after 2.2.4 this parameter will be removed. Please use juzName in TopBottomQuranStyle instead.')
+        'In versions after 2.2.5 this parameter will be removed. Please use juzName in TopBottomQuranStyle instead.')
     this.juzName,
     this.appLanguageCode,
     this.onAyahLongPress,
@@ -41,7 +41,7 @@ class QuranLibraryScreen extends StatelessWidget {
     this.onSurahBannerPress,
     this.pageIndex = 0,
     @Deprecated(
-        'In versions after 2.2.4 this parameter will be removed. Please use sajdaName in TopBottomQuranStyle instead.')
+        'In versions after 2.2.5 this parameter will be removed. Please use sajdaName in TopBottomQuranStyle instead.')
     this.sajdaName,
     this.showAyahBookmarkedIcon = true,
     this.surahInfoStyle,
@@ -50,7 +50,7 @@ class QuranLibraryScreen extends StatelessWidget {
     this.textColor,
     this.singleAyahTextColors,
     @Deprecated(
-        'In versions after 2.2.4 this parameter will be removed. Please use topTitleChild in TopBottomQuranStyle instead.')
+        'In versions after 2.2.5 this parameter will be removed. Please use topTitleChild in TopBottomQuranStyle instead.')
     this.topTitleChild,
     this.useDefaultAppBar = true,
     this.withPageView = true,
@@ -58,16 +58,16 @@ class QuranLibraryScreen extends StatelessWidget {
     this.fontsName = '',
     this.ayahBookmarked = const [],
     @Deprecated(
-        'In versions after 2.2.4 this parameter will be removed. Please use customMenuItems in AyahMenuStyle instead.')
+        'In versions after 2.2.5 this parameter will be removed. Please use customMenuItems in AyahMenuStyle instead.')
     this.anotherMenuChild,
     @Deprecated(
-        'In versions after 2.2.4 this parameter will be removed. Please use customMenuItems in AyahMenuStyle instead.')
+        'In versions after 2.2.5 this parameter will be removed. Please use customMenuItems in AyahMenuStyle instead.')
     this.anotherMenuChildOnTap,
     @Deprecated(
-        'In versions after 2.2.4 this parameter will be removed. Please use customMenuItems in AyahMenuStyle instead.')
+        'In versions after 2.2.5 this parameter will be removed. Please use customMenuItems in AyahMenuStyle instead.')
     this.secondMenuChild,
     @Deprecated(
-        'In versions after 2.2.4 this parameter will be removed. Please use customMenuItems in AyahMenuStyle instead.')
+        'In versions after 2.2.5 this parameter will be removed. Please use customMenuItems in AyahMenuStyle instead.')
     this.secondMenuChildOnTap,
     this.ayahStyle,
     this.surahStyle,
@@ -158,7 +158,7 @@ class QuranLibraryScreen extends StatelessWidget {
   /// If you want to change the word “الجزء” to another word or translate it just pass it to [juzName].
   ///
   @Deprecated(
-      'In versions after 2.2.4 this parameter will be removed. Please use juzName in TopBottomQuranStyle instead.')
+      'In versions after 2.2.5 this parameter will be removed. Please use juzName in TopBottomQuranStyle instead.')
   final String? juzName;
 
   /// إذا تم توفيره فسيتم استدعاؤه عند تغيير صفحة القرآن [onPageChanged]
@@ -195,7 +195,7 @@ class QuranLibraryScreen extends StatelessWidget {
   /// If you want to change the word “سجدة” to another word or translate it just pass it to [sajdaName].
   ///
   @Deprecated(
-      'In versions after 2.2.4 this parameter will be removed. Please use sajdaName in TopBottomQuranStyle instead.')
+      'In versions after 2.2.5 this parameter will be removed. Please use sajdaName in TopBottomQuranStyle instead.')
   final String? sajdaName;
 
   /// يمكنك تمكين أو تعطيل عرض أيقونة الإشارة المرجعية للآية [showAyahBookmarkedIcon]
@@ -223,7 +223,7 @@ class QuranLibraryScreen extends StatelessWidget {
   /// If you want to add a widget next to the surah name [topTitleChild]
   ///
   @Deprecated(
-      'In versions after 2.2.4 this parameter will be removed. Please use topTitleChild in TopBottomQuranStyle instead.')
+      'In versions after 2.2.5 this parameter will be removed. Please use topTitleChild in TopBottomQuranStyle instead.')
   final Widget? topTitleChild;
 
   /// يمكنك تمرير لون نص القرآن [textColor]
@@ -262,28 +262,28 @@ class QuranLibraryScreen extends StatelessWidget {
   ///
   /// [anotherMenuChild] First additional button for ayah options menu - you can add custom icon or text
   @Deprecated(
-      'In versions after 2.2.4 this parameter will be removed. Please use customMenuItems in AyahMenuStyle instead.')
+      'In versions after 2.2.5 this parameter will be removed. Please use customMenuItems in AyahMenuStyle instead.')
   final Widget? anotherMenuChild;
 
   /// دالة يتم استدعاؤها عند الضغط على الزر الإضافي الأول في قائمة خيارات الآية [anotherMenuChildOnTap]
   ///
   /// [anotherMenuChildOnTap] Function called when pressing the first additional button in ayah options menu
   @Deprecated(
-      'In versions after 2.2.4 this parameter will be removed. Please use customMenuItems in AyahMenuStyle instead.')
+      'In versions after 2.2.5 this parameter will be removed. Please use customMenuItems in AyahMenuStyle instead.')
   final void Function(AyahModel ayah)? anotherMenuChildOnTap;
 
   /// زر إضافي ثاني لقائمة خيارات الآية - يمكن إضافة أيقونة أو نص مخصص [secondMenuChild]
   ///
   /// [secondMenuChild] Second additional button for ayah options menu - you can add custom icon or text
   @Deprecated(
-      'In versions after 2.2.4 this parameter will be removed. Please use customMenuItems in AyahMenuStyle instead.')
+      'In versions after 2.2.5 this parameter will be removed. Please use customMenuItems in AyahMenuStyle instead.')
   final Widget? secondMenuChild;
 
   /// دالة يتم استدعاؤها عند الضغط على الزر الإضافي الثاني في قائمة خيارات الآية [secondMenuChildOnTap]
   ///
   /// [secondMenuChildOnTap] Function called when pressing the second additional button in ayah options menu
   @Deprecated(
-      'In versions after 2.2.4 this parameter will be removed. Please use customMenuItems in AyahMenuStyle instead.')
+      'In versions after 2.2.5 this parameter will be removed. Please use customMenuItems in AyahMenuStyle instead.')
   final void Function(AyahModel ayah)? secondMenuChildOnTap;
 
   /// نمط تخصيص مظهر المشغل الصوتي للآيات - يتحكم في الألوان والخطوط والأيقونات [ayahStyle]

@@ -1,3 +1,11 @@
+## 2.2.5
+
+* **Fix: Replace unsupported** `Dialog(constraints: ...)` **with**
+	`Dialog(child: ConstrainedBox(...))` **to support older Flutter SDKs. Files:**
+	`lib/src/tafsir/widgets/change_tafsir.dart`,
+	`lib/src/audio/surah_audio/widgets/surah_change_reader.dart`,
+	`lib/src/audio/widgets/ayah_change_reader.dart`.
+
 ## 2.2.4+1
 
 * **Fix change Tafsir font size.**

@@ -9,17 +9,17 @@ class TopAndBottomWidget extends StatelessWidget {
   final int? surahNumber;
   final String? languageCode;
   @Deprecated(
-      'In versions after 2.2.4 this parameter will be removed. Please use juzName in TopBottomQuranStyle instead.')
+      'In versions after 2.2.5 this parameter will be removed. Please use juzName in TopBottomQuranStyle instead.')
   final String? juzName;
   @Deprecated(
-      'In versions after 2.2.4 this parameter will be removed. Please use sajdaName in TopBottomQuranStyle instead.')
+      'In versions after 2.2.5 this parameter will be removed. Please use sajdaName in TopBottomQuranStyle instead.')
   final String? sajdaName;
   @Deprecated(
-      'In versions after 2.2.4 this parameter will be removed. Please use surahName in TopBottomQuranStyle instead.')
+      'In versions after 2.2.5 this parameter will be removed. Please use surahName in TopBottomQuranStyle instead.')
   final String? surahName;
   final Widget child;
   @Deprecated(
-      'In versions after 2.2.4 this parameter will be removed. Please use topTitleChild in TopBottomQuranStyle instead.')
+      'In versions after 2.2.5 this parameter will be removed. Please use topTitleChild in TopBottomQuranStyle instead.')
   final Widget? topTitleChild;
 
   TopAndBottomWidget({
@@ -29,16 +29,16 @@ class TopAndBottomWidget extends StatelessWidget {
     required this.child,
     this.languageCode,
     @Deprecated(
-        'In versions after 2.2.4 this parameter will be removed. Please use juzName in TopBottomQuranStyle instead.')
+        'In versions after 2.2.5 this parameter will be removed. Please use juzName in TopBottomQuranStyle instead.')
     this.juzName,
     @Deprecated(
-        'In versions after 2.2.4 this parameter will be removed. Please use sajdaName in TopBottomQuranStyle instead.')
+        'In versions after 2.2.5 this parameter will be removed. Please use sajdaName in TopBottomQuranStyle instead.')
     this.sajdaName,
     @Deprecated(
-        'In versions after 2.2.4 this parameter will be removed. Please use topTitleChild in TopBottomQuranStyle instead.')
+        'In versions after 2.2.5 this parameter will be removed. Please use topTitleChild in TopBottomQuranStyle instead.')
     this.topTitleChild,
     @Deprecated(
-        'In versions after 2.2.4 this parameter will be removed. Please use surahName in TopBottomQuranStyle instead.')
+        'In versions after 2.2.5 this parameter will be removed. Please use surahName in TopBottomQuranStyle instead.')
     this.surahName,
     this.isSurah = false,
     this.surahNumber,

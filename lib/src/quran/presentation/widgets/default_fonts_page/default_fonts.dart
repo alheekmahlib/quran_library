@@ -150,9 +150,8 @@ class DefaultFontsBuild extends StatelessWidget {
                         child: Text(
                           ayah.text,
                           style: TextStyle(
-                            color: (isUserSelected || isExternallyHighlighted)
-                                ? ayahSelectedFontColor
-                                : textColor ?? (AppColors.getTextColor(isDark)),
+                            color:
+                                textColor ?? (AppColors.getTextColor(isDark)),
                             fontSize: 22.55,
                             fontFamily: "hafs",
                             height: 1.3,

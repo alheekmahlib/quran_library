@@ -1,7 +1,9 @@
 ## 2.2.4+1
 
-* **Fix Tafsir font size.**
-* **Fix isFontsLocal.**
+* **Fix change Tafsir font size.**
+* **Fix support local fonts.**
+* **Fix Surah header display issue in default fonts.**
+* **Fix selected Ayah color in default fonts.**
 
 ## 2.2.4
 

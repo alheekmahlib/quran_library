@@ -99,111 +99,64 @@ class PageViewBuild extends StatelessWidget {
     return GetBuilder<QuranCtrl>(
       id: '_pageViewBuild',
       init: QuranCtrl.instance,
-      builder: (quranCtrl) => GestureDetector(
-        onScaleStart: (details) => quranCtrl.state.baseScaleFactor.value =
-            quranCtrl.state.scaleFactor.value,
-        onScaleUpdate: (ScaleUpdateDetails details) =>
-            quranCtrl.updateTextScale(details),
-        child: quranCtrl.textScale(
-          (((quranCtrl.isDownloadFonts &&
-                      quranCtrl.state.loadedFontPages.contains(pageIndex)) ||
-                  isFontsLocal)
-              ? quranCtrl.state.allAyahs.isEmpty ||
-                      quranCtrl.state.surahs.isEmpty ||
-                      quranCtrl.state.pages.isEmpty
-                  ? Center(
-                      child: circularProgressWidget ??
-                          const CircularProgressIndicator())
-                  : Align(
-                      alignment: Alignment.topCenter,
-                      child: TopAndBottomWidget(
-                        pageIndex: pageIndex,
-                        languageCode: languageCode,
-                        juzName: juzName,
-                        sajdaName: sajdaName,
-                        isRight: pageIndex.isEven ? true : false,
-                        topTitleChild: topTitleChild,
-                        child: _QuranFontsPage(
-                          context: userContext,
-                          pageIndex: pageIndex,
-                          bookmarkList: bookmarkList,
-                          textColor: ayahSelectedFontColor ?? textColor,
-                          ayahIconColor: ayahIconColor,
-                          showAyahBookmarkedIcon: showAyahBookmarkedIcon,
-                          bookmarks: bookmarksMap,
-                          onAyahLongPress: onAyahLongPress,
-                          bookmarksColor: bookmarksColor,
-                          surahNameStyle: surahNameStyle,
-                          bannerStyle: bannerStyle,
-                          basmalaStyle: basmalaStyle,
-                          onSurahBannerPress: onSurahBannerPress,
-                          surahNumber: surahNumber,
-                          bookmarksAyahs: bookmarksAyahSet.toList(),
-                          ayahSelectedBackgroundColor:
-                              ayahSelectedBackgroundColor,
-                          isDark: isDark,
-                          circularProgressWidget: circularProgressWidget,
-                          isFontsLocal: isFontsLocal,
-                          fontsName: fontsName,
-                          ayahBookmarked: ayahBookmarked!,
-                          anotherMenuChild: anotherMenuChild,
-                          anotherMenuChildOnTap: anotherMenuChildOnTap,
-                          secondMenuChild: secondMenuChild,
-                          secondMenuChildOnTap: secondMenuChildOnTap,
-                        ),
-                      ))
-              : quranCtrl.staticPages.isEmpty || quranCtrl.isLoading.value
-                  ? Center(
-                      child: circularProgressWidget ??
-                          const CircularProgressIndicator())
-                  : _DefaultFontsPage(
-                      context: userContext,
+      builder: (quranCtrl) => quranCtrl.textScale(
+        (((quranCtrl.isDownloadFonts &&
+                    quranCtrl.state.loadedFontPages.contains(pageIndex)) ||
+                isFontsLocal)
+            ? quranCtrl.state.allAyahs.isEmpty ||
+                    quranCtrl.state.surahs.isEmpty ||
+                    quranCtrl.state.pages.isEmpty
+                ? Center(
+                    child: circularProgressWidget ??
+                        const CircularProgressIndicator())
+                : Align(
+                    alignment: Alignment.topCenter,
+                    child: TopAndBottomWidget(
                       pageIndex: pageIndex,
-                      bookmarkList: bookmarkList,
-                      textColor: textColor,
                       languageCode: languageCode,
-                      onAyahLongPress: onAyahLongPress,
-                      bookmarksColor: bookmarksColor,
-                      surahNameStyle: surahNameStyle,
-                      bannerStyle: bannerStyle,
-                      basmalaStyle: basmalaStyle,
-                      onSurahBannerPress: onSurahBannerPress,
-                      surahNumber: surahNumber,
-                      newSurahs: newSurahs,
-                      ayahSelectedBackgroundColor: ayahSelectedBackgroundColor,
-                      deviceSize: deviceSize,
                       juzName: juzName,
                       sajdaName: sajdaName,
+                      isRight: pageIndex.isEven ? true : false,
                       topTitleChild: topTitleChild,
-                      isDark: isDark,
-                      ayahBookmarked: ayahBookmarked!,
-                      anotherMenuChild: anotherMenuChild,
-                      anotherMenuChildOnTap: anotherMenuChildOnTap,
-                      secondMenuChild: secondMenuChild,
-                      secondMenuChildOnTap: secondMenuChildOnTap,
-                      ayahIconColor: ayahIconColor ??
-                          Theme.of(context).colorScheme.primary,
-                      showAyahBookmarkedIcon: showAyahBookmarkedIcon,
-                    )),
-          quranCtrl.staticPages.isEmpty || quranCtrl.isLoading.value
-              ? Center(
-                  child: circularProgressWidget ??
-                      const CircularProgressIndicator())
-              : TopAndBottomWidget(
-                  pageIndex: pageIndex,
-                  languageCode: languageCode,
-                  juzName: juzName,
-                  sajdaName: sajdaName,
-                  isRight: pageIndex.isEven ? true : false,
-                  topTitleChild: topTitleChild,
-                  child: _QuranTextScale(
+                      child: _QuranFontsPage(
+                        context: userContext,
+                        pageIndex: pageIndex,
+                        bookmarkList: bookmarkList,
+                        textColor: ayahSelectedFontColor ?? textColor,
+                        ayahIconColor: ayahIconColor,
+                        showAyahBookmarkedIcon: showAyahBookmarkedIcon,
+                        bookmarks: bookmarksMap,
+                        onAyahLongPress: onAyahLongPress,
+                        bookmarksColor: bookmarksColor,
+                        surahNameStyle: surahNameStyle,
+                        bannerStyle: bannerStyle,
+                        basmalaStyle: basmalaStyle,
+                        onSurahBannerPress: onSurahBannerPress,
+                        surahNumber: surahNumber,
+                        bookmarksAyahs: bookmarksAyahSet.toList(),
+                        ayahSelectedBackgroundColor:
+                            ayahSelectedBackgroundColor,
+                        isDark: isDark,
+                        circularProgressWidget: circularProgressWidget,
+                        isFontsLocal: isFontsLocal,
+                        fontsName: fontsName,
+                        ayahBookmarked: ayahBookmarked!,
+                        anotherMenuChild: anotherMenuChild,
+                        anotherMenuChildOnTap: anotherMenuChildOnTap,
+                        secondMenuChild: secondMenuChild,
+                        secondMenuChildOnTap: secondMenuChildOnTap,
+                      ),
+                    ))
+            : quranCtrl.staticPages.isEmpty || quranCtrl.isLoading.value
+                ? Center(
+                    child: circularProgressWidget ??
+                        const CircularProgressIndicator())
+                : _DefaultFontsPage(
                     context: userContext,
                     pageIndex: pageIndex,
                     bookmarkList: bookmarkList,
-                    textColor: ayahSelectedFontColor ?? textColor,
-                    ayahIconColor: ayahIconColor,
-                    showAyahBookmarkedIcon: showAyahBookmarkedIcon,
-                    bookmarks: bookmarksMap,
+                    textColor: textColor,
+                    languageCode: languageCode,
                     onAyahLongPress: onAyahLongPress,
                     bookmarksColor: bookmarksColor,
                     surahNameStyle: surahNameStyle,
@@ -211,20 +164,61 @@ class PageViewBuild extends StatelessWidget {
                     basmalaStyle: basmalaStyle,
                     onSurahBannerPress: onSurahBannerPress,
                     surahNumber: surahNumber,
-                    bookmarksAyahs: bookmarksAyahSet.toList(),
+                    newSurahs: newSurahs,
                     ayahSelectedBackgroundColor: ayahSelectedBackgroundColor,
-                    onPagePress: onPagePress,
-                    languageCode: languageCode,
+                    deviceSize: deviceSize,
+                    juzName: juzName,
+                    sajdaName: sajdaName,
+                    topTitleChild: topTitleChild,
                     isDark: isDark,
-                    circularProgressWidget: circularProgressWidget,
                     ayahBookmarked: ayahBookmarked!,
                     anotherMenuChild: anotherMenuChild,
                     anotherMenuChildOnTap: anotherMenuChildOnTap,
                     secondMenuChild: secondMenuChild,
                     secondMenuChildOnTap: secondMenuChildOnTap,
-                  ),
+                    ayahIconColor:
+                        ayahIconColor ?? Theme.of(context).colorScheme.primary,
+                    showAyahBookmarkedIcon: showAyahBookmarkedIcon,
+                  )),
+        quranCtrl.staticPages.isEmpty || quranCtrl.isLoading.value
+            ? Center(
+                child:
+                    circularProgressWidget ?? const CircularProgressIndicator())
+            : TopAndBottomWidget(
+                pageIndex: pageIndex,
+                languageCode: languageCode,
+                juzName: juzName,
+                sajdaName: sajdaName,
+                isRight: pageIndex.isEven ? true : false,
+                topTitleChild: topTitleChild,
+                child: _QuranTextScale(
+                  context: userContext,
+                  pageIndex: pageIndex,
+                  bookmarkList: bookmarkList,
+                  textColor: ayahSelectedFontColor ?? textColor,
+                  ayahIconColor: ayahIconColor,
+                  showAyahBookmarkedIcon: showAyahBookmarkedIcon,
+                  bookmarks: bookmarksMap,
+                  onAyahLongPress: onAyahLongPress,
+                  bookmarksColor: bookmarksColor,
+                  surahNameStyle: surahNameStyle,
+                  bannerStyle: bannerStyle,
+                  basmalaStyle: basmalaStyle,
+                  onSurahBannerPress: onSurahBannerPress,
+                  surahNumber: surahNumber,
+                  bookmarksAyahs: bookmarksAyahSet.toList(),
+                  ayahSelectedBackgroundColor: ayahSelectedBackgroundColor,
+                  onPagePress: onPagePress,
+                  languageCode: languageCode,
+                  isDark: isDark,
+                  circularProgressWidget: circularProgressWidget,
+                  ayahBookmarked: ayahBookmarked!,
+                  anotherMenuChild: anotherMenuChild,
+                  anotherMenuChildOnTap: anotherMenuChildOnTap,
+                  secondMenuChild: secondMenuChild,
+                  secondMenuChildOnTap: secondMenuChildOnTap,
                 ),
-        ),
+              ),
       ),
     );
   }

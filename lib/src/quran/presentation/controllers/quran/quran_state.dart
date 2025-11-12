@@ -12,6 +12,9 @@ class QuranState {
   RxBool isBold = false.obs;
   RxDouble scaleFactor = 1.0.obs;
   RxDouble baseScaleFactor = 1.0.obs;
+  // قفل سلوك التمرير أثناء عملية التكبير/التصغير بإصبعين
+  // Lock scrolling while pinch-to-zoom is active
+  RxBool isScaling = false.obs;
   Map<int, int> pageToHizbQuarterMap = {};
 
   double surahItemHeight = 90.0;
@@ -51,6 +54,7 @@ class QuranState {
     isBold.close();
     scaleFactor.close();
     baseScaleFactor.close();
+    isScaling.close();
     isDownloadingFonts.close();
     isFontDownloaded.close();
     fontsDownloadedList.close();

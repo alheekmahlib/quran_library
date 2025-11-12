@@ -442,164 +442,196 @@ class QuranLibraryScreen extends StatelessWidget {
                     children: [
                       Directionality(
                         textDirection: TextDirection.rtl,
-                        child: withPageView
-                            ? Focus(
-                                focusNode: quranCtrl.state.quranPageRLFocusNode,
-                                // على الويب، إيقاف الـ autofocus لتجنّب سرقة التركيز
-                                autofocus: kIsWeb ? false : true,
-                                onKeyEvent: (node, event) =>
-                                    quranCtrl.controlRLByKeyboard(node, event),
-                                child: PageView.builder(
-                                  itemCount: 604,
-                                  controller:
-                                      quranCtrl.getPageController(context),
-                                  padEnds: false,
-                                  // شرح: اختيار نوع الفيزياء حسب إعداد التحسين QuranPagesScreen
-                                  // Explanation: Choose physics type based on optimization setting
-                                  physics: const ClampingScrollPhysics(),
-                                  // شرح: إضافة allowImplicitScrolling لتحسين الأداء
-                                  // Explanation: Adding allowImplicitScrolling for better performance
-                                  allowImplicitScrolling: true,
-                                  scrollBehavior:
-                                      const MaterialScrollBehavior().copyWith(
-                                    dragDevices: {
-                                      PointerDeviceKind.touch,
-                                      PointerDeviceKind.mouse,
-                                      PointerDeviceKind.trackpad,
-                                      PointerDeviceKind.stylus,
-                                      PointerDeviceKind.unknown
-                                    },
-                                  ),
-
-                                  // شرح: تقليل القص لتخفيف كلفة الرسم ما لم نحتاجه
-                                  // Explanation: Reduce clipping cost unless necessary
-                                  clipBehavior: Clip.none,
-                                  // شرح: تحسين معالجة تغيير الصفحة لتقليل التقطيع
-                                  // Explanation: Optimized page change handling to reduce stuttering
-                                  onPageChanged: (pageIndex) {
-                                    // تشغيل العمليات في الخلفية لتجنب تجميد UI
-                                    // Run operations in background to avoid UI freeze
-                                    WidgetsBinding.instance
-                                        .addPostFrameCallback((_) async {
-                                      if (!context.mounted) return;
-                                      if (onPageChanged != null) {
-                                        // لا تلمس الـ Overlay إذا كان المستخدم يدير الحدث بنفسه
-                                        onPageChanged!(pageIndex);
-                                      } else {
-                                        // إزالة الـ Overlay فقط إذا كان ظاهرًا
-                                        if (quranCtrl.state.overlayEntry !=
-                                            null) {
-                                          quranCtrl.state.overlayEntry
-                                              ?.remove();
-                                          quranCtrl.state.overlayEntry = null;
-                                        }
-                                      }
-                                      quranCtrl.state.currentPageNumber.value =
-                                          pageIndex + 1;
-                                      quranCtrl.saveLastPage(pageIndex + 1);
-                                      await quranCtrl.prepareFonts(pageIndex);
-                                    });
-                                  },
-                                  pageSnapping: true,
-                                  itemBuilder: (ctx, index) {
-                                    // شرح: تحسين أداء itemBuilder لتقليل التقطيع
-                                    // Explanation: Optimize itemBuilder performance to reduce stuttering
-                                    return InkWell(
-                                      onTap: () {
-                                        if (onPagePress != null) {
-                                          onPagePress!();
-                                        } else {
-                                          quranCtrl.showControlToggle();
-                                          quranCtrl.state.overlayEntry
-                                              ?.remove();
-                                          quranCtrl.state.overlayEntry = null;
-                                        }
+                        child: GestureDetector(
+                          onScaleStart: (details) => quranCtrl
+                              .state
+                              .baseScaleFactor
+                              .value = quranCtrl.state.scaleFactor.value,
+                          onScaleUpdate: (ScaleUpdateDetails details) {
+                            // عند وجود إصبعين أو أكثر نعتبرها عملية تكبير/تصغير ونوقف سكرول الصفحات
+                            if (details.pointerCount >= 2 &&
+                                quranCtrl.state.isScaling.value == false) {
+                              quranCtrl.state.isScaling.value = true;
+                              quranCtrl.update();
+                            } else if (details.pointerCount < 2 &&
+                                quranCtrl.state.isScaling.value == true) {
+                              // عاد المستخدم لإصبع واحد -> أعِد تفعيل السحب
+                              quranCtrl.state.isScaling.value = false;
+                              quranCtrl.update();
+                            }
+                            quranCtrl.updateTextScale(details);
+                          },
+                          onScaleEnd: (_) {
+                            if (quranCtrl.state.isScaling.value) {
+                              quranCtrl.state.isScaling.value = false;
+                              quranCtrl.update();
+                            }
+                          },
+                          child: withPageView
+                              ? Focus(
+                                  focusNode:
+                                      quranCtrl.state.quranPageRLFocusNode,
+                                  // على الويب، إيقاف الـ autofocus لتجنّب سرقة التركيز
+                                  autofocus: kIsWeb ? false : true,
+                                  onKeyEvent: (node, event) => quranCtrl
+                                      .controlRLByKeyboard(node, event),
+                                  child: PageView.builder(
+                                    itemCount: 604,
+                                    controller:
+                                        quranCtrl.getPageController(context),
+                                    padEnds: false,
+                                    // شرح: اختيار نوع الفيزياء حسب إعداد التحسين QuranPagesScreen
+                                    // Explanation: Choose physics type based on optimization setting
+                                    physics: quranCtrl.state.isScaling.value
+                                        ? const NeverScrollableScrollPhysics()
+                                        : const ClampingScrollPhysics(),
+                                    // شرح: إضافة allowImplicitScrolling لتحسين الأداء
+                                    // Explanation: Adding allowImplicitScrolling for better performance
+                                    allowImplicitScrolling: true,
+                                    scrollBehavior:
+                                        const MaterialScrollBehavior().copyWith(
+                                      dragDevices: {
+                                        PointerDeviceKind.touch,
+                                        PointerDeviceKind.mouse,
+                                        PointerDeviceKind.trackpad,
+                                        PointerDeviceKind.stylus,
+                                        PointerDeviceKind.unknown
                                       },
-                                      hoverColor: Colors.transparent,
-                                      focusColor: Colors.transparent,
-                                      splashColor: Colors.transparent,
-                                      highlightColor: Colors.transparent,
-                                      child: RepaintBoundary(
-                                        key: ValueKey('quran_page_$index'),
-                                        child: _KeepAlive(
-                                          child: PageViewBuild(
-                                            circularProgressWidget:
-                                                circularProgressWidget,
-                                            languageCode: languageCode,
-                                            juzName: juzName,
-                                            sajdaName: sajdaName,
-                                            topTitleChild: topTitleChild,
-                                            bookmarkList: bookmarkList,
-                                            ayahSelectedFontColor:
-                                                ayahSelectedFontColor,
-                                            textColor: textColor,
-                                            ayahIconColor: ayahIconColor,
-                                            showAyahBookmarkedIcon:
-                                                showAyahBookmarkedIcon,
-                                            onAyahLongPress: onAyahLongPress,
-                                            bookmarksColor: bookmarksColor,
-                                            surahNameStyle: surahNameStyle,
-                                            bannerStyle: bannerStyle,
-                                            basmalaStyle: basmalaStyle,
-                                            onSurahBannerPress:
-                                                onSurahBannerPress,
-                                            surahNumber: surahNumber,
-                                            ayahSelectedBackgroundColor:
-                                                ayahSelectedBackgroundColor,
-                                            onPagePress: onPagePress,
-                                            isDark: isDark,
-                                            fontsName: fontsName,
-                                            ayahBookmarked: ayahBookmarked,
-                                            anotherMenuChild: anotherMenuChild,
-                                            anotherMenuChildOnTap:
-                                                anotherMenuChildOnTap,
-                                            secondMenuChild: secondMenuChild,
-                                            secondMenuChildOnTap:
-                                                secondMenuChildOnTap,
-                                            userContext: parentContext,
-                                            pageIndex: index,
-                                            quranCtrl: quranCtrl,
-                                            isFontsLocal: isFontsLocal!,
+                                    ),
+
+                                    // شرح: تقليل القص لتخفيف كلفة الرسم ما لم نحتاجه
+                                    // Explanation: Reduce clipping cost unless necessary
+                                    clipBehavior: Clip.none,
+                                    // شرح: تحسين معالجة تغيير الصفحة لتقليل التقطيع
+                                    // Explanation: Optimized page change handling to reduce stuttering
+                                    onPageChanged: (pageIndex) {
+                                      // تشغيل العمليات في الخلفية لتجنب تجميد UI
+                                      // Run operations in background to avoid UI freeze
+                                      WidgetsBinding.instance
+                                          .addPostFrameCallback((_) async {
+                                        if (!context.mounted) return;
+                                        if (onPageChanged != null) {
+                                          // لا تلمس الـ Overlay إذا كان المستخدم يدير الحدث بنفسه
+                                          onPageChanged!(pageIndex);
+                                        } else {
+                                          // إزالة الـ Overlay فقط إذا كان ظاهرًا
+                                          if (quranCtrl.state.overlayEntry !=
+                                              null) {
+                                            quranCtrl.state.overlayEntry
+                                                ?.remove();
+                                            quranCtrl.state.overlayEntry = null;
+                                          }
+                                        }
+                                        quranCtrl.state.currentPageNumber
+                                            .value = pageIndex + 1;
+                                        quranCtrl.saveLastPage(pageIndex + 1);
+                                        await quranCtrl.prepareFonts(pageIndex);
+                                      });
+                                    },
+                                    pageSnapping: true,
+                                    itemBuilder: (ctx, index) {
+                                      // شرح: تحسين أداء itemBuilder لتقليل التقطيع
+                                      // Explanation: Optimize itemBuilder performance to reduce stuttering
+                                      return InkWell(
+                                        onTap: () {
+                                          if (onPagePress != null) {
+                                            onPagePress!();
+                                          } else {
+                                            quranCtrl.showControlToggle();
+                                            quranCtrl.state.overlayEntry
+                                                ?.remove();
+                                            quranCtrl.state.overlayEntry = null;
+                                          }
+                                        },
+                                        hoverColor: Colors.transparent,
+                                        focusColor: Colors.transparent,
+                                        splashColor: Colors.transparent,
+                                        highlightColor: Colors.transparent,
+                                        child: RepaintBoundary(
+                                          key: ValueKey('quran_page_$index'),
+                                          child: _KeepAlive(
+                                            child: PageViewBuild(
+                                              circularProgressWidget:
+                                                  circularProgressWidget,
+                                              languageCode: languageCode,
+                                              juzName: juzName,
+                                              sajdaName: sajdaName,
+                                              topTitleChild: topTitleChild,
+                                              bookmarkList: bookmarkList,
+                                              ayahSelectedFontColor:
+                                                  ayahSelectedFontColor,
+                                              textColor: textColor,
+                                              ayahIconColor: ayahIconColor,
+                                              showAyahBookmarkedIcon:
+                                                  showAyahBookmarkedIcon,
+                                              onAyahLongPress: onAyahLongPress,
+                                              bookmarksColor: bookmarksColor,
+                                              surahNameStyle: surahNameStyle,
+                                              bannerStyle: bannerStyle,
+                                              basmalaStyle: basmalaStyle,
+                                              onSurahBannerPress:
+                                                  onSurahBannerPress,
+                                              surahNumber: surahNumber,
+                                              ayahSelectedBackgroundColor:
+                                                  ayahSelectedBackgroundColor,
+                                              onPagePress: onPagePress,
+                                              isDark: isDark,
+                                              fontsName: fontsName,
+                                              ayahBookmarked: ayahBookmarked,
+                                              anotherMenuChild:
+                                                  anotherMenuChild,
+                                              anotherMenuChildOnTap:
+                                                  anotherMenuChildOnTap,
+                                              secondMenuChild: secondMenuChild,
+                                              secondMenuChildOnTap:
+                                                  secondMenuChildOnTap,
+                                              userContext: parentContext,
+                                              pageIndex: index,
+                                              quranCtrl: quranCtrl,
+                                              isFontsLocal: isFontsLocal!,
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                    );
-                                  },
+                                      );
+                                    },
+                                  ),
+                                )
+                              : PageViewBuild(
+                                  circularProgressWidget:
+                                      circularProgressWidget,
+                                  languageCode: languageCode,
+                                  juzName: juzName,
+                                  sajdaName: sajdaName,
+                                  topTitleChild: topTitleChild,
+                                  bookmarkList: bookmarkList,
+                                  ayahSelectedFontColor: ayahSelectedFontColor,
+                                  textColor: textColor,
+                                  ayahIconColor: ayahIconColor,
+                                  showAyahBookmarkedIcon:
+                                      showAyahBookmarkedIcon,
+                                  onAyahLongPress: onAyahLongPress,
+                                  bookmarksColor: bookmarksColor,
+                                  surahNameStyle: surahNameStyle,
+                                  bannerStyle: bannerStyle,
+                                  basmalaStyle: basmalaStyle,
+                                  onSurahBannerPress: onSurahBannerPress,
+                                  surahNumber: surahNumber,
+                                  ayahSelectedBackgroundColor:
+                                      ayahSelectedBackgroundColor,
+                                  onPagePress: onPagePress,
+                                  isDark: isDark,
+                                  fontsName: fontsName,
+                                  ayahBookmarked: ayahBookmarked,
+                                  anotherMenuChild: anotherMenuChild,
+                                  anotherMenuChildOnTap: anotherMenuChildOnTap,
+                                  secondMenuChild: secondMenuChild,
+                                  secondMenuChildOnTap: secondMenuChildOnTap,
+                                  userContext: parentContext,
+                                  pageIndex: pageIndex,
+                                  quranCtrl: quranCtrl,
+                                  isFontsLocal: isFontsLocal!,
                                 ),
-                              )
-                            : PageViewBuild(
-                                circularProgressWidget: circularProgressWidget,
-                                languageCode: languageCode,
-                                juzName: juzName,
-                                sajdaName: sajdaName,
-                                topTitleChild: topTitleChild,
-                                bookmarkList: bookmarkList,
-                                ayahSelectedFontColor: ayahSelectedFontColor,
-                                textColor: textColor,
-                                ayahIconColor: ayahIconColor,
-                                showAyahBookmarkedIcon: showAyahBookmarkedIcon,
-                                onAyahLongPress: onAyahLongPress,
-                                bookmarksColor: bookmarksColor,
-                                surahNameStyle: surahNameStyle,
-                                bannerStyle: bannerStyle,
-                                basmalaStyle: basmalaStyle,
-                                onSurahBannerPress: onSurahBannerPress,
-                                surahNumber: surahNumber,
-                                ayahSelectedBackgroundColor:
-                                    ayahSelectedBackgroundColor,
-                                onPagePress: onPagePress,
-                                isDark: isDark,
-                                fontsName: fontsName,
-                                ayahBookmarked: ayahBookmarked,
-                                anotherMenuChild: anotherMenuChild,
-                                anotherMenuChildOnTap: anotherMenuChildOnTap,
-                                secondMenuChild: secondMenuChild,
-                                secondMenuChildOnTap: secondMenuChildOnTap,
-                                userContext: parentContext,
-                                pageIndex: pageIndex,
-                                quranCtrl: quranCtrl,
-                                isFontsLocal: isFontsLocal!,
-                              ),
+                        ),
                       ),
                       GetBuilder<QuranCtrl>(
                         id: 'isShowControl',

@@ -1,3 +1,7 @@
+## 2.2.5+1
+
+* **Fix: Tafsir widget UI in dark mode.**
+
 ## 2.2.5
 
 * **Fix: Replace unsupported** `Dialog(constraints: ...)` **with**

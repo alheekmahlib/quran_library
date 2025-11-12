@@ -64,7 +64,7 @@ class TextScaleRichTextBuild extends StatelessWidget {
                 fontSize: fs,
                 height: 1.7,
                 // letterSpacing: 2,
-                fontWeight: FontWeight.bold,
+                // fontWeight: FontWeight.bold,
                 color: textColor ?? (AppColors.getTextColor(isDark)),
                 // shadows: [
                 //   Shadow(
@@ -85,6 +85,7 @@ class TextScaleRichTextBuild extends StatelessWidget {
                     quranCtrl.externallyHighlightedAyahs
                         .contains(ayahs[ayahIndex].ayahUQNumber);
                 return _customSpan(
+                  context: context,
                   text: ayahs[ayahIndex].text,
                   isDark: isDark,
                   pageIndex: pageIndex,
@@ -157,7 +158,7 @@ class TextScaleRichTextBuild extends StatelessWidget {
                   bookmarkList: bookmarkList,
                   textColor: textColor ?? (AppColors.getTextColor(isDark)),
                   ayahIconColor:
-                      ayahIconColor ?? (AppColors.getTextColor(isDark)),
+                      ayahIconColor ?? Theme.of(context).colorScheme.primary,
                   showAyahBookmarkedIcon: showAyahBookmarkedIcon,
                   bookmarks: bookmarks,
                   bookmarksAyahs: bookmarksAyahs,

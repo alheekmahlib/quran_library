@@ -234,6 +234,7 @@ TextSpan _span({
 }
 
 TextSpan _customSpan({
+  required BuildContext context,
   required String text,
   required int pageIndex,
   required bool isSelected,
@@ -296,18 +297,17 @@ TextSpan _customSpan({
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
                   child: SvgPicture.asset(
                     AssetsPath.assets.ayahBookmarked,
-                    height: 100,
+                    height: fontSize,
                   ),
                 ))
             : TextSpan(
-                text: ayahNumber
-                    .toString()
+                text: ' $ayahNumber '
                     .convertNumbersAccordingToLang(languageCode: languageCode),
                 style: TextStyle(
                   fontFamily: 'hafs',
                   fontSize: fontSize,
                   height: 2.1,
-                  color: ayahIconColor ?? (AppColors.getTextColor(isDark)),
+                  color: ayahIconColor ?? Theme.of(context).colorScheme.primary,
                   backgroundColor: hasBookmark
                       ? bookmarksColor
                       : (bookmarksAyahs.contains(ayahUQNum)

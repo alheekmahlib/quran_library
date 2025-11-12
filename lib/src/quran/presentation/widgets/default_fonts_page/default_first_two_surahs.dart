@@ -23,6 +23,8 @@ class DefaultFirstTwoSurahs extends StatelessWidget {
     required this.secondMenuChild,
     required this.secondMenuChildOnTap,
     required this.context,
+    required this.ayahIconColor,
+    required this.showAyahBookmarkedIcon,
   });
 
   final int? surahNumber;
@@ -46,6 +48,8 @@ class DefaultFirstTwoSurahs extends StatelessWidget {
   final Widget? secondMenuChild;
   final void Function(AyahModel ayah)? secondMenuChildOnTap;
   final BuildContext context;
+  final Color ayahIconColor;
+  final bool showAyahBookmarkedIcon;
 
   @override
   Widget build(BuildContext context) {
@@ -59,6 +63,7 @@ class DefaultFirstTwoSurahs extends StatelessWidget {
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           SurahHeaderWidget(
             surahNumber ??
@@ -90,6 +95,8 @@ class DefaultFirstTwoSurahs extends StatelessWidget {
                 child: GetBuilder<BookmarksCtrl>(
                   builder: (bookmarkCtrl) {
                     return Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         SizedBox(
                           width: Responsive.isDesktop(context)
@@ -116,6 +123,8 @@ class DefaultFirstTwoSurahs extends StatelessWidget {
                             anotherMenuChildOnTap: anotherMenuChildOnTap,
                             secondMenuChild: secondMenuChild,
                             secondMenuChildOnTap: secondMenuChildOnTap,
+                            ayahIconColor: ayahIconColor,
+                            showAyahBookmarkedIcon: showAyahBookmarkedIcon,
                           ),
                         ),
                       ],

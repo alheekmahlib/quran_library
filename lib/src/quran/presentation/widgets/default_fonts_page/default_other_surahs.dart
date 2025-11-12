@@ -28,6 +28,8 @@ class DefaultOtherSurahs extends StatelessWidget {
     required this.secondMenuChild,
     required this.secondMenuChildOnTap,
     required this.context,
+    required this.ayahIconColor,
+    required this.showAyahBookmarkedIcon,
   });
 
   final int pageIndex;
@@ -56,6 +58,8 @@ class DefaultOtherSurahs extends StatelessWidget {
   final Widget? secondMenuChild;
   final void Function(AyahModel ayah)? secondMenuChildOnTap;
   final BuildContext context;
+  final Color ayahIconColor;
+  final bool showAyahBookmarkedIcon;
 
   @override
   Widget build(BuildContext context) {
@@ -97,6 +101,8 @@ class DefaultOtherSurahs extends StatelessWidget {
                     secondMenuChildOnTap: secondMenuChildOnTap,
                     context: context,
                     constraints: constraints,
+                    ayahIconColor: ayahIconColor,
+                    showAyahBookmarkedIcon: showAyahBookmarkedIcon,
                   ),
                 )
               : DefaultFontsPageBuild(
@@ -122,6 +128,8 @@ class DefaultOtherSurahs extends StatelessWidget {
                   secondMenuChildOnTap: secondMenuChildOnTap,
                   context: context,
                   constraints: constraints,
+                  ayahIconColor: ayahIconColor,
+                  showAyahBookmarkedIcon: showAyahBookmarkedIcon,
                 ),
         );
       },

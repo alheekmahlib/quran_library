@@ -111,7 +111,7 @@ class _QuranTextScale extends StatelessWidget {
                                           BannerStyle.textScale(isDark: isDark),
                                       surahNameStyle: surahNameStyle ??
                                           SurahNameStyle(
-                                            surahNameSize: 70,
+                                            surahNameSize: 24.sp,
                                             surahNameColor: isDark
                                                 ? Colors.white
                                                 : Colors.black,

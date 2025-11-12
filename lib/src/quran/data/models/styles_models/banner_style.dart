@@ -81,9 +81,7 @@ class BannerStyle {
   factory BannerStyle.textScale({required bool isDark}) {
     return BannerStyle(
       isImage: false,
-      bannerSvgPath: isDark
-          ? AssetsPath.assets.surahSvgBannerDark
-          : AssetsPath.assets.surahSvgBanner,
+      bannerSvgPath: AssetsPath.assets.surahSvgBanner,
       bannerSvgHeight: 40.0,
       bannerSvgWidth: 150.0,
       bannerImagePath: '',

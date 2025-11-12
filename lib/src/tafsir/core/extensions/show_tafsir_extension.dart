@@ -44,8 +44,6 @@ extension ShowTafsirExtension on void {
     required int ayahUQNum,
     required int ayahNumber,
     bool? isDark,
-    bool? islocalFont,
-    String? fontsName,
     TafsirStyle? externalTafsirStyle,
   }) async {
     // شرح: هذا السطر لطباعة رسالة عند استدعاء الدالة للتأكد من تنفيذها
@@ -105,8 +103,6 @@ extension ShowTafsirExtension on void {
             ayahNumber: ayahNumber,
             pageIndex: pageIndex,
             isDark: isDarkMode,
-            islocalFont: islocalFont,
-            fontsName: fontsName,
             tafsirStyle: resolvedTafsirStyle,
           );
         },

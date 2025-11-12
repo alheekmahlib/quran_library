@@ -25,6 +25,8 @@ class DefaultFontsPageBuild extends StatelessWidget {
     required this.secondMenuChildOnTap,
     required this.context,
     required this.constraints,
+    required this.ayahIconColor,
+    required this.showAyahBookmarkedIcon,
   });
 
   final QuranCtrl quranCtrl;
@@ -50,6 +52,8 @@ class DefaultFontsPageBuild extends StatelessWidget {
   final void Function(AyahModel ayah)? secondMenuChildOnTap;
   final BuildContext context;
   final BoxConstraints constraints;
+  final Color ayahIconColor;
+  final bool showAyahBookmarkedIcon;
 
   @override
   Widget build(BuildContext context) {
@@ -62,6 +66,8 @@ class DefaultFontsPageBuild extends StatelessWidget {
       child: FittedBox(
         fit: BoxFit.fitWidth,
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             ...quranCtrl.staticPages[pageIndex].lines.map(
               (line) {
@@ -91,6 +97,8 @@ class DefaultFontsPageBuild extends StatelessWidget {
                 return Obx(
                   () {
                     return Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         if (isNewSurah)
                           SurahHeaderWidget(
@@ -164,6 +172,8 @@ class DefaultFontsPageBuild extends StatelessWidget {
                             anotherMenuChildOnTap: anotherMenuChildOnTap,
                             secondMenuChild: secondMenuChild,
                             secondMenuChildOnTap: secondMenuChildOnTap,
+                            ayahIconColor: ayahIconColor,
+                            showAyahBookmarkedIcon: showAyahBookmarkedIcon,
                           ),
                         ),
                       ],

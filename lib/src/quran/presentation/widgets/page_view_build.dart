@@ -181,6 +181,9 @@ class PageViewBuild extends StatelessWidget {
                       anotherMenuChildOnTap: anotherMenuChildOnTap,
                       secondMenuChild: secondMenuChild,
                       secondMenuChildOnTap: secondMenuChildOnTap,
+                      ayahIconColor: ayahIconColor ??
+                          Theme.of(context).colorScheme.primary,
+                      showAyahBookmarkedIcon: showAyahBookmarkedIcon,
                     )),
           quranCtrl.staticPages.isEmpty || quranCtrl.isLoading.value
               ? Center(

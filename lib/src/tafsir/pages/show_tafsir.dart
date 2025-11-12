@@ -15,8 +15,6 @@ class ShowTafseer extends StatelessWidget {
   final BuildContext context;
   final int ayahNumber;
   final bool isDark;
-  final bool? islocalFont;
-  final String? fontsName;
   final TafsirStyle? tafsirStyle;
 
   ShowTafseer({
@@ -26,8 +24,6 @@ class ShowTafseer extends StatelessWidget {
     required this.pageIndex,
     required this.context,
     required this.isDark,
-    this.islocalFont,
-    this.fontsName,
     this.tafsirStyle,
   });
 
@@ -134,8 +130,6 @@ class ShowTafseer extends StatelessWidget {
                       ayahUQNumber: ayahUQNumber,
                       tafsirStyle: s,
                       isDark: isDark,
-                      islocalFont: islocalFont,
-                      fontsName: fontsName,
                     ),
                   ),
                 ),

@@ -539,6 +539,8 @@ class SurahDisplayScreen extends StatelessWidget {
                             ayahSelectedFontColor: ayahSelectedFontColor,
                             secondMenuChild: secondMenuChild,
                             secondMenuChildOnTap: secondMenuChildOnTap,
+                            ayahIconColor: ayahIconColor,
+                            showAyahBookmarkedIcon: showAyahBookmarkedIcon,
                           ),
                         );
                       }).toList(),
@@ -715,6 +717,8 @@ class SurahDisplayScreen extends StatelessWidget {
                               ayahSelectedFontColor: ayahSelectedFontColor,
                               secondMenuChild: secondMenuChild,
                               secondMenuChildOnTap: secondMenuChildOnTap,
+                              ayahIconColor: ayahIconColor,
+                              showAyahBookmarkedIcon: showAyahBookmarkedIcon,
                             ),
                           ),
                         ],

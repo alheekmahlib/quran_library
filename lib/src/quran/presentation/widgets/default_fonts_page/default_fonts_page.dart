@@ -26,6 +26,8 @@ class _DefaultFontsPage extends StatelessWidget {
   final void Function(AyahModel ayah)? anotherMenuChildOnTap;
   final Widget? secondMenuChild;
   final void Function(AyahModel ayah)? secondMenuChildOnTap;
+  final Color ayahIconColor;
+  final bool showAyahBookmarkedIcon;
 
   _DefaultFontsPage({
     required this.context,
@@ -52,6 +54,8 @@ class _DefaultFontsPage extends StatelessWidget {
     this.anotherMenuChildOnTap,
     this.secondMenuChild,
     this.secondMenuChildOnTap,
+    required this.ayahIconColor,
+    required this.showAyahBookmarkedIcon,
   });
 
   final quranCtrl = QuranCtrl.instance;
@@ -99,6 +103,8 @@ class _DefaultFontsPage extends StatelessWidget {
                             secondMenuChild: secondMenuChild,
                             secondMenuChildOnTap: secondMenuChildOnTap,
                             context: context,
+                            ayahIconColor: ayahIconColor,
+                            showAyahBookmarkedIcon: showAyahBookmarkedIcon,
                           ),
                         )
                       : DefaultFirstTwoSurahs(
@@ -123,6 +129,8 @@ class _DefaultFontsPage extends StatelessWidget {
                           secondMenuChild: secondMenuChild,
                           secondMenuChildOnTap: secondMenuChildOnTap,
                           context: context,
+                          ayahIconColor: ayahIconColor,
+                          showAyahBookmarkedIcon: showAyahBookmarkedIcon,
                         )
                   : DefaultFirstTwoSurahs(
                       surahNumber: surahNumber,
@@ -145,6 +153,8 @@ class _DefaultFontsPage extends StatelessWidget {
                       secondMenuChild: secondMenuChild,
                       secondMenuChildOnTap: secondMenuChildOnTap,
                       context: context,
+                      ayahIconColor: ayahIconColor,
+                      showAyahBookmarkedIcon: showAyahBookmarkedIcon,
                     ),
             )
           : DefaultOtherSurahs(
@@ -173,6 +183,8 @@ class _DefaultFontsPage extends StatelessWidget {
               secondMenuChild: secondMenuChild,
               secondMenuChildOnTap: secondMenuChildOnTap,
               context: context,
+              ayahIconColor: ayahIconColor,
+              showAyahBookmarkedIcon: showAyahBookmarkedIcon,
             ),
     );
   }

@@ -21,6 +21,8 @@ class DefaultFontsBuild extends StatelessWidget {
     required this.isDark,
     this.secondMenuChild,
     this.secondMenuChildOnTap,
+    this.ayahIconColor,
+    required this.showAyahBookmarkedIcon,
   });
 
   final quranCtrl = QuranCtrl.instance;
@@ -44,6 +46,8 @@ class DefaultFontsBuild extends StatelessWidget {
   final bool isDark;
   final Widget? secondMenuChild;
   final void Function(AyahModel ayah)? secondMenuChildOnTap;
+  final Color? ayahIconColor;
+  final bool showAyahBookmarkedIcon;
 
   @override
   Widget build(BuildContext context) {
@@ -72,6 +76,9 @@ class DefaultFontsBuild extends StatelessWidget {
                           ? true
                           : false)
                       : ayahBookmarked;
+
+                  // فصل رقم الآية من النص الأصلي لإتاحة تلوينه بشكل مستقل
+                  final parts = _splitAyahTail(ayah.text);
                   return WidgetSpan(
                     child: GestureDetector(
                       onLongPressStart: (details) {
@@ -134,28 +141,55 @@ class DefaultFontsBuild extends StatelessWidget {
                           color: ayahBookmarked.contains(ayah.ayahUQNumber)
                               ? bookmarksColor
                               : (bookmarksAyahs.contains(ayah.ayahUQNumber)
-                                  ? Color(allBookmarks
-                                          .firstWhere(
-                                            (b) =>
-                                                b.ayahId == ayah.ayahUQNumber,
-                                          )
-                                          .colorCode)
-                                      .withValues(alpha: 0.3)
+                                  ? Color(
+                                      allBookmarks
+                                          .firstWhere((b) =>
+                                              b.ayahId == ayah.ayahUQNumber)
+                                          .colorCode,
+                                    ).withValues(alpha: .30)
                                   : quranCtrl.isAyahSelected
                                       ? ayahSelectedBackgroundColor ??
                                           const Color(0xffCDAD80)
-                                              .withValues(alpha: 0.25)
+                                              .withValues(alpha: .25)
                                       : null),
                         ),
-                        child: Text(
-                          ayah.text,
-                          style: TextStyle(
-                            color:
-                                textColor ?? (AppColors.getTextColor(isDark)),
-                            fontSize: 22.55,
-                            fontFamily: "hafs",
-                            height: 1.3,
-                            package: "quran_library",
+                        child: RichText(
+                          text: TextSpan(
+                            style: TextStyle(
+                              color:
+                                  textColor ?? AppColors.getTextColor(isDark),
+                              fontSize: 22.55,
+                              fontFamily: 'hafs',
+                              height: 1.3,
+                              package: 'quran_library',
+                            ),
+                            children: [
+                              TextSpan(text: parts.body),
+                              if (parts.tail.isNotEmpty)
+                                (ayahBookmarked.contains(ayah.ayahUQNumber) ||
+                                            bookmarksAyahs
+                                                .contains(ayah.ayahUQNumber)) &&
+                                        showAyahBookmarkedIcon
+                                    ? WidgetSpan(
+                                        alignment: PlaceholderAlignment.middle,
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 8.0),
+                                          child: SvgPicture.asset(
+                                            AssetsPath.assets.ayahBookmarked,
+                                            height: 22.55,
+                                          ),
+                                        ))
+                                    : TextSpan(
+                                        text: ' ${parts.tail}',
+                                        style: TextStyle(
+                                          color: ayahIconColor ??
+                                              Theme.of(context)
+                                                  .colorScheme
+                                                  .primary,
+                                        ),
+                                      ),
+                            ],
                           ),
                         ),
                       ),
@@ -170,4 +204,34 @@ class DefaultFontsBuild extends StatelessWidget {
       },
     );
   }
+
+  // يُعيد جزئين: body (النص دون الذيل) و tail (علامة نهاية الآية + الرقم)
+  _AyahParts _splitAyahTail(String input) {
+    // نلتقط الذيل في المجموعة الأولى للحفاظ عليه كما هو لخط حفص
+    final reg = RegExp(
+        r'((?:\s*[\u06DD]\s*)?(?:\s*[﴿\uFD3F]\s*)?[\u0660-\u0669\u06F0-\u06F9]+\s*(?:[﴾\uFD3E])?)\s*$');
+    final m = reg.firstMatch(input);
+    if (m == null) {
+      return _AyahParts(input, '');
+    }
+    final start = m.start;
+    final body = input.substring(0, start).trimRight();
+    final tail = m.group(1) ?? '';
+    return _AyahParts(body, tail);
+  }
+
+  String stripAyahNumber(String s) {
+    // أنماط محتملة في المصاحف:
+    // - U+06DD ARABIC END OF AYAH + أرقام
+    // - أقواس زخرفية ﴿ ﴾ (FD3F, FD3E) + أرقام
+    final endPattern = RegExp(
+        r'(?:\s*[\u06DD]\s*)?(?:\s*[﴿\uFD3F]\s*)?\s*[\u0660-\u0669\u06F0-\u06F9]+\s*(?:[﴾\uFD3E])?\s*$');
+    return s.replaceAll(endPattern, '').trimRight();
+  }
+}
+
+class _AyahParts {
+  final String body;
+  final String tail;
+  const _AyahParts(this.body, this.tail);
 }

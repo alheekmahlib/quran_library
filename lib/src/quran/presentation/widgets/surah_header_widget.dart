@@ -96,7 +96,7 @@ class SurahHeaderWidget extends StatelessWidget {
                         (AppColors.getTextColor(isDark)),
                     fontFamily: "surahName",
                     fontSize: surahNameStyle?.surahNameSize ?? 120.0,
-                    height: 1.2,
+                    height: 1.3,
                     package: "quran_library",
                   ),
                   textAlign: TextAlign.center,

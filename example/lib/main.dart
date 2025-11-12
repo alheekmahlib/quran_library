@@ -26,6 +26,7 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
+    const TextScaler fixedScaler = TextScaler.linear(1.0);
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       localizationsDelegates: const [
@@ -48,6 +49,13 @@ class _MyAppState extends State<MyApp> {
         primaryColor: Colors.teal,
         useMaterial3: false,
       ),
+      builder: (context, child) {
+        final mq = MediaQuery.of(context);
+        return MediaQuery(
+          data: mq.copyWith(textScaler: fixedScaler),
+          child: child!,
+        );
+      },
       home: const Scaffold(
         // body: SingleAyah(),
         // body: SingleSurah(),

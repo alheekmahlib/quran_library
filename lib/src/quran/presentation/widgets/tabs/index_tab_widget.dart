@@ -89,78 +89,106 @@ class _SurahsList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // احسب السورة الحالية من الكنترولر
+    int? currentIndex;
+    try {
+      final ctrl = QuranCtrl.instance;
+      final currentPage = ctrl.state.currentPageNumber.value;
+      final surahNumber =
+          ctrl.getCurrentSurahByPageNumber(currentPage).surahNumber;
+      currentIndex = (surahNumber - 1).clamp(0, surahs.length - 1);
+    } catch (_) {}
+
+    // استخدم ScrollController للتمرير بالاعتماد على ارتفاع تقريبي للعنصر
+    final scrollCtrl = ScrollController();
+    const double itemHeight = 68.0; // ارتفاع تقديري لكل صف
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (currentIndex != null && scrollCtrl.hasClients) {
+        final max = scrollCtrl.position.maxScrollExtent;
+        final desired = (currentIndex * itemHeight) - (itemHeight * 1.5);
+        final target = desired.clamp(0.0, max);
+        scrollCtrl.jumpTo(target);
+      }
+    });
+
     final Color textColor = style.textColor ?? AppColors.getTextColor(isDark);
     final Color accentColor =
         style.accentColor ?? Theme.of(context).colorScheme.primary;
     return ListView.builder(
+      controller: scrollCtrl,
       itemCount: surahs.length,
-      itemBuilder: (context, index) => Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: () {
-            Navigator.pop(context);
-            QuranLibrary().jumpToSurah(index + 1);
-          },
-          child: Container(
-            padding:
-                const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-            margin: const EdgeInsets.symmetric(vertical: 2.0),
-            decoration: BoxDecoration(
-              color: index.isEven
-                  ? accentColor.withValues(
-                      alpha: (style.surahRowAltBgAlpha ?? 0.1))
-                  : Colors.transparent,
-              borderRadius:
-                  BorderRadius.circular((style.listItemRadius ?? 8).toDouble()),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    SvgPicture.asset(
-                      AssetsPath.assets.suraNum,
-                      width: 40,
-                      height: 40,
-                      colorFilter: ColorFilter.mode(
-                        textColor,
-                        BlendMode.srcIn,
+      itemBuilder: (context, index) {
+        final bool isCurrent = (currentIndex == index);
+        return Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: () {
+              Navigator.pop(context);
+              QuranLibrary().jumpToSurah(index + 1);
+            },
+            child: Container(
+              padding:
+                  const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+              margin: const EdgeInsets.symmetric(vertical: 2.0),
+              decoration: BoxDecoration(
+                color: isCurrent
+                    ? accentColor.withValues(alpha: 0.15)
+                    : (index.isEven
+                        ? accentColor.withValues(
+                            alpha: (style.surahRowAltBgAlpha ?? 0.1))
+                        : Colors.transparent),
+                borderRadius: BorderRadius.circular(
+                    (style.listItemRadius ?? 8).toDouble()),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      SvgPicture.asset(
+                        AssetsPath.assets.suraNum,
+                        width: 40,
+                        height: 40,
+                        colorFilter: ColorFilter.mode(
+                          textColor,
+                          BlendMode.srcIn,
+                        ),
                       ),
-                    ),
-                    Text(
-                      '${index + 1}'.convertNumbersAccordingToLang(
-                          languageCode: languageCode),
-                      style: QuranLibrary()
-                          .cairoStyle
-                          .copyWith(fontSize: 14, color: textColor),
-                    ),
-                  ],
-                ),
-                Column(
-                  children: [
-                    Text(
-                      (index + 1).toString(),
-                      style: TextStyle(
-                        color: textColor,
-                        fontFamily: "surahName",
-                        fontSize: 32,
-                        package: "quran_library",
+                      Text(
+                        '${index + 1}'.convertNumbersAccordingToLang(
+                            languageCode: languageCode),
+                        style: QuranLibrary()
+                            .cairoStyle
+                            .copyWith(fontSize: 14, color: textColor),
                       ),
-                      textAlign: TextAlign.center,
-                    ),
-                    Text(
-                      surahs[index],
-                      style: QuranLibrary().cairoStyle.copyWith(
-                          fontSize: 14, color: textColor, height: 1.2),
-                    ),
-                  ],
-                ),
-              ],
+                    ],
+                  ),
+                  Column(
+                    children: [
+                      Text(
+                        (index + 1).toString(),
+                        style: TextStyle(
+                          color: textColor,
+                          fontFamily: "surahName",
+                          fontSize: 32,
+                          package: "quran_library",
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      Text(
+                        surahs[index],
+                        style: QuranLibrary().cairoStyle.copyWith(
+                            fontSize: 14, color: textColor, height: 1.2),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }
@@ -178,10 +206,32 @@ class _JozzList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // احسب الجزء الحالي من الكنترولر
+    int? currentJozzIndex;
+    try {
+      final ctrl = QuranCtrl.instance;
+      final currentPage = ctrl.state.currentPageNumber.value;
+      final juz = ctrl.getJuzByPage(currentPage).juz; // 1..30
+      currentJozzIndex = (juz - 1).clamp(0, jozzList.length - 1);
+    } catch (_) {}
+
+    // ScrollController للتمرير إلى الجزء الحالي باستخدام ارتفاع تقريبي
+    final jozzScrollCtrl = ScrollController();
+    const double tileHeight = 60.0; // ارتفاع تقديري لكل عنصر جزء
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (currentJozzIndex != null && jozzScrollCtrl.hasClients) {
+        final max = jozzScrollCtrl.position.maxScrollExtent;
+        final desired = (currentJozzIndex * tileHeight) - (tileHeight * 1.0);
+        final target = desired.clamp(0.0, max);
+        jozzScrollCtrl.jumpTo(target);
+      }
+    });
+
     final Color textColor = style.textColor ?? AppColors.getTextColor(isDark);
     final Color accentColor =
         style.accentColor ?? Theme.of(context).colorScheme.primary;
     return ListView.builder(
+      controller: jozzScrollCtrl,
       itemCount: jozzList.length,
       itemBuilder: (context, jozzIndex) => Container(
         margin: const EdgeInsets.symmetric(vertical: 2.0),
@@ -193,6 +243,7 @@ class _JozzList extends StatelessWidget {
               BorderRadius.circular((style.listItemRadius ?? 8).toDouble()),
         ),
         child: ExpansionTile(
+          initiallyExpanded: currentJozzIndex == jozzIndex,
           collapsedShape: RoundedRectangleBorder(
             borderRadius:
                 BorderRadius.circular((style.listItemRadius ?? 8).toDouble()),

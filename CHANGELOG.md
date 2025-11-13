@@ -1,4 +1,4 @@
-## 2.2.5+1
+## 2.2.6
 
 * **Fix: Tafsir widget UI in dark mode.**
 * **Add: Scroll to current Surah in Surah list.**

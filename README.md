@@ -3,32 +3,58 @@
 <img src="https://raw.githubusercontent.com/alheekmahlib/thegarlanded/master/Photos/Packages/quran_library/quran_library_banner.png" width="500"/>
 </p>
 
-[![Flutter support](https://img.shields.io/badge/Flutter-3.13%2B-2cacbf?logo=flutter&logoColor=white&labelColor=145261)](https://flutter.dev/)
-[![Dart support](https://img.shields.io/badge/Dart-3.3.0%2B-2cacbf?logo=dart&logoColor=white&labelColor=145261)](https://dart.dev/)
-[![pub package](https://img.shields.io/pub/v/quran_library.svg?color=2cacbf&labelColor=145261)](https://pub.dev/packages/quran_library)
-[![pub points](https://img.shields.io/pub/points/quran_library?color=2cacbf&labelColor=145261)](https://pub.dev/packages/quran_library/score)
-[![likes](https://img.shields.io/pub/likes/quran_library?color=2cacbf&labelColor=145261)](https://pub.dev/packages/quran_library/score)
-[![Pub Downloads](https://img.shields.io/pub/dm/quran_library?color=2cacbf&labelColor=145261)](https://pub.dev/packages/quran_library/score)
-[![License: MIT](https://img.shields.io/badge/License-MIT-2cacbf.svg?labelColor=145261)](https://opensource.org/licenses/MIT)
 
-[![Web](https://img.shields.io/badge/Web-145261?logo=google-chrome&logoColor=white)](https://flutter.dev/)
-[![Windows](https://img.shields.io/badge/Windows-145261?logo=Windows&logoColor=white)](https://flutter.dev/)
-[![macOS](https://img.shields.io/badge/macOS-145261?logo=apple&logoColor=white)](https://flutter.dev/)
-[![Android](https://img.shields.io/badge/Android-145261?logo=android&logoColor=white)](https://flutter.dev/)
-[![iOS](https://img.shields.io/badge/iOS-145261?logo=ios&logoStyle=bold&logoColor=white)](https://flutter.dev/)
+<!-- الصف الأول -->
+<p align="center">
+  <a href="https://pub.dev/packages/quran_library">
+    <img alt="pub package" src="https://img.shields.io/pub/v/quran_library.svg?color=2cacbf&labelColor=145261" />
+  </a>
+  <a href="https://pub.dev/packages/quran_library/score">
+    <img alt="pub points" src="https://img.shields.io/pub/points/quran_library?color=2cacbf&labelColor=145261" />
+  </a>
+  <a href="https://pub.dev/packages/quran_library/score">
+    <img alt="likes" src="https://img.shields.io/pub/likes/quran_library?color=2cacbf&labelColor=145261" />
+  </a>
+  <a href="https://pub.dev/packages/quran_library/score">
+    <img alt="Pub Downloads" src="https://img.shields.io/pub/dm/quran_library?color=2cacbf&labelColor=145261" />
+  </a>
+  <a href="LICENSE">
+    <img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-2cacbf.svg?labelColor=145261" />
+  </a>
+</p>
+
+<!-- الصف الثاني -->
+<p align="center">
+  <a href="https://flutter.dev/">
+    <img alt="Web" src="https://img.shields.io/badge/Web-145261?logo=google-chrome&logoColor=white" />
+  </a>
+  <a href="https://flutter.dev/">
+    <img alt="Windows" src="https://img.shields.io/badge/Windows-145261?logo=Windows&logoColor=white" />
+  </a>
+  <a href="https://flutter.dev/">
+    <img alt="macOS" src="https://img.shields.io/badge/macOS-145261?logo=apple&logoColor=white" />
+  </a>
+  <a href="https://flutter.dev/">
+    <img alt="Android" src="https://img.shields.io/badge/Android-145261?logo=android&logoColor=white" />
+  </a>
+  <a href="https://flutter.dev/">
+    <img alt="iOS" src="https://img.shields.io/badge/iOS-145261?logo=ios&logoStyle=bold&logoColor=white" />
+  </a>
+</p>
+
 
 <p align="center"><strong>Choose your language for the documentation:</strong></p>
 
 <p align="center">
-  <a href="https://alheekmahlib.github.io/quran_library_web/#/ar" style="display: inline-block; padding: 6px 24px; margin: 8px; background: linear-gradient(135deg, #2cacbf, #145261); color: white; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 14px; transition: all 0.3s ease; text-transform: uppercase;">العربية</a>
-  <a href="https://alheekmahlib.github.io/quran_library_web/#/en" style="display: inline-block; padding: 6px 24px; margin: 8px; background: linear-gradient(135deg, #2cacbf, #145261); color: white; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 14px; transition: all 0.3s ease; text-transform: uppercase;">English</a>
-  <a href="https://alheekmahlib.github.io/quran_library_web/#/bn" style="display: inline-block; padding: 6px 24px; margin: 8px; background: linear-gradient(135deg, #2cacbf, #145261); color: white; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 14px; transition: all 0.3s ease; text-transform: uppercase;">বাংলা</a>
-  <a href="https://alheekmahlib.github.io/quran_library_web/#/id" style="display: inline-block; padding: 6px 24px; margin: 8px; background: linear-gradient(135deg, #2cacbf, #145261); color: white; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 14px; transition: all 0.3s ease; text-transform: uppercase;">Bahasa Indonesia</a>
-  <a href="https://alheekmahlib.github.io/quran_library_web/#/ur" style="display: inline-block; padding: 6px 24px; margin: 8px; background: linear-gradient(135deg, #2cacbf, #145261); color: white; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 14px; transition: all 0.3s ease; text-transform: uppercase;">اردو</a>
-  <a href="https://alheekmahlib.github.io/quran_library_web/#/tr" style="display: inline-block; padding: 6px 24px; margin: 8px; background: linear-gradient(135deg, #2cacbf, #145261); color: white; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 14px; transition: all 0.3s ease; text-transform: uppercase;">Türkçe</a>
-  <a href="https://alheekmahlib.github.io/quran_library_web/#/ku" style="display: inline-block; padding: 6px 24px; margin: 8px; background: linear-gradient(135deg, #2cacbf, #145261); color: white; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 14px; transition: all 0.3s ease; text-transform: uppercase;">کوردی</a>
-  <a href="https://alheekmahlib.github.io/quran_library_web/#/ms" style="display: inline-block; padding: 6px 24px; margin: 8px; background: linear-gradient(135deg, #2cacbf, #145261); color: white; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 14px; transition: all 0.3s ease; text-transform: uppercase;">Bahasa Malaysia</a>
-  <a href="https://alheekmahlib.github.io/quran_library_web/#/es" style="display: inline-block; padding: 6px 24px; margin: 8px; background: linear-gradient(135deg, #2cacbf, #145261); color: white; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 14px; transition: all 0.3s ease; text-transform: uppercase;">Español</a>
+  <a href="https://alheekmahlib.github.io/quran_library_web/#/ar" ><img alt="Arabic" src="https://img.shields.io/badge/Arabic-2cacbf?size-30" height="30" /></a>
+  <a href="https://alheekmahlib.github.io/quran_library_web/#/en" ><img alt="English" src="https://img.shields.io/badge/English-2cacbf?size-30" height="30" /></a>
+  <a href="https://alheekmahlib.github.io/quran_library_web/#/bn" ><img alt="bangla" src="https://img.shields.io/badge/bangla-2cacbf?size-30" height="30" /></a>
+  <a href="https://alheekmahlib.github.io/quran_library_web/#/id" ><img alt="Bahasa Indonesia" src="https://img.shields.io/badge/Bahasa Indonesia-2cacbf?size-30" height="30" /></a>
+  <a href="https://alheekmahlib.github.io/quran_library_web/#/ur" ><img alt="Urdu" src="https://img.shields.io/badge/Urdu-2cacbf?size-30" height="30" /></a>
+  <a href="https://alheekmahlib.github.io/quran_library_web/#/tr" ><img alt="Türkçe" src="https://img.shields.io/badge/Türkçe-2cacbf?size-30" height="30" /></a>
+  <a href="https://alheekmahlib.github.io/quran_library_web/#/ku" ><img alt="Kurdish" src="https://img.shields.io/badge/Kurdish-2cacbf?size-30" height="30" /></a>
+  <a href="https://alheekmahlib.github.io/quran_library_web/#/ms" ><img alt="Bahasa Malaysia" src="https://img.shields.io/badge/Bahasa Malaysia-2cacbf?size-30" height="30" /></a>
+  <a href="https://alheekmahlib.github.io/quran_library_web/#/es" ><img alt="Español" src="https://img.shields.io/badge/Español-2cacbf?size-30" height="30" /></a>
 </p>
 
 
@@ -103,7 +129,7 @@ In the `pubspec.yaml` of your flutter project, add the following dependency:
 ```yaml
 dependencies:
   ...
-  quran_library: ^2.2.5+1
+  quran_library: ^2.2.6
 ```
 
 Import it:

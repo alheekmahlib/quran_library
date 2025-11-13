@@ -3,6 +3,7 @@
 * **Fix: Tafsir widget UI in dark mode.**
 * **Add: Scroll to current Surah in Surah list.**
 * **Add: Scroll to current Juz in Juz list.**
+* **Fix: Some UI issue.**
 
 ## 2.2.5
 

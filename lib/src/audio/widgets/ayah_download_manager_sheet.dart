@@ -275,26 +275,30 @@ class DownloadedAndDeleteWidget extends StatelessWidget {
             }
 
             // إذا لم يكن هذا العنصر هو الجاري تحميله حاليًا، أظهر زر تحميل/إعادة
-            return FilledButton(
-              onPressed: isDownloading
-                  ? null
-                  : () => fullyDownloaded
-                      ? onRequestDelete(s.surahNumber)
-                      : onRequestDownload(s.surahNumber),
-              style: ButtonStyle(
-                backgroundColor: WidgetStatePropertyAll(fullyDownloaded
-                    ? (style?.deleteIconColor ?? Colors.red)
-                    : (style?.downloadBackground ??
-                        Theme.of(context).colorScheme.primary)),
-                foregroundColor: WidgetStatePropertyAll(
-                    style?.downloadForeground ??
-                        Theme.of(context).colorScheme.primary),
-              ),
-              child: Icon(
-                fullyDownloaded
-                    ? (style?.deleteIcon ?? Icons.delete_outline)
-                    : (style?.downloadIcon ?? Icons.download),
-                color: Colors.white,
+            return SizedBox(
+              height: 30,
+              width: 60,
+              child: FilledButton(
+                onPressed: isDownloading
+                    ? null
+                    : () => fullyDownloaded
+                        ? onRequestDelete(s.surahNumber)
+                        : onRequestDownload(s.surahNumber),
+                style: ButtonStyle(
+                  backgroundColor: WidgetStatePropertyAll(fullyDownloaded
+                      ? (style?.deleteIconColor ?? Colors.red)
+                      : (style?.downloadBackground ??
+                          Theme.of(context).colorScheme.primary)),
+                  foregroundColor: WidgetStatePropertyAll(
+                      style?.downloadForeground ??
+                          Theme.of(context).colorScheme.primary),
+                ),
+                child: Icon(
+                  fullyDownloaded
+                      ? (style?.deleteIcon ?? Icons.delete_outline)
+                      : (style?.downloadIcon ?? Icons.download),
+                  color: Colors.white,
+                ),
               ),
             );
           }),

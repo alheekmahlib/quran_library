@@ -77,8 +77,11 @@ class AppBarWidget extends StatelessWidget {
             alignment: AlignmentDirectional.bottomStart,
             child: IconButton(
               onPressed: () => Navigator.pop(context),
-              icon: const Icon(Icons.arrow_back_ios_new_outlined),
-              color: s.iconColor,
+              icon: Icon(
+                Icons.arrow_back_ios_new_outlined,
+                color: s.backIconColor,
+              ),
+              color: s.backIconColor ?? textColor,
               iconSize: 24,
             ),
           ),

@@ -103,6 +103,10 @@ class SurahAudioStyle {
   /// General icons color
   final Color? iconColor;
 
+  /// لون أيقونة الرجوع العامة
+  /// General back icon color
+  final Color? backIconColor;
+
   /// لون الأيقونات العامة
   /// General icons color
   final Color? audioSliderBackgroundColor;
@@ -206,6 +210,7 @@ class SurahAudioStyle {
     this.ayahPluralText,
     this.lastListenText,
     this.dialogHeaderTitle,
+    this.backIconColor,
   });
 
   SurahAudioStyle copyWith({
@@ -249,6 +254,7 @@ class SurahAudioStyle {
     String? ayahPluralText,
     String? lastListenText,
     String? dialogHeaderTitle,
+    Color? backIconColor,
   }) {
     return SurahAudioStyle(
       textColor: textColor ?? this.textColor,
@@ -303,6 +309,7 @@ class SurahAudioStyle {
       ayahPluralText: ayahPluralText ?? this.ayahPluralText,
       lastListenText: lastListenText ?? this.lastListenText,
       dialogHeaderTitle: dialogHeaderTitle ?? this.dialogHeaderTitle,
+      backIconColor: backIconColor ?? this.backIconColor,
     );
   }
 
@@ -322,7 +329,8 @@ class SurahAudioStyle {
       backgroundColor: bg,
       textColor: onBg,
       primaryColor: primary,
-      iconColor: primary,
+      backIconColor: primary,
+      iconColor: onBg,
       surahNameColor: onBg,
       audioSliderBackgroundColor:
           isDark ? const Color(0xFF1E1E1E) : bg.withValues(alpha: 0.98),

@@ -167,7 +167,7 @@ class TafsirStyle {
     return TafsirStyle(
       // الألوان العامة
       backgroundColor: bg,
-      textColor: onBg,
+      textColor: AppColors.getTextColor(isDark),
       tafsirBackgroundColor: isDark ? const Color(0xFF151515) : Colors.white,
       dividerColor: isDark ? Colors.grey.shade600 : Colors.grey.shade400,
 

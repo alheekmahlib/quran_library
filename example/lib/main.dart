@@ -75,20 +75,20 @@ class FullQuran extends StatelessWidget {
   Widget build(BuildContext context) {
     return QuranLibraryScreen(
       parentContext: context,
-      isDark: false,
+      isDark: true,
       showAyahBookmarkedIcon: true,
       // appLanguageCode: 'ar',
       // ayahIconColor: Colors.teal,
       // backgroundColor: Colors.white,
       // textColor: Colors.black,
       isFontsLocal: false,
-      tafsirStyle:
-          TafsirStyle.defaults(isDark: true, context: context).copyWith(
-        widthOfBottomSheet: 500,
-        heightOfBottomSheet: MediaQuery.sizeOf(context).height * 0.9,
-        changeTafsirDialogHeight: MediaQuery.sizeOf(context).height * 0.9,
-        changeTafsirDialogWidth: 400,
-      ),
+      // tafsirStyle:
+      //     TafsirStyle.defaults(isDark: false, context: context).copyWith(
+      //   widthOfBottomSheet: 500,
+      //   heightOfBottomSheet: MediaQuery.sizeOf(context).height * 0.9,
+      //   changeTafsirDialogHeight: MediaQuery.sizeOf(context).height * 0.9,
+      //   changeTafsirDialogWidth: 400,
+      // ),
       // anotherMenuChild:
       //     const Icon(Icons.play_arrow_outlined, size: 28, color: Colors.teal),
       // anotherMenuChildOnTap: (ayah) {

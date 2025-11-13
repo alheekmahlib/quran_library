@@ -41,7 +41,7 @@ class ActualTafsirWidget extends StatelessWidget {
         GetSingleAyah(
           surahNumber: surahs.surahNumber,
           ayahNumber: ayahs.ayahNumber,
-          fontSize: fontSizeArabic + 10,
+          fontSize: fontSizeArabic - 10,
           isBold: false,
           ayahs: ayahs,
           isSingleAyah: false,

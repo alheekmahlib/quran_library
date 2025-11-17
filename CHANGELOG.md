@@ -1,3 +1,7 @@
+## 2.2.7
+
+* **Fix: Ayah 19 in Surah 24.**
+
 ## 2.2.6
 
 * **Fix: Tafsir widget UI in dark mode.**

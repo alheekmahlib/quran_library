@@ -1,10 +1,8 @@
-## 2.2.8
+## 2.3.0
 
-* **Fix: Ayah 28 in Surah 19.**
-
-## 2.2.7
-
-* **Fix: Ayah 19 in Surah 24.**
+* **BREAKING FIX:**
+	`Ayah 19 in Surah 24.`
+	`Ayah 28 in Surah 19.`
 
 ## 2.2.6
 

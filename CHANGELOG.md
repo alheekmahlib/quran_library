@@ -1,3 +1,7 @@
+## 2.2.8
+
+* **Fix: Ayah 28 in Surah 19.**
+
 ## 2.2.7
 
 * **Fix: Ayah 19 in Surah 24.**

@@ -90,17 +90,28 @@ class SurahHeaderWidget extends StatelessWidget {
                       BlendMode.modulate),
                 ),
                 Text(
-                  surahNumber.toString(),
+                  ' surah${(surahNumber).toString().padLeft(3, '0')} surah-icon',
                   style: TextStyle(
                     color: surahNameStyle?.surahNameColor ??
                         (AppColors.getTextColor(isDark)),
-                    fontFamily: "surahName",
+                    letterSpacing: surahNumber == 113 ? 20 : 5,
+                    fontFamily: "surah-name-v4",
                     fontSize: surahNameStyle?.surahNameSize ?? 120.0,
-                    height: 1.3,
                     package: "quran_library",
                   ),
-                  textAlign: TextAlign.center,
                 ),
+                // Text(
+                //   surahNumber.toString(),
+                //   style: TextStyle(
+                //     color: surahNameStyle?.surahNameColor ??
+                //         (AppColors.getTextColor(isDark)),
+                //     fontFamily: "surahName",
+                //     fontSize: surahNameStyle?.surahNameSize ?? 120.0,
+                //     height: 1.3,
+                //     package: "quran_library",
+                //   ),
+                //   textAlign: TextAlign.center,
+                // ),
               ],
             ),
           ),

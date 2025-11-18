@@ -1,3 +1,9 @@
+## 2.3.1
+
+* **CHANGES:**
+	`Surah name shape.`
+	`Ayah icon shape.`
+
 ## 2.3.0
 
 * **BREAKING FIX:**

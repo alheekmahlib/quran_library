@@ -56,7 +56,7 @@ TextSpan _span({
     final String? partTwo =
         text.length > 2 ? text.substring(2, text.length - 1) : null;
     final String initialPart = text.substring(0, text.length - 1);
-    final String lastCharacter = text.substring(text.length - 1);
+    // final String lastCharacter = text.substring(text.length - 1);
     final allBookmarks = bookmarks.values.expand((list) => list).toList();
     final quranCtrl = QuranCtrl.instance;
     ayahBookmarked.isEmpty
@@ -68,12 +68,11 @@ TextSpan _span({
       first = TextSpan(
         text: partOne,
         style: TextStyle(
-          // fontFamily: isFontsLocal ? fontsName : 'p${(pageIndex + 2001)}',
           fontFamily:
               isFontsLocal ? fontsName : quranCtrl.getFontPath(pageIndex),
           fontSize: fontSize,
           height: 2.1,
-          // letterSpacing: pageSpacing ? -5 : 30,
+          letterSpacing: 6,
           color: quranCtrl.state.fontsSelected.value == 1
               ? textColor ?? Colors.transparent
               : isDark
@@ -101,13 +100,11 @@ TextSpan _span({
       second = TextSpan(
         text: partTwo,
         style: TextStyle(
-          // fontFamily: isFontsLocal ? fontsName : 'p${(pageIndex + 2001)}',
           fontFamily:
               isFontsLocal ? fontsName : quranCtrl.getFontPath(pageIndex),
           fontSize: fontSize,
           height: 2.1,
-          // letterSpacing: 0,
-          // wordSpacing: wordSpacing + 10,
+          letterSpacing: 6,
           color: quranCtrl.state.fontsSelected.value == 1
               ? textColor ?? Colors.transparent
               : isDark
@@ -135,13 +132,12 @@ TextSpan _span({
     }
 
     final TextSpan initialTextSpan = TextSpan(
-      text: initialPart,
+      text: '\u200A\u200A$initialPart',
       style: TextStyle(
-        // fontFamily: isFontsLocal ? fontsName : 'p${(pageIndex + 2001)}',
         fontFamily: isFontsLocal ? fontsName : quranCtrl.getFontPath(pageIndex),
         fontSize: fontSize,
         height: 2.1,
-        // letterSpacing: 0,
+        letterSpacing: 6,
         color: quranCtrl.state.fontsSelected.value == 1
             ? textColor ?? Colors.transparent
             : isDark
@@ -183,22 +179,13 @@ TextSpan _span({
             ),
           )
         : TextSpan(
-            text: lastCharacter,
+            text: '$ayahNum'.convertEnglishNumbersToArabic(ayahNum.toString()),
             style: TextStyle(
-              // fontFamily: isFontsLocal ? fontsName : 'p${(pageIndex + 2001)}',
-              fontFamily:
-                  isFontsLocal ? fontsName : quranCtrl.getFontPath(pageIndex),
+              fontFamily: isFontsLocal ? fontsName : 'ayahNumber',
               fontSize: fontSize,
+              letterSpacing: 5,
               height: 2.1,
-              // letterSpacing: isFirstAyah &&
-              //     (pageIndex == 1 ||
-              //         pageIndex == 49 ||
-              //         pageIndex == 476 ||
-              //         pageIndex == 482 ||
-              //         pageIndex == 495 ||
-              //         pageIndex == 498)
-              // ? 20
-              // : null,
+              package: 'quran_library',
               color: ayahIconColor ?? Theme.of(context).colorScheme.primary,
               backgroundColor: ayahBookmarked.contains(ayahUQNum)
                   ? bookmarksColor
@@ -304,7 +291,7 @@ TextSpan _customSpan({
                 text: ' $ayahNumber '
                     .convertNumbersAccordingToLang(languageCode: languageCode),
                 style: TextStyle(
-                  fontFamily: 'hafs',
+                  fontFamily: 'ayahNumber',
                   fontSize: fontSize,
                   height: 2.1,
                   color: ayahIconColor ?? Theme.of(context).colorScheme.primary,

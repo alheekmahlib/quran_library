@@ -165,17 +165,27 @@ class _SurahsList extends StatelessWidget {
                     ],
                   ),
                   Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       Text(
-                        (index + 1).toString(),
+                        ' surah${(index + 1).toString().padLeft(3, '0')} ',
                         style: TextStyle(
                           color: textColor,
-                          fontFamily: "surahName",
+                          fontFamily: "surah-name-v4",
                           fontSize: 32,
                           package: "quran_library",
                         ),
-                        textAlign: TextAlign.center,
                       ),
+                      // Text(
+                      //   (index + 1).toString(),
+                      //   style: TextStyle(
+                      //     color: textColor,
+                      //     fontFamily: "surahName",
+                      //     fontSize: 32,
+                      //     package: "quran_library",
+                      //   ),
+                      //   textAlign: TextAlign.center,
+                      // ),
                       Text(
                         surahs[index],
                         style: QuranLibrary().cairoStyle.copyWith(

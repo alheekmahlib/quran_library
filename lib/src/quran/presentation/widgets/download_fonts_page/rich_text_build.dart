@@ -77,10 +77,10 @@ class RichTextBuild extends StatelessWidget {
             text: TextSpan(
               style: TextStyle(
                 // fontFamily: isFontsLocal ? fontsName : 'p${(pageIndex + 2001)}',
-                fontFamily:
-                    isFontsLocal ? fontsName : quranCtrl.getFontPath(pageIndex),
-                fontSize: fs,
-                height: 1.7,
+                // fontFamily:
+                //     isFontsLocal ? fontsName : quranCtrl.getFontPath(pageIndex),
+                // fontSize: fs,
+                // height: 1.7,
                 shadows: quranCtrl.state.isBold.value
                     ? [
                         Shadow(

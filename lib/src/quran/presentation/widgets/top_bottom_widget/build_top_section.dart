@@ -32,6 +32,9 @@ class BuildTopSection extends StatelessWidget {
         topBottomStyle.juzTextColor ?? const Color(0xff77554B);
     final Color surahColor =
         topBottomStyle.surahNameColor ?? const Color(0xff77554B);
+    final List<SurahModel> surah =
+        quranCtrl.getSurahsByPageNumber(pageIndex + 1);
+    final juz = quranCtrl.getJuzByPage(pageIndex);
 
     final Widget? effectiveTopTitleChild =
         topTitleChild ?? topBottomStyle.customChild;
@@ -49,9 +52,8 @@ class BuildTopSection extends StatelessWidget {
                     ? const SizedBox(width: 16)
                     : const SizedBox.shrink(),
                 Text(
-                  '$effectiveJuzName: ${quranCtrl.getJuzByPage(pageIndex).juz}'
-                      .convertNumbersAccordingToLang(
-                          languageCode: languageCode),
+                  '$effectiveJuzName: ${juz.juz}'.convertNumbersAccordingToLang(
+                      languageCode: languageCode),
                   style: _getTextStyle(context, juzColor),
                 ),
                 const Spacer(),
@@ -60,16 +62,22 @@ class BuildTopSection extends StatelessWidget {
                         effectiveSurahName,
                         style: _getTextStyle(context, surahColor),
                       )
-                    : quranCtrl.getSurahsByPageNumber(pageIndex + 1).isNotEmpty
+                    : surah.isNotEmpty
                         ? Row(
                             children: List.generate(
-                                quranCtrl
-                                    .getSurahsByPageNumber(pageIndex + 1)
-                                    .length,
-                                (i) => Text(
-                                      ' ${quranCtrl.getSurahsByPageNumber(pageIndex + 1)[i].arabicName.replaceAll('سُورَةُ ', '')} ',
-                                      style: _getTextStyle(context, surahColor),
-                                    )),
+                              surah.length,
+                              (i) => Text(
+                                ' surah${(surah[i].surahNumber).toString().padLeft(3, '0')} ',
+                                style: TextStyle(
+                                  color: surahColor,
+                                  letterSpacing: 5,
+                                  fontFamily: "surah-name-v4",
+                                  fontSize: UiHelper.currentOrientation(
+                                      26.0, 32.0, context),
+                                  package: "quran_library",
+                                ),
+                              ),
+                            ),
                           )
                         : const SizedBox.shrink(),
               ],
@@ -81,15 +89,20 @@ class BuildTopSection extends StatelessWidget {
                         effectiveSurahName,
                         style: _getTextStyle(context, surahColor),
                       )
-                    : quranCtrl.getSurahsByPageNumber(pageIndex + 1).isNotEmpty
+                    : surah.isNotEmpty
                         ? Row(
                             children: List.generate(
-                              quranCtrl
-                                  .getSurahsByPageNumber(pageIndex + 1)
-                                  .length,
+                              surah.length,
                               (i) => Text(
-                                ' ${quranCtrl.getSurahsByPageNumber(pageIndex + 1)[i].arabicName.replaceAll('سُورَةُ ', '')} ',
-                                style: _getTextStyle(context, surahColor),
+                                ' surah${(surah[i].surahNumber).toString().padLeft(3, '0')} ',
+                                style: TextStyle(
+                                  color: surahColor,
+                                  letterSpacing: 5,
+                                  fontFamily: "surah-name-v4",
+                                  fontSize: UiHelper.currentOrientation(
+                                      26.0, 32.0, context),
+                                  package: "quran_library",
+                                ),
                               ),
                             ),
                           )

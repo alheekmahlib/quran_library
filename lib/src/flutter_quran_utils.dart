@@ -249,18 +249,21 @@ class QuranLibrary {
   /// [getAllSurahsArtPath] يعيد قائمة ويدجيت المخطوطات الخاصة بإسماء السور.
   ///
   /// [getAllSurahsArtPath] returns list of widgets for all Quran surahs' name artistic manuscript path
-  List<Widget> getAllSurahsArtPath({Color? color}) {
+  List<Widget> getAllSurahsArtPath(
+      {Color? color, double? fontSize, bool? withSurahWord = false}) {
     if (_cache.containsKey('allSurahsArtPath')) {
       return _cache['allSurahsArtPath'] as List<Widget>;
     }
     final paths = List.generate(
         quranCtrl.surahs.length,
         (i) => Text(
-              (i + 1).toString(),
+              withSurahWord!
+                  ? 'surah${(i + 1).toString().padLeft(3, '0')}surah-icon'
+                  : 'surah${(i + 1).toString().padLeft(3, '0')}',
               style: TextStyle(
                 color: color ?? Colors.black,
-                fontFamily: "surahName",
-                fontSize: 38,
+                fontFamily: "surah-name-v4",
+                fontSize: fontSize ?? 38,
                 package: "quran_library",
               ),
             ));
@@ -271,16 +274,22 @@ class QuranLibrary {
   /// [getSurahArtPath] يعيد ويدجيت المخطوطة الخاصة بإسم السور.
   ///
   /// [getSurahArtPath] returns widget for Quran surah name artistic manuscript path
-  Widget getSurahArtPath({required int index, Color? color}) {
+  Widget getSurahArtPath(
+      {required int index,
+      Color? color,
+      double? fontSize,
+      bool? withSurahWord = false}) {
     if (_cache.containsKey('allSurahsArtPath')) {
       return _cache['allSurahsArtPath'] as Widget;
     }
     final paths = Text(
-      (index + 1).toString(),
+      withSurahWord!
+          ? 'surah${(index + 1).toString().padLeft(3, '0')}surah-icon'
+          : 'surah${(index + 1).toString().padLeft(3, '0')}',
       style: TextStyle(
         color: color ?? Colors.black,
-        fontFamily: "surahName",
-        fontSize: 38,
+        fontFamily: "surah-name-v4",
+        fontSize: fontSize ?? 38,
         package: "quran_library",
       ),
     );

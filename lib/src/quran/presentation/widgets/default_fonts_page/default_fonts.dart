@@ -187,6 +187,8 @@ class DefaultFontsBuild extends StatelessWidget {
                                               Theme.of(context)
                                                   .colorScheme
                                                   .primary,
+                                          fontFamily: 'ayahNumber',
+                                          package: 'quran_library',
                                         ),
                                       ),
                             ],

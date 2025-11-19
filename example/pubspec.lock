@@ -207,10 +207,10 @@ packages:
     dependency: transitive
     description:
       name: flutter_scale_kit
-      sha256: d14d2aa01253d17d446922baabf4866229f21efc6244ea15b51c4e45947d45cf
+      sha256: "5e23d4a5e468774673643fb66ebb381f84f5d95a36d5ef4d078dd8cb4e0bf4b4"
       url: "https://pub.dev"
     source: hosted
-    version: "1.2.3"
+    version: "1.5.2"
   flutter_sliding_panel:
     dependency: transitive
     description:

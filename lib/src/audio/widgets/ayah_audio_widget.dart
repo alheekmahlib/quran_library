@@ -14,7 +14,6 @@ class AyahsAudioWidget extends StatelessWidget {
       this.languageCode});
   final quranCtrl = QuranCtrl.instance;
   final audioCtrl = AudioCtrl.instance;
-  final sliderCtrl = SliderController.instance;
 
   @override
   Widget build(BuildContext context) {
@@ -37,8 +36,6 @@ class AyahsAudioWidget extends StatelessWidget {
                 if (details.primaryDelta! < -8) {
                   // سحب للأعلى: فتح السلايدر
                   // Drag up: open
-                  sliderCtrl.setMediumHeight(context);
-                  sliderCtrl.updateBottomHandleVisibility(true);
                   Future.delayed(
                     const Duration(milliseconds: 10),
                     () => QuranCtrl.instance.state.isPlayExpanded.value = true,
@@ -48,7 +45,6 @@ class AyahsAudioWidget extends StatelessWidget {
                   // Drag down: close
 
                   QuranCtrl.instance.state.isPlayExpanded.value = false;
-                  sliderCtrl.setSmallHeight();
                 }
               }
             },
@@ -58,6 +54,14 @@ class AyahsAudioWidget extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: effectiveStyle.backgroundColor!,
                   borderRadius: const BorderRadius.all(Radius.circular(8)),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: .2),
+                      spreadRadius: 1,
+                      blurRadius: 5,
+                      offset: const Offset(0, -5), // changes position of shadow
+                    ),
+                  ],
                 ),
                 child: Obx(() => Column(
                       mainAxisSize: MainAxisSize.min,
@@ -114,7 +118,6 @@ class AyahsAudioWidget extends StatelessWidget {
                                         availableHeight.clamp(80.0, 175.0);
 
                                     return SizedBox(
-                                        height: targetHeight.h,
                                         width: MediaQuery.sizeOf(context).width,
                                         child: Column(
                                           mainAxisAlignment:
@@ -124,8 +127,9 @@ class AyahsAudioWidget extends StatelessWidget {
                                             // تقليل المسافات عند المساحة المحدودة
                                             // Reduce spacing when space is limited
                                             SizedBox(
-                                                height:
-                                                    targetHeight > 120 ? 4 : 2),
+                                                height: targetHeight > 120
+                                                    ? 12
+                                                    : 2),
                                             AyahChangeReader(
                                                 style: effectiveStyle,
                                                 isDark: isDark,
@@ -138,113 +142,103 @@ class AyahsAudioWidget extends StatelessWidget {
                                               child: Directionality(
                                                 textDirection:
                                                     TextDirection.rtl,
-                                                child: SingleChildScrollView(
-                                                  child: c.state.isDownloading
-                                                          .value
-                                                      ? GetX<AudioCtrl>(
-                                                          builder: (c) {
-                                                          final data = c.state
-                                                              .tmpDownloadedAyahsCount;
-                                                          log('$data => REBUILDING  ${audioCtrl.state.tmpDownloadedAyahsCount}');
-                                                          return PackageSliderWidget
-                                                              .downloading(
-                                                            currentPosition:
-                                                                data,
-                                                            filesCount: audioCtrl
-                                                                .currentAyahFileName
-                                                                .length,
-                                                            activeTrackColor:
-                                                                effectiveStyle
-                                                                    .seekBarActiveTrackColor!,
-                                                            inactiveTrackColor:
-                                                                effectiveStyle
-                                                                    .seekBarInactiveTrackColor!,
-                                                            thumbColor:
-                                                                effectiveStyle
-                                                                    .seekBarThumbColor!,
-                                                            horizontalPadding:
-                                                                effectiveStyle
-                                                                    .seekBarHorizontalPadding!,
-                                                            timeContainerColor:
-                                                                effectiveStyle
-                                                                    .seekBarTimeContainerColor!,
-                                                          );
-                                                        })
-                                                      : StreamBuilder<
-                                                          PackagePositionData>(
-                                                          stream: audioCtrl
-                                                              .positionDataStream,
-                                                          builder: (context,
-                                                              snapshot) {
-                                                            if (snapshot
-                                                                .hasData) {
-                                                              final positionData =
-                                                                  snapshot.data;
-                                                              return PackageSliderWidget
-                                                                  .player(
-                                                                horizontalPadding:
-                                                                    effectiveStyle
-                                                                        .seekBarHorizontalPadding!,
-                                                                duration: positionData
-                                                                        ?.duration ??
-                                                                    Duration
-                                                                        .zero,
-                                                                position: positionData
-                                                                        ?.position ??
-                                                                    Duration
-                                                                        .zero,
-                                                                activeTrackColor:
-                                                                    effectiveStyle
-                                                                        .seekBarActiveTrackColor!,
-                                                                inactiveTrackColor:
-                                                                    effectiveStyle
-                                                                        .seekBarInactiveTrackColor!,
-                                                                thumbColor:
-                                                                    effectiveStyle
-                                                                        .seekBarThumbColor!,
-                                                                onChangeEnd:
-                                                                    audioCtrl
-                                                                        .state
-                                                                        .audioPlayer
-                                                                        .seek,
-                                                                timeContainerColor:
-                                                                    effectiveStyle
-                                                                        .seekBarTimeContainerColor!,
-                                                                languageCode:
-                                                                    languageCode ??
-                                                                        'ar',
-                                                                sliderHeight:
-                                                                    20,
-                                                              );
-                                                            }
-                                                            return const SizedBox
-                                                                .shrink();
-                                                          },
-                                                        ),
-                                                ),
+                                                child: c.state.isDownloading
+                                                        .value
+                                                    ? GetX<AudioCtrl>(
+                                                        builder: (c) {
+                                                        final data = c.state
+                                                            .tmpDownloadedAyahsCount;
+                                                        log('$data => REBUILDING  ${audioCtrl.state.tmpDownloadedAyahsCount}');
+                                                        return PackageSliderWidget
+                                                            .downloading(
+                                                          currentPosition: data,
+                                                          filesCount: audioCtrl
+                                                              .currentAyahFileName
+                                                              .length,
+                                                          activeTrackColor:
+                                                              effectiveStyle
+                                                                  .seekBarActiveTrackColor!,
+                                                          inactiveTrackColor:
+                                                              effectiveStyle
+                                                                  .seekBarInactiveTrackColor!,
+                                                          thumbColor: effectiveStyle
+                                                              .seekBarThumbColor!,
+                                                          horizontalPadding:
+                                                              effectiveStyle
+                                                                  .seekBarHorizontalPadding!,
+                                                          timeContainerColor:
+                                                              effectiveStyle
+                                                                  .seekBarTimeContainerColor!,
+                                                        );
+                                                      })
+                                                    : StreamBuilder<
+                                                        PackagePositionData>(
+                                                        stream: audioCtrl
+                                                            .positionDataStream,
+                                                        builder: (context,
+                                                            snapshot) {
+                                                          if (snapshot
+                                                              .hasData) {
+                                                            final positionData =
+                                                                snapshot.data;
+                                                            return PackageSliderWidget
+                                                                .player(
+                                                              horizontalPadding:
+                                                                  effectiveStyle
+                                                                      .seekBarHorizontalPadding!,
+                                                              duration: positionData
+                                                                      ?.duration ??
+                                                                  Duration.zero,
+                                                              position: positionData
+                                                                      ?.position ??
+                                                                  Duration.zero,
+                                                              activeTrackColor:
+                                                                  effectiveStyle
+                                                                      .seekBarActiveTrackColor!,
+                                                              inactiveTrackColor:
+                                                                  effectiveStyle
+                                                                      .seekBarInactiveTrackColor!,
+                                                              thumbColor:
+                                                                  effectiveStyle
+                                                                      .seekBarThumbColor!,
+                                                              onChangeEnd:
+                                                                  audioCtrl
+                                                                      .state
+                                                                      .audioPlayer
+                                                                      .seek,
+                                                              timeContainerColor:
+                                                                  effectiveStyle
+                                                                      .seekBarTimeContainerColor!,
+                                                              languageCode:
+                                                                  languageCode ??
+                                                                      'ar',
+                                                              // sliderHeight: 20,
+                                                            );
+                                                          }
+                                                          return const SizedBox
+                                                              .shrink();
+                                                        },
+                                                      ),
                                               ),
                                             ),
-                                            // إضافة أزرار التحكم فقط إذا كان هناك مساحة كافية
-                                            // Add control buttons only if there's enough space
-                                            if (targetHeight > 120)
-                                              Padding(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                        horizontal: 16.0),
-                                                child: Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceEvenly,
-                                                  children: [
-                                                    AyahSkipToPrevious(
-                                                        style: effectiveStyle),
-                                                    PlayAyahWidget(
-                                                        style: effectiveStyle),
-                                                    AyahSkipToNext(
-                                                        style: effectiveStyle),
-                                                  ],
-                                                ),
+                                            Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 16.0),
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceEvenly,
+                                                children: [
+                                                  AyahSkipToPrevious(
+                                                      style: effectiveStyle),
+                                                  PlayAyahWidget(
+                                                      style: effectiveStyle),
+                                                  AyahSkipToNext(
+                                                      style: effectiveStyle),
+                                                ],
                                               ),
+                                            ),
                                           ],
                                         ));
                                   });

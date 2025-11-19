@@ -16,7 +16,7 @@ dependencies:
   dio: ^5.9.0
   flutter:
     sdk: flutter
-  flutter_scale_kit: ^1.2.3
+  flutter_scale_kit: ^1.5.2
   flutter_sliding_panel: ^0.0.5
   flutter_svg: ^2.2.2
   get: ^4.7.2

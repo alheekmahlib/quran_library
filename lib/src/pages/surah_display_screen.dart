@@ -357,26 +357,11 @@ class SurahDisplayScreen extends StatelessWidget {
                           ? Padding(
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 16.0),
-                              child: Obx(() => BottomSlider(
-                                    isVisible:
-                                        QuranCtrl.instance.isShowControl.value,
-                                    onClose: () {
-                                      QuranCtrl.instance.isShowControl.value =
-                                          false;
-                                      SliderController.instance
-                                          .hideBottomContent();
-                                    },
-                                    style: ayahStyle ?? AyahAudioStyle(),
-                                    contentChild: const SizedBox.shrink(),
-                                    child: Flexible(
-                                      child: AyahsAudioWidget(
-                                        style: ayahStyle ??
-                                            AyahAudioStyle.defaults(
-                                                isDark: isDark,
-                                                context: context),
-                                      ),
-                                    ),
-                                  )),
+                              child: AyahsAudioWidget(
+                                style: ayahStyle ??
+                                    AyahAudioStyle.defaults(
+                                        isDark: isDark, context: context),
+                              ),
                             )
                           : const SizedBox.shrink(),
                     ],

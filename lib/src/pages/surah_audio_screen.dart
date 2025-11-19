@@ -20,26 +20,37 @@ class SurahAudioScreen extends StatelessWidget {
     final size = MediaQuery.sizeOf(context);
 
     surahCtrl.loadLastSurahAndPosition();
-    return Scaffold(
-      backgroundColor: background,
-      body: SafeArea(
-        child: Column(
-          children: [
-            if (s.withAppBar ?? true)
-              AppBarWidget(background: background, s: s, textColor: textColor),
-            Expanded(
-              child: UiHelper.currentOrientation(
-                  PortraitWidget(
-                      surahCtrl: surahCtrl,
-                      size: size,
-                      style: s,
-                      dark: dark,
-                      languageCode: languageCode),
-                  SurahBackDropWidget(
-                      style: s, isDark: dark, languageCode: languageCode),
-                  context),
-            ),
-          ],
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (bool didPop, _) {
+        if (didPop) {
+          return;
+        }
+        surahCtrl.state.audioPlayer.stop();
+        Navigator.pop(context);
+      },
+      child: Scaffold(
+        backgroundColor: background,
+        body: SafeArea(
+          child: Column(
+            children: [
+              if (s.withAppBar ?? true)
+                AppBarWidget(
+                    background: background, s: s, textColor: textColor),
+              Expanded(
+                child: UiHelper.currentOrientation(
+                    PortraitWidget(
+                        surahCtrl: surahCtrl,
+                        size: size,
+                        style: s,
+                        dark: dark,
+                        languageCode: languageCode),
+                    SurahBackDropWidget(
+                        style: s, isDark: dark, languageCode: languageCode),
+                    context),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -76,7 +87,10 @@ class AppBarWidget extends StatelessWidget {
           Align(
             alignment: AlignmentDirectional.bottomStart,
             child: IconButton(
-              onPressed: () => Navigator.pop(context),
+              onPressed: () {
+                AudioCtrl.instance.state.audioPlayer.stop();
+                Navigator.pop(context);
+              },
               icon: Icon(
                 Icons.arrow_back_ios_new_outlined,
                 color: s.backIconColor,

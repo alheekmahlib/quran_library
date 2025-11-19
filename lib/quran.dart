@@ -27,8 +27,6 @@ import 'src/core/widgets/header_dialog_widget.dart';
 import 'src/quran/core/helpers/responsive.dart';
 import 'src/tafsir/tafsir.dart';
 
-part 'src/audio/widgets/slider/bottom_slider.dart';
-part 'src/audio/widgets/slider/controller/slider_controller.dart';
 part 'src/core/theme/quran_library_theme.dart';
 part 'src/core/utils/assets_path.dart';
 part 'src/core/utils/toast_utils.dart';

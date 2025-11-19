@@ -415,28 +415,10 @@ class QuranPagesScreen extends StatelessWidget {
                           alignment: Alignment.center,
                           children: [
                             isShowAudioSlider!
-                                ? BottomSlider(
-                                    isVisible:
-                                        QuranCtrl.instance.isShowControl.value,
-                                    onClose: () {
-                                      QuranCtrl.instance.isShowControl.value =
-                                          false;
-                                      SliderController.instance
-                                          .hideBottomContent();
-                                    },
-                                    isDark: isDark,
-                                    sliderHeight: UiHelper.currentOrientation(
-                                        0.0, 40.0, context),
-                                    style: ayahStyle ?? AyahAudioStyle(),
-                                    contentChild: const SizedBox.shrink(),
-                                    child: Flexible(
-                                      child: AyahsAudioWidget(
-                                        style: ayahStyle ??
-                                            AyahAudioStyle.defaults(
-                                                isDark: isDark,
-                                                context: context),
-                                      ),
-                                    ),
+                                ? AyahsAudioWidget(
+                                    style: ayahStyle ??
+                                        AyahAudioStyle.defaults(
+                                            isDark: isDark, context: context),
                                   )
                                 : const SizedBox.shrink(),
                             appBar == null &&

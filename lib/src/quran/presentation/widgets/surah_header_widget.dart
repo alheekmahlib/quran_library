@@ -89,29 +89,29 @@ class SurahHeaderWidget extends StatelessWidget {
                       Theme.of(context).colorScheme.primary,
                       BlendMode.modulate),
                 ),
-                Text(
-                  ' surah${(surahNumber).toString().padLeft(3, '0')} surah-icon',
-                  style: TextStyle(
-                    color: surahNameStyle?.surahNameColor ??
-                        AppColors.getTextColor(isDark),
-                    letterSpacing: surahNumber == 113 ? 20 : 5,
-                    fontFamily: "surah-name-v4",
-                    fontSize: surahNameStyle?.surahNameSize ?? 120.0,
-                    package: "quran_library",
-                  ),
-                ),
                 // Text(
-                //   surahNumber.toString(),
+                //   ' surah${(surahNumber).toString().padLeft(3, '0')} surah-icon',
                 //   style: TextStyle(
                 //     color: surahNameStyle?.surahNameColor ??
-                //         (AppColors.getTextColor(isDark)),
-                //     fontFamily: "surahName",
+                //         AppColors.getTextColor(isDark),
+                //     letterSpacing: surahNumber == 113 ? 3 : 0,
+                //     fontFamily: "surah-name-v4",
                 //     fontSize: surahNameStyle?.surahNameSize ?? 120.0,
-                //     height: 1.3,
                 //     package: "quran_library",
                 //   ),
-                //   textAlign: TextAlign.center,
                 // ),
+                Text(
+                  surahNumber.toString(),
+                  style: TextStyle(
+                    color: surahNameStyle?.surahNameColor ??
+                        (AppColors.getTextColor(isDark)),
+                    fontFamily: "surahName",
+                    fontSize: surahNameStyle?.surahNameSize ?? 120.0,
+                    height: 1.3,
+                    package: "quran_library",
+                  ),
+                  textAlign: TextAlign.center,
+                ),
               ],
             ),
           ),

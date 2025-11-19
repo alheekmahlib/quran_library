@@ -236,8 +236,6 @@ extension AyahCtrlExtension on AudioCtrl {
     state.playSingleAyahOnly = playSingleAyah;
     state.currentAyahUniqueNumber = currentAyahUniqueNumber;
     QuranCtrl.instance.isShowControl.value = true;
-    SliderController.instance.setMediumHeight(context);
-    SliderController.instance.updateBottomHandleVisibility(true);
     // أوقف أي تشغيل قائم لتجنّب عاديات إعادة التشغيل
     if (state.audioPlayer.playing) await pausePlayer();
     Future.delayed(

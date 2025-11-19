@@ -1,8 +1,10 @@
 ## 2.3.1
 
 * **CHANGES:**
-	`Surah name shape.`
-	`Ayah icon shape.`
+	* Surah name shape.
+	* Ayah icon shape.
+* **FIX:**
+	* Separating the playing of Ayahs from the playing of Surahs.
 
 ## 2.3.0
 

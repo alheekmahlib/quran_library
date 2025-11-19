@@ -20,7 +20,6 @@ class PackageSliderWidget extends StatefulWidget {
   final Color? textColor;
   final bool? timeShow;
   final double? padding;
-  final double sliderHeight;
   final int min;
   final int max;
   final bool fullWidth;
@@ -82,7 +81,6 @@ class PackageSliderWidget extends StatefulWidget {
       textColor: textColor,
       timeShow: timeShow,
       padding: padding,
-      sliderHeight: sliderHeight,
       max: max,
       min: min,
       fullWidth: fullWidth,
@@ -106,7 +104,6 @@ class PackageSliderWidget extends StatefulWidget {
     this.textColor,
     this.timeShow,
     this.padding,
-    this.sliderHeight = 48,
     this.max = 10,
     this.min = 0,
     this.fullWidth = false,

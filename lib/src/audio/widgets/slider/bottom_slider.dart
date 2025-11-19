@@ -49,7 +49,7 @@ class BottomSlider extends StatelessWidget {
               sliderCtrl.setMediumHeight(context);
               sliderCtrl.updateBottomHandleVisibility(true);
               Future.delayed(
-                const Duration(milliseconds: 400),
+                const Duration(milliseconds: 10),
                 () => QuranCtrl.instance.state.isPlayExpanded.value = true,
               );
             } else if (details.primaryDelta! > 8) {

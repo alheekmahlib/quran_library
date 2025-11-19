@@ -32,9 +32,9 @@ class AyahsAudioWidget extends StatelessWidget {
           child: Obx(() => AnimatedCrossFade(
                 // مطابقة مدة الأنيميشن مع السلايدر لتجنب overflow
                 // Match animation duration with slider to avoid overflow
-                duration: const Duration(milliseconds: 650),
-                reverseDuration: const Duration(milliseconds: 600),
-                secondCurve: Curves.easeOutBack,
+                duration: const Duration(milliseconds: 10),
+                reverseDuration: const Duration(milliseconds: 0),
+                secondCurve: Curves.linear,
                 firstChild: Container(
                   height: 50,
                   width: MediaQuery.sizeOf(context).width,

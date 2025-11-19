@@ -91,8 +91,8 @@ class SliderController extends GetxController with GetTickerProviderStateMixin {
     // Height animation controller - for bottom slider height control
     heightController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 600),
-      reverseDuration: const Duration(milliseconds: 600),
+      duration: const Duration(milliseconds: 300),
+      reverseDuration: const Duration(milliseconds: 300),
     );
 
     // تهيئة أنيميشن الارتفاع مع القيمة الابتدائية

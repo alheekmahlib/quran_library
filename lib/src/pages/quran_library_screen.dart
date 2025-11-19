@@ -650,34 +650,45 @@ class QuranLibraryScreen extends StatelessWidget {
                                     // السلايدر السفلي - يظهر من الأسفل للأعلى
                                     // Bottom slider - appears from bottom to top
                                     isShowAudioSlider!
-                                        ? BottomSlider(
-                                            isVisible: visible,
-                                            onClose: () {
-                                              QuranCtrl.instance.isShowControl
-                                                  .value = false;
-                                              SliderController.instance
-                                                  .hideBottomContent();
-                                            },
+                                        ?
+                                        // ? BottomSlider(
+                                        //     isVisible: visible,
+                                        //     onClose: () {
+                                        //       QuranCtrl.instance.isShowControl
+                                        //           .value = false;
+                                        //       SliderController.instance
+                                        //           .hideBottomContent();
+                                        //     },
+                                        //     isDark: isDark,
+                                        //     sliderHeight:
+                                        //         UiHelper.currentOrientation(
+                                        //             40.0, 40.0, context),
+                                        //     style:
+                                        //         ayahStyle ?? AyahAudioStyle(),
+                                        //     contentChild:
+                                        //         const SizedBox.shrink(),
+                                        //     child: Flexible(
+                                        //       child: AyahsAudioWidget(
+                                        //         style: ayahStyle ??
+                                        //             AyahAudioStyle.defaults(
+                                        //                 isDark: isDark,
+                                        //                 context: context),
+                                        //         isDark: isDark,
+                                        //         languageCode: languageCode,
+                                        //         downloadManagerStyle:
+                                        //             ayahDownloadManagerStyle,
+                                        //       ),
+                                        //     ),
+                                        //   )
+                                        AyahsAudioWidget(
+                                            style: ayahStyle ??
+                                                AyahAudioStyle.defaults(
+                                                    isDark: isDark,
+                                                    context: context),
                                             isDark: isDark,
-                                            sliderHeight:
-                                                UiHelper.currentOrientation(
-                                                    40.0, 40.0, context),
-                                            style:
-                                                ayahStyle ?? AyahAudioStyle(),
-                                            contentChild:
-                                                const SizedBox.shrink(),
-                                            child: Flexible(
-                                              child: AyahsAudioWidget(
-                                                style: ayahStyle ??
-                                                    AyahAudioStyle.defaults(
-                                                        isDark: isDark,
-                                                        context: context),
-                                                isDark: isDark,
-                                                languageCode: languageCode,
-                                                downloadManagerStyle:
-                                                    ayahDownloadManagerStyle,
-                                              ),
-                                            ),
+                                            languageCode: languageCode,
+                                            downloadManagerStyle:
+                                                ayahDownloadManagerStyle,
                                           )
                                         : const SizedBox.shrink(),
                                     kIsWeb

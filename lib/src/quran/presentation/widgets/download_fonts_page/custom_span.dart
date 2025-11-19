@@ -72,7 +72,7 @@ TextSpan _span({
               isFontsLocal ? fontsName : quranCtrl.getFontPath(pageIndex),
           fontSize: fontSize,
           height: 2.1,
-          letterSpacing: 6,
+          // letterSpacing: 6,
           color: quranCtrl.state.fontsSelected.value == 1
               ? textColor ?? Colors.transparent
               : isDark
@@ -104,7 +104,7 @@ TextSpan _span({
               isFontsLocal ? fontsName : quranCtrl.getFontPath(pageIndex),
           fontSize: fontSize,
           height: 2.1,
-          letterSpacing: 6,
+          // letterSpacing: 6,
           color: quranCtrl.state.fontsSelected.value == 1
               ? textColor ?? Colors.transparent
               : isDark
@@ -137,7 +137,7 @@ TextSpan _span({
         fontFamily: isFontsLocal ? fontsName : quranCtrl.getFontPath(pageIndex),
         fontSize: fontSize,
         height: 2.1,
-        letterSpacing: 6,
+        // letterSpacing: 6,
         color: quranCtrl.state.fontsSelected.value == 1
             ? textColor ?? Colors.transparent
             : isDark
@@ -183,7 +183,7 @@ TextSpan _span({
             style: TextStyle(
               fontFamily: isFontsLocal ? fontsName : 'ayahNumber',
               fontSize: fontSize,
-              letterSpacing: 5,
+              // letterSpacing: 5,
               height: 2.1,
               package: 'quran_library',
               color: ayahIconColor ?? Theme.of(context).colorScheme.primary,

@@ -93,7 +93,7 @@ class SurahHeaderWidget extends StatelessWidget {
                   ' surah${(surahNumber).toString().padLeft(3, '0')} surah-icon',
                   style: TextStyle(
                     color: surahNameStyle?.surahNameColor ??
-                        (AppColors.getTextColor(isDark)),
+                        AppColors.getTextColor(isDark),
                     letterSpacing: surahNumber == 113 ? 20 : 5,
                     fontFamily: "surah-name-v4",
                     fontSize: surahNameStyle?.surahNameSize ?? 120.0,

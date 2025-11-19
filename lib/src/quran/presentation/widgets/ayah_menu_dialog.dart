@@ -54,6 +54,9 @@ class AyahMenuDialog extends StatelessWidget {
     final themed = AyahLongClickTheme.of(context)?.style;
     final s =
         themed ?? AyahMenuStyle.defaults(isDark: isDark, context: context);
+    final sAudio = AyahAudioStyle.defaults(isDark: isDark, context: context);
+    final sDownloadManager =
+        AyahDownloadManagerStyle.defaults(isDark: isDark, context: context);
 
     final List<Widget> customMenuItems = s.customMenuItems ?? const [];
 
@@ -206,8 +209,13 @@ class AyahMenuDialog extends StatelessWidget {
                 widgets.add(
                   GestureDetector(
                     onTap: () {
-                      AudioCtrl.instance.playAyah(context, ayah!.ayahUQNumber,
-                          playSingleAyah: true);
+                      AudioCtrl.instance.playAyah(
+                        context,
+                        ayah!.ayahUQNumber,
+                        playSingleAyah: true,
+                        ayahAudioStyle: sAudio,
+                        ayahDownloadManagerStyle: sDownloadManager,
+                      );
                       log('Second Menu Child Tapped: ${ayah!.ayahUQNumber}');
                       QuranCtrl.instance.state.overlayEntry?.remove();
                       QuranCtrl.instance.state.overlayEntry = null;

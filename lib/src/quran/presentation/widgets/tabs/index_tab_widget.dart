@@ -91,8 +91,8 @@ class _SurahsList extends StatelessWidget {
   Widget build(BuildContext context) {
     // احسب السورة الحالية من الكنترولر
     int? currentIndex;
-    final ctrl = QuranCtrl.instance;
     try {
+      final ctrl = QuranCtrl.instance;
       final currentPage = ctrl.state.currentPageNumber.value;
       final surahNumber =
           ctrl.getCurrentSurahByPageNumber(currentPage).surahNumber;
@@ -123,8 +123,8 @@ class _SurahsList extends StatelessWidget {
           color: Colors.transparent,
           child: InkWell(
             onTap: () {
-              ctrl.animateToPage(ctrl.surahsStart[index] + 1);
               Navigator.pop(context);
+              QuranLibrary().jumpToSurah(index + 1);
             },
             child: Container(
               padding:

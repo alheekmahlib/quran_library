@@ -119,7 +119,7 @@ class DefaultFontsPageBuild extends StatelessWidget {
                             surahNameStyle: surahNameStyle ??
                                 SurahNameStyle(
                                   surahNameSize: Responsive.isDesktop(context)
-                                      ? 40.sp.clamp(40, 80)
+                                      ? 80.sp.clamp(40, 80)
                                       : 27.sp.clamp(27, 64),
                                   surahNameColor:
                                       AppColors.getTextColor(isDark),

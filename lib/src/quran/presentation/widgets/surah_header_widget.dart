@@ -65,7 +65,8 @@ class SurahHeaderWidget extends StatelessWidget {
       return Center(
         child: Padding(
           padding: EdgeInsets.symmetric(
-              vertical: quranCtrl.state.fontsSelected.value == 1 ? 24.0 : 8.0),
+            vertical: quranCtrl.state.fontsSelected.value == 1 ? 24.0 : 8.0,
+          ),
           child: GestureDetector(
             onTap: () {
               if (onSurahBannerPress != null) {

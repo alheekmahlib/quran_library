@@ -123,7 +123,7 @@ class _SurahsList extends StatelessWidget {
           color: Colors.transparent,
           child: InkWell(
             onTap: () {
-              ctrl.jumpToPage(ctrl.surahsStart[index] + 1);
+              ctrl.animateToPage(ctrl.surahsStart[index] + 1);
               Navigator.pop(context);
             },
             child: Container(

@@ -1,3 +1,10 @@
+## 2.3.2
+
+* **CHANGES:**
+	* .
+* **FIX:**
+	* Prepare fonts if fonts is local.
+
 ## 2.3.1
 
 * **CHANGES:**

@@ -54,7 +54,9 @@ class QuranCtrl extends GetxController {
     super.onInit();
     if (!kIsWeb) {
       _dir = await getApplicationDocumentsDirectory();
-      await initFontLoader();
+      if (GetStorage().read(_StorageConstants().fontsSelected) == 1) {
+        await initFontLoader();
+      }
     }
     await prepareFonts(state.currentPageNumber.value - 1);
     searchFocusNode = FocusNode();

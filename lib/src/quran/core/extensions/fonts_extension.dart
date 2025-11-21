@@ -94,14 +94,14 @@ extension FontsExtension on QuranCtrl {
     // يجب أن يكون _dir متاحًا في QuranCtrl
     final fontsDir = Directory(_dir.path);
     final fontPath = getFontFullPath(fontsDir, pageIndex);
-    final localExists = await File(fontPath).exists();
+    // final localExists = await File(fontPath).exists();
     final message = FontLoadMessage(
         pageIndex: pageIndex,
         fontPath: fontPath,
         fontName: fontName,
         url: url,
         // لا نحاول الشبكة إذا الملف موجود محليًا (للعمل أوفلاين)
-        isWeb: (kIsWeb || !isFontsLocal) && !localExists, //TODO: false,
+        isWeb: false, // (kIsWeb || !isFontsLocal) && !localExists,
         candidateUrls: _webFontCandidateUrls(pageIndex),
         generation: generation);
     FontLoaderIsolateManager.sendRequest(message);
@@ -141,35 +141,37 @@ extension FontsExtension on QuranCtrl {
 
   /// **الدالة المعدلة:** تحضير الخطوط للصفحة الحالية والصفحات المجاورة
   Future<void> prepareFonts(int pageIndex, {bool isFontsLocal = false}) async {
-    // إذا كان محمّلًا بالفعل محليًا لا نعيد الإرسال
-    if (state.loadedFontPages.contains(pageIndex)) return;
+    if (state.fontsSelected.value == 1) {
+      // إذا كان محمّلًا بالفعل محليًا لا نعيد الإرسال
+      if (state.loadedFontPages.contains(pageIndex) || isFontsLocal) return;
 
-    final currentGeneration = ++state._fontPreloadGeneration;
-    if (!kIsWeb) {
-      _sendFontLoadRequest(pageIndex, isFontsLocal, currentGeneration);
-    } else {
-      await loadFont(pageIndex);
-    }
-
-    // جدولة الصفحات المجاورة بعد تأخير بسيط
-    state._debounceTimer?.cancel();
-    state._debounceTimer = Timer(const Duration(milliseconds: 300), () {
-      final gen = ++state._fontPreloadGeneration;
-      final neighbors = [-2, -1, 1, 2, 3, 4];
-      final candidates = neighbors
-          .map((o) => pageIndex + o)
-          .where((i) => i >= 0 && i < 604)
-          .toList();
-      if (!kIsWeb && state._fontPreloadGeneration != gen) return;
-      for (final i in candidates) {
-        if (state.loadedFontPages.contains(i)) continue;
-        if (kIsWeb) {
-          loadFont(i);
-        } else {
-          _sendFontLoadRequest(i, isFontsLocal, gen);
-        }
+      final currentGeneration = ++state._fontPreloadGeneration;
+      if (!kIsWeb) {
+        _sendFontLoadRequest(pageIndex, isFontsLocal, currentGeneration);
+      } else {
+        await loadFont(pageIndex);
       }
-    });
+
+      // جدولة الصفحات المجاورة بعد تأخير بسيط
+      state._debounceTimer?.cancel();
+      state._debounceTimer = Timer(const Duration(milliseconds: 300), () {
+        final gen = ++state._fontPreloadGeneration;
+        final neighbors = [-2, -1, 1, 2, 3, 4];
+        final candidates = neighbors
+            .map((o) => pageIndex + o)
+            .where((i) => i >= 0 && i < 604)
+            .toList();
+        if (!kIsWeb && state._fontPreloadGeneration != gen) return;
+        for (final i in candidates) {
+          if (state.loadedFontPages.contains(i)) continue;
+          if (kIsWeb) {
+            loadFont(i);
+          } else {
+            _sendFontLoadRequest(i, isFontsLocal, gen);
+          }
+        }
+      });
+    }
   }
 
   /// يجب استدعاء هذه الدالة في onInit() لـ QuranCtrl
@@ -476,17 +478,17 @@ extension FontsExtension on QuranCtrl {
         log('Loading font for page ${pageIndex + 1} from web...',
             name: 'FontsLoad');
         fontLoader.addFont(_getWebFontBytes(pageIndex));
-      } else {
-        //TODO: this well not work ever because this function is only called on web
-
-        // التحميل من التخزين المحلي (سواء كانت isFontsLocal true أم false)
-        final fontFile = File(getFontFullPath(_dir, pageIndex));
-        if (!await fontFile.exists()) {
-          throw Exception(
-              "Font file not exists for page: ${(pageIndex + 1).toString().padLeft(3, '0')}");
-        }
-        fontLoader.addFont(_getFontLoaderBytes(fontFile));
       }
+      // else {
+
+      //   // التحميل من التخزين المحلي (سواء كانت isFontsLocal true أم false)
+      //   final fontFile = File(getFontFullPath(_dir, pageIndex));
+      //   if (!await fontFile.exists()) {
+      //     throw Exception(
+      //         "Font file not exists for page: ${(pageIndex + 1).toString().padLeft(3, '0')}");
+      //   }
+      //   fontLoader.addFont(_getFontLoaderBytes(fontFile));
+      // }
       await fontLoader.load();
       state.loadedFontPages.add(pageIndex);
       update();

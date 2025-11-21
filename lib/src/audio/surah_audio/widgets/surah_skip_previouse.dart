@@ -21,7 +21,8 @@ class SurahSkipToPrevious extends StatelessWidget {
             label: 'skipToPrevious'.tr,
             child: Icon(
               isRtl ? Icons.skip_previous : Icons.skip_next,
-              color: style?.iconColor ?? Theme.of(context).colorScheme.primary,
+              color:
+                  style?.playIconColor ?? Theme.of(context).colorScheme.primary,
               size: style?.previousIconHeight ?? 38,
             ),
           ),

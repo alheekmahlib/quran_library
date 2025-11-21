@@ -6,6 +6,7 @@
 * **FIX:**
 	* Separating the playing of Ayahs from the playing of Surahs.
 	* Audio widget width.
+	* Surah skip to previous color.
 
 ## 2.3.0
 

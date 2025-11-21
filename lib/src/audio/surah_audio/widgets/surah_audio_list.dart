@@ -222,15 +222,25 @@ class BuildEnhancedSurahItem extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        surah.surahNumber.toString(),
+                        ' surah${(index + 1).toString().padLeft(3, '0')} ',
                         style: TextStyle(
                           color: (style?.textColor ??
                               AppColors.getTextColor(isDark)),
-                          fontFamily: 'surahName',
+                          fontFamily: "surah-name-v4",
                           fontSize: 32.sp.clamp(32, 40),
-                          package: 'quran_library',
+                          package: "quran_library",
                         ),
                       ),
+                      // Text(
+                      //   surah.surahNumber.toString(),
+                      //   style: TextStyle(
+                      //     color: (style?.textColor ??
+                      //         AppColors.getTextColor(isDark)),
+                      //     fontFamily: 'surahName',
+                      //     fontSize: 32.sp.clamp(32, 40),
+                      //     package: 'quran_library',
+                      //   ),
+                      // ),
                       const SizedBox(height: 4.0),
                       Row(
                         children: [

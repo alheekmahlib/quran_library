@@ -83,14 +83,24 @@ class SurahLastListen extends StatelessWidget {
               const SizedBox(width: 12),
               // رقم السورة بتصميم متدرج وخلفية شفافة
               Obx(
-                () => Text(
-                  surahAudioCtrl.state.currentAudioListSurahNum.value
-                      .toString(),
+                () =>
+                    // Text(
+                    //   surahAudioCtrl.state.currentAudioListSurahNum.value
+                    //       .toString(),
+                    //   style: TextStyle(
+                    //     color: numberColor,
+                    //     fontFamily: 'surahName',
+                    //     fontSize: 32.sp.clamp(32, 40),
+                    //     package: 'quran_library',
+                    //   ),
+                    // ),
+                    Text(
+                  ' surah${(surahAudioCtrl.state.currentAudioListSurahNum.value).toString().padLeft(3, '0')} ',
                   style: TextStyle(
                     color: numberColor,
-                    fontFamily: 'surahName',
-                    fontSize: 32.sp.clamp(32, 40),
-                    package: 'quran_library',
+                    fontFamily: "surah-name-v4",
+                    fontSize: 38.sp.clamp(32, 50),
+                    package: "quran_library",
                   ),
                 ),
               ),

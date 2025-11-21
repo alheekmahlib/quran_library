@@ -101,7 +101,7 @@ extension FontsExtension on QuranCtrl {
         fontName: fontName,
         url: url,
         // لا نحاول الشبكة إذا الملف موجود محليًا (للعمل أوفلاين)
-        isWeb: (kIsWeb || !isFontsLocal) && !localExists,
+        isWeb: (kIsWeb || !isFontsLocal) && !localExists, //TODO: false,
         candidateUrls: _webFontCandidateUrls(pageIndex),
         generation: generation);
     FontLoaderIsolateManager.sendRequest(message);
@@ -477,6 +477,8 @@ extension FontsExtension on QuranCtrl {
             name: 'FontsLoad');
         fontLoader.addFont(_getWebFontBytes(pageIndex));
       } else {
+        //TODO: this well not work ever because this function is only called on web
+
         // التحميل من التخزين المحلي (سواء كانت isFontsLocal true أم false)
         final fontFile = File(getFontFullPath(_dir, pageIndex));
         if (!await fontFile.exists()) {

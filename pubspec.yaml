@@ -28,6 +28,10 @@ dependencies:
   path: ^1.9.1
   path_provider: ^2.1.5
   rxdart: ^0.28.0
+  arabic_justified_text:
+    git:
+      ref: main
+      url: https://github.com/AhmedAlboishe/arabic_justified_text.git
 
 # This package supports all platforms listed below.
 # But note that it works and fits on mobile size devices

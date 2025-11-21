@@ -5,6 +5,7 @@
 	* Ayah icon shape.
 * **FIX:**
 	* Separating the playing of Ayahs from the playing of Surahs.
+	* Audio widget width.
 
 ## 2.3.0
 

@@ -87,8 +87,10 @@ class AyahsAudioWidget extends StatelessWidget {
                             reverseDuration: const Duration(milliseconds: 200),
                             secondCurve: Curves.linear,
                             firstChild: Container(
-                              height: 50,
-                              width: MediaQuery.sizeOf(context).width,
+                              height: 60,
+                              width: Responsive.isDesktop(context)
+                                  ? MediaQuery.of(context).size.width * .5
+                                  : MediaQuery.of(context).size.width,
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 32.0),
                               child: Row(
@@ -118,7 +120,12 @@ class AyahsAudioWidget extends StatelessWidget {
                                         availableHeight.clamp(80.0, 175.0);
 
                                     return SizedBox(
-                                        width: MediaQuery.sizeOf(context).width,
+                                        width: Responsive.isDesktop(context)
+                                            ? MediaQuery.of(context)
+                                                    .size
+                                                    .width *
+                                                .5
+                                            : MediaQuery.of(context).size.width,
                                         child: Column(
                                           mainAxisAlignment:
                                               MainAxisAlignment.spaceEvenly,

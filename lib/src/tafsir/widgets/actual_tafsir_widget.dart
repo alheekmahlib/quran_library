@@ -63,8 +63,9 @@ class ActualTafsirWidget extends StatelessWidget {
           textDirection: TextDirection.rtl,
           textAlign: TextAlign.justify,
         ),
-        Text.rich(
-          TextSpan(
+        ArabicJustifiedRichText(
+          excludedWords: const ['محمد'],
+          textSpan: TextSpan(
             children: <InlineSpan>[
               isTafsir
                   ? TextSpan(

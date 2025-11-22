@@ -2,6 +2,8 @@
 
 * **CHANGES:**
 	* .
+* **ADD:**
+	* Add Kashida to Tafsir & Surah info text.
 * **FIX:**
 	* Prepare fonts if fonts is local.
 

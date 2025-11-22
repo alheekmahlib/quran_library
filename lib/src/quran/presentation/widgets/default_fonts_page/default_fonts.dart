@@ -158,9 +158,9 @@ class DefaultFontsBuild extends StatelessWidget {
                             style: TextStyle(
                               color:
                                   textColor ?? AppColors.getTextColor(isDark),
-                              fontSize: 22.55,
+                              // fontSize: 22.55,
                               fontFamily: 'hafs',
-                              height: 1.3,
+                              // height: 1.3,
                               package: 'quran_library',
                             ),
                             children: [
@@ -199,7 +199,13 @@ class DefaultFontsBuild extends StatelessWidget {
                   );
                 });
               }(),
-              style: QuranLibrary().hafsStyle,
+              // style: TextStyle(
+              //   color: textColor ?? AppColors.getTextColor(isDark),
+              //   // fontSize: 22.55,
+              //   fontFamily: 'hafs',
+              //   // height: 1.3,
+              //   package: 'quran_library',
+              // ),
             ),
           ),
         );

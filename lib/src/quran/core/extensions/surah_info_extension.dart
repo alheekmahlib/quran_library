@@ -375,8 +375,9 @@ extension SurahInfoExtension on void {
                                             ),
                                           ),
                                         ),
-                                        child: RichText(
-                                          text: TextSpan(
+                                        child: ArabicJustifiedRichText(
+                                          excludedWords: const ['محمد'],
+                                          textSpan: TextSpan(
                                             children: [
                                               TextSpan(
                                                 children: surah.surahNames
@@ -443,8 +444,9 @@ extension SurahInfoExtension on void {
                                             ),
                                           ),
                                         ),
-                                        child: RichText(
-                                          text: TextSpan(
+                                        child: ArabicJustifiedRichText(
+                                          excludedWords: const ['محمد'],
+                                          textSpan: TextSpan(
                                             children: [
                                               TextSpan(
                                                 children: surah.surahInfo

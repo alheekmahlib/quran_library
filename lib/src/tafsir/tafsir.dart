@@ -2,6 +2,7 @@ import 'dart:convert' show json;
 import 'dart:developer' show log;
 import 'dart:io' show File, Directory;
 
+import 'package:arabic_justified_text/arabic_justified_text.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart' show kDebugMode, kIsWeb;
 import 'package:flutter/material.dart';

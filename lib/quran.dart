@@ -5,6 +5,7 @@ import 'dart:io' show File, Platform, Directory;
 import 'dart:isolate';
 import 'dart:math' as math show max;
 
+import 'package:arabic_justified_text/arabic_justified_text.dart';
 import 'package:archive/archive.dart' show ZipDecoder;
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';

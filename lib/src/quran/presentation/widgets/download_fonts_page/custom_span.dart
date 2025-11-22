@@ -181,7 +181,7 @@ TextSpan _span({
         : TextSpan(
             text: '$ayahNum'.convertEnglishNumbersToArabic(ayahNum.toString()),
             style: TextStyle(
-              fontFamily: isFontsLocal ? fontsName : 'ayahNumber',
+              fontFamily: 'ayahNumber',
               fontSize: fontSize,
               // letterSpacing: 5,
               height: 2.1,

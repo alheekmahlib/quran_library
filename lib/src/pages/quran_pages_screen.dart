@@ -275,6 +275,8 @@ class QuranPagesScreen extends StatelessWidget {
             BookmarksTabStyle.defaults(isDark: isDark, context: parentContext),
         topBottomQuranStyle: TopBottomQuranStyle.defaults(
             isDark: isDark, context: parentContext),
+        ayahDownloadManagerStyle: AyahDownloadManagerStyle.defaults(
+            isDark: isDark, context: parentContext),
         child: GetBuilder<QuranCtrl>(
           builder: (quranCtrl) {
             Widget singlePage(int globalIndex) {

@@ -185,9 +185,15 @@ extension FontsDownloadWidgetExtension on QuranCtrl {
                           ctrl.state.fontsSelected.value = index;
                           GetStorage()
                               .write(_StorageConstants().fontsSelected, index);
-                          log('fontsSelected: ');
-                          Get.forceAppUpdate().then((_) =>
-                              prepareFonts(state.currentPageNumber.value - 1));
+                          log('fontsSelected: $index');
+                          // QuranCtrl.instance.update();
+                          Get.forceAppUpdate().then((_) async {
+                            index == 1 ? await initFontLoader() : null;
+                            index == 1
+                                ? prepareFonts(
+                                    state.currentPageNumber.value - 1)
+                                : null;
+                          });
                         }
                       : null,
                   leading: (fontsLocal || kIsWeb || !isDownloadOption)

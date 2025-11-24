@@ -54,7 +54,8 @@ class QuranCtrl extends GetxController {
     super.onInit();
     if (!kIsWeb) {
       _dir = await getApplicationDocumentsDirectory();
-      if (GetStorage().read(_StorageConstants().fontsSelected) == 1) {
+      if (GetStorage().read(_StorageConstants().fontsSelected) == 1 ||
+          state.fontsSelected.value == 1) {
         await initFontLoader();
       }
     }

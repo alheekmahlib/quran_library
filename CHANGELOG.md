@@ -6,6 +6,7 @@
 	* Add Kashida to Tafsir & Surah info text.
 * **FIX:**
 	* Prepare fonts if fonts is local.
+	* Dark mode issue in Ayah audio download manager.
 
 ## 2.3.1
 

@@ -49,6 +49,8 @@ class AyahDownloadManagerStyle {
   final Color? downloadForeground;
   final Color? downloadBackground;
 
+  final Color? backgroundColor;
+
   // Count text
   final AyahCountTextBuilder? countTextBuilder;
 
@@ -84,6 +86,7 @@ class AyahDownloadManagerStyle {
     this.downloadForeground,
     this.downloadBackground,
     this.countTextBuilder,
+    this.backgroundColor,
   });
 
   AyahDownloadManagerStyle copyWith({
@@ -120,6 +123,7 @@ class AyahDownloadManagerStyle {
     IconData? redownloadIcon,
     Color? downloadForeground,
     Color? downloadBackground,
+    Color? backgroundColor,
     AyahCountTextBuilder? countTextBuilder,
   }) {
     return AyahDownloadManagerStyle(
@@ -158,6 +162,7 @@ class AyahDownloadManagerStyle {
       downloadForeground: downloadForeground ?? this.downloadForeground,
       downloadBackground: downloadBackground ?? this.downloadBackground,
       countTextBuilder: countTextBuilder ?? this.countTextBuilder,
+      backgroundColor: backgroundColor ?? this.backgroundColor,
     );
   }
 
@@ -170,8 +175,10 @@ class AyahDownloadManagerStyle {
     final scheme = Theme.of(context).colorScheme;
     final primary = scheme.primary;
     final onBg = AppColors.getTextColor(isDark);
+    final backgroundColor = AppColors.getBackgroundColor(isDark);
 
     return AyahDownloadManagerStyle(
+      backgroundColor: backgroundColor,
       // Header
       titleText: 'إدارة تحميل آيات السور',
       titleTextStyle: QuranLibrary().cairoStyle.copyWith(

@@ -715,12 +715,22 @@ class QuranLibrary {
   ///   playSingleAyah: true,
   /// );
   /// ```
-  Future<void> playAyah(
-          {required BuildContext context,
-          required int currentAyahUniqueNumber,
-          required bool playSingleAyah}) async =>
-      await AudioCtrl.instance.playAyah(context, currentAyahUniqueNumber,
-          playSingleAyah: playSingleAyah);
+  Future<void> playAyah({
+    required BuildContext context,
+    required int currentAyahUniqueNumber,
+    required bool playSingleAyah,
+    AyahAudioStyle? ayahAudioStyle,
+    AyahDownloadManagerStyle? ayahDownloadManagerStyle,
+    bool? isDarkMode,
+  }) async =>
+      await AudioCtrl.instance.playAyah(
+        context,
+        currentAyahUniqueNumber,
+        playSingleAyah: playSingleAyah,
+        ayahAudioStyle: ayahAudioStyle,
+        ayahDownloadManagerStyle: ayahDownloadManagerStyle,
+        isDarkMode: isDarkMode,
+      );
 
   /// ينتقل إلى الآية التالية وبدء تشغيلها صوتياً.
   /// يتم استخدام هذه الدالة للتنقل السريع للآية التالية أثناء التشغيل الصوتي.

@@ -54,8 +54,13 @@ class AyahMenuDialog extends StatelessWidget {
     final themed = AyahLongClickTheme.of(context)?.style;
     final s =
         themed ?? AyahMenuStyle.defaults(isDark: isDark, context: context);
+
+    // الحصول على نمط الصوت / Get audio style
     final sAudio = AyahAudioStyle.defaults(isDark: isDark, context: context);
-    final sDownloadManager =
+
+    // محاولة الحصول على نمط مدير التحميل من الثيم أولاً / Try to get download manager style from theme first
+    final themedDownloadManager = AyahDownloadManagerTheme.of(context)?.style;
+    final sDownloadManager = themedDownloadManager ??
         AyahDownloadManagerStyle.defaults(isDark: isDark, context: context);
 
     final List<Widget> customMenuItems = s.customMenuItems ?? const [];
@@ -215,6 +220,7 @@ class AyahMenuDialog extends StatelessWidget {
                         playSingleAyah: true,
                         ayahAudioStyle: sAudio,
                         ayahDownloadManagerStyle: sDownloadManager,
+                        isDarkMode: isDark,
                       );
                       log('Second Menu Child Tapped: ${ayah!.ayahUQNumber}');
                       QuranCtrl.instance.state.overlayEntry?.remove();
@@ -235,8 +241,14 @@ class AyahMenuDialog extends StatelessWidget {
                 widgets.add(
                   GestureDetector(
                     onTap: () {
-                      AudioCtrl.instance.playAyah(context, ayah!.ayahUQNumber,
-                          playSingleAyah: false);
+                      AudioCtrl.instance.playAyah(
+                        context,
+                        ayah!.ayahUQNumber,
+                        playSingleAyah: false,
+                        ayahAudioStyle: sAudio,
+                        ayahDownloadManagerStyle: sDownloadManager,
+                        isDarkMode: isDark,
+                      );
                       log('Second Menu Child Tapped: ${ayah!.ayahUQNumber}');
                       QuranCtrl.instance.state.overlayEntry?.remove();
                       QuranCtrl.instance.state.overlayEntry = null;

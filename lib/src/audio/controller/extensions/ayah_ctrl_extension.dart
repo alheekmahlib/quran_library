@@ -59,29 +59,29 @@ extension AyahCtrlExtension on AudioCtrl {
 
   /// play Ayahs
   /// تشغيل الآيات
-  Future<void> _playAyahsFile(
-      BuildContext? context, int currentAyahUniqueNumber,
+  Future<void> _playAyahsFile(BuildContext context, int currentAyahUniqueNumber,
       {AyahAudioStyle? ayahAudioStyle,
-      AyahDownloadManagerStyle? ayahDownloadManagerStyle}) async {
+      AyahDownloadManagerStyle? ayahDownloadManagerStyle,
+      bool? isDarkMode}) async {
     state.tmpDownloadedAyahsCount = 0;
     final ayahsFilesNames = selectedSurahAyahsFileNames;
+    bool isDark = isDarkMode ??
+        MediaQuery.of(context).platformBrightness == Brightness.dark;
 
+    log('isDarkMode2: $isDarkMode', name: 'AudioController');
     if (!kIsWeb) {
       // إذا لم تكن آيات السورة محمّلة بالكامل، افتح bottomSheet لإدارة التحميل
       final isSurahFullyDownloaded =
           await isAyahSurahFullyDownloaded(currentSurahNumber);
       if (!isSurahFullyDownloaded) {
-        if (context != null) {
-          await _showAyahDownloadBottomSheet(
-            context,
-            initialSurahToDownload: currentSurahNumber,
-            style: ayahDownloadManagerStyle ??
-                AyahDownloadManagerStyle.defaults(
-                    isDark: false, context: context),
-            ayahStyle: ayahAudioStyle ??
-                AyahAudioStyle.defaults(isDark: false, context: context),
-          );
-        }
+        await _showAyahDownloadBottomSheet(
+          context,
+          initialSurahToDownload: currentSurahNumber,
+          style: AyahDownloadManagerStyle.defaults(
+              isDark: isDark, context: context),
+          ayahStyle: AyahAudioStyle.defaults(isDark: isDark, context: context),
+          isDark: isDark,
+        );
         // بعد إغلاق الـ bottomSheet، أعد التحقق
         final downloadedNow =
             await isAyahSurahFullyDownloaded(currentSurahNumber);
@@ -180,7 +180,7 @@ extension AyahCtrlExtension on AudioCtrl {
         QuranCtrl.instance.toggleAyahSelection(state.currentAyahUniqueNumber);
 
         // إن تغيّرت الصفحة، حرّك صفحات المصحف بسلاسة
-        if (context != null && prevAyahUQ != null) {
+        if (prevAyahUQ != null) {
           final prevPage =
               QuranCtrl.instance.getPageNumberByAyahUqNumber(prevAyahUQ);
           final newPage = QuranCtrl.instance
@@ -218,20 +218,21 @@ extension AyahCtrlExtension on AudioCtrl {
       log('Error in ayahs playFile: $e', name: 'AudioController');
 
       // إظهار رسالة خطأ للمستخدم / Show error message to user
-      if (context != null) {
-        ToastUtils().showToast(context, 'خطأ في تشغيل الآيات: ${e.toString()}');
-      }
+      ToastUtils().showToast(context, 'خطأ في تشغيل الآيات: ${e.toString()}');
     }
   }
 
   Future<void> playAyah(BuildContext context, int currentAyahUniqueNumber,
       {required bool playSingleAyah,
       AyahAudioStyle? ayahAudioStyle,
-      AyahDownloadManagerStyle? ayahDownloadManagerStyle}) async {
+      AyahDownloadManagerStyle? ayahDownloadManagerStyle,
+      bool? isDarkMode}) async {
     // التحقق من إمكانية التشغيل / Check if playback is allowed
     if (!await canPlayAudio()) {
       return;
     }
+
+    log('isDarkMode: $isDarkMode', name: 'AudioController');
 
     state.playSingleAyahOnly = playSingleAyah;
     state.currentAyahUniqueNumber = currentAyahUniqueNumber;
@@ -246,13 +247,16 @@ extension AyahCtrlExtension on AudioCtrl {
     if (playSingleAyah) {
       await _playSingleAyahFile(context, currentAyahUniqueNumber);
     } else {
+      bool isDark = isDarkMode ??
+          MediaQuery.of(context).platformBrightness == Brightness.dark;
       await _playAyahsFile(
         context,
         currentAyahUniqueNumber,
         ayahAudioStyle: ayahAudioStyle ??
-            AyahAudioStyle.defaults(isDark: false, context: context),
+            AyahAudioStyle.defaults(isDark: isDark, context: context),
         ayahDownloadManagerStyle: ayahDownloadManagerStyle ??
-            AyahDownloadManagerStyle.defaults(isDark: false, context: context),
+            AyahDownloadManagerStyle.defaults(isDark: isDark, context: context),
+        isDarkMode: isDark,
       );
     }
     // }
@@ -469,7 +473,7 @@ extension AyahCtrlExtension on AudioCtrl {
       {int? initialSurahToDownload,
       AyahAudioStyle? ayahStyle,
       AyahDownloadManagerStyle? style,
-      bool? isDark = false}) async {
+      bool? isDark = true}) async {
     // ابحث عن سياق يحوي MediaQuery لتجنّب أخطاء debugCheckHasMediaQuery
     BuildContext? resolveBottomSheetContext(BuildContext? ctx) {
       try {
@@ -495,8 +499,15 @@ extension AyahCtrlExtension on AudioCtrl {
       return null;
     }
 
-    final bool resolvedDark = isDark ?? false;
+    final bool resolvedDark = isDark ?? true;
     BuildContext? sheetContext = resolveBottomSheetContext(context);
+    final AyahDownloadManagerStyle resolvedStyle = style ??
+        (sheetContext != null
+            ? (AyahDownloadManagerTheme.of(sheetContext)?.style ??
+                AyahDownloadManagerStyle.defaults(
+                    isDark: resolvedDark, context: sheetContext))
+            : AyahDownloadManagerStyle.defaults(
+                isDark: resolvedDark, context: context ?? Get.context!));
     // إعادة محاولة بعد Frame واحد إذا لم يُعثر على سياق صالح أولاً
     if (sheetContext == null) {
       await Future.delayed(const Duration(milliseconds: 16));
@@ -505,8 +516,6 @@ extension AyahCtrlExtension on AudioCtrl {
 
     // مُنشئ الواجهة حتى يُستخدم مع أي سياق صالح
     Widget buildSheet(BuildContext ctx) {
-      final AyahDownloadManagerStyle resolvedStyle = style ??
-          AyahDownloadManagerStyle.defaults(isDark: resolvedDark, context: ctx);
       log('AyahDownloadManagerStyle source=${style != null ? 'passed' : 'defaults'}',
           name: 'AudioController');
       final AyahAudioStyle as = ayahStyle ??
@@ -534,10 +543,10 @@ extension AyahCtrlExtension on AudioCtrl {
         context: sheetContext,
         useRootNavigator: true,
         isScrollControlled: true,
-        backgroundColor: AppColors.getBackgroundColor(resolvedDark),
+        backgroundColor: resolvedStyle.backgroundColor,
         shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.vertical(top: Radius.circular(16))),
-        builder: (ctx) => buildSheet(ctx),
+        builder: (ctx) => buildSheet(sheetContext!),
       );
     } else {
       // كحل أخير، استخدم Get.bottomSheet الذي يعتمد على overlay context داخليًا

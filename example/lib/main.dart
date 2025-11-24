@@ -43,7 +43,8 @@ class _MyAppState extends State<MyApp> {
       // locale: DevicePreview.locale(context),
       // builder: DevicePreview.appBuilder,
       theme: ThemeData(
-        colorScheme: const ColorScheme.light(
+        brightness: Brightness.dark,
+        colorScheme: const ColorScheme.dark(
           primary: Colors.teal,
         ),
         primaryColor: Colors.teal,
@@ -75,7 +76,7 @@ class FullQuran extends StatelessWidget {
   Widget build(BuildContext context) {
     return QuranLibraryScreen(
       parentContext: context,
-      isDark: false,
+      isDark: true,
       showAyahBookmarkedIcon: true,
       // appLanguageCode: 'ar',
       // ayahIconColor: Colors.teal,

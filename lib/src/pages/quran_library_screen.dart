@@ -412,6 +412,9 @@ class QuranLibraryScreen extends StatelessWidget {
               BookmarksTabStyle.defaults(isDark: isDark, context: context),
           topBottomQuranStyle: topBottomQuranStyle ??
               TopBottomQuranStyle.defaults(isDark: isDark, context: context),
+          ayahDownloadManagerStyle: ayahDownloadManagerStyle ??
+              AyahDownloadManagerStyle.defaults(
+                  isDark: isDark, context: context),
           child: GetBuilder<QuranCtrl>(
             builder: (quranCtrl) {
               // تهيئة خاملة لخطوط الصفحات المجاورة حول الصفحة الحالية بعد أول إطار

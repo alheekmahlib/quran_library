@@ -284,6 +284,8 @@ class SurahDisplayScreen extends StatelessWidget {
             BookmarksTabStyle.defaults(isDark: isDark, context: parentContext),
         topBottomQuranStyle: TopBottomQuranStyle.defaults(
             isDark: isDark, context: parentContext),
+        ayahDownloadManagerStyle: AyahDownloadManagerStyle.defaults(
+            isDark: isDark, context: parentContext),
         child: GetBuilder<SurahCtrl>(
           init: SurahCtrl.instance,
           initState: (state) {

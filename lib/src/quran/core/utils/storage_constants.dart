@@ -9,6 +9,7 @@ class _StorageConstants {
   final String isTajweed = 'isTajweed';
   final String fontsDownloadedList = 'fontsDownloadedList';
   final String loadedFontPages = 'loadedFontPages';
+  final String isWarshDownloaded = 'isWarshDownloaded';
   final String isBold = 'IS_BOLD_BOOL';
 
   /// Tafsir & Translation Constants

@@ -25,6 +25,128 @@ class QuranRepository {
     return jsonDecode(content);
   }
 
+  /// Fetches the Quran data in Warsh narration from remote URL.
+  ///
+  /// This method retrieves Warsh Quran data from the remote repository.
+  /// Data is cached locally for offline access.
+  ///
+  /// Returns a [Future] that completes with a [List] of dynamic objects
+  /// representing the Quran data in Warsh narration.
+  ///
+  /// Throws an [Exception] if the data retrieval fails.
+  Future<List<dynamic>> getQuranWarsh() async {
+    const url =
+        'https://raw.githubusercontent.com/alheekmahlib/data/main/packages/quran_library/content/warshData_v2-1.json';
+    return await getQuranFromUrl(url, cacheKey: 'warshData');
+  }
+
+  /// Fetches Quran data from a remote URL with caching support.
+  ///
+  /// This method attempts to load data from the given [url]. If successful,
+  /// the data is cached locally using GetStorage for offline access.
+  /// If the network request fails, it attempts to load from cache.
+  ///
+  /// [url] - The remote URL to fetch data from
+  /// [cacheKey] - Key used to store/retrieve cached data
+  ///
+  /// Returns a [Future] that completes with a [List] of dynamic objects
+  /// representing the Quran data.
+  ///
+  /// Throws an [Exception] if both network and cache fail.
+  Future<List<dynamic>> getQuranFromUrl(String url,
+      {required String cacheKey}) async {
+    try {
+      // Try to load from network
+      final dio = Dio();
+      dio.options.connectTimeout = const Duration(seconds: 15);
+      dio.options.receiveTimeout = const Duration(seconds: 30);
+
+      final response = await dio.get(url);
+      if (response.statusCode == 200 && response.data != null) {
+        final raw = response.data;
+        List<dynamic> data;
+        try {
+          if (raw is List) {
+            data = raw;
+          } else if (raw is String) {
+            final decoded = jsonDecode(raw);
+            if (decoded is List) {
+              data = decoded;
+            } else if (decoded is Map && decoded['data'] is List) {
+              data = decoded['data'] as List<dynamic>;
+            } else {
+              throw Exception('Unexpected JSON format (String decoded)');
+            }
+          } else if (raw is Map) {
+            if (raw['data'] is List) {
+              data = raw['data'] as List<dynamic>;
+            } else {
+              throw Exception('Unexpected JSON format (Map)');
+            }
+          } else {
+            throw Exception('Unsupported response type: ${raw.runtimeType}');
+          }
+        } catch (e) {
+          throw Exception('Failed to parse remote JSON: $e');
+        }
+        await _cacheRemoteData(cacheKey, data);
+        log('Loaded Quran data from URL: $url', name: 'QuranRepository');
+        return data;
+      }
+      throw Exception('Failed to load from $url: ${response.statusCode}');
+    } catch (e) {
+      log('Failed to load from URL, trying cache: $e', name: 'QuranRepository');
+      // Try to load from cache if network fails
+      try {
+        return await _loadFromCache(cacheKey);
+      } catch (cacheError) {
+        // Fallback to bundled asset if available (e.g. Warsh local file)
+        try {
+          final localContent = await rootBundle.loadString(
+              'packages/quran_library/assets/jsons/${cacheKey == 'warshData' ? 'warshData_v2-1' : 'quran_hafs'}.json');
+          final decoded = jsonDecode(localContent);
+          if (decoded is List) {
+            log('Loaded local bundled fallback for key: $cacheKey',
+                name: 'QuranRepository');
+            return decoded;
+          }
+        } catch (_) {}
+        throw Exception('Failed to load from cache: $cacheError');
+      }
+    }
+  }
+
+  /// Caches remote Quran data locally
+  Future<void> _cacheRemoteData(String key, List<dynamic> data) async {
+    try {
+      GetStorage().write('cached_$key', jsonEncode(data));
+      GetStorage()
+          .write('cached_${key}_timestamp', DateTime.now().toIso8601String());
+      log('Cached data for key: $key', name: 'QuranRepository');
+    } catch (e) {
+      log('Failed to cache data: $e', name: 'QuranRepository');
+    }
+  }
+
+  /// Loads Quran data from local cache
+  Future<List<dynamic>> _loadFromCache(String key) async {
+    try {
+      final cachedData = GetStorage().read<String>('cached_$key');
+      if (cachedData != null) {
+        log('Loaded data from cache: $key', name: 'QuranRepository');
+        final decoded = jsonDecode(cachedData);
+        if (decoded is List) return decoded;
+        if (decoded is Map && decoded['data'] is List) {
+          return decoded['data'] as List<dynamic>;
+        }
+        throw Exception('Cached JSON has unexpected format');
+      }
+      throw Exception('No cached data found for key: $key');
+    } catch (e) {
+      throw Exception('Failed to load from cache: $e');
+    }
+  }
+
   /// Fetches the list of Surahs from the data source.
   ///
   /// This method returns a [Future] that completes with a [Map] containing

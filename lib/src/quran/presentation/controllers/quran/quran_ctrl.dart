@@ -54,11 +54,17 @@ class QuranCtrl extends GetxController {
     super.onInit();
     if (!kIsWeb) {
       _dir = await getApplicationDocumentsDirectory();
+      // Only initialize font loader for hafsMushaf (index 1)
       if (GetStorage().read(_StorageConstants().fontsSelected) == 1 ||
           state.fontsSelected.value == 1) {
         await initFontLoader();
       }
     }
+
+    // Initialize Warsh download state from storage
+    state.isWarshDownloaded.value =
+        GetStorage().read<bool>(_StorageConstants().isWarshDownloaded) ?? false;
+
     await prepareFonts(state.currentPageNumber.value - 1);
     searchFocusNode = FocusNode();
     searchTextController = TextEditingController();
@@ -84,6 +90,15 @@ class QuranCtrl extends GetxController {
       disposeFontLoader();
     }
   }
+
+  /// -------- [Getters] ----------
+
+  /// Get current recitation based on fontsSelected value
+  QuranRecitation get currentRecitation =>
+      QuranRecitation.fromIndex(state.fontsSelected.value);
+
+  /// Get current font family for the selected recitation
+  String get currentFontFamily => currentRecitation.fontFamily;
 
   /// -------- [Methods] ----------
 
@@ -143,13 +158,25 @@ class QuranCtrl extends GetxController {
         quranPages,
         (index) => QuranPageModel(pageNumber: index + 1, ayahs: [], lines: []),
       );
-      final quranJson = await _quranRepository.getQuran();
+
+      // Load data based on current recitation
+      List<dynamic> quranJson;
+      if (currentRecitation == QuranRecitation.warsh) {
+        quranJson = await _quranRepository.getQuranWarsh();
+      } else {
+        quranJson = await _quranRepository.getQuran();
+      }
+
       int hizb = 1;
       int surahsIndex = 1;
       List<AyahModel> thisSurahAyahs = [];
       for (int i = 0; i < quranJson.length; i++) {
         // تحويل كل json إلى AyahModel
         final ayah = AyahModel.fromOriginalJson(quranJson[i]);
+        // حماية من صفحات غير صالحة لتفادي RangeError عند الفهرسة
+        if (ayah.page <= 0 || ayah.page > quranPages) {
+          continue;
+        }
         if (ayah.surahNumber != surahsIndex) {
           surahs.last.endPage = ayahs.last.page;
           surahs.last.ayahs = thisSurahAyahs;
@@ -233,6 +260,56 @@ class QuranCtrl extends GetxController {
       isLoading(false);
     }
     update();
+  }
+
+  /// Downloads Warsh Quran data from remote URL
+  ///
+  /// This method downloads the Warsh recitation JSON data from the remote repository
+  /// and caches it locally for offline access. It updates the download status in state.
+  Future<void> downloadWarshData() async {
+    try {
+      state.isDownloadingWarsh.value = true;
+      log('Starting Warsh data download...', name: 'QuranCtrl');
+
+      // Download Warsh data from URL with caching
+      await _quranRepository.getQuranWarsh();
+
+      // Mark as downloaded
+      state.isWarshDownloaded.value = true;
+      GetStorage().write(_StorageConstants().isWarshDownloaded, true);
+
+      state.isDownloadingWarsh.value = false;
+      Get.forceAppUpdate();
+
+      log('Warsh data downloaded successfully', name: 'QuranCtrl');
+    } catch (e) {
+      state.isDownloadingWarsh.value = false;
+      log('Failed to download Warsh data: $e', name: 'QuranCtrl');
+      rethrow;
+    }
+  }
+
+  /// Deletes cached Warsh recitation data and resets related state.
+  ///
+  /// This removes cached JSON (`cached_warshData`) and its timestamp, updates
+  /// persistent storage flags, and if Warsh is currently selected it reverts
+  /// the selection to the default font (index 0).
+  Future<void> deleteWarshData() async {
+    try {
+      GetStorage().remove('cached_warshData');
+      GetStorage().remove('cached_warshData_timestamp');
+      GetStorage().write(_StorageConstants().isWarshDownloaded, false);
+      state.isWarshDownloaded.value = false;
+      // إذا كان ورش هو المحدد حالياً، أعده للخط الافتراضي
+      if (state.fontsSelected.value == 2) {
+        state.fontsSelected.value = 0;
+        GetStorage().write(_StorageConstants().fontsSelected, 0);
+      }
+      Get.forceAppUpdate();
+      log('Warsh data deleted', name: 'QuranCtrl');
+    } catch (e) {
+      log('Failed to delete Warsh data: $e', name: 'QuranCtrl');
+    }
   }
 
   List<AyahModel> search(String searchText) {

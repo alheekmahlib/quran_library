@@ -159,7 +159,7 @@ class DefaultFontsBuild extends StatelessWidget {
                               color:
                                   textColor ?? AppColors.getTextColor(isDark),
                               // fontSize: 22.55,
-                              fontFamily: 'hafs',
+                              fontFamily: quranCtrl.currentFontFamily,
                               height: 2,
                               package: 'quran_library',
                             ),

@@ -1,3 +1,18 @@
+plugins {
+    id 'com.android.library' version '8.2.2'
+}
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        // Use a recent AGP version that matches your Gradle wrapper (e.g., 8.2.2)
+        classpath 'com.android.tools.build:gradle:8.2.2'
+    }
+}
+
+// Apply the Android library plugin
 apply plugin: 'com.android.library'
 
 android {
@@ -17,6 +32,11 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+}
+
+repositories {
+    google()
+    mavenCentral()
 }
 
 dependencies {

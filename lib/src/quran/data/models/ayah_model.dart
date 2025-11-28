@@ -82,32 +82,39 @@ class AyahModel {
   /// Factory لإنشاء الموديل من json الأصلي
   /// Factory to create model from original JSON
   factory AyahModel.fromOriginalJson(Map<String, dynamic> json) {
-    // معالجة نص الآية كما في الموديل القديم
-    String ayahText = json['aya_text'];
-    if (ayahText[ayahText.length - 1] == '\n') {
-      ayahText = ayahText.insert(' ', ayahText.length - 1);
-    } else {
-      ayahText = '$ayahText ';
+    int toInt(dynamic v, {int defaultValue = 0}) {
+      if (v == null) return defaultValue;
+      if (v is int) return v;
+      if (v is double) return v.toInt();
+      if (v is String) {
+        final s = v.trim();
+        if (s.isEmpty) return defaultValue;
+        return int.tryParse(s) ?? defaultValue;
+      }
+      return defaultValue;
     }
+
+    // استخدم نص الآية كما هو للحفاظ على فواصل الأسطر \n
+    final String ayahText = (json['aya_text'] ?? '') as String;
     return AyahModel(
-      ayahUQNumber: json['id'],
-      ayahNumber: json['aya_no'],
+      ayahUQNumber: toInt(json['id']),
+      ayahNumber: toInt(json['aya_no']),
       text: ayahText,
       ayaTextEmlaey: json['aya_text_emlaey'] ?? '',
       codeV2: null,
-      juz: json['jozz'],
-      page: json['page'],
-      surahNumber: json['sura_no'] ?? json['sora'] ?? 0,
-      lineStart: json['line_start'],
-      lineEnd: json['line_end'],
-      quarter: json['quarter'] ?? -1,
-      hizb: json['hizb'] ?? -1,
+      juz: toInt(json['jozz']),
+      page: toInt(json['page']),
+      surahNumber: toInt(json['sura_no'] ?? json['sora'] ?? 0),
+      lineStart: toInt(json['line_start']),
+      lineEnd: toInt(json['line_end']),
+      quarter: toInt(json['quarter'], defaultValue: -1),
+      hizb: toInt(json['hizb'], defaultValue: -1),
       englishName: json['sura_name_en'] ?? json['sora_name_en'],
       arabicName: json['sura_name_ar'] ?? json['sora_name_ar'],
       sajdaBool: false,
       sajda: null,
       singleAyahTextColor: null,
-      centered: json['centered'] ?? false,
+      centered: (json['centered'] ?? false) as bool,
       isDownloadedFonts: false,
     );
   }

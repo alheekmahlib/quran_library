@@ -320,7 +320,8 @@ class AyahMenuDialog extends StatelessWidget {
                 widgets.add(
                   GestureDetector(
                     onTap: () {
-                      if (QuranCtrl.instance.state.fontsSelected.value == 1) {
+                      if (QuranCtrl.instance.state.fontsSelected.value == 1 ||
+                          QuranCtrl.instance.state.fontsSelected.value == 2) {
                         Clipboard.setData(ClipboardData(text: ayah!.text));
                         ToastUtils().showToast(
                           context,

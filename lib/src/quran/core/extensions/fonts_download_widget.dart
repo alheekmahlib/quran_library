@@ -21,8 +21,9 @@ extension FontsDownloadWidgetExtension on QuranCtrl {
     final fontsLocal = isFontsLocal ?? false;
 
     final List<String> titleList = [
-      downloadFontsDialogStyle?.defaultFontText ?? 'الخط الأساسي',
-      downloadFontsDialogStyle?.downloadedFontsText ?? 'خط المصحف',
+      downloadFontsDialogStyle?.defaultFontText ?? 'الخط الأساسي (حفص)',
+      downloadFontsDialogStyle?.downloadedFontsText ?? 'خط المصحف (حفص)',
+      downloadFontsDialogStyle?.warshFontText ?? 'خط المصحف (ورش)',
     ];
 
     // Theming fallbacks
@@ -47,13 +48,21 @@ extension FontsDownloadWidgetExtension on QuranCtrl {
       required int index,
     }) {
       final bool isSelected = ctrl.state.fontsSelected.value == index;
-      final bool isDownloadOption = index == 1;
+      final bool isDownloadOption = index == 1 || index == 2;
 
       Widget trailingForDownload() {
         return Obx(() {
-          final preparing = ctrl.state.isPreparingDownload.value;
-          final downloading = ctrl.state.isDownloadingFonts.value;
-          final downloaded = ctrl.state.isFontDownloaded.value;
+          // تمييز حالة ورش عن حالة الخطوط
+          final bool isWarsh = index == 2;
+          final preparing =
+              isWarsh ? false : ctrl.state.isPreparingDownload.value;
+          final downloading = isWarsh
+              ? ctrl.state.isDownloadingWarsh.value
+              : ctrl.state.isDownloadingFonts.value;
+          final downloaded = isWarsh
+              ? ctrl.state.isWarshDownloaded.value
+              : ctrl.state.isFontDownloaded.value;
+
           // Keep a consistent button area size
           const double buttonHeight = 55;
 
@@ -74,13 +83,25 @@ extension FontsDownloadWidgetExtension on QuranCtrl {
                   )
                 else
                   IconButton(
-                    tooltip: downloaded ? 'حذف الخطوط' : 'تحميل الخطوط',
+                    tooltip: downloaded
+                        ? (isWarsh ? 'حذف بيانات ورش' : 'حذف الخطوط')
+                        : (isWarsh ? 'تحميل بيانات ورش' : 'تحميل الخطوط'),
                     onPressed: () async {
                       if (downloaded) {
-                        await ctrl.deleteFonts();
-                      } else if (!ctrl.state.isDownloadingFonts.value &&
-                          !ctrl.state.isPreparingDownload.value) {
-                        await ctrl.downloadAllFontsZipFile(index);
+                        if (isWarsh) {
+                          await ctrl.deleteWarshData();
+                        } else {
+                          await ctrl.deleteFonts();
+                        }
+                      } else {
+                        if (isWarsh) {
+                          if (!ctrl.state.isDownloadingWarsh.value) {
+                            await ctrl.downloadWarshData();
+                          }
+                        } else if (!ctrl.state.isDownloadingFonts.value &&
+                            !ctrl.state.isPreparingDownload.value) {
+                          await ctrl.downloadAllFontsZipFile(index);
+                        }
                       }
                       log('fontIndex: $index');
                     },
@@ -168,7 +189,10 @@ extension FontsDownloadWidgetExtension on QuranCtrl {
             borderRadius: BorderRadius.circular(12.0),
           ),
           child: Obx(() {
-            final downloading = ctrl.state.isDownloadingFonts.value;
+            final bool isWarsh = index == 2;
+            final downloading = isWarsh
+                ? ctrl.state.isDownloadingWarsh.value
+                : ctrl.state.isDownloadingFonts.value;
             final progress = ctrl.state.fontsDownloadProgress.value;
             return Stack(
               alignment: Alignment.center,
@@ -180,7 +204,9 @@ extension FontsDownloadWidgetExtension on QuranCtrl {
                       horizontal: 12, vertical: 0),
                   onTap: (fontsLocal ||
                           ctrl.state.isFontDownloaded.value ||
-                          kIsWeb)
+                          kIsWeb ||
+                          // السماح باختيار ورش إذا تم تحميل بياناته
+                          (ctrl.state.isWarshDownloaded.value))
                       ? () {
                           ctrl.state.fontsSelected.value = index;
                           GetStorage()
@@ -193,6 +219,12 @@ extension FontsDownloadWidgetExtension on QuranCtrl {
                                 ? prepareFonts(
                                     state.currentPageNumber.value - 1)
                                 : null;
+                            // إعادة تحميل بيانات الصفحات عند اختيار ورش لضمان استخدام JSON الخاص به
+                            if (ctrl.state.isWarshDownloaded.value) {
+                              // تفريغ الصفحات السابقة ليُعاد بناؤها حسب الرواية
+                              ctrl.staticPages.clear();
+                              await ctrl.loadQuranDataV1();
+                            }
                           });
                         }
                       : null,
@@ -208,9 +240,13 @@ extension FontsDownloadWidgetExtension on QuranCtrl {
                           fit: BoxFit.scaleDown,
                           child: Text(
                             downloading && isDownloadOption
-                                ? '${downloadFontsDialogStyle?.downloadingText ?? 'جاري التحميل'} ${progress.toStringAsFixed(1)}%'
-                                    .convertNumbersAccordingToLang(
-                                        languageCode: languageCode ?? 'ar')
+                                ? (isWarsh
+                                    ? (downloadFontsDialogStyle
+                                            ?.downloadingText ??
+                                        'جاري تحميل ورش')
+                                    : '${downloadFontsDialogStyle?.downloadingText ?? 'جاري التحميل'} ${progress.toStringAsFixed(1)}%'
+                                        .convertNumbersAccordingToLang(
+                                            languageCode: languageCode ?? 'ar'))
                                 : titleList[index],
                             style: downloadFontsDialogStyle?.fontNameStyle ??
                                 TextStyle(
@@ -278,6 +314,7 @@ extension FontsDownloadWidgetExtension on QuranCtrl {
           // Options
           buildTile(index: 0),
           buildTile(index: 1),
+          buildTile(index: 2),
         ],
       ),
     );

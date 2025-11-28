@@ -26,6 +26,11 @@ class QuranState {
   RxInt fontsSelected = 0.obs;
   RxDouble fontsDownloadProgress = 0.0.obs;
   RxBool isPreparingDownload = false.obs;
+
+  // Warsh data download state
+  RxBool isDownloadingWarsh = false.obs;
+  RxBool isWarshDownloaded = false.obs;
+
   OverlayEntry? overlayEntry;
 
   // صفحات الخطوط التي تم تحميلها لتجنب إعادة التحميل
@@ -61,6 +66,8 @@ class QuranState {
     fontsSelected.close();
     fontsDownloadProgress.close();
     isPreparingDownload.close();
+    isDownloadingWarsh.close();
+    isWarshDownloaded.close();
     // تنظيف آمن للـ OverlayEntry
     try {
       overlayEntry?.remove();

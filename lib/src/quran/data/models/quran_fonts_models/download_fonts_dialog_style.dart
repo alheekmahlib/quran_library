@@ -19,6 +19,9 @@ class DownloadFontsDialogStyle {
   /// The text to be displayed as the title for the quran font.
   final String? downloadedFontsText;
 
+  /// The text to be displayed as the title for the Warsh font.
+  final String? warshFontText;
+
   /// The background color of the download button in the dialog.
   ///
   /// This property allows you to customize the appearance of the download button
@@ -142,6 +145,7 @@ class DownloadFontsDialogStyle {
     this.defaultFontText,
     this.dividerColor,
     this.downloadedFontsText,
+    this.warshFontText,
     this.downloadButtonBackgroundColor,
     this.downloadingStyle,
     this.downloadingText,
@@ -172,6 +176,7 @@ class DownloadFontsDialogStyle {
     String? defaultFontText,
     Color? dividerColor,
     String? downloadedFontsText,
+    String? warshFontText,
     Color? downloadButtonBackgroundColor,
     TextStyle? downloadingStyle,
     String? downloadingText,
@@ -196,6 +201,7 @@ class DownloadFontsDialogStyle {
       defaultFontText: defaultFontText ?? this.defaultFontText,
       dividerColor: dividerColor ?? this.dividerColor,
       downloadedFontsText: downloadedFontsText ?? this.downloadedFontsText,
+      warshFontText: warshFontText ?? this.warshFontText,
       downloadButtonBackgroundColor:
           downloadButtonBackgroundColor ?? this.downloadButtonBackgroundColor,
       downloadingStyle: downloadingStyle ?? this.downloadingStyle,
@@ -230,12 +236,12 @@ class DownloadFontsDialogStyle {
     return DownloadFontsDialogStyle(
       // لون خلفية النافذة الافتراضي
       backgroundColor: AppColors.getBackgroundColor(isDarkMode),
-      // نص الخط الافتراضي
-      defaultFontText: 'الخط الأساسي',
       // لون الفاصل الافتراضي
       dividerColor: primary,
-      // نص خطوط القرآن المحملة الافتراضي
-      downloadedFontsText: 'خط المصحف',
+      // نص خطوط القرآن من enum
+      defaultFontText: QuranRecitation.hafs.arabicName,
+      downloadedFontsText: QuranRecitation.hafsMushaf.arabicName,
+      warshFontText: QuranRecitation.warsh.arabicName,
       // لون خلفية زر التحميل الافتراضي
       downloadButtonBackgroundColor: primary,
       // نص التحميل الافتراضي

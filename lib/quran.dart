@@ -53,6 +53,7 @@ part 'src/quran/data/models/quran_constants.dart';
 part 'src/quran/data/models/quran_fonts_models/download_fonts_dialog_style.dart';
 part 'src/quran/data/models/quran_fonts_models/sajda_model.dart';
 part 'src/quran/data/models/quran_page.dart';
+part 'src/quran/data/models/quran_recitation.dart';
 part 'src/quran/data/models/styles_models/ayah_menu_style.dart';
 part 'src/quran/data/models/styles_models/banner_style.dart';
 part 'src/quran/data/models/styles_models/basmala_style.dart';

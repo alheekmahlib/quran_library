@@ -23,23 +23,23 @@ extension QuranGetters on QuranCtrl {
     // التحقق مما إذا كان الخط المطلوب هو نفس الخط الحالي
     // Check if the requested font is the same as the current font
     if (state.fontsSelected.value == fontIndex &&
-        (fontIndex == 0 || state.isFontDownloaded.value)) {
+        (fontIndex == 0 || fontIndex == 2 || state.isFontDownloaded.value)) {
       log('Font is already selected', name: 'QuranGetters');
       return;
     }
 
-    // إذا كان الخط هو الخط الافتراضي (0)، فقط قم بتعيينه
-    // If the font is the default font (0), just set it
-    if (fontIndex == 0) {
+    // إذا كان الخط هو الخط الافتراضي (0) أو ورش (2)، فقط قم بتعيينه
+    // If the font is the default font (0) or Warsh (2), just set it
+    if (fontIndex == 0 || fontIndex == 2) {
       state.fontsSelected.value = fontIndex;
       GetStorage().write(_StorageConstants().fontsSelected, fontIndex);
       Get.forceAppUpdate();
-      log('Default font selected', name: 'QuranGetters');
+      log('Font selected: $fontIndex', name: 'QuranGetters');
       return;
     }
 
-    // إذا كان الخط محملاً بالفعل، قم بتعيينه
-    // If the font is already downloaded, just set it
+    // إذا كان الخط محملاً بالفعل (خط المصحف حفص)، قم بتعيينه
+    // If the font is already downloaded (Mushaf Hafs), just set it
     if (state.isFontDownloaded.value) {
       state.fontsSelected.value = fontIndex;
       GetStorage().write(_StorageConstants().fontsSelected, fontIndex);

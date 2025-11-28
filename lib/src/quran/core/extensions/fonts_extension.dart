@@ -141,6 +141,7 @@ extension FontsExtension on QuranCtrl {
 
   /// **الدالة المعدلة:** تحضير الخطوط للصفحة الحالية والصفحات المجاورة
   Future<void> prepareFonts(int pageIndex, {bool isFontsLocal = false}) async {
+    // Only prepare fonts for hafsMushaf (index 1) - downloaded fonts
     if (state.fontsSelected.value == 1) {
       // إذا كان محمّلًا بالفعل محليًا لا نعيد الإرسال
       if (state.loadedFontPages.contains(pageIndex) || isFontsLocal) return;

@@ -130,7 +130,7 @@ class SurahCtrl extends GetxController {
         final lines = aya.text.split('\n');
         for (int i = 0; i < lines.length; i++) {
           bool centered = false;
-          if ((aya.centered ?? false) && i == lines.length - 2) {
+          if (i == lines.length - 2) {
             centered = true;
           }
           final a = AyahModel.fromAya(

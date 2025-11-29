@@ -25,7 +25,7 @@ class AyahModel {
   final bool? sajdaBool;
   final dynamic sajda;
   final Color? singleAyahTextColor;
-  final bool? centered;
+  // final bool? centered;
 
   // متغير يحدد إذا كانت البيانات من ملف الخطوط المنزلة
   // Variable to determine if data is from downloaded fonts JSON
@@ -49,7 +49,7 @@ class AyahModel {
     this.sajdaBool,
     this.sajda,
     this.singleAyahTextColor,
-    this.centered,
+    // this.centered,
     required this.isDownloadedFonts,
   });
 
@@ -75,7 +75,7 @@ class AyahModel {
       englishName: null,
       arabicName: null,
       sajdaBool: null,
-      centered: null,
+      // centered: null,
     );
   }
 
@@ -114,7 +114,7 @@ class AyahModel {
       sajdaBool: false,
       sajda: null,
       singleAyahTextColor: null,
-      centered: (json['centered'] ?? false) as bool,
+      // centered: (json['centered'] ?? false) as bool,
       isDownloadedFonts: false,
     );
   }
@@ -138,7 +138,7 @@ class AyahModel {
       sajdaBool: false,
       sajda: null,
       singleAyahTextColor: null,
-      centered: false,
+      // centered: false,
       isDownloadedFonts: false,
     );
   }
@@ -169,7 +169,7 @@ class AyahModel {
       sajdaBool: ayah.sajdaBool,
       sajda: ayah.sajda,
       singleAyahTextColor: ayah.singleAyahTextColor,
-      centered: centered ?? ayah.centered,
+      // centered: centered ?? ayah.centered,
       isDownloadedFonts: ayah.isDownloadedFonts,
     );
   }

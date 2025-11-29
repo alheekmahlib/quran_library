@@ -22,6 +22,9 @@ class BannerStyle {
   ///[bannerSvgHeight] if you wanna add the height for the banner svg
   final double? bannerSvgHeight;
 
+  ///[svgBannerColor] if you wanna change the color for the banner svg
+  final Color? svgBannerColor;
+
   BannerStyle({
     this.isImage,
     this.bannerImagePath,
@@ -30,6 +33,7 @@ class BannerStyle {
     this.bannerSvgPath,
     this.bannerSvgWidth,
     this.bannerSvgHeight,
+    this.svgBannerColor,
   });
 
   BannerStyle copyWith({
@@ -40,6 +44,7 @@ class BannerStyle {
     String? bannerSvgPath,
     double? bannerSvgWidth,
     double? bannerSvgHeight,
+    Color? svgBannerColor,
   }) {
     return BannerStyle(
       bannerImagePath: bannerImagePath ?? this.bannerImagePath,
@@ -49,6 +54,7 @@ class BannerStyle {
       bannerSvgPath: bannerSvgPath ?? this.bannerSvgPath,
       bannerSvgWidth: bannerSvgWidth ?? this.bannerSvgWidth,
       bannerSvgHeight: bannerSvgHeight ?? this.bannerSvgHeight,
+      svgBannerColor: svgBannerColor ?? this.svgBannerColor,
     );
   }
 
@@ -61,6 +67,7 @@ class BannerStyle {
       bannerImagePath: '',
       bannerImageHeight: 50,
       bannerImageWidth: double.infinity,
+      svgBannerColor: null,
     );
   }
 
@@ -75,6 +82,7 @@ class BannerStyle {
       bannerImagePath: '',
       bannerImageHeight: 50,
       bannerImageWidth: double.infinity,
+      svgBannerColor: null,
     );
   }
 
@@ -87,6 +95,7 @@ class BannerStyle {
       bannerImagePath: '',
       bannerImageHeight: 50,
       bannerImageWidth: double.infinity,
+      svgBannerColor: null,
     );
   }
 }

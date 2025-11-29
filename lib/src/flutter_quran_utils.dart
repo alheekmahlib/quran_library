@@ -473,9 +473,32 @@ class QuranLibrary {
   ///
   /// To set the font type you want to use, just give a value to [setFontsSelected]
   ///
+  @Deprecated('Use changeFontType() instead')
   set setFontsSelected(int index) {
     quranCtrl.state.fontsSelected.value = index;
     GetStorage().write(_StorageConstants().fontsSelected, index);
+    Get.forceAppUpdate(); // تحديث إجباري للواجهة بعد تغيير نوع الخط
+  }
+
+  /// لتغيير نوع الخط وإعادة تحميل البيانات المناسبة
+  ///
+  /// To change font type and reload appropriate data
+  Future<void> changeFontType(int index) async {
+    quranCtrl.state.fontsSelected.value = index;
+    GetStorage().write(_StorageConstants().fontsSelected, index);
+
+    // إذا كان الخط الجديد يستخدم default_fonts_page (حفص أو ورش)
+    // إعادة تحميل البيانات من المصدر المناسب
+    if (index == 0 || index == 2) {
+      // مسح البيانات القديمة
+      quranCtrl.staticPages.clear();
+      quranCtrl.ayahs.clear();
+      quranCtrl.surahs.clear();
+
+      // تحميل البيانات الجديدة
+      await quranCtrl.loadQuranDataV1();
+    }
+
     Get.forceAppUpdate(); // تحديث إجباري للواجهة بعد تغيير نوع الخط
   }
 

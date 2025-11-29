@@ -27,7 +27,8 @@ class SurahChangeSurahReader extends StatelessWidget {
             constraints: BoxConstraints(
               maxHeight:
                   s.dialogHeight ?? MediaQuery.of(context).size.height * 0.7,
-              maxWidth: s.dialogWidth ?? MediaQuery.of(context).size.width * 0.6,
+              maxWidth:
+                  s.dialogWidth ?? MediaQuery.of(context).size.width * 0.6,
             ),
             child: _buildDialog(context, s, dark),
           ),

@@ -53,194 +53,230 @@ class DefaultFontsBuild extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetBuilder<QuranCtrl>(
       id: 'selection_page_',
-      builder: (quranCtrl) {
-        return FittedBox(
-          fit: boxFit,
-          child: RichText(
-            text: TextSpan(
-              children: () {
-                final reversedAyahs = line.ayahs.reversed.toList();
-                return List.generate(reversedAyahs.length, (i) {
-                  final ayah = reversedAyahs[i];
-                  final isUserSelected = quranCtrl.selectedAyahsByUnequeNumber
-                      .contains(ayah.ayahUQNumber);
-                  final isExternallyHighlighted = quranCtrl
-                      .externallyHighlightedAyahs
-                      .contains(ayah.ayahUQNumber);
-                  quranCtrl.isAyahSelected =
-                      isUserSelected || isExternallyHighlighted;
-                  final allBookmarks =
-                      bookmarks.values.expand((list) => list).toList();
-                  ayahBookmarked.isEmpty
-                      ? (bookmarksAyahs.contains(ayah.ayahUQNumber)
-                          ? true
-                          : false)
-                      : ayahBookmarked;
+      builder: (quranCtrl) => FittedBox(
+        fit: boxFit,
+        child: RichText(
+          text: TextSpan(
+            children: () {
+              final reversedAyahs = line.ayahs.reversed.toList();
+              return List.generate(reversedAyahs.length, (i) {
+                final ayah = reversedAyahs[i];
+                final isUserSelected = quranCtrl.selectedAyahsByUnequeNumber
+                    .contains(ayah.ayahUQNumber);
+                final isExternallyHighlighted = quranCtrl
+                    .externallyHighlightedAyahs
+                    .contains(ayah.ayahUQNumber);
+                final isSelected = isUserSelected || isExternallyHighlighted;
+                final allBookmarks =
+                    bookmarks.values.expand((list) => list).toList();
+                ayahBookmarked.isEmpty
+                    ? (bookmarksAyahs.contains(ayah.ayahUQNumber)
+                        ? true
+                        : false)
+                    : ayahBookmarked;
 
-                  // فصل رقم الآية من النص الأصلي لإتاحة تلوينه بشكل مستقل
-                  final parts = _splitAyahTail(ayah.text);
-                  return WidgetSpan(
-                    child: GestureDetector(
-                      onLongPressStart: (details) {
-                        if (onDefaultAyahLongPress != null) {
-                          onDefaultAyahLongPress!(details, ayah);
-                          quranCtrl.toggleAyahSelection(ayah.ayahUQNumber);
+                return WidgetSpan(
+                  child: GestureDetector(
+                    onLongPressStart: (details) {
+                      if (onDefaultAyahLongPress != null) {
+                        onDefaultAyahLongPress!(details, ayah);
+                        quranCtrl.toggleAyahSelection(ayah.ayahUQNumber);
+                      } else {
+                        final bookmarkId = allBookmarks.any((bookmark) =>
+                                bookmark.ayahId == ayah.ayahUQNumber)
+                            ? allBookmarks
+                                .firstWhere((bookmark) =>
+                                    bookmark.ayahId == ayah.ayahUQNumber)
+                                .id
+                            : null;
+                        if (bookmarkId != null) {
+                          BookmarksCtrl.instance.removeBookmark(bookmarkId);
                         } else {
-                          final bookmarkId = allBookmarks.any((bookmark) =>
-                                  bookmark.ayahId == ayah.ayahUQNumber)
-                              ? allBookmarks
-                                  .firstWhere((bookmark) =>
-                                      bookmark.ayahId == ayah.ayahUQNumber)
-                                  .id
-                              : null;
-                          if (bookmarkId != null) {
-                            BookmarksCtrl.instance.removeBookmark(bookmarkId);
+                          // تحديث التحديد
+                          if (quranCtrl.isMultiSelectMode.value) {
+                            quranCtrl
+                                .toggleAyahSelectionMulti(ayah.ayahUQNumber);
                           } else {
-                            // تحديث التحديد
-                            if (quranCtrl.isMultiSelectMode.value) {
-                              quranCtrl
-                                  .toggleAyahSelectionMulti(ayah.ayahUQNumber);
-                            } else {
-                              quranCtrl.toggleAyahSelection(ayah.ayahUQNumber);
-                            }
-                            quranCtrl.state.overlayEntry?.remove();
-                            quranCtrl.state.overlayEntry = null;
-
-                            // إنشاء OverlayEntry جديد
-                            if (!context.mounted) return;
-                            final overlay = Overlay.of(context);
-                            // التقاط النمط مبكرًا من سياق تحت QuranLibraryTheme
-                            final themedTafsirStyle =
-                                TafsirTheme.of(context)?.style;
-                            final newOverlayEntry = OverlayEntry(
-                              builder: (context) => AyahMenuDialog(
-                                context: context,
-                                isDark: isDark,
-                                ayah: ayah,
-                                position: details.globalPosition,
-                                index: ayah.ayahNumber,
-                                pageIndex: pageIndex,
-                                anotherMenuChild: anotherMenuChild,
-                                anotherMenuChildOnTap: anotherMenuChildOnTap,
-                                secondMenuChild: secondMenuChild,
-                                secondMenuChildOnTap: secondMenuChildOnTap,
-                                externalTafsirStyle: themedTafsirStyle,
-                              ),
-                            );
-
-                            quranCtrl.state.overlayEntry = newOverlayEntry;
-
-                            // إدخال OverlayEntry في Overlay
-                            overlay.insert(newOverlayEntry);
+                            quranCtrl.toggleAyahSelection(ayah.ayahUQNumber);
                           }
-                        }
-                      },
-                      child: Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(4.0),
-                          color: ayahBookmarked.contains(ayah.ayahUQNumber)
-                              ? bookmarksColor
-                              : (bookmarksAyahs.contains(ayah.ayahUQNumber)
-                                  ? Color(
-                                      allBookmarks
-                                          .firstWhere((b) =>
-                                              b.ayahId == ayah.ayahUQNumber)
-                                          .colorCode,
-                                    ).withValues(alpha: .30)
-                                  : quranCtrl.isAyahSelected
-                                      ? ayahSelectedBackgroundColor ??
-                                          const Color(0xffCDAD80)
-                                              .withValues(alpha: .25)
-                                      : null),
-                        ),
-                        child: RichText(
-                          text: TextSpan(
-                            style: TextStyle(
-                              color:
-                                  textColor ?? AppColors.getTextColor(isDark),
-                              // fontSize: 22.55,
-                              fontFamily: quranCtrl.currentFontFamily,
-                              height: 2,
-                              package: 'quran_library',
+                          quranCtrl.state.overlayEntry?.remove();
+                          quranCtrl.state.overlayEntry = null;
+
+                          // إنشاء OverlayEntry جديد
+                          if (!context.mounted) return;
+                          final overlay = Overlay.of(context);
+                          // التقاط النمط مبكرًا من سياق تحت QuranLibraryTheme
+                          final themedTafsirStyle =
+                              TafsirTheme.of(context)?.style;
+                          final newOverlayEntry = OverlayEntry(
+                            builder: (context) => AyahMenuDialog(
+                              context: context,
+                              isDark: isDark,
+                              ayah: ayah,
+                              position: details.globalPosition,
+                              index: ayah.ayahNumber,
+                              pageIndex: pageIndex,
+                              anotherMenuChild: anotherMenuChild,
+                              anotherMenuChildOnTap: anotherMenuChildOnTap,
+                              secondMenuChild: secondMenuChild,
+                              secondMenuChildOnTap: secondMenuChildOnTap,
+                              externalTafsirStyle: themedTafsirStyle,
                             ),
-                            children: [
-                              TextSpan(text: parts.body),
-                              if (parts.tail.isNotEmpty)
-                                (ayahBookmarked.contains(ayah.ayahUQNumber) ||
-                                            bookmarksAyahs
-                                                .contains(ayah.ayahUQNumber)) &&
-                                        showAyahBookmarkedIcon
-                                    ? WidgetSpan(
-                                        alignment: PlaceholderAlignment.middle,
-                                        child: Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 8.0),
-                                          child: SvgPicture.asset(
-                                            AssetsPath.assets.ayahBookmarked,
-                                            height: 22.55,
-                                          ),
-                                        ))
-                                    : TextSpan(
-                                        text: ' ${parts.tail}',
-                                        style: TextStyle(
-                                          color: ayahIconColor ??
-                                              Theme.of(context)
-                                                  .colorScheme
-                                                  .primary,
-                                          fontSize: 16,
-                                          fontFamily: 'ayahNumber',
-                                          package: 'quran_library',
-                                        ),
-                                      ),
-                            ],
-                          ),
-                        ),
-                      ),
+                          );
+
+                          quranCtrl.state.overlayEntry = newOverlayEntry;
+
+                          // إدخال OverlayEntry في Overlay
+                          overlay.insert(newOverlayEntry);
+                        }
+                      }
+                    },
+                    child: AyahDisplayBuild(
+                      ayahBookmarked: ayahBookmarked,
+                      ayah: ayah,
+                      bookmarksColor: bookmarksColor,
+                      bookmarksAyahs: bookmarksAyahs,
+                      allBookmarks: allBookmarks,
+                      ayahSelectedBackgroundColor: ayahSelectedBackgroundColor,
+                      textColor: textColor,
+                      isDark: isDark,
+                      showAyahBookmarkedIcon: showAyahBookmarkedIcon,
+                      ayahIconColor: ayahIconColor,
+                      isSelected: isSelected,
                     ),
-                  );
-                });
-              }(),
-              // style: TextStyle(
-              //   color: textColor ?? AppColors.getTextColor(isDark),
-              //   // fontSize: 22.55,
-              //   fontFamily: 'hafs',
-              //   // height: 1.3,
-              //   package: 'quran_library',
-              // ),
-            ),
+                  ),
+                );
+              });
+            }(),
+            // style: TextStyle(
+            //   color: textColor ?? AppColors.getTextColor(isDark),
+            //   // fontSize: 22.55,
+            //   fontFamily: 'hafs',
+            //   // height: 1.3,
+            //   package: 'quran_library',
+            // ),
           ),
-        );
-      },
+        ),
+      ),
     );
-  }
-
-  // يُعيد جزئين: body (النص دون الذيل) و tail (علامة نهاية الآية + الرقم)
-  _AyahParts _splitAyahTail(String input) {
-    // نلتقط الذيل في المجموعة الأولى للحفاظ عليه كما هو لخط حفص
-    final reg = RegExp(
-        r'((?:\s*[\u06DD]\s*)?(?:\s*[﴿\uFD3F]\s*)?[\u0660-\u0669\u06F0-\u06F9]+\s*(?:[﴾\uFD3E])?)\s*$');
-    final m = reg.firstMatch(input);
-    if (m == null) {
-      return _AyahParts(input, '');
-    }
-    final start = m.start;
-    final body = input.substring(0, start).trimRight();
-    final tail = m.group(1) ?? '';
-    return _AyahParts(body, tail);
-  }
-
-  String stripAyahNumber(String s) {
-    // أنماط محتملة في المصاحف:
-    // - U+06DD ARABIC END OF AYAH + أرقام
-    // - أقواس زخرفية ﴿ ﴾ (FD3F, FD3E) + أرقام
-    final endPattern = RegExp(
-        r'(?:\s*[\u06DD]\s*)?(?:\s*[﴿\uFD3F]\s*)?\s*[\u0660-\u0669\u06F0-\u06F9]+\s*(?:[﴾\uFD3E])?\s*$');
-    return s.replaceAll(endPattern, '').trimRight();
   }
 }
 
-class _AyahParts {
+class AyahDisplayBuild extends StatelessWidget {
+  const AyahDisplayBuild({
+    super.key,
+    required this.ayahBookmarked,
+    required this.ayah,
+    required this.bookmarksColor,
+    required this.bookmarksAyahs,
+    required this.allBookmarks,
+    required this.ayahSelectedBackgroundColor,
+    required this.textColor,
+    required this.isDark,
+    required this.showAyahBookmarkedIcon,
+    required this.ayahIconColor,
+    required this.isSelected,
+  });
+
+  final List<int> ayahBookmarked;
+  final AyahModel ayah;
+  final Color? bookmarksColor;
+  final List<int> bookmarksAyahs;
+  final List<BookmarkModel> allBookmarks;
+  final Color? ayahSelectedBackgroundColor;
+  final Color? textColor;
+  final bool isDark;
+  final bool showAyahBookmarkedIcon;
+  final Color? ayahIconColor;
+  final bool isSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    // فصل رقم الآية من النص الأصلي لإتاحة تلوينه بشكل مستقل
+    final parts = _splitAyahTail(ayah.text);
+    final quranCtrl = QuranCtrl.instance;
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(4.0),
+        color: ayahBookmarked.contains(ayah.ayahUQNumber)
+            ? bookmarksColor
+            : (bookmarksAyahs.contains(ayah.ayahUQNumber)
+                ? Color(
+                    allBookmarks
+                        .firstWhere((b) => b.ayahId == ayah.ayahUQNumber)
+                        .colorCode,
+                  ).withValues(alpha: .30)
+                : isSelected
+                    ? ayahSelectedBackgroundColor ??
+                        const Color(0xffCDAD80).withValues(alpha: .25)
+                    : null),
+      ),
+      child: RichText(
+        text: TextSpan(
+          style: TextStyle(
+            color: textColor ?? AppColors.getTextColor(isDark),
+            // fontSize: 22.55,
+            fontFamily: quranCtrl.currentFontFamily,
+            height: 2,
+            package: 'quran_library',
+          ),
+          children: [
+            TextSpan(text: parts.body),
+            if (parts.tail.isNotEmpty)
+              (ayahBookmarked.contains(ayah.ayahUQNumber) ||
+                          bookmarksAyahs.contains(ayah.ayahUQNumber)) &&
+                      showAyahBookmarkedIcon
+                  ? WidgetSpan(
+                      alignment: PlaceholderAlignment.middle,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        child: SvgPicture.asset(
+                          AssetsPath.assets.ayahBookmarked,
+                          height: 22.55,
+                        ),
+                      ))
+                  : TextSpan(
+                      text: RegExp(r'[\u0660-\u0669\u06F0-\u06F9]')
+                              .hasMatch(parts.tail)
+                          ? ' ${parts.tail}'
+                          : ' ${ayah.ayahNumber.toString().convertEnglishNumbersToArabic(ayah.ayahNumber.toString())}',
+                      style: TextStyle(
+                        color: ayahIconColor ??
+                            Theme.of(context).colorScheme.primary,
+                        fontSize: 16,
+                        fontFamily: 'ayahNumber',
+                        package: 'quran_library',
+                      ),
+                    ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // يُعيد جزئين: body (النص دون الذيل) و tail (علامة نهاية الآية + الرقم أو رمز)
+  AyahParts _splitAyahTail(String input) {
+    // نلتقط الكلمة الأخيرة فقط إذا كانت رقمًا أو رمز نهاية آية محتمل
+    // (أرقام عربية/فارسية مع أقواس، أو حرف واحد غير عربي مثل الرموز الخاصة)
+    final reg = RegExp(
+        r'((?:\s*[\u06DD]\s*)?(?:\s*[﴿\uFD3F]\s*)?[\u0660-\u0669\u06F0-\u06F9]+\s*(?:[﴾\uFD3E])?|[^\u0600-\u06FF\s]+)\s*$');
+    final m = reg.firstMatch(input);
+    if (m == null) {
+      return AyahParts(input, '');
+    }
+    final tail = m.group(1) ?? '';
+    // تحقق: إذا كان الذيل كلمة عربية عادية، لا نفصلها
+    if (RegExp(r'^[\u0600-\u06FF]+$').hasMatch(tail)) {
+      return AyahParts(input, '');
+    }
+    final start = m.start;
+    final body = input.substring(0, start).trimRight();
+    return AyahParts(body, tail);
+  }
+}
+
+class AyahParts {
   final String body;
   final String tail;
-  const _AyahParts(this.body, this.tail);
+  const AyahParts(this.body, this.tail);
 }

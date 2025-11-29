@@ -9,6 +9,7 @@ class QuranCtrl extends GetxController {
 
   final QuranRepository _quranRepository;
 
+  // إذا كانت الصفحات لم تُملأ أو العدد غير متطابق
   RxList<QuranPageModel> staticPages = <QuranPageModel>[].obs;
   RxList<int> quranStops = <int>[].obs;
   RxList<int> surahsStart = <int>[].obs;
@@ -16,10 +17,12 @@ class QuranCtrl extends GetxController {
   final List<AyahModel> ayahs = [];
   int lastPage = 1;
   int? initialPage;
+
+  /// نتائج البحث
   final RxList<AyahModel> searchResultAyahs = <AyahModel>[].obs;
   final RxList<SurahModel> searchResultSurahs = <SurahModel>[].obs;
 
-  /// List of selected ayahs by their unique number
+  /// قائمة الآيات المحددة حسب الرقم الفريد
   final selectedAyahsByUnequeNumber = <int>[].obs;
   bool isAyahSelected = false;
   RxDouble scaleFactor = 1.0.obs;
@@ -49,6 +52,15 @@ class QuranCtrl extends GetxController {
 
   QuranState state = QuranState();
 
+  /// -------- [Getters] ----------
+
+  /// Get current recitation based on fontsSelected value
+  QuranRecitation get currentRecitation =>
+      QuranRecitation.fromIndex(state.fontsSelected.value);
+
+  /// Get current font family for the selected recitation
+  String get currentFontFamily => currentRecitation.fontFamily;
+
   @override
   void onInit() async {
     super.onInit();
@@ -69,39 +81,6 @@ class QuranCtrl extends GetxController {
     searchFocusNode = FocusNode();
     searchTextController = TextEditingController();
   }
-
-  @override
-  void onClose() {
-    staticPages.close();
-    quranStops.close();
-    surahsStart.close();
-    selectedAyahsByUnequeNumber.close();
-    searchResultAyahs.close();
-    scaleFactor.close();
-    baseScaleFactor.close();
-    isLoading.close();
-    surahsList.close();
-    state.dispose();
-    quranPagesController.dispose();
-    super.onClose();
-    searchFocusNode.dispose();
-    searchTextController.dispose();
-    if (!kIsWeb) {
-      disposeFontLoader();
-    }
-  }
-
-  /// -------- [Getters] ----------
-
-  /// Get current recitation based on fontsSelected value
-  QuranRecitation get currentRecitation =>
-      QuranRecitation.fromIndex(state.fontsSelected.value);
-
-  /// Get current font family for the selected recitation
-  String get currentFontFamily => currentRecitation.fontFamily;
-
-  /// -------- [Methods] ----------
-
   // Future<void> _initSearch() async {
   //   quranSearch = QuranSearch(ayahs); // تأكد من أن `ayahs` محملة مسبقًا
   //   await quranSearch.loadModel(); // تحميل نموذج BERT
@@ -159,17 +138,36 @@ class QuranCtrl extends GetxController {
         (index) => QuranPageModel(pageNumber: index + 1, ayahs: [], lines: []),
       );
 
-      // Load data based on current recitation
-      List<dynamic> quranJson;
-      if (currentRecitation == QuranRecitation.warsh) {
+      // تحديد مصدر البيانات حسب نوع الخط المُختار
+      // Determine data source based on selected font type
+      final List<dynamic> quranJson;
+      final QuranRecitation recitation = currentRecitation;
+
+      if (recitation.recitationIndex == 2) {
+        // ورش - Warsh
         quranJson = await _quranRepository.getQuranWarsh();
       } else {
+        // حفص الأساسي - Default Hafs
         quranJson = await _quranRepository.getQuran();
       }
 
-      int hizb = 1;
+      // int hizb = 1;
       int surahsIndex = 1;
       List<AyahModel> thisSurahAyahs = [];
+      // تجزئة كلمات المصحف ككل وفق ترتيب الآيات/الصفحات لربطها بنطاق quran_info
+      final Map<int, List<_WordToken>> tokensByPage = {};
+      int globalWordId = 0;
+      AyahParts splitAyahTailLocal(String input) {
+        final reg = RegExp(
+            r'((?:\s*[\u06DD]\s*)?(?:\s*[﴿\uFD3F]\s*)?[\u0660-\u0669\u06F0-\u06F9]+\s*(?:[﴾\uFD3E])?)\s*$');
+        final m = reg.firstMatch(input);
+        if (m == null) return AyahParts(input, '');
+        final start = m.start;
+        final body = input.substring(0, start).trimRight();
+        final tail = m.group(1) ?? '';
+        return AyahParts(body, tail);
+      }
+
       for (int i = 0; i < quranJson.length; i++) {
         // تحويل كل json إلى AyahModel
         final ayah = AyahModel.fromOriginalJson(quranJson[i]);
@@ -186,13 +184,73 @@ class QuranCtrl extends GetxController {
         ayahs.add(ayah);
         thisSurahAyahs.add(ayah);
         staticPages[ayah.page - 1].ayahs.add(ayah);
-        if (ayah.text.contains('۞')) {
-          staticPages[ayah.page - 1].hizb = hizb++;
-          quranStops.add(ayah.page);
+        // جزّئ كلمات هذه الآية إلى رموز وفق المسافات واحتفظ بذيل الآية كرمز مستقل
+        final withoutNewlines = ayah.text.replaceAll('\n', ' ').trim();
+        final partsLocal = splitAyahTailLocal(withoutNewlines);
+        final bodyWords = partsLocal.body
+            .split(RegExp(r'\s+'))
+            .where((w) => w.isNotEmpty)
+            .toList();
+
+        // لا نمنح العلامتين "۞" و"۩" معرفًا مستقلًا؛ نُلحقهما بأقرب كلمة مجاورة
+        final List<_WordToken> pageTokens =
+            tokensByPage.putIfAbsent(ayah.page, () => []);
+        String? pendingMarker; // عند ظهور العلامة في بداية السطر/الآية
+        for (final w in bodyWords) {
+          if (w == '۞' || w == '۩') {
+            if (pageTokens.isNotEmpty &&
+                pageTokens.last.ayahUQ == ayah.ayahUQNumber) {
+              final last = pageTokens.removeLast();
+              pageTokens.add(_WordToken(
+                id: last.id,
+                page: last.page,
+                ayahUQ: last.ayahUQ,
+                text: '${last.text} $w',
+              ));
+            } else {
+              pendingMarker = (pendingMarker == null) ? w : '$pendingMarker $w';
+            }
+            continue;
+          }
+
+          final displayText = pendingMarker != null ? '$pendingMarker $w' : w;
+          pendingMarker = null;
+          final token = _WordToken(
+            id: ++globalWordId,
+            page: ayah.page,
+            ayahUQ: ayah.ayahUQNumber,
+            text: displayText,
+          );
+          pageTokens.add(token);
         }
-        if (ayah.text.contains('۩')) {
-          staticPages[ayah.page - 1].hasSajda = true;
+        // إن تبقّت علامة بلا كلمة بعدها، نلحقها بآخر كلمة من نفس الآية
+        if (pendingMarker != null &&
+            pageTokens.isNotEmpty &&
+            pageTokens.last.ayahUQ == ayah.ayahUQNumber) {
+          final last = pageTokens.removeLast();
+          pageTokens.add(_WordToken(
+            id: last.id,
+            page: last.page,
+            ayahUQ: last.ayahUQ,
+            text: '${last.text} $pendingMarker',
+          ));
+          pendingMarker = null;
         }
+        if (partsLocal.tail.isNotEmpty) {
+          final token = _WordToken(
+              id: ++globalWordId,
+              page: ayah.page,
+              ayahUQ: ayah.ayahUQNumber,
+              text: partsLocal.tail.trim());
+          pageTokens.add(token);
+        }
+        // if (ayah.text.contains('۞')) {
+        //   staticPages[ayah.page - 1].hizb = hizb++;
+        //   quranStops.add(ayah.page);
+        // }
+        // if (ayah.text.contains('۩')) {
+        //   staticPages[ayah.page - 1].hasSajda = true;
+        // }
         if (ayah.ayahNumber == 1) {
           ayah.text = ayah.text.replaceAll('۞', '');
           staticPages[ayah.page - 1].numberOfNewSurahs++;
@@ -208,41 +266,128 @@ class QuranCtrl extends GetxController {
       }
       surahs.last.endPage = ayahs.last.page;
       surahs.last.ayahs = thisSurahAyahs;
-      // ملء الأسطر (lines) لكل صفحة
-      for (QuranPageModel staticPage in staticPages) {
-        List<AyahModel> ayas = [];
-        for (AyahModel aya in staticPage.ayahs) {
-          if (aya.ayahNumber == 1 && ayas.isNotEmpty) {
-            ayas.clear();
-          }
-          if (aya.text.contains('\n')) {
-            final lines = aya.text.split('\n');
-            for (int i = 0; i < lines.length; i++) {
-              bool centered = false;
-              if ((aya.centered ?? false) && i == lines.length - 2) {
-                centered = true;
+      // بناء الأسطر من quran_info.json مع مسار احتياطي
+      try {
+        final List<dynamic> infoList = await _quranRepository.getQuranInfo();
+        final List<QuranInfoLine> infoLines = infoList
+            .map((e) => QuranInfoLine.fromJson(e as Map<String, dynamic>))
+            .toList();
+
+        final Map<int, List<QuranInfoLine>> infoByPage = {};
+        for (final l in infoLines) {
+          infoByPage.putIfAbsent(l.pageNumber, () => []).add(l);
+        }
+
+        for (final staticPage in staticPages) {
+          final pageInfo = (infoByPage[staticPage.pageNumber] ?? [])
+            ..sort((a, b) => a.lineNumber.compareTo(b.lineNumber));
+          staticPage.lines.clear();
+          for (final line in pageInfo) {
+            if (line.lineType == 'ayah' || line.lineType == 'basmallah') {
+              final tokens =
+                  tokensByPage[staticPage.pageNumber] ?? const <_WordToken>[];
+              List<_WordToken> lineTokens;
+              if (line.firstWordId != null && line.lastWordId != null) {
+                lineTokens = tokens
+                    .where((t) =>
+                        t.id >= line.firstWordId! && t.id <= line.lastWordId!)
+                    .toList();
+              } else {
+                lineTokens = const <_WordToken>[];
               }
-              final a = AyahModel.fromAya(
-                ayah: aya,
-                aya: lines[i],
-                ayaText: lines[i],
-                centered: centered,
-              );
-              ayas.add(a);
-              if (i < lines.length - 1) {
-                staticPage.lines.add(LineModel([...ayas]));
-                ayas.clear();
+
+              if (lineTokens.isNotEmpty) {
+                final Map<int, List<_WordToken>> byAyah = {};
+                for (final t in lineTokens) {
+                  byAyah.putIfAbsent(t.ayahUQ, () => []).add(t);
+                }
+                final List<int> ayahOrder = byAyah.keys.toList()..sort();
+                final List<AyahModel> segments = [];
+                for (final ayahUQ in ayahOrder) {
+                  final original = staticPage.ayahs
+                      .firstWhere((a) => a.ayahUQNumber == ayahUQ);
+                  final joined = byAyah[ayahUQ]!.map((e) => e.text).join(' ');
+                  segments.add(
+                    AyahModel.fromAya(
+                      ayah: original,
+                      aya: joined,
+                      ayaText: joined,
+                      centered: line.isCentered,
+                    ),
+                  );
+                }
+                staticPage.lines
+                    .add(LineModel(segments, centered: line.isCentered));
+              } else {
+                // fallback: line_start/line_end + تقسيم \n
+                final List<AyahModel> ayasCoveringLine = staticPage.ayahs
+                    .where((a) =>
+                        (a.lineStart ?? -1) <= line.lineNumber &&
+                        (a.lineEnd ?? -1) >= line.lineNumber)
+                    .toList()
+                  ..sort((a, b) => a.ayahNumber.compareTo(b.ayahNumber));
+
+                final List<AyahModel> lineAyahSegments = <AyahModel>[];
+                for (final a in ayasCoveringLine) {
+                  final parts = a.text.split('\n');
+                  final int start = a.lineStart ?? line.lineNumber;
+                  int idx = line.lineNumber - start;
+                  if (idx < 0) idx = 0;
+                  if (idx >= parts.length) idx = parts.length - 1;
+                  final String segment = parts.isEmpty ? a.text : parts[idx];
+                  lineAyahSegments.add(
+                    AyahModel.fromAya(
+                      ayah: a,
+                      aya: segment,
+                      ayaText: segment,
+                      centered: line.isCentered,
+                    ),
+                  );
+                }
+                if (lineAyahSegments.isNotEmpty) {
+                  staticPage.lines.add(
+                      LineModel(lineAyahSegments, centered: line.isCentered));
+                }
               }
             }
-          } else {
-            ayas.add(aya);
+          }
+
+          if (staticPage.lines.isEmpty && staticPage.ayahs.isNotEmpty) {
+            final Map<int, List<AyahModel>> byLine = {};
+            for (final a in staticPage.ayahs) {
+              final from = a.lineStart ?? 0;
+              final to = a.lineEnd ?? from;
+              for (int ln = from; ln <= to; ln++) {
+                byLine.putIfAbsent(ln, () => []).add(a);
+              }
+            }
+            final ordered = byLine.keys.toList()..sort();
+            for (final ln in ordered) {
+              final list = byLine[ln]!
+                ..sort((a, b) => a.ayahNumber.compareTo(b.ayahNumber));
+              staticPage.lines.add(LineModel(list));
+            }
           }
         }
-        // إذا بقيت آيات في ayas بعد آخر سطر
-        if (ayas.isNotEmpty) {
-          staticPage.lines.add(LineModel([...ayas]));
+      } catch (e) {
+        log('Failed to load quran_info.json: $e', name: 'QuranCtrl');
+        for (final staticPage in staticPages) {
+          staticPage.lines.clear();
+          final Map<int, List<AyahModel>> byLine = {};
+          for (final a in staticPage.ayahs) {
+            final from = a.lineStart ?? 0;
+            final to = a.lineEnd ?? from;
+            for (int ln = from; ln <= to; ln++) {
+              byLine.putIfAbsent(ln, () => []).add(a);
+            }
+          }
+          final ordered = byLine.keys.toList()..sort();
+          for (final ln in ordered) {
+            final list = byLine[ln]!
+              ..sort((a, b) => a.ayahNumber.compareTo(b.ayahNumber));
+            staticPage.lines.add(LineModel(list));
+          }
         }
-        ayas.clear();
       }
       update();
     }
@@ -831,4 +976,18 @@ class QuranCtrl extends GetxController {
     }
     return KeyEventResult.ignored;
   }
+}
+
+/// تمثيل كلمة منفصلة مع معرفها العالمي ورابطها بالآية والصفحة
+class _WordToken {
+  final int id; // المعرف العالمي للكلمة عبر المصحف
+  final int page; // رقم الصفحة
+  final int ayahUQ; // رقم الآية الفريد
+  final String text; // نص الكلمة (أو ذيل الآية)
+  _WordToken({
+    required this.id,
+    required this.page,
+    required this.ayahUQ,
+    required this.text,
+  });
 }

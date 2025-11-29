@@ -508,9 +508,9 @@ class SurahDisplayScreen extends StatelessWidget {
                             isDark: isDark,
                             bookmarkCtrl.bookmarksAyahs,
                             bookmarkCtrl.bookmarks,
-                            boxFit: line.ayahs.last.centered!
-                                ? BoxFit.contain
-                                : BoxFit.fill,
+                            // boxFit: line.ayahs.last.centered!
+                            //     ? BoxFit.contain
+                            //     : BoxFit.fill,
                             onDefaultAyahLongPress: onAyahLongPress,
                             bookmarksColor: bookmarksColor,
                             textColor:

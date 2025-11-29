@@ -25,6 +25,20 @@ class QuranRepository {
     return jsonDecode(content);
   }
 
+  /// Fetches the Quran info.
+  ///
+  /// This method retrieves a list of Quran data asynchronously.
+  ///
+  /// Returns a [Future] that completes with a [List] of dynamic objects
+  /// representing the Quran info.
+  ///
+  /// Throws an [Exception] if the data retrieval fails.
+  Future<List<dynamic>> getQuranInfo() async {
+    final String infoRaw = await rootBundle
+        .loadString('packages/quran_library/assets/jsons/quran_info.json');
+    return jsonDecode(infoRaw);
+  }
+
   /// Fetches the Quran data in Warsh narration from remote URL.
   ///
   /// This method retrieves Warsh Quran data from the remote repository.

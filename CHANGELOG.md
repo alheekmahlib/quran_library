@@ -4,6 +4,7 @@
 	* .
 * **ADD:**
 	* Add Kashida to Tafsir & Surah info text.
+	* Add `svgBannerColor` to `BannerStyle` to change SVG banner color.
 * **FIX:**
 	* Prepare fonts if fonts is local.
 	* Dark mode issue in Ayah audio download manager.

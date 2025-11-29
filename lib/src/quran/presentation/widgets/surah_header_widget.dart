@@ -86,9 +86,15 @@ class SurahHeaderWidget extends StatelessWidget {
                       AssetsPath.assets.surahSvgBanner,
                   width: bannerStyle?.bannerSvgWidth ?? 250.0,
                   height: bannerStyle?.bannerSvgHeight ?? 160.0,
-                  colorFilter: ColorFilter.mode(
-                      Theme.of(context).colorScheme.primary,
-                      BlendMode.modulate),
+                  colorFilter: bannerStyle?.svgBannerColor != null
+                      ? ColorFilter.mode(
+                          bannerStyle!.svgBannerColor!,
+                          BlendMode.modulate,
+                        )
+                      : ColorFilter.mode(
+                          Theme.of(context).colorScheme.primary,
+                          BlendMode.modulate,
+                        ),
                 ),
                 // Text(
                 //   ' surah${(surahNumber).toString().padLeft(3, '0')} surah-icon',

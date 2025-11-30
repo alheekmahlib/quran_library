@@ -5,9 +5,12 @@
 * **ADD:**
 	* Add Kashida to Tafsir & Surah info text.
 	* Add `svgBannerColor` to `BannerStyle` to change SVG banner color.
+	* Add possibility of deleting the Tafsir or translation that was previously downloaded by `deleteTafsirOrTranslation(int itemIndex)`.
 * **FIX:**
 	* Prepare fonts if fonts is local.
 	* Dark mode issue in Ayah audio download manager.
+	* Custom Tafsir Performance.
+	* Download Tafsir & translation icon color in dark mode.
 
 ## 2.3.1
 

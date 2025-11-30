@@ -62,6 +62,12 @@ class TafsirCtrl extends GetxController {
   List<TafsirNameModel> get customTranslationsItems =>
       customTafsirAndTranslationsItems.where((e) => e.isTranslation).toList();
 
+  bool getIsRemovableItem(int index) {
+    return tafsirDownloadIndexList.contains(index) &&
+        index != _defaultTafsirIndex &&
+        index != translationsStartIndex;
+  }
+
   Future<void> _loadPersistedCustoms() async {
     final raw = box.read(_customTafsirsKey);
     if (raw == null) return;
@@ -533,6 +539,73 @@ class TafsirCtrl extends GetxController {
         ? rawList.map((e) => e as int).toList()
         : [_defaultTafsirIndex, translationsStartIndex];
     tafsirDownloadIndexList.value = savedIndices;
+  }
+
+  /// شرح: حذف تفسير أو ترجمة محملة
+  /// Explanation: Delete a downloaded tafsir or translation
+  Future<bool> deleteTafsirOrTranslation({required int itemIndex}) async {
+    if (kIsWeb) {
+      log('Cannot delete files on web platform', name: 'TafsirCtrl');
+      return false;
+    }
+
+    // منع حذف التفسير والترجمة الافتراضية
+    if (itemIndex == _defaultTafsirIndex ||
+        itemIndex == translationsStartIndex) {
+      log('Cannot delete default tafsir or translation', name: 'TafsirCtrl');
+      return false;
+    }
+
+    // منع حذف التفاسير المخصصة (لها دالة منفصلة)
+    if (itemIndex >= 0 && itemIndex < tafsirAndTranslationsItems.length) {
+      final selected = tafsirAndTranslationsItems[itemIndex];
+      if (selected.isCustom) {
+        log('Use removeCustomTafsir for custom entries', name: 'TafsirCtrl');
+        return false;
+      }
+    }
+
+    try {
+      final selected = tafsirAndTranslationsItems[itemIndex];
+      String filePath;
+
+      if (!selected.isTranslation) {
+        filePath = join(_appDir.path, selected.databaseName);
+      } else {
+        filePath = join(_appDir.path, '${selected.fileName}.json');
+      }
+
+      final file = File(filePath);
+      if (await file.exists()) {
+        await file.delete();
+        log('Deleted file: $filePath', name: 'TafsirCtrl');
+      } else {
+        log('File not found: $filePath', name: 'TafsirCtrl');
+      }
+
+      // تحديث حالة التحميل
+      _updateDownloadStatus(itemIndex, false);
+
+      // إزالة الفهرس من القائمة المحفوظة
+      tafsirDownloadIndexList.remove(itemIndex);
+      await box.write('tafsirDownloadIndices', tafsirDownloadIndexList);
+
+      // إعادة فحص جميع الملفات
+      await _checkAllTafsirDownloaded();
+
+      // إذا كان التفسير المحذوف هو المختار حاليًا، العودة للتفسير الافتراضي
+      if (radioValue.value == itemIndex) {
+        await handleRadioValueChanged(_defaultTafsirIndex);
+      }
+
+      update(['tafsirs_menu_list']);
+      log('Successfully deleted tafsir/translation at index $itemIndex',
+          name: 'TafsirCtrl');
+      return true;
+    } catch (e) {
+      log('Error deleting tafsir/translation: $e', name: 'TafsirCtrl');
+      return false;
+    }
   }
 
   List<CustomTafsirEntry> customTafsirEntries = [];

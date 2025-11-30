@@ -33,6 +33,11 @@ class TafsirStyle {
   final Color? fontSizeActiveTrackColor;
   final Color? fontSizeInactiveTrackColor;
   final double? fontSizeIconSize;
+  final Color? downloadIconColor;
+  final Gradient? dialogHeaderBackgroundGradient;
+  final Color? dialogHeaderTitleColor;
+  final String? dialogHeaderTitle;
+  final Color? dialogCloseIconColor;
 
   TafsirStyle({
     this.backgroundColor,
@@ -67,6 +72,11 @@ class TafsirStyle {
     this.fontSizeActiveTrackColor,
     this.fontSizeInactiveTrackColor,
     this.fontSizeIconSize,
+    this.downloadIconColor,
+    this.dialogHeaderBackgroundGradient,
+    this.dialogHeaderTitleColor,
+    this.dialogHeaderTitle,
+    this.dialogCloseIconColor,
   });
 
   TafsirStyle copyWith({
@@ -102,6 +112,11 @@ class TafsirStyle {
     Color? fontSizeActiveTrackColor,
     Color? fontSizeInactiveTrackColor,
     double? fontSizeIconSize,
+    Color? downloadIconColor,
+    Gradient? dialogHeaderBackgroundGradient,
+    Color? dialogHeaderTitleColor,
+    String? dialogHeaderTitle,
+    Color? dialogCloseIconColor,
   }) {
     return TafsirStyle(
       tafsirNameWidget: tafsirNameWidget ?? this.tafsirNameWidget,
@@ -147,6 +162,13 @@ class TafsirStyle {
       fontSizeInactiveTrackColor:
           fontSizeInactiveTrackColor ?? this.fontSizeInactiveTrackColor,
       fontSizeIconSize: fontSizeIconSize ?? this.fontSizeIconSize,
+      downloadIconColor: downloadIconColor ?? this.downloadIconColor,
+      dialogHeaderBackgroundGradient:
+          dialogHeaderBackgroundGradient ?? this.dialogHeaderBackgroundGradient,
+      dialogHeaderTitleColor:
+          dialogHeaderTitleColor ?? this.dialogHeaderTitleColor,
+      dialogHeaderTitle: dialogHeaderTitle ?? this.dialogHeaderTitle,
+      dialogCloseIconColor: dialogCloseIconColor ?? this.dialogCloseIconColor,
     );
   }
 
@@ -185,7 +207,7 @@ class TafsirStyle {
       selectedTafsirBorderColor: primary,
       unSelectedTafsirBorderColor: primary.withValues(alpha: 0.3),
       changeTafsirDialogHeight: MediaQuery.of(context).size.height * 0.7,
-      changeTafsirDialogWidth: MediaQuery.of(context).size.width * 0.9,
+      changeTafsirDialogWidth: MediaQuery.of(context).size.width,
 
       // النصوص والأحجام
       fontSize: 18.0,
@@ -235,6 +257,18 @@ class TafsirStyle {
       fontSizeActiveTrackColor: Colors.white,
       fontSizeInactiveTrackColor: primary.withValues(alpha: 0.5),
       fontSizeIconSize: 34.0,
+      downloadIconColor: primary,
+      dialogHeaderTitleColor: onBg,
+      dialogCloseIconColor: onBg,
+      dialogHeaderBackgroundGradient: LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+        colors: [
+          primary.withValues(alpha: 0.15),
+          primary.withValues(alpha: 0.05),
+        ],
+      ),
+      dialogHeaderTitle: 'تغيير التفسير',
     );
   }
 }

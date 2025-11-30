@@ -37,7 +37,7 @@ class ChangeTafsirDialog extends StatelessWidget {
         },
         child: Container(
           width: 160.h,
-          margin: const EdgeInsets.symmetric(horizontal: 16),
+          // margin: const EdgeInsets.symmetric(horizontal: 16),
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
           child: Row(
             mainAxisSize: MainAxisSize.min,
@@ -88,53 +88,71 @@ class DailogBuild extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetBuilder<TafsirCtrl>(
-        id: 'tafsirs_menu_list',
-        builder: (tafsirCtrl) {
-          return Dialog(
-            backgroundColor: tafsirStyle?.backgroundColor!,
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-            child: ConstrainedBox(
-              constraints: BoxConstraints(
-                maxWidth: tafsirStyle?.changeTafsirDialogWidth ??
-                    MediaQuery.of(context).size.width,
-                maxHeight: tafsirStyle?.changeTafsirDialogHeight ??
-                    MediaQuery.of(context).size.height * 0.9,
-              ),
-              child: Container(
-                margin:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8.0),
-                padding: const EdgeInsets.symmetric(vertical: 8),
-                child: SingleChildScrollView(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: List.generate(
-                      tafsirCtrl.tafsirAndTranslationsItems.length,
-                      (index) {
-                        return Column(
-                          children: [
-                            tafsirOrTranslateTitle(index),
-                            TafsirItemWidget(
-                              tafsirIndex: index,
-                              pageNumber: pageNumber ??
-                                  QuranCtrl
-                                      .instance.state.currentPageNumber.value,
-                              tafsirNameList: tafsirNameList,
-                              tafsirStyle: tafsirStyle ??
-                                  TafsirStyle.defaults(
-                                      isDark: isDark!, context: context),
-                              isDark: isDark!,
-                            ),
-                          ],
-                        );
-                      },
+      id: 'tafsirs_menu_list',
+      builder: (tafsirCtrl) {
+        return Dialog(
+          backgroundColor: tafsirStyle?.backgroundColor!,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxWidth: tafsirStyle?.changeTafsirDialogWidth ??
+                  MediaQuery.of(context).size.width,
+              maxHeight: tafsirStyle?.changeTafsirDialogHeight ??
+                  MediaQuery.of(context).size.height * 0.9,
+            ),
+            child: Container(
+              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8.0),
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              child: Column(
+                children: [
+                  // Header
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: HeaderDialogWidget(
+                      title: tafsirStyle?.dialogHeaderTitle ?? 'تغيير التفسير',
+                      isDark: isDark,
+                      titleColor: tafsirStyle?.dialogHeaderTitleColor,
+                      backgroundGradient:
+                          tafsirStyle?.dialogHeaderBackgroundGradient,
+                      closeIconColor: tafsirStyle?.dialogCloseIconColor,
                     ),
                   ),
-                ),
+                  Expanded(
+                    child: SingleChildScrollView(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: List.generate(
+                          tafsirCtrl.tafsirAndTranslationsItems.length,
+                          (index) {
+                            return Column(
+                              children: [
+                                tafsirOrTranslateTitle(index),
+                                TafsirItemWidget(
+                                  tafsirIndex: index,
+                                  pageNumber: pageNumber ??
+                                      QuranCtrl.instance.state.currentPageNumber
+                                          .value,
+                                  tafsirNameList: tafsirNameList,
+                                  tafsirStyle: tafsirStyle ??
+                                      TafsirStyle.defaults(
+                                          isDark: isDark!, context: context),
+                                  isDark: isDark!,
+                                ),
+                              ],
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
-          );
-        });
+          ),
+        );
+      },
+    );
   }
 
   Widget tafsirOrTranslateTitle(int index, {String? title}) {
@@ -143,7 +161,7 @@ class DailogBuild extends StatelessWidget {
           index == 0 ? tafsirStyle?.tafsirName! : tafsirStyle?.translateName!;
       return Container(
         width: double.infinity,
-        padding: const EdgeInsets.symmetric(vertical: 6.0),
+        padding: const EdgeInsets.symmetric(vertical: 2.0),
         margin: const EdgeInsets.symmetric(vertical: 6.0),
         decoration: BoxDecoration(
           color: tafsirStyle?.backgroundTitleColor!,
@@ -222,70 +240,47 @@ class TafsirItemWidget extends StatelessWidget {
             child: Row(
               children: [
                 Obx(
-                  () => isDownloaded.value
-                      ? Container(
-                          height: 20,
-                          width: 20,
-                          margin: const EdgeInsets.symmetric(horizontal: 14),
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                                color: tafsirStyle.selectedTafsirBorderColor!,
-                                width: 2),
-                            color: Colors.white,
-                          ),
-                          child: tafsirCtrl.radioValue.value == tafsirIndex
-                              ? const Icon(
-                                  Icons.done,
-                                  size: 14,
-                                  color: Colors.black,
-                                )
-                              : null,
-                        )
-                      : Stack(
-                          alignment: Alignment.center,
-                          children: [
-                            // مؤشر دوران أثناء مرحلة التهيئة وقبل ظهور التقدم
-                            Obx(() {
-                              final isThisItem =
-                                  tafsirIndex == tafsirCtrl.downloadIndex.value;
-                              final preparing =
-                                  tafsirCtrl.isPreparingDownload.value;
-                              final startedNoProgress =
-                                  tafsirCtrl.onDownloading.value &&
-                                      tafsirCtrl.progress.value == 0.0;
-                              final showInit = isThisItem &&
-                                  (preparing || startedNoProgress);
-                              return showInit
-                                  ? SizedBox(
-                                      height: 24,
-                                      width: 24,
-                                      child: CircularProgressIndicator(
-                                        strokeWidth: 2,
-                                        color:
-                                            tafsirStyle.selectedTafsirColor ??
-                                                const Color(0xffCDAD80),
-                                      ),
-                                    )
-                                  : const SizedBox.shrink();
-                            }),
-                            // مؤشر تقدم أثناء التحميل
-                            Obx(
-                              () => CircularProgressIndicator(
-                                strokeWidth: 2,
-                                backgroundColor: Colors.transparent,
-                                color: tafsirIndex ==
-                                        tafsirCtrl.downloadIndex.value
-                                    ? tafsirCtrl.onDownloading.value
-                                        ? tafsirStyle.selectedTafsirColor ??
-                                            const Color(0xffCDAD80)
-                                        : Colors.transparent
-                                    : Colors.transparent,
-                                value: tafsirCtrl.progress.value,
-                              ),
-                            ),
-                            // زر التحميل يُخفى أثناء التهيئة أو عند بدء التحميل بدون تقدم
-                            if (!kIsWeb)
+                  () {
+                    return isDownloaded.value
+                        ? tafsirCtrl.getIsRemovableItem(tafsirIndex)
+                            ? IconButton(
+                                icon: Icon(
+                                  Icons.delete_forever_outlined,
+                                  size: 22,
+                                  color: tafsirStyle.downloadIconColor,
+                                ),
+                                onPressed: () async {
+                                  tafsirCtrl.update(['tafsirs_menu_list']);
+                                  await tafsirCtrl.deleteTafsirOrTranslation(
+                                      itemIndex: tafsirIndex);
+                                },
+                              )
+                            : Container(
+                                height: 20,
+                                width: 20,
+                                margin:
+                                    const EdgeInsets.symmetric(horizontal: 14),
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                      color: tafsirStyle
+                                          .selectedTafsirBorderColor!,
+                                      width: 2),
+                                  color: Colors.white,
+                                ),
+                                child:
+                                    tafsirCtrl.radioValue.value == tafsirIndex
+                                        ? const Icon(
+                                            Icons.done,
+                                            size: 14,
+                                            color: Colors.black,
+                                          )
+                                        : null,
+                              )
+                        : Stack(
+                            alignment: Alignment.center,
+                            children: [
+                              // مؤشر دوران أثناء مرحلة التهيئة وقبل ظهور التقدم
                               Obx(() {
                                 final isThisItem = tafsirIndex ==
                                     tafsirCtrl.downloadIndex.value;
@@ -294,31 +289,75 @@ class TafsirItemWidget extends StatelessWidget {
                                 final startedNoProgress =
                                     tafsirCtrl.onDownloading.value &&
                                         tafsirCtrl.progress.value == 0.0;
-                                final hideIcon = isThisItem &&
-                                    (preparing ||
-                                        startedNoProgress ||
-                                        tafsirCtrl.onDownloading.value);
-                                return Visibility(
-                                  visible: !hideIcon,
-                                  child: IconButton(
-                                    icon: Icon(
-                                      Icons.cloud_download_outlined,
-                                      size: 22,
-                                      color: tafsirStyle.unSelectedTafsirColor,
-                                    ),
-                                    onPressed: () async {
-                                      tafsirCtrl.downloadIndex.value =
-                                          tafsirIndex;
-                                      tafsirCtrl.update(['tafsirs_menu_list']);
-                                      await tafsirCtrl
-                                          .tafsirAndTranslationDownload(
-                                              tafsirIndex);
-                                    },
-                                  ),
-                                );
+                                final showInit = isThisItem &&
+                                    (preparing || startedNoProgress);
+                                return showInit
+                                    ? SizedBox(
+                                        height: 24,
+                                        width: 24,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                          color:
+                                              tafsirStyle.selectedTafsirColor ??
+                                                  const Color(0xffCDAD80),
+                                        ),
+                                      )
+                                    : const SizedBox.shrink();
                               }),
-                          ],
-                        ),
+                              // مؤشر تقدم أثناء التحميل
+                              Obx(
+                                () => CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  backgroundColor: Colors.transparent,
+                                  color: tafsirIndex ==
+                                          tafsirCtrl.downloadIndex.value
+                                      ? tafsirCtrl.onDownloading.value
+                                          ? tafsirStyle.selectedTafsirColor ??
+                                              const Color(0xffCDAD80)
+                                          : Colors.transparent
+                                      : Colors.transparent,
+                                  value: tafsirCtrl.progress.value,
+                                ),
+                              ),
+                              // زر التحميل يُخفى أثناء التهيئة أو عند بدء التحميل بدون تقدم
+                              if (!kIsWeb)
+                                Obx(
+                                  () {
+                                    final isThisItem = tafsirIndex ==
+                                        tafsirCtrl.downloadIndex.value;
+                                    final preparing =
+                                        tafsirCtrl.isPreparingDownload.value;
+                                    final startedNoProgress =
+                                        tafsirCtrl.onDownloading.value &&
+                                            tafsirCtrl.progress.value == 0.0;
+                                    final hideIcon = isThisItem &&
+                                        (preparing ||
+                                            startedNoProgress ||
+                                            tafsirCtrl.onDownloading.value);
+                                    return Visibility(
+                                      visible: !hideIcon,
+                                      child: IconButton(
+                                        icon: Icon(
+                                          Icons.cloud_download_outlined,
+                                          size: 22,
+                                          color: tafsirStyle.downloadIconColor,
+                                        ),
+                                        onPressed: () async {
+                                          tafsirCtrl.downloadIndex.value =
+                                              tafsirIndex;
+                                          tafsirCtrl
+                                              .update(['tafsirs_menu_list']);
+                                          await tafsirCtrl
+                                              .tafsirAndTranslationDownload(
+                                                  tafsirIndex);
+                                        },
+                                      ),
+                                    );
+                                  },
+                                ),
+                            ],
+                          );
+                  },
                 ),
                 const SizedBox(width: 8),
                 Expanded(

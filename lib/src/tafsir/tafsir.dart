@@ -6,6 +6,7 @@ import 'package:arabic_justified_text/arabic_justified_text.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart' show kDebugMode, kIsWeb;
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_scale_kit/flutter_scale_kit.dart';
 import 'package:get/get.dart' hide Response;

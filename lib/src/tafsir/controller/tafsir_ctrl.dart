@@ -106,7 +106,9 @@ class TafsirCtrl extends GetxController {
 
   Future<void> _persistCustoms() async {
     final customOnly = customTafsirEntries.map((e) => e.toJson()).toList();
-    await box.write(_customTafsirsKey, json.encode(customOnly));
+    SchedulerBinding.instance.addPostFrameCallback((_) async {
+      await box.write(_customTafsirsKey, json.encode(customOnly));
+    });
   }
 
   bool _isTafsirInitialized = false;
@@ -541,8 +543,11 @@ class TafsirCtrl extends GetxController {
     try {
       for (final entry in entries) {
         final m = entry.model;
-        final exists = tafsirAndTranslationsItems.any((e) =>
-            e.isCustom && e.databaseName == m.databaseName && e.name == m.name);
+        final exists = tafsirAndTranslationsItems.firstWhereOrNull((e) =>
+                e.isCustom &&
+                e.databaseName == m.databaseName &&
+                e.name == m.name) !=
+            null;
         if (!exists) {
           tafsirAndTranslationsItems.insert(entry.index, m);
           added = true;
@@ -550,9 +555,10 @@ class TafsirCtrl extends GetxController {
       }
       // append to live observable list (avoid duplicates)
       for (final entry in entries) {
-        final already = customTafsirEntries.any((e) =>
-            e.model.databaseName == entry.model.databaseName &&
-            e.name == entry.name);
+        final already = customTafsirEntries.firstWhereOrNull((e) =>
+                e.model.databaseName == entry.model.databaseName &&
+                e.name == entry.name) !=
+            null;
         if (!already) customTafsirEntries.insert(entry.index, entry);
       }
       if (added) await _persistCustoms();

@@ -601,40 +601,57 @@ class QuranLibraryScreen extends StatelessWidget {
                                     },
                                   ),
                                 )
-                              : PageViewBuild(
-                                  circularProgressWidget:
-                                      circularProgressWidget,
-                                  languageCode: languageCode,
-                                  juzName: juzName,
-                                  sajdaName: sajdaName,
-                                  topTitleChild: topTitleChild,
-                                  bookmarkList: bookmarkList,
-                                  ayahSelectedFontColor: ayahSelectedFontColor,
-                                  textColor: textColor,
-                                  ayahIconColor: ayahIconColor,
-                                  showAyahBookmarkedIcon:
-                                      showAyahBookmarkedIcon,
-                                  onAyahLongPress: onAyahLongPress,
-                                  bookmarksColor: bookmarksColor,
-                                  surahNameStyle: surahNameStyle,
-                                  bannerStyle: bannerStyle,
-                                  basmalaStyle: basmalaStyle,
-                                  onSurahBannerPress: onSurahBannerPress,
-                                  surahNumber: surahNumber,
-                                  ayahSelectedBackgroundColor:
-                                      ayahSelectedBackgroundColor,
-                                  onPagePress: onPagePress,
-                                  isDark: isDark,
-                                  fontsName: fontsName,
-                                  ayahBookmarked: ayahBookmarked,
-                                  anotherMenuChild: anotherMenuChild,
-                                  anotherMenuChildOnTap: anotherMenuChildOnTap,
-                                  secondMenuChild: secondMenuChild,
-                                  secondMenuChildOnTap: secondMenuChildOnTap,
-                                  userContext: parentContext,
-                                  pageIndex: pageIndex,
-                                  quranCtrl: quranCtrl,
-                                  isFontsLocal: isFontsLocal!,
+                              : InkWell(
+                                  onTap: () {
+                                    if (onPagePress != null) {
+                                      onPagePress!();
+                                    } else {
+                                      quranCtrl.showControlToggle();
+                                      quranCtrl.state.overlayEntry?.remove();
+                                      quranCtrl.state.overlayEntry = null;
+                                    }
+                                  },
+                                  hoverColor: Colors.transparent,
+                                  focusColor: Colors.transparent,
+                                  splashColor: Colors.transparent,
+                                  highlightColor: Colors.transparent,
+                                  child: PageViewBuild(
+                                    circularProgressWidget:
+                                        circularProgressWidget,
+                                    languageCode: languageCode,
+                                    juzName: juzName,
+                                    sajdaName: sajdaName,
+                                    topTitleChild: topTitleChild,
+                                    bookmarkList: bookmarkList,
+                                    ayahSelectedFontColor:
+                                        ayahSelectedFontColor,
+                                    textColor: textColor,
+                                    ayahIconColor: ayahIconColor,
+                                    showAyahBookmarkedIcon:
+                                        showAyahBookmarkedIcon,
+                                    onAyahLongPress: onAyahLongPress,
+                                    bookmarksColor: bookmarksColor,
+                                    surahNameStyle: surahNameStyle,
+                                    bannerStyle: bannerStyle,
+                                    basmalaStyle: basmalaStyle,
+                                    onSurahBannerPress: onSurahBannerPress,
+                                    surahNumber: surahNumber,
+                                    ayahSelectedBackgroundColor:
+                                        ayahSelectedBackgroundColor,
+                                    onPagePress: onPagePress,
+                                    isDark: isDark,
+                                    fontsName: fontsName,
+                                    ayahBookmarked: ayahBookmarked,
+                                    anotherMenuChild: anotherMenuChild,
+                                    anotherMenuChildOnTap:
+                                        anotherMenuChildOnTap,
+                                    secondMenuChild: secondMenuChild,
+                                    secondMenuChildOnTap: secondMenuChildOnTap,
+                                    userContext: parentContext,
+                                    pageIndex: pageIndex,
+                                    quranCtrl: quranCtrl,
+                                    isFontsLocal: isFontsLocal!,
+                                  ),
                                 ),
                         ),
                       ),

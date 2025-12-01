@@ -371,7 +371,7 @@ extension AyahCtrlExtension on AudioCtrl {
 
   /// اسم ملف الآية لقارئ الآيات الحالي (حسب مصدر الروابط)
   String _ayahFileNameFor(int surahNumber, int ayahNumberInSurah) {
-    if (ReadersConstants.ayahReaderInfo[state.ayahReaderIndex.value]['url'] ==
+    if (ReadersConstants.activeAyahReaders[state.ayahReaderIndex.value].url ==
         ReadersConstants.ayahs1stSource) {
       // المصدر الأول يعتمد على الرقم الفريد للآية
       final aq = QuranCtrl.instance.surahs

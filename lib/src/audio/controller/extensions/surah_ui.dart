@@ -59,14 +59,8 @@ extension SurahUi on AudioCtrl {
   }
 
   Future<void> changeAyahReadersOnTap(BuildContext context, int index) async {
-    state.ayahReaderNameValue.value =
-        ReadersConstants.ayahReaderInfo[index]['readerD'];
-    state.ayahReaderValue.value =
-        ReadersConstants.ayahReaderInfo[index]['readerI'];
     state.box.write(StorageConstants.ayahAudioPlayerSound,
-        ReadersConstants.ayahReaderInfo[index]['readerD']);
-    state.box.write(StorageConstants.ayahAudioPlayerName,
-        ReadersConstants.ayahReaderInfo[index]['readerN']);
+        ReadersConstants.activeAyahReaders[index].readerNamePath);
     state.box.write(StorageConstants.ayahReaderIndex, index);
     state.ayahReaderIndex.value = index;
     Navigator.of(context).pop();

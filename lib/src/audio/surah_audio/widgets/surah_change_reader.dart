@@ -27,7 +27,8 @@ class SurahChangeSurahReader extends StatelessWidget {
             constraints: BoxConstraints(
               maxHeight:
                   s.dialogHeight ?? MediaQuery.of(context).size.height * 0.7,
-              maxWidth: s.dialogWidth ?? MediaQuery.of(context).size.width * 0.6,
+              maxWidth:
+                  s.dialogWidth ?? MediaQuery.of(context).size.width * 0.6,
             ),
             child: _buildDialog(context, s, dark),
           ),
@@ -71,13 +72,13 @@ class SurahChangeSurahReader extends StatelessWidget {
             child: ListView.separated(
               shrinkWrap: true,
               physics: const ClampingScrollPhysics(),
-              itemCount: ReadersConstants.surahReaderInfo.length,
+              itemCount: ReadersConstants.activeSurahReaders.length,
               separatorBuilder: (_, __) => Divider(
                 height: 1,
                 color: AppColors.getTextColor(dark).withValues(alpha: 0.08),
               ),
               itemBuilder: (context, index) {
-                final info = ReadersConstants.surahReaderInfo[index];
+                final info = ReadersConstants.activeSurahReaders[index];
                 final bool isSelected = selectedIndex == index;
                 final Color itemColor =
                     isSelected ? activeColor : inactiveColor;
@@ -98,7 +99,7 @@ class SurahChangeSurahReader extends StatelessWidget {
                     ),
                     contentPadding: const EdgeInsets.symmetric(horizontal: 8),
                     title: Text(
-                      '${info['name']}'.tr,
+                      info.name.tr,
                       style: QuranLibrary().cairoStyle.copyWith(
                             color: textColor,
                             fontSize: itemFontSize,
@@ -128,7 +129,9 @@ class SurahChangeSurahReader extends StatelessWidget {
       children: [
         Obx(
           () => Text(
-            '${ReadersConstants.surahReaderInfo[surahAudioCtrl.state.surahReaderIndex.value]['name']}'
+            ReadersConstants
+                .activeSurahReaders[surahAudioCtrl.state.surahReaderIndex.value]
+                .name
                 .tr,
             style: QuranLibrary().cairoStyle.copyWith(
                   color: textColor,

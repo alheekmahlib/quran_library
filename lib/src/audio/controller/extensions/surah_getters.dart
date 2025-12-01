@@ -24,7 +24,7 @@ extension SurahGetters on AudioCtrl {
   }
 
   String get urlSurahFilePath {
-    return '${state.surahReaderValue}${state.surahReaderNameValue}${state.currentAudioListSurahNum.value.toString().padLeft(3, "0")}.mp3';
+    return '${state.surahReaderUrl}${state.surahReaderNameValue}${state.currentAudioListSurahNum.value.toString().padLeft(3, "0")}.mp3';
   }
 
   /// single verse
@@ -61,9 +61,8 @@ extension SurahGetters on AudioCtrl {
         id: '${state.currentAudioListSurahNum.value}',
         title: QuranCtrl.instance.state
             .surahs[(state.currentAudioListSurahNum.value - 1)].arabicName,
-        artist:
-            '${ReadersConstants.surahReaderInfo[state.surahReaderIndex.value]['name']}'
-                .tr,
+        artist: ReadersConstants
+            .activeSurahReaders[state.surahReaderIndex.value].name.tr,
         artUri: state.cachedArtUri, // state.cachedArtUri,
       );
 
@@ -131,15 +130,15 @@ extension SurahGetters on AudioCtrl {
           state.audioPlayer.durationStream,
           (position, bufferedPosition, duration) => PackagePositionData(
               position, bufferedPosition, duration ?? Duration.zero));
-  String get ayahReaderValue =>
-      ReadersConstants.ayahReaderInfo[state.ayahReaderIndex.value]['readerD'];
+  String get ayahReaderValue => ReadersConstants
+      .activeAyahReaders[state.ayahReaderIndex.value].readerNamePath;
 
   List<String> get selectedSurahAyahsFileNames {
     return List.generate(
       currentAyahsSurah.ayahs.length,
       (i) {
         final fileName = ReadersConstants
-                    .ayahReaderInfo[state.ayahReaderIndex.value]['url'] ==
+                    .activeAyahReaders[state.ayahReaderIndex.value].url ==
                 ReadersConstants.ayahs1stSource
             ? '${currentAyahsSurah.ayahs[i].ayahUQNumber}.mp3'
             : '${currentAyahsSurah.surahNumber.toString().padLeft(3, "0")}${currentAyahsSurah.ayahs[i].ayahNumber.toString().padLeft(3, "0")}.mp3';
@@ -155,13 +154,13 @@ extension SurahGetters on AudioCtrl {
   }
 
   String get ayahDownloadSource =>
-      ReadersConstants.ayahReaderInfo[state.ayahReaderIndex.value]['url'];
+      ReadersConstants.activeAyahReaders[state.ayahReaderIndex.value].url;
 
   String get currentAyahUrl => '$ayahDownloadSource$currentAyahFileName';
 
   String get currentAyahFileName {
     final fileName = ReadersConstants
-                .ayahReaderInfo[state.ayahReaderIndex.value]['url'] ==
+                .activeAyahReaders[state.ayahReaderIndex.value].url ==
             ReadersConstants.ayahs1stSource
         ? '${state.currentAyahUniqueNumber}.mp3'
         : '${currentAyahsSurah.surahNumber.toString().padLeft(3, '0')}${currentAyah.ayahNumber.toString().padLeft(3, '0')}.mp3';
@@ -204,9 +203,8 @@ extension SurahGetters on AudioCtrl {
             .ayahs
             .firstWhere((a) => a.ayahUQNumber == state.currentAyahUniqueNumber)
             .text,
-        artist:
-            '${ReadersConstants.ayahReaderInfo[state.ayahReaderIndex.value]['name']}'
-                .tr,
+        artist: ReadersConstants
+            .activeAyahReaders[state.ayahReaderIndex.value].name.tr,
         artUri: state.cachedArtUri,
       );
   List<MediaItem> get mediaItemsForCurrentSurah {
@@ -215,9 +213,8 @@ extension SurahGetters on AudioCtrl {
         (i) => MediaItem(
               id: '${currentAyahsSurah.ayahs[i].ayahUQNumber}',
               title: currentAyahsSurah.ayahs[i].text,
-              artist:
-                  '${ReadersConstants.ayahReaderInfo[state.ayahReaderIndex.value]['name']}'
-                      .tr,
+              artist: ReadersConstants
+                  .activeAyahReaders[state.ayahReaderIndex.value].name.tr,
               artUri: state.cachedArtUri,
             ));
   }

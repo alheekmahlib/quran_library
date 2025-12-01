@@ -25,12 +25,11 @@ class SurahState {
   TextEditingController textController = TextEditingController();
   RxInt selectedSurahIndex = 0.obs;
   final ScrollController surahListController = ScrollController();
-  String get surahReaderValue =>
-      ReadersConstants.surahReaderInfo[surahReaderIndex.value]['readerD'];
-  String get surahReaderNameValue =>
-      ReadersConstants.surahReaderInfo[surahReaderIndex.value]['readerN'];
-  RxString ayahReaderValue = "https://download.quranicaudio.com/quran/".obs;
-  RxString ayahReaderNameValue = "abdul_basit_murattal/".obs;
+  String get surahReaderUrl =>
+      ReadersConstants.activeSurahReaders[surahReaderIndex.value].url;
+  String get surahReaderNameValue => ReadersConstants
+      .activeSurahReaders[surahReaderIndex.value].readerNamePath;
+  // RxString ayahReaderNameValue = "abdul_basit_murattal/".obs;
   final bool isDisposed = false;
   List<AudioSource>? surahsPlayList;
   List<Map<int, AudioSource>> downloadSurahsPlayList = [];

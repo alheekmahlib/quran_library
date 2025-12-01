@@ -44,6 +44,7 @@ part 'core/utils/custom_widgets.dart';
 part 'data/model/ayah_audio_style.dart';
 part 'data/model/ayah_download_manager_style.dart';
 part 'data/model/surah_audio_style.dart';
+part 'data/model/reader_info.dart';
 part 'surah_audio/widgets/surah_audio_list.dart';
 part 'surah_audio/widgets/surah_back_drop_widget.dart';
 part 'surah_audio/widgets/surah_change_reader.dart';

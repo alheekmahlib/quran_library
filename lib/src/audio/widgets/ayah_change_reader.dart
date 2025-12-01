@@ -147,7 +147,10 @@ class AyahChangeReader extends StatelessWidget {
       children: [
         Obx(
           () => Text(
-            '${ReadersConstants.ayahReaderInfo[AudioCtrl.instance.state.ayahReaderIndex.value]['name']}'
+            ReadersConstants
+                .activeAyahReaders[
+                    AudioCtrl.instance.state.ayahReaderIndex.value]
+                .name
                 .tr,
             style: QuranLibrary().cairoStyle.copyWith(
                   color: textColor,
@@ -196,15 +199,15 @@ class ReaderListBuild extends StatelessWidget {
     return ListView.separated(
       shrinkWrap: true,
       physics: const ClampingScrollPhysics(),
-      itemCount: ReadersConstants.ayahReaderInfo.length,
+      itemCount: ReadersConstants.activeAyahReaders.length,
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       separatorBuilder: (_, __) => Divider(
         height: 1,
         color: AppColors.getTextColor(dark).withValues(alpha: 0.08),
       ),
       itemBuilder: (context, index) {
-        final info = ReadersConstants.ayahReaderInfo[index];
-        final bool isSelected = selectedIndex == info['index'];
+        final info = ReadersConstants.activeAyahReaders[index];
+        final bool isSelected = selectedIndex == info.index;
         final Color itemColor = isSelected ? activeColor : inactiveColor;
 
         return Padding(
@@ -222,7 +225,7 @@ class ReaderListBuild extends StatelessWidget {
             ),
             contentPadding: const EdgeInsets.symmetric(horizontal: 8),
             title: Text(
-              '${info['name']}'.tr,
+              info.name.tr,
               style: QuranLibrary().cairoStyle.copyWith(
                     color: textColor,
                     fontSize: itemFontSize,

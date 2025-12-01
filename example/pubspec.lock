@@ -4,12 +4,11 @@ packages:
   arabic_justified_text:
     dependency: transitive
     description:
-      path: "."
-      ref: main
-      resolved-ref: bb0cd8dcbfc38eaa055daabc1fcc290d68146779
-      url: "https://github.com/AhmedAlboishe/arabic_justified_text.git"
-    source: git
-    version: "0.0.4"
+      name: arabic_justified_text
+      sha256: "0a0516fe91ec3cbdebd0afc701ea280fe9bc8c51ab0b8a41b614688aed98e995"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.2"
   archive:
     dependency: transitive
     description:
@@ -747,5 +746,5 @@ packages:
     source: hosted
     version: "6.6.1"
 sdks:
-  dart: ">=3.10.0 <4.0.0"
+  dart: ">=3.9.0 <4.0.0"
   flutter: ">=3.35.0"

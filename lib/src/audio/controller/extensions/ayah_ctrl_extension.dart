@@ -77,9 +77,11 @@ extension AyahCtrlExtension on AudioCtrl {
         await _showAyahDownloadBottomSheet(
           context,
           initialSurahToDownload: currentSurahNumber,
-          style: AyahDownloadManagerStyle.defaults(
-              isDark: isDark, context: context),
-          ayahStyle: AyahAudioStyle.defaults(isDark: isDark, context: context),
+          style: ayahDownloadManagerStyle ??
+              AyahDownloadManagerStyle.defaults(
+                  isDark: isDark, context: context),
+          ayahStyle: ayahAudioStyle ??
+              AyahAudioStyle.defaults(isDark: isDark, context: context),
           isDark: isDark,
         );
         // بعد إغلاق الـ bottomSheet، أعد التحقق

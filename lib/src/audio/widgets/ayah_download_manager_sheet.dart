@@ -410,10 +410,11 @@ class HeaderBuild extends StatelessWidget {
                         ),
               ),
             ),
-        AyahChangeReader(
-            style: effectiveAyahStyle,
-            isDark: isDark,
-            downloadManagerStyle: style),
+        style?.changeReaderWidget ??
+            AyahChangeReader(
+                style: effectiveAyahStyle,
+                isDark: isDark,
+                downloadManagerStyle: style),
       ],
     );
   }

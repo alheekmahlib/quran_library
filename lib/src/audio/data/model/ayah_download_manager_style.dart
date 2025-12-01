@@ -51,6 +51,8 @@ class AyahDownloadManagerStyle {
 
   final Color? backgroundColor;
 
+  final Widget? changeReaderWidget;
+
   // Count text
   final AyahCountTextBuilder? countTextBuilder;
 
@@ -87,6 +89,7 @@ class AyahDownloadManagerStyle {
     this.downloadBackground,
     this.countTextBuilder,
     this.backgroundColor,
+    this.changeReaderWidget,
   });
 
   AyahDownloadManagerStyle copyWith({
@@ -124,6 +127,7 @@ class AyahDownloadManagerStyle {
     Color? downloadForeground,
     Color? downloadBackground,
     Color? backgroundColor,
+    Widget? changeReaderWidget,
     AyahCountTextBuilder? countTextBuilder,
   }) {
     return AyahDownloadManagerStyle(
@@ -163,6 +167,7 @@ class AyahDownloadManagerStyle {
       downloadBackground: downloadBackground ?? this.downloadBackground,
       countTextBuilder: countTextBuilder ?? this.countTextBuilder,
       backgroundColor: backgroundColor ?? this.backgroundColor,
+      changeReaderWidget: changeReaderWidget ?? this.changeReaderWidget,
     );
   }
 
@@ -246,6 +251,7 @@ class AyahDownloadManagerStyle {
 
       // Count text builder - يمكن تخصيصه لاحقًا
       countTextBuilder: null,
+      changeReaderWidget: null,
     );
   }
 }

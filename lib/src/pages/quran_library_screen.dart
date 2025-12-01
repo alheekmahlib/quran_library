@@ -389,6 +389,7 @@ class QuranLibraryScreen extends StatelessWidget {
     // }
     final String deviceLocale = Localizations.localeOf(context).languageCode;
     final String languageCode = appLanguageCode ?? deviceLocale;
+    QuranCtrl.instance.state.currentPageNumber.value = pageIndex + 1;
     return ScaleKitBuilder(
       designWidth: 375,
       designHeight: 812,

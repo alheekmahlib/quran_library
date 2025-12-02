@@ -73,18 +73,6 @@ class AyahDownloadManagerSheet extends StatelessWidget {
               ? const SizedBox.shrink()
               : Column(
                   children: [
-                    const SizedBox(height: 8),
-                    Container(
-                      width: 48,
-                      height: 5,
-                      decoration: BoxDecoration(
-                        color:
-                            effectiveStyle.handleColor ?? Colors.grey.shade300,
-                        borderRadius: BorderRadius.circular(
-                            effectiveStyle.handleRadius ?? 8),
-                      ),
-                    ),
-                    const SizedBox(height: 12),
                     HeaderBuild(
                         style: effectiveStyle,
                         isDark: dark,
@@ -399,15 +387,30 @@ class HeaderBuild extends StatelessWidget {
         style?.headerIcon ??
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Text(
-                style?.titleText ?? 'إدارة تحميل آيات السور',
-                style: style?.titleTextStyle ??
-                    QuranLibrary().cairoStyle.copyWith(
-                          fontSize: 18,
-                          color: AppColors.getTextColor(isDark ?? false),
-                          fontWeight: FontWeight.bold,
-                          height: 1.2,
-                        ),
+              child: Column(
+                children: [
+                  const SizedBox(height: 8),
+                  Container(
+                    width: 48,
+                    height: 5,
+                    decoration: BoxDecoration(
+                      color: style?.handleColor ?? Colors.grey.shade300,
+                      borderRadius:
+                          BorderRadius.circular(style?.handleRadius ?? 8),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    style?.titleText ?? 'إدارة تحميل آيات السور',
+                    style: style?.titleTextStyle ??
+                        QuranLibrary().cairoStyle.copyWith(
+                              fontSize: 18,
+                              color: AppColors.getTextColor(isDark ?? false),
+                              fontWeight: FontWeight.bold,
+                              height: 1.2,
+                            ),
+                  ),
+                ],
               ),
             ),
         style?.changeReaderWidget ??

@@ -27,7 +27,7 @@ class SurahState {
   final ScrollController surahListController = ScrollController();
   String get surahReaderUrl =>
       ReadersConstants.activeSurahReaders[surahReaderIndex.value].url;
-  String get surahReaderNameValue => ReadersConstants
+  String get surahReaderNamePath => ReadersConstants
       .activeSurahReaders[surahReaderIndex.value].readerNamePath;
   // RxString ayahReaderNameValue = "abdul_basit_murattal/".obs;
   final bool isDisposed = false;
@@ -38,7 +38,7 @@ class SurahState {
   Rx<PackagePositionData>? positionData;
   var activeButton = RxString('');
   final TextEditingController textEditingController = TextEditingController();
-  RxInt surahReaderIndex = 1.obs;
+  RxInt surahReaderIndex = 0.obs;
   final Rx<Map<int, bool>> surahDownloadStatus = Rx<Map<int, bool>>({});
   RxBool isSurahDownloadedByNumber(int surahNumber) =>
       (surahDownloadStatus.value[surahNumber] ?? false).obs;

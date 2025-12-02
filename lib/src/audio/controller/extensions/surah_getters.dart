@@ -13,18 +13,19 @@ extension SurahGetters on AudioCtrl {
   }
 
   /// -------- [Getters] ----------
+
   String get localSurahFilePath {
     if (kIsWeb) {
       return '';
     }
     return join(
       state._dir!.path,
-      '${state.surahReaderNameValue}${state.currentAudioListSurahNum.value.toString().padLeft(3, "0")}.mp3',
+      '${state.surahReaderNamePath}${state.currentAudioListSurahNum.value.toString().padLeft(3, "0")}.mp3',
     );
   }
 
   String get urlSurahFilePath {
-    return '${state.surahReaderUrl}${state.surahReaderNameValue}${state.currentAudioListSurahNum.value.toString().padLeft(3, "0")}.mp3';
+    return '${state.surahReaderUrl}${state.surahReaderNamePath}${state.currentAudioListSurahNum.value.toString().padLeft(3, "0")}.mp3';
   }
 
   /// single verse

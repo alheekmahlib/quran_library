@@ -207,7 +207,7 @@ class AudioCtrl extends GetxController {
       } else {
         state.isPlaying.value = true;
         log("File doesn't exist. Downloading...", name: 'AudioCtrl');
-        log("state.sorahReaderNameValue: ${state.surahReaderNameValue}",
+        log("state.sorahReaderNameValue: ${state.surahReaderNamePath}",
             name: 'AudioCtrl');
         log("Downloading from URL: $urlSurahFilePath", name: 'AudioCtrl');
         if (await _downloadFile(filePath, urlSurahFilePath)) {
@@ -392,7 +392,7 @@ class AudioCtrl extends GetxController {
 
     for (int i = 1; i <= 114; i++) {
       String filePath =
-          '${directory.path}/${state.surahReaderNameValue}${i.toString().padLeft(3, '0')}.mp3';
+          '${directory.path}/${state.surahReaderNamePath}${i.toString().padLeft(3, '0')}.mp3';
       File file = File(filePath);
       surahDownloadStatus[i] = await file.exists();
     }
@@ -429,7 +429,7 @@ class AudioCtrl extends GetxController {
     final directory = await state.dir;
     for (int i = 1; i <= 114; i++) {
       String filePath =
-          '${directory.path}/${state.surahReaderNameValue}${i.toString().padLeft(3, '0')}.mp3';
+          '${directory.path}/${state.surahReaderNamePath}${i.toString().padLeft(3, '0')}.mp3';
 
       File file = File(filePath);
 

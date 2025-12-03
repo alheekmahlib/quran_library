@@ -21,9 +21,8 @@ class SurahSeekBar extends StatelessWidget {
                 builder: (context, snapshot) {
                   if (snapshot.hasData && snapshot.data != null) {
                     c.state.positionData?.value = snapshot.data!;
-                    final positionData = snapshot.data;
+                    final positionData = snapshot.data!;
 
-                    c.updateControllerValues(positionData!);
                     return PackageSliderWidget.player(
                       horizontalPadding: 32.0,
                       duration: positionData.duration,
@@ -43,7 +42,6 @@ class SurahSeekBar extends StatelessWidget {
                         c.saveLastSurahListen();
                         c.state.seekNextSeconds.value =
                             positionData.position.inSeconds;
-                        c.updateControllerValues(positionData);
                       },
                       textColor: style?.secondaryTextColor ?? Colors.white,
                       timeShow: true,

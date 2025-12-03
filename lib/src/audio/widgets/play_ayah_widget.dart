@@ -42,6 +42,8 @@ class PlayAyahWidget extends StatelessWidget {
                 audioCtrl.state.isPlayingSurahsMode = false;
                 // عطّل مستمع وضع السور لتجنّب التداخل مع تشغيل الآيات
                 audioCtrl.disableSurahAutoNextListener();
+                // تعطيل حفظ موضع السورة عند تشغيل الآيات
+                audioCtrl.disableSurahPositionSaving();
                 // تجنّب استدعاءات مزدوجة
                 if (!audioCtrl.state.audioPlayer.playing) {
                   await audioCtrl.playAyah(

@@ -44,6 +44,7 @@ extension SurahUi on AudioCtrl {
     // شغّل تلقائيًا إذا طُلب ذلك
     if (autoPlay) {
       enableSurahAutoNextListener();
+      enableSurahPositionSaving();
       state.isPlaying.value = true;
       await state.audioPlayer.play();
     }

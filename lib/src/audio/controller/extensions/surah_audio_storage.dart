@@ -35,15 +35,10 @@ extension SurahAudioStorage on AudioCtrl {
     );
   }
 
-  void loadSurahReader() {
+  void loadReaderIndex() {
     state.surahReaderIndex.value =
         state.box.read(StorageConstants.surahReaderIndex) ?? 0;
-  }
-
-  void loadAyahReader() {
     state.ayahReaderIndex.value =
         state.box.read(StorageConstants.ayahReaderIndex) ?? 0;
-    state.surahReaderIndex.value =
-        state.box.read(StorageConstants.surahReaderIndex) ?? 0;
   }
 }

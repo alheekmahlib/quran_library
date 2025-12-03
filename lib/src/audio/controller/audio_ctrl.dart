@@ -10,8 +10,7 @@ class AudioCtrl extends GetxController {
 
   @override
   Future<void> onInit() async {
-    loadSurahReader();
-    loadAyahReader();
+    loadReaderIndex();
     await initializeSurahDownloadStatus();
     // تأكد من مزامنة حالة آيات السور مع الملفات الفعلية عند التشغيل/Hot reload
     // await _updateDownloadedAyahsMap();
@@ -171,6 +170,9 @@ class AudioCtrl extends GetxController {
   Future<void> downloadSurah({int? surahNum}) async {
     // إيقاف أي صوت نشط أولاً / Stop any active audio first
     await state.stopAllAudio();
+
+    // تفعيل حفظ موضع السورة عند بدء التشغيل
+    enableSurahPositionSaving();
 
     if (surahNum != null) {
       state.selectedSurahIndex.value = (surahNum - 1);
@@ -451,12 +453,26 @@ class AudioCtrl extends GetxController {
     return "${twoDigits(duration.inHours)}:$twoDigitMinutes:$twoDigitSeconds";
   }
 
-  void updateControllerValues(PackagePositionData positionData) {
-    audioStream.listen((p) {
-      state.lastPosition.value = p.position.inSeconds;
-      state.seekNextSeconds.value = p.position.inSeconds;
-      state.box.write(StorageConstants.lastPosition, p.position.inSeconds);
+  /// تفعيل حفظ آخر موضع استماع للسور فقط
+  void enableSurahPositionSaving() {
+    // إلغاء أي اشتراك سابق لتفادي التكرار
+    state._surahPositionSubscription?.cancel();
+
+    state._surahPositionSubscription =
+        state.audioPlayer.positionStream.listen((position) {
+      // حفظ الموضع فقط في وضع السور
+      if (state.isPlayingSurahsMode) {
+        state.lastPosition.value = position.inSeconds;
+        state.seekNextSeconds.value = position.inSeconds;
+        state.box.write(StorageConstants.lastPosition, position.inSeconds);
+      }
     });
+  }
+
+  /// تعطيل حفظ موضع السورة
+  void disableSurahPositionSaving() {
+    state._surahPositionSubscription?.cancel();
+    state._surahPositionSubscription = null;
   }
 
   Future<void> setCachedArtUri() async {
@@ -497,6 +513,8 @@ class AudioCtrl extends GetxController {
     await state.audioPlayer.pause();
     // إيقاف جميع الاشتراكات عند الإيقاف / Cancel all subscriptions when pausing
     state.cancelAllSubscriptions();
+    // تعطيل حفظ موضع السورة عند الإيقاف
+    disableSurahPositionSaving();
   }
 
   /// التحقق من الصلاحيات الصوتية / Check audio permissions

@@ -63,6 +63,7 @@ class SurahOnlinePlayButton extends StatelessWidget {
                   // تفعيل وضع السور مع تشغيل تلقائي للسورة التالية عند الاكتمال
                   surahAudioCtrl.state.isPlayingSurahsMode = true;
                   surahAudioCtrl.enableSurahAutoNextListener();
+                  surahAudioCtrl.enableSurahPositionSaving();
                   surahAudioCtrl.cancelDownload();
                   surahAudioCtrl.state.isPlaying.value = true;
                   // await surahAudioCtrl.state.audioPlayer.pause();

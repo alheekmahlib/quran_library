@@ -11,6 +11,8 @@ class SurahState {
   StreamSubscription<PlayerState>? _playerStateSubscription;
   // قد تتغير أنواع الدفق (int? أو SequenceState) بحسب واجهة المشغّل، لذا نجعلها غير مقيّدة
   StreamSubscription? _currentIndexSubscription;
+  // StreamSubscription مخصص لحفظ آخر استماع للسور فقط
+  StreamSubscription<Duration>? _surahPositionSubscription;
 
   // getter وsetter للحالة النشطة / getter and setter for active state
   static bool get isAudioServiceActive => _isAudioServiceActive;
@@ -88,8 +90,10 @@ class SurahState {
   void cancelAllSubscriptions() {
     _playerStateSubscription?.cancel();
     _currentIndexSubscription?.cancel();
+    _surahPositionSubscription?.cancel();
     _playerStateSubscription = null;
     _currentIndexSubscription = null;
+    _surahPositionSubscription = null;
   }
 
   /// إيقاف جميع الأصوات / Stop all audio

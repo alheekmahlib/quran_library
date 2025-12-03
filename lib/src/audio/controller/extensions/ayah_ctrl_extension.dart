@@ -238,6 +238,8 @@ extension AyahCtrlExtension on AudioCtrl {
 
     state.playSingleAyahOnly = playSingleAyah;
     state.currentAyahUniqueNumber = currentAyahUniqueNumber;
+    // تعطيل حفظ موضع السورة عند تشغيل الآيات
+    disableSurahPositionSaving();
     QuranCtrl.instance.isShowControl.value = true;
     // أوقف أي تشغيل قائم لتجنّب عاديات إعادة التشغيل
     if (state.audioPlayer.playing) await pausePlayer();

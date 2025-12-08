@@ -37,13 +37,6 @@ class QuranCtrl extends GetxController {
   late Directory _dir;
   // late QuranSearch quranSearch;
 
-  // شرح: تحسين PageController للحصول على أداء أفضل
-  // Explanation: Optimized PageController for better performance
-  PageController quranPagesController = PageController(
-    keepPage: true,
-    viewportFraction: 1.0,
-  );
-
   // final bool _scrollListenerAttached = false;
   // final int _lastPrefetchedForPage = -1;
 
@@ -62,6 +55,7 @@ class QuranCtrl extends GetxController {
     await prepareFonts(state.currentPageNumber.value - 1);
     searchFocusNode = FocusNode();
     searchTextController = TextEditingController();
+    junpTolastPage();
   }
 
   @override
@@ -93,11 +87,6 @@ class QuranCtrl extends GetxController {
   // }
 
   Future<void> loadQuranDataV3() async {
-    lastPage = _quranRepository.getLastPage() ?? 1;
-    state.currentPageNumber.value = lastPage;
-    if (lastPage != 0) {
-      jumpToPage(lastPage - 1);
-    }
     if (state.surahs.isEmpty) {
       List<dynamic> surahsJson = await _quranRepository.getQuranDataV3();
       state.surahs =
@@ -115,6 +104,15 @@ class QuranCtrl extends GetxController {
       });
       state.isQuranLoaded = true;
       // log('Pages Length: ${state.pages.length}', name: 'Quran Controller');
+    }
+  }
+
+  void junpTolastPage() {
+    lastPage = _quranRepository.getLastPage() ?? 1;
+    state.currentPageNumber.value = lastPage;
+    if (lastPage != 0) {
+      log('Jumping to last page: $lastPage', name: 'QuranCtrl');
+      jumpToPage(lastPage - 1);
     }
   }
 
@@ -347,10 +345,12 @@ class QuranCtrl extends GetxController {
   // Explanation: Improved navigation for smoother scrolling
   void jumpToPage(int page) {
     if (quranPagesController.hasClients) {
+      log('Jumping to page: $page', name: 'QuranCtrl');
       quranPagesController.jumpToPage(
         page,
       );
     } else {
+      log('Creating new PageController for page: $page', name: 'QuranCtrl');
       quranPagesController = PageController(
         initialPage: page,
         keepPage: true,

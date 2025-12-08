@@ -5,6 +5,18 @@ part of '/quran.dart';
 extension QuranGetters on QuranCtrl {
   /// -------- [Getter] ----------
 
+  // شرح: تحسين PageController للحصول على أداء أفضل
+  // Explanation: Optimized PageController for better performance
+  PageController get quranPagesController => PageController(
+        initialPage: (_quranRepository.getLastPage() ?? 1) - 1,
+        keepPage: true,
+        viewportFraction: 1.0,
+      );
+
+  set quranPagesController(PageController controller) {
+    // لا تفعل شيئاً، فقط لتجنب الخطأ
+  }
+
   RxBool get isDownloadedFonts =>
       QuranCtrl.instance.state.fontsSelected.value == 1 ? true.obs : false.obs;
 

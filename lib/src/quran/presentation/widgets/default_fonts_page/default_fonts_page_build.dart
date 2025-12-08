@@ -138,7 +138,9 @@ class DefaultFontsPageBuild extends StatelessWidget {
                                 ),
                           ),
                         SizedBox(
-                          width: deviceSize.width - 20,
+                          width: Responsive.isDesktop(context)
+                              ? deviceSize.width - 120.w
+                              : deviceSize.width - 20,
                           height: (UiHelper.currentOrientation(
                                       constraints.maxHeight,
                                       MediaQuery.sizeOf(context).width * 1.6,

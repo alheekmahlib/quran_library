@@ -57,7 +57,7 @@ class DefaultFirstTwoSurahs extends StatelessWidget {
       height: MediaQuery.sizeOf(context).height,
       padding: EdgeInsets.symmetric(
         vertical: UiHelper.currentOrientation(
-            MediaQuery.sizeOf(context).width * .16,
+            MediaQuery.sizeOf(context).width * .01,
             MediaQuery.sizeOf(context).height * .01,
             context),
       ),
@@ -90,47 +90,46 @@ class DefaultFirstTwoSurahs extends StatelessWidget {
             ),
           ...quranCtrl.staticPages[pageIndex].lines.map((line) {
             return RepaintBoundary(
-              child: FittedBox(
-                fit: BoxFit.fitWidth,
-                child: GetBuilder<BookmarksCtrl>(
-                  builder: (bookmarkCtrl) {
-                    return Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        SizedBox(
-                          width: Responsive.isDesktop(context)
-                              ? deviceSize.width - 800
-                              : deviceSize.width,
-                          // width: deviceSize.width - 32,
-                          child: DefaultFontsBuild(
-                            context,
-                            line,
-                            isDark: isDark,
-                            bookmarkCtrl.bookmarksAyahs,
-                            bookmarkCtrl.bookmarks,
-                            boxFit: BoxFit.scaleDown,
-                            onDefaultAyahLongPress: onAyahLongPress,
-                            bookmarksColor: bookmarksColor,
-                            textColor:
-                                textColor ?? (AppColors.getTextColor(isDark)),
-                            bookmarkList: bookmarkList,
-                            pageIndex: pageIndex,
-                            ayahSelectedBackgroundColor:
-                                ayahSelectedBackgroundColor,
-                            ayahBookmarked: ayahBookmarked,
-                            anotherMenuChild: anotherMenuChild,
-                            anotherMenuChildOnTap: anotherMenuChildOnTap,
-                            secondMenuChild: secondMenuChild,
-                            secondMenuChildOnTap: secondMenuChildOnTap,
-                            ayahIconColor: ayahIconColor,
-                            showAyahBookmarkedIcon: showAyahBookmarkedIcon,
-                          ),
+              child: GetBuilder<BookmarksCtrl>(
+                builder: (bookmarkCtrl) {
+                  return Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      SizedBox(
+                        width:
+                            // Responsive.isDesktop(context)
+                            //     ? deviceSize.width - 800
+                            //     :
+                            deviceSize.width,
+                        // width: deviceSize.width - 32,
+                        child: DefaultFontsBuild(
+                          context,
+                          line,
+                          isDark: isDark,
+                          bookmarkCtrl.bookmarksAyahs,
+                          bookmarkCtrl.bookmarks,
+                          boxFit: BoxFit.scaleDown,
+                          onDefaultAyahLongPress: onAyahLongPress,
+                          bookmarksColor: bookmarksColor,
+                          textColor:
+                              textColor ?? (AppColors.getTextColor(isDark)),
+                          bookmarkList: bookmarkList,
+                          pageIndex: pageIndex,
+                          ayahSelectedBackgroundColor:
+                              ayahSelectedBackgroundColor,
+                          ayahBookmarked: ayahBookmarked,
+                          anotherMenuChild: anotherMenuChild,
+                          anotherMenuChildOnTap: anotherMenuChildOnTap,
+                          secondMenuChild: secondMenuChild,
+                          secondMenuChildOnTap: secondMenuChildOnTap,
+                          ayahIconColor: ayahIconColor,
+                          showAyahBookmarkedIcon: showAyahBookmarkedIcon,
                         ),
-                      ],
-                    );
-                  },
-                ),
+                      ),
+                    ],
+                  );
+                },
               ),
             );
           }),

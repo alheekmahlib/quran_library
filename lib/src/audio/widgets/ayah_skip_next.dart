@@ -28,7 +28,7 @@ class AyahSkipToNext extends StatelessWidget {
             ),
           ),
           onTap: () async => await audioCtrl.skipNextAyah(
-              context, audioCtrl.state.currentAyahUniqueNumber),
+              context, audioCtrl.state.currentAyahUniqueNumber.value),
         ),
       ),
     );

@@ -10,6 +10,7 @@ class AudioCtrl extends GetxController {
 
   @override
   Future<void> onInit() async {
+    super.onInit();
     loadReaderIndex();
     await initializeSurahDownloadStatus();
     // تأكد من مزامنة حالة آيات السور مع الملفات الفعلية عند التشغيل/Hot reload
@@ -29,8 +30,13 @@ class AudioCtrl extends GetxController {
       _updateDownloadedAyahsMap(),
       // loadLastSurahAndPosition(),
     ]);
-
-    super.onInit();
+    ever(QuranCtrl.instance.state.currentPageNumber, (pageNumber) {
+      final ayahs = QuranCtrl.instance
+          .getCurrentPageAyahsSeparatedForBasmalah(pageNumber - 1);
+      if (ayahs.isNotEmpty) {
+        state.currentAyahUniqueNumber.value = ayahs.first.first.ayahUQNumber;
+      }
+    });
 
     state.surahsPlayList = List.generate(114, (i) {
       state.selectedSurahIndex.value = i;

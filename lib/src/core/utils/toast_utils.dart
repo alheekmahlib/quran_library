@@ -23,7 +23,7 @@ class ToastUtils {
       behavior: style.behavior ?? SnackBarBehavior.floating,
       margin: style.margin ??
           EdgeInsets.only(
-            bottom: MediaQuery.of(context).size.height - 100,
+            bottom: MediaQuery.of(context).viewInsets.bottom + 16,
             right: 16,
             left: 16,
           ),

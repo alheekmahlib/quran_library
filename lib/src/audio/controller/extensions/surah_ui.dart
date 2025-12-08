@@ -69,7 +69,7 @@ extension SurahUi on AudioCtrl {
     await _updateDownloadedAyahsMap();
     if (context.mounted) {
       state.isPlaying.value
-          ? playAyah(context, state.currentAyahUniqueNumber,
+          ? playAyah(context, state.currentAyahUniqueNumber.value,
               playSingleAyah: state.playSingleAyahOnly)
           : null;
     }

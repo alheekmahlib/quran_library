@@ -18,7 +18,8 @@ extension AyahCtrlExtension on AudioCtrl {
       // إيقاف أي تشغيل سابق / Stop any previous playback
       await state.stopAllAudio();
 
-      QuranCtrl.instance.toggleAyahSelection(state.currentAyahUniqueNumber);
+      QuranCtrl.instance
+          .toggleAyahSelection(state.currentAyahUniqueNumber.value);
       if (kIsWeb) {
         await state.audioPlayer.setAudioSource(
           AudioSource.uri(
@@ -85,9 +86,9 @@ extension AyahCtrlExtension on AudioCtrl {
           isDark: isDark,
         );
         // بعد إغلاق الـ bottomSheet، أعد التحقق
-        final downloadedNow =
-            await isAyahSurahFullyDownloaded(currentSurahNumber);
-        if (!downloadedNow) {
+        // final downloadedNow =
+        //     await isAyahSurahFullyDownloaded(currentSurahNumber);
+        if (!isSurahFullyDownloaded) {
           // المستخدم أغلق أو لم يكتمل التحميل
           return;
         }
@@ -111,6 +112,8 @@ extension AyahCtrlExtension on AudioCtrl {
           ),
         );
       } else {
+        log('Creating audio sources for surah $currentSurahNumber...',
+            name: 'AudioController');
         final directory = await state.dir;
         audioSources = List.generate(
           ayahsFilesNames.length,
@@ -119,19 +122,39 @@ extension AyahCtrlExtension on AudioCtrl {
             tag: mediaItemsForCurrentSurah[i],
           ),
         );
+        log('Audio sources created for surah $currentSurahNumber.',
+            name: 'AudioController');
       }
 
       if (!kIsWeb) {
-        // التأكد من وجود ملفات الصوت / Verify audio files exist
+        log('Verifying audio files for surah $currentSurahNumber...',
+            name: 'AudioController');
+        // التأكد من وجود ملفات الصوت بشكل متوازي / Verify audio files exist in parallel
         final directory = await state.dir;
-        for (int i = 0; i < ayahsFilesNames.length; i++) {
-          final filePath = join(directory.path, ayahsFilesNames[i]);
-          if (!await File(filePath).exists()) {
-            log('Audio file does not exist: $filePath',
-                name: 'AudioController');
-            throw Exception('ملف الصوت غير موجود: ${ayahsFilesNames[i]}');
-          }
+
+        // التحقق المتوازي من جميع الملفات دفعة واحدة
+        final verificationResults = await Future.wait(
+          ayahsFilesNames.map((fileName) async {
+            final filePath = join(directory.path, fileName);
+            final exists = await File(filePath).exists();
+            return {'fileName': fileName, 'exists': exists, 'path': filePath};
+          }),
+        );
+
+        // البحث عن أول ملف مفقود
+        final missingFile = verificationResults.firstWhere(
+          (result) => !(result['exists'] as bool),
+          orElse: () => {'exists': true},
+        );
+
+        if (!(missingFile['exists'] as bool)) {
+          log('Audio file does not exist: ${missingFile['path']}',
+              name: 'AudioController');
+          throw Exception('ملف الصوت غير موجود: ${missingFile['fileName']}');
         }
+
+        log('All audio files verified for surah $currentSurahNumber.',
+            name: 'AudioController');
       }
 
       // احسب فهرس البداية اعتمادًا على ترتيب آيات السورة الحالية لضمان الدقة
@@ -154,7 +177,7 @@ extension AyahCtrlExtension on AudioCtrl {
 
       // الاستماع لتغييرات الفهرس عبر sequenceStateStream (أوثق مع واجهة playlist)
       int? lastHandledIndex;
-      int? lastHandledAyahUQ = state.currentAyahUniqueNumber;
+      int? lastHandledAyahUQ = state.currentAyahUniqueNumber.value;
       state._currentIndexSubscription =
           state.audioPlayer.sequenceStateStream.listen((sequenceState) async {
         final index = sequenceState.currentIndex;
@@ -176,17 +199,18 @@ extension AyahCtrlExtension on AudioCtrl {
         lastHandledAyahUQ = newAyahUQ;
 
         // حدّث رقم الآية الحالية بحسب الفهرس الجديد
-        state.currentAyahUniqueNumber = newAyahUQ;
+        state.currentAyahUniqueNumber.value = newAyahUQ;
 
         // حدّث التحديد البصري للآية (مرة واحدة فقط عند تغيّر الآية)
-        QuranCtrl.instance.toggleAyahSelection(state.currentAyahUniqueNumber);
+        QuranCtrl.instance
+            .toggleAyahSelection(state.currentAyahUniqueNumber.value);
 
         // إن تغيّرت الصفحة، حرّك صفحات المصحف بسلاسة
         if (prevAyahUQ != null) {
           final prevPage =
               QuranCtrl.instance.getPageNumberByAyahUqNumber(prevAyahUQ);
           final newPage = QuranCtrl.instance
-              .getPageNumberByAyahUqNumber(state.currentAyahUniqueNumber);
+              .getPageNumberByAyahUqNumber(state.currentAyahUniqueNumber.value);
           if (newPage != prevPage) {
             log('Page changed: $prevPage -> $newPage, animating...',
                 name: 'AudioController');
@@ -237,7 +261,7 @@ extension AyahCtrlExtension on AudioCtrl {
     log('isDarkMode: $isDarkMode', name: 'AudioController');
 
     state.playSingleAyahOnly = playSingleAyah;
-    state.currentAyahUniqueNumber = currentAyahUniqueNumber;
+    state.currentAyahUniqueNumber.value = currentAyahUniqueNumber;
     // تعطيل حفظ موضع السورة عند تشغيل الآيات
     disableSurahPositionSaving();
     QuranCtrl.instance.isShowControl.value = true;
@@ -274,8 +298,8 @@ extension AyahCtrlExtension on AudioCtrl {
     if (isLastAyahInPageButNotInSurah) {
       await moveToNextPage();
     }
-    state.currentAyahUniqueNumber += 1;
-    QuranCtrl.instance.toggleAyahSelection(state.currentAyahUniqueNumber,
+    state.currentAyahUniqueNumber.value += 1;
+    QuranCtrl.instance.toggleAyahSelection(state.currentAyahUniqueNumber.value,
         forceAddition: true);
     if (state.playSingleAyahOnly) {
       return _playSingleAyahFile(context, ayahUniqueNumber);
@@ -294,8 +318,8 @@ extension AyahCtrlExtension on AudioCtrl {
     if (isFirstAyahInPageButNotInSurah) {
       await moveToPreviousPage();
     }
-    state.currentAyahUniqueNumber -= 1;
-    QuranCtrl.instance.toggleAyahSelection(state.currentAyahUniqueNumber,
+    state.currentAyahUniqueNumber.value -= 1;
+    QuranCtrl.instance.toggleAyahSelection(state.currentAyahUniqueNumber.value,
         forceAddition: true);
     if (state.playSingleAyahOnly) {
       return _playSingleAyahFile(context, ayahUniqueNumber);
@@ -350,6 +374,8 @@ extension AyahCtrlExtension on AudioCtrl {
   /// حالة تحميل آيات السورة بالكامل حسب القارئ الحالي
   Future<bool> isAyahSurahFullyDownloaded(int surahNumber) async {
     if (kIsWeb) return false;
+    log('Checking if surah $surahNumber is fully downloaded...',
+        name: 'AudioController');
     final key = 'surah_$surahNumberـ${state.ayahReaderIndex.value}';
     // أولاً تحقّق من الملفات فعلياً
     try {
@@ -365,6 +391,7 @@ extension AyahCtrlExtension on AudioCtrl {
           return false;
         }
       }
+      log('All files for surah $surahNumber exist.', name: 'AudioController');
       // إذا وصلت هنا فكل الملفات موجودة
       state.box.write(key, true);
       return true;

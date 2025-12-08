@@ -131,11 +131,11 @@ class QuranCtrl extends GetxController {
   Future<void> loadQuranDataV1(
       {int quranPages = QuranRepository.hafsPagesNumber}) async {
     // حفظ آخر صفحة
-    // lastPage = _quranRepository.getLastPage() ?? 1;
-    // state.currentPageNumber.value = lastPage;
-    // if (lastPage != 0) {
-    //   jumpToPage(lastPage - 1);
-    // }
+    lastPage = _quranRepository.getLastPage() ?? 1;
+    state.currentPageNumber.value = lastPage;
+    if (lastPage != 0) {
+      jumpToPage(lastPage - 1);
+    }
     // إذا كانت الصفحات لم تُملأ أو العدد غير متطابق
     if (staticPages.isEmpty || quranPages != staticPages.length) {
       // إنشاء صفحات فارغة

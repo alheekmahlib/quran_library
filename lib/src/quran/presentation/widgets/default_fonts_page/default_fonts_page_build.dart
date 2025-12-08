@@ -109,7 +109,7 @@ class DefaultFontsPageBuild extends StatelessWidget {
                                   bannerSvgPath:
                                       AssetsPath.assets.surahSvgBanner,
                                   bannerSvgHeight: Responsive.isDesktop(context)
-                                      ? 90.0.h.clamp(90, 150)
+                                      ? 50.0.h.clamp(70, 150)
                                       : 35.0.h.clamp(35, 90),
                                   bannerSvgWidth: 150.0.w.clamp(150, 250),
                                   bannerImagePath: '',
@@ -119,7 +119,7 @@ class DefaultFontsPageBuild extends StatelessWidget {
                             surahNameStyle: surahNameStyle ??
                                 SurahNameStyle(
                                   surahNameSize: Responsive.isDesktop(context)
-                                      ? 80.sp.clamp(40, 80)
+                                      ? 40.sp.clamp(40, 80)
                                       : 27.sp.clamp(27, 64),
                                   surahNameColor:
                                       AppColors.getTextColor(isDark),
@@ -133,7 +133,7 @@ class DefaultFontsPageBuild extends StatelessWidget {
                             basmalaStyle: basmalaStyle ??
                                 BasmalaStyle(
                                   basmalaColor: AppColors.getTextColor(isDark),
-                                  basmalaFontSize: 22.0,
+                                  basmalaFontSize: 22.0.sp.clamp(22, 50),
                                   verticalPadding: 0.0,
                                 ),
                           ),

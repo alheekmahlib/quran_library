@@ -69,7 +69,8 @@ class SurahState {
   bool snackBarShownForBatch = false;
 
   /// ===== single verse =====
-  int currentAyahUniqueNumber = 1;
+
+  RxInt currentAyahUniqueNumber = 1.obs;
 
   int tmpDownloadedAyahsCount = 0;
   RxInt ayahReaderIndex = 0.obs;

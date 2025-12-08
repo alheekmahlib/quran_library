@@ -48,7 +48,8 @@ class PlayAyahWidget extends StatelessWidget {
                 if (!audioCtrl.state.audioPlayer.playing) {
                   await audioCtrl.playAyah(
                     context,
-                    audioCtrl.state.currentAyahUniqueNumber,
+                    isDarkMode: dark,
+                    audioCtrl.state.currentAyahUniqueNumber.value,
                     playSingleAyah: audioCtrl.state.playSingleAyahOnly,
                   );
                 }

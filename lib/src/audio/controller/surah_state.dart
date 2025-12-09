@@ -46,6 +46,8 @@ class SurahState {
       (surahDownloadStatus.value[surahNumber] ?? false).obs;
   Map<int, bool> ayahsDownloadStatus =
       Map.fromEntries(List.generate(6236, (i) => MapEntry(i + 1, false)));
+  // كاش لقوائم AudioSource الخاصة بآيات كل سورة لكل قارئ
+  final Map<String, List<AudioSource>> ayahPlaylistsCache = {};
   RxInt seekNextSeconds = 5.obs;
   final box = GetStorage();
   RxInt fileSize = 0.obs;
@@ -105,4 +107,6 @@ class SurahState {
   }
 
   RxDouble ayahDownloadProgress = 0.0.obs;
+  RxBool isAudioPreparing = false.obs;
+  final QuranRepository _quranRepository = QuranRepository();
 }

@@ -40,6 +40,7 @@ extension AyahCtrlExtension on AudioCtrl {
           ),
         );
       }
+      state.isAudioPreparing.value = false;
       state.isPlaying.value = true;
       await state.audioPlayer.play();
       log('تحميل $currentAyahFileName تم بنجاح.');
@@ -52,6 +53,7 @@ extension AyahCtrlExtension on AudioCtrl {
       });
       return;
     } catch (e) {
+      state.isAudioPreparing.value = false;
       state.isPlaying.value = false;
       await state.audioPlayer.stop();
       log('Error in playFile: $e', name: 'AudioController');
@@ -64,6 +66,11 @@ extension AyahCtrlExtension on AudioCtrl {
       {AyahAudioStyle? ayahAudioStyle,
       AyahDownloadManagerStyle? ayahDownloadManagerStyle,
       bool? isDarkMode}) async {
+    final sw = Stopwatch()..start();
+    log('TIMER: _playAyahsFile start for surah $currentSurahNumber',
+        name: 'AudioTimer');
+    // فعّل حالة التحضير لعرض مؤشر الانتظار أثناء تجهيز قائمة الآيات
+    state.isAudioPreparing.value = true;
     state.tmpDownloadedAyahsCount = 0;
     final ayahsFilesNames = selectedSurahAyahsFileNames;
     bool isDark = isDarkMode ??
@@ -89,11 +96,15 @@ extension AyahCtrlExtension on AudioCtrl {
         // final downloadedNow =
         //     await isAyahSurahFullyDownloaded(currentSurahNumber);
         if (!isSurahFullyDownloaded) {
+          state.isAudioPreparing.value = false;
           // المستخدم أغلق أو لم يكتمل التحميل
           return;
         }
       }
     }
+
+    log('TIMER: after download check for surah $currentSurahNumber: ${sw.elapsedMilliseconds} ms',
+        name: 'AudioTimer');
 
     // عند هذه النقطة كل الآيات محمّلة بالكامل، يمكن إنشاء المصادر وتشغيلها
     try {
@@ -101,8 +112,19 @@ extension AyahCtrlExtension on AudioCtrl {
       await state.audioPlayer.stop();
       state.cancelAllSubscriptions();
 
+      // احسب فهرس البداية اعتمادًا على ترتيب آيات السورة الحالية لضمان الدقة
+      final computedInitialIndex = currentAyahsSurah.ayahs
+          .indexWhere((a) => a.ayahUQNumber == currentAyahUniqueNumber);
+      final int initialIndex =
+          computedInitialIndex >= 0 ? computedInitialIndex : 0;
+
+      log('TIMER: before setAudioSources for surah $currentSurahNumber: ${sw.elapsedMilliseconds} ms',
+          name: 'AudioTimer');
+
       // إنشاء مصادر الصوت / Create audio sources
       final List<AudioSource> audioSources;
+      // هذا الفهرس هو أول آية داخل قائمة التشغيل الفعلية (قد يكون 0 أو آية في منتصف السورة)
+      int playlistStartAyahIndex = 0;
       if (kIsWeb) {
         audioSources = List.generate(
           ayahsFilesNames.length,
@@ -112,61 +134,39 @@ extension AyahCtrlExtension on AudioCtrl {
           ),
         );
       } else {
-        log('Creating audio sources for surah $currentSurahNumber...',
-            name: 'AudioController');
+        // نمط "نافذة صغيرة" يتوسع تدريجيًا حسب تقدّم التشغيل
+        final int totalAyahs = ayahsFilesNames.length;
+        const int windowSize = 4; // عدد الآيات المحمّلة في كل مرة
+
+        playlistStartAyahIndex = initialIndex;
+        final int remainingAyahs = totalAyahs - initialIndex;
+        final int batchCount =
+            remainingAyahs < windowSize ? remainingAyahs : windowSize;
+
         final directory = await state.dir;
-        audioSources = List.generate(
-          ayahsFilesNames.length,
+        audioSources = List<AudioSource>.generate(
+          batchCount,
           (i) => AudioSource.file(
-            join(directory.path, ayahsFilesNames[i]),
-            tag: mediaItemsForCurrentSurah[i],
+            join(directory.path, ayahsFilesNames[initialIndex + i]),
+            tag: mediaItemsForCurrentSurah[initialIndex + i],
           ),
         );
-        log('Audio sources created for surah $currentSurahNumber.',
+
+        log('Created initial window of $batchCount ayahs (from index $initialIndex) out of $totalAyahs for surah $currentSurahNumber.',
             name: 'AudioController');
       }
-
-      if (!kIsWeb) {
-        log('Verifying audio files for surah $currentSurahNumber...',
-            name: 'AudioController');
-        // التأكد من وجود ملفات الصوت بشكل متوازي / Verify audio files exist in parallel
-        final directory = await state.dir;
-
-        // التحقق المتوازي من جميع الملفات دفعة واحدة
-        final verificationResults = await Future.wait(
-          ayahsFilesNames.map((fileName) async {
-            final filePath = join(directory.path, fileName);
-            final exists = await File(filePath).exists();
-            return {'fileName': fileName, 'exists': exists, 'path': filePath};
-          }),
-        );
-
-        // البحث عن أول ملف مفقود
-        final missingFile = verificationResults.firstWhere(
-          (result) => !(result['exists'] as bool),
-          orElse: () => {'exists': true},
-        );
-
-        if (!(missingFile['exists'] as bool)) {
-          log('Audio file does not exist: ${missingFile['path']}',
-              name: 'AudioController');
-          throw Exception('ملف الصوت غير موجود: ${missingFile['fileName']}');
-        }
-
-        log('All audio files verified for surah $currentSurahNumber.',
-            name: 'AudioController');
-      }
-
-      // احسب فهرس البداية اعتمادًا على ترتيب آيات السورة الحالية لضمان الدقة
-      final computedInitialIndex = currentAyahsSurah.ayahs
-          .indexWhere((a) => a.ayahUQNumber == currentAyahUniqueNumber);
-      final initialIndex = computedInitialIndex >= 0 ? computedInitialIndex : 0;
 
       // تعيين مصدر الصوت مع الفهرس الصحيح باستخدام واجهة playlist الحديثة
+      final int playlistInitialIndex =
+          playlistStartAyahIndex > 0 ? 0 : initialIndex;
+
       await state.audioPlayer.setAudioSources(
         audioSources,
-        initialIndex: initialIndex,
+        initialIndex: playlistInitialIndex,
       );
+
+      log('TIMER: after setAudioSources for surah $currentSurahNumber: ${sw.elapsedMilliseconds} ms',
+          name: 'AudioTimer');
 
       // إعدادات قائمة التشغيل: تعطيل العشوائي والتكرار لضمان انتقال تسلسلي
       await state.audioPlayer.setShuffleModeEnabled(false);
@@ -178,13 +178,16 @@ extension AyahCtrlExtension on AudioCtrl {
       // الاستماع لتغييرات الفهرس عبر sequenceStateStream (أوثق مع واجهة playlist)
       int? lastHandledIndex;
       int? lastHandledAyahUQ = state.currentAyahUniqueNumber.value;
+      // إجمالي عدد آيات السورة، لاستخدامه مع نمط النافذة المتحركة
+      final int totalAyahsCount = selectedSurahAyahsFileNames.length;
+
       state._currentIndexSubscription =
           state.audioPlayer.sequenceStateStream.listen((sequenceState) async {
         final index = sequenceState.currentIndex;
         final currentIndex = (state.audioPlayer.currentIndex ?? 0);
         log('seq.index: $index | player.currentIndex: $currentIndex',
             name: 'index');
-        if (index == null || index < 0 || index >= ayahsFilesNames.length) {
+        if (index == null || index < 0 || index >= audioSources.length) {
           return;
         }
         // تجاهل التكرارات لنفس الفهرس لتقليل الضجيج
@@ -195,7 +198,13 @@ extension AyahCtrlExtension on AudioCtrl {
 
         // احسب الآية الفريدة قبل وبعد للتأكد من تبدّل الصفحة
         final prevAyahUQ = lastHandledAyahUQ;
-        final newAyahUQ = currentAyahsSurah.ayahs[index].ayahUQNumber;
+        final effectiveAyahIndex = playlistStartAyahIndex + index;
+        if (effectiveAyahIndex < 0 ||
+            effectiveAyahIndex >= currentAyahsSurah.ayahs.length) {
+          return;
+        }
+        final newAyahUQ =
+            currentAyahsSurah.ayahs[effectiveAyahIndex].ayahUQNumber;
         lastHandledAyahUQ = newAyahUQ;
 
         // حدّث رقم الآية الحالية بحسب الفهرس الجديد
@@ -221,11 +230,50 @@ extension AyahCtrlExtension on AudioCtrl {
                 curve: Curves.easeInOut);
           }
         }
+
+        // توسيع نافذة التشغيل تدريجيًا: إذا اقتربنا من نهاية القائمة الحالية
+        // ولا تزال هناك آيات في السورة، أضف الآية التالية فقط
+        if (!kIsWeb) {
+          final int lastPlaylistGlobalIndex =
+              playlistStartAyahIndex + audioSources.length - 1;
+          final int currentGlobalIndex = playlistStartAyahIndex + index;
+
+          // إذا تبقّى عدد قليل من الآيات في النافذة (مثلاً أقل من 2 أمامنا)
+          // وما زال هناك آيات بعد نهاية القائمة الحالية، أضف آية واحدة فقط.
+          if (lastPlaylistGlobalIndex < totalAyahsCount - 1 &&
+              (lastPlaylistGlobalIndex - currentGlobalIndex) < 2) {
+            final int nextGlobalIndex = lastPlaylistGlobalIndex + 1;
+            if (nextGlobalIndex >= 0 && nextGlobalIndex < totalAyahsCount) {
+              Future(() async {
+                try {
+                  final dir = await state.dir;
+                  final source = AudioSource.file(
+                    join(
+                        dir.path, selectedSurahAyahsFileNames[nextGlobalIndex]),
+                    tag: mediaItemsForCurrentSurah[nextGlobalIndex],
+                  );
+                  await state.audioPlayer.addAudioSource(source);
+                  audioSources.add(source);
+                  log('Appended ayah at global index $nextGlobalIndex to playlist for surah $currentSurahNumber.',
+                      name: 'AudioController');
+                } catch (e) {
+                  log('Error appending next window ayah for surah $currentSurahNumber: $e',
+                      name: 'AudioController');
+                }
+              });
+            }
+          }
+        }
         log('Current playing index: $index', name: 'AudioController');
       });
 
       state.isPlaying.value = true;
+      // انتهت مرحلة تجهيز القائمة قبل البدء الفعلي
+      state.isAudioPreparing.value = false;
       await state.audioPlayer.play();
+
+      log('TIMER: after play() for surah $currentSurahNumber: ${sw.elapsedMilliseconds} ms',
+          name: 'AudioTimer');
 
       // استخدام اشتراك واحد لإدارة اكتمال قائمة التشغيل (نهاية السورة)
       state._playerStateSubscription =
@@ -239,6 +287,7 @@ extension AyahCtrlExtension on AudioCtrl {
         }
       });
     } catch (e) {
+      state.isAudioPreparing.value = false;
       state.isPlaying.value = false;
       await state.audioPlayer.stop();
       log('Error in ayahs playFile: $e', name: 'AudioController');
@@ -255,8 +304,12 @@ extension AyahCtrlExtension on AudioCtrl {
       bool? isDarkMode}) async {
     // التحقق من إمكانية التشغيل / Check if playback is allowed
     if (!await canPlayAudio()) {
+      state.isAudioPreparing.value = false;
       return;
     }
+
+    // فعّل حالة التحضير هنا ليعمل المؤشر مع أي مصدر استدعاء (زر القائمة أو زر الآية)
+    state.isAudioPreparing.value = true;
 
     log('isDarkMode: $isDarkMode', name: 'AudioController');
 
@@ -374,10 +427,15 @@ extension AyahCtrlExtension on AudioCtrl {
   /// حالة تحميل آيات السورة بالكامل حسب القارئ الحالي
   Future<bool> isAyahSurahFullyDownloaded(int surahNumber) async {
     if (kIsWeb) return false;
-    log('Checking if surah $surahNumber is fully downloaded...',
-        name: 'AudioController');
     final key = 'surah_$surahNumberـ${state.ayahReaderIndex.value}';
-    // أولاً تحقّق من الملفات فعلياً
+
+    // اقرأ من الكاش أولاً - فوري وبدون تأخير
+    final cached = state.box.read<bool>(key);
+    if (cached == true) {
+      return true; // ارجع مباشرة من الكاش
+    }
+
+    // فقط إذا لم يكن في الكاش، تحقق من الملفات
     try {
       final surah = QuranCtrl.instance.surahs
           .firstWhere((s) => s.surahNumber == surahNumber);
@@ -386,13 +444,11 @@ extension AyahCtrlExtension on AudioCtrl {
         final fileName = _ayahFileNameFor(surahNumber, ayah.ayahNumber);
         final path = join(dir.path, fileName);
         if (!await File(path).exists()) {
-          // تأكد من تخزين الحالة كغير محمّلة
           state.box.write(key, false);
           return false;
         }
       }
-      log('All files for surah $surahNumber exist.', name: 'AudioController');
-      // إذا وصلت هنا فكل الملفات موجودة
+      // كل الملفات موجودة - احفظ في الكاش
       state.box.write(key, true);
       return true;
     } catch (_) {

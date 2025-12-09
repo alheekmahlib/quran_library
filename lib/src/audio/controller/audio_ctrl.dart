@@ -30,12 +30,10 @@ class AudioCtrl extends GetxController {
       _updateDownloadedAyahsMap(),
       // loadLastSurahAndPosition(),
     ]);
+    getAyahUQNumber(state._quranRepository.getLastPage() ?? 1);
+
     ever(QuranCtrl.instance.state.currentPageNumber, (pageNumber) {
-      final ayahs = QuranCtrl.instance
-          .getCurrentPageAyahsSeparatedForBasmalah(pageNumber - 1);
-      if (ayahs.isNotEmpty) {
-        state.currentAyahUniqueNumber.value = ayahs.first.first.ayahUQNumber;
-      }
+      getAyahUQNumber(pageNumber);
     });
 
     state.surahsPlayList = List.generate(114, (i) {
@@ -589,6 +587,17 @@ class AudioCtrl extends GetxController {
     } catch (e, s) {
       log('Failed to refresh MediaItem art: $e',
           name: 'AudioCtrl', stackTrace: s);
+    }
+  }
+
+  void getAyahUQNumber(int pageNumber) {
+    final ayahs = QuranCtrl.instance
+        .getCurrentPageAyahsSeparatedForBasmalah(pageNumber - 1);
+    log('Fetching AyahUQNumber for page $pageNumber', name: 'AudioCtrl');
+    if (ayahs.isNotEmpty) {
+      state.currentAyahUniqueNumber.value = ayahs.first.first.ayahUQNumber;
+      log('Updated currentAyahUniqueNumber to ${state.currentAyahUniqueNumber.value} for page $pageNumber',
+          name: 'AudioCtrl');
     }
   }
 }

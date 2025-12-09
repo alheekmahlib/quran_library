@@ -34,6 +34,9 @@ class QuranCtrl extends GetxController {
   late FocusNode searchFocusNode;
   late TextEditingController searchTextController;
 
+  // PageController الداخلي
+  PageController? _pageController;
+
   late Directory _dir;
   // late QuranSearch quranSearch;
 
@@ -45,6 +48,7 @@ class QuranCtrl extends GetxController {
   @override
   void onInit() async {
     super.onInit();
+    junpTolastPage();
     if (!kIsWeb) {
       _dir = await getApplicationDocumentsDirectory();
       if (GetStorage().read(_StorageConstants().fontsSelected) == 1 ||
@@ -55,7 +59,6 @@ class QuranCtrl extends GetxController {
     await prepareFonts(state.currentPageNumber.value - 1);
     searchFocusNode = FocusNode();
     searchTextController = TextEditingController();
-    junpTolastPage();
   }
 
   @override

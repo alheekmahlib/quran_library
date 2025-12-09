@@ -159,10 +159,10 @@ class DefaultFontsBuild extends StatelessWidget {
                               color:
                                   textColor ?? AppColors.getTextColor(isDark),
                               fontSize: pageIndex == 0 || pageIndex == 1
-                                  ? 32.55
+                                  ? 22.55.sp
                                   : null,
                               fontFamily: 'hafs',
-                              height: 2,
+                              height: 1.7.h,
                               package: 'quran_library',
                             ),
                             children: [
@@ -191,7 +191,7 @@ class DefaultFontsBuild extends StatelessWidget {
                                                   .primary,
                                           fontSize:
                                               pageIndex == 0 || pageIndex == 1
-                                                  ? 32.55
+                                                  ? 22.55.sp
                                                   : 16,
                                           fontFamily: 'ayahNumber',
                                           package: 'quran_library',

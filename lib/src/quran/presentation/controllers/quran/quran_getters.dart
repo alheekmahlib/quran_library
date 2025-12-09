@@ -7,14 +7,31 @@ extension QuranGetters on QuranCtrl {
 
   // شرح: تحسين PageController للحصول على أداء أفضل
   // Explanation: Optimized PageController for better performance
-  PageController get quranPagesController => PageController(
+  PageController get quranPagesController {
+    // إذا لم يكن الـ controller مُهيأً بعد أو لا يحتوي على clients، أنشئه
+    if (QuranCtrl.instance._pageController == null ||
+        !QuranCtrl.instance._pageController!.hasClients) {
+      QuranCtrl.instance._pageController = PageController(
         initialPage: (_quranRepository.getLastPage() ?? 1) - 1,
         keepPage: true,
         viewportFraction: 1.0,
       );
+    }
+    return QuranCtrl.instance._pageController!;
+  }
 
   set quranPagesController(PageController controller) {
-    // لا تفعل شيئاً، فقط لتجنب الخطأ
+    // حفظ الـ controller الجديد
+    // إذا كان هناك controller قديم، قم بالتخلص منه أولاً
+    if (QuranCtrl.instance._pageController != null &&
+        QuranCtrl.instance._pageController!.hasClients) {
+      try {
+        QuranCtrl.instance._pageController!.dispose();
+      } catch (_) {
+        // تجاهل الأخطاء إذا كان قد تم التخلص منه مسبقاً
+      }
+    }
+    QuranCtrl.instance._pageController = controller;
   }
 
   RxBool get isDownloadedFonts =>

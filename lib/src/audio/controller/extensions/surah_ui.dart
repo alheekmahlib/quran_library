@@ -40,6 +40,7 @@ extension SurahUi on AudioCtrl {
 
     // بدّل المصدر بأمان
     await changeAudioSource();
+    update(['CollSurahName']);
 
     // شغّل تلقائيًا إذا طُلب ذلك
     if (autoPlay) {

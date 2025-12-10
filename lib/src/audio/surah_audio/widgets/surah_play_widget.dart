@@ -176,9 +176,10 @@ class AudioSurahNameWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Obx(
-      () => Text(
-        AudioCtrl.instance.state.currentAudioListSurahNum.value.toString(),
+    return GetBuilder<AudioCtrl>(
+      id: 'CollSurahName',
+      builder: (audioCtrl) => Text(
+        audioCtrl.state.currentAudioListSurahNum.value.toString(),
         style: TextStyle(
           color: numberColor,
           fontFamily: "surahName",

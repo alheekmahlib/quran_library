@@ -41,9 +41,16 @@ class SurahState {
   var activeButton = RxString('');
   final TextEditingController textEditingController = TextEditingController();
   RxInt surahReaderIndex = 0.obs;
-  final Rx<Map<int, bool>> surahDownloadStatus = Rx<Map<int, bool>>({});
-  RxBool isSurahDownloadedByNumber(int surahNumber) =>
-      (surahDownloadStatus.value[surahNumber] ?? false).obs;
+  // هيكل البيانات: {"readerIndex_surahNumber": bool}
+  // مثال: {"0_1": true} يعني القارئ رقم 0، السورة رقم 1 محملة
+  final Rx<Map<String, bool>> surahDownloadStatus = Rx<Map<String, bool>>({});
+
+  /// التحقق من تحميل سورة معينة للقارئ الحالي
+  RxBool isSurahDownloadedByNumber(int surahNumber) {
+    String key = '${surahReaderIndex.value}_$surahNumber';
+    return (surahDownloadStatus.value[key] ?? false).obs;
+  }
+
   Map<int, bool> ayahsDownloadStatus =
       Map.fromEntries(List.generate(6236, (i) => MapEntry(i + 1, false)));
   // كاش لقوائم AudioSource الخاصة بآيات كل سورة لكل قارئ

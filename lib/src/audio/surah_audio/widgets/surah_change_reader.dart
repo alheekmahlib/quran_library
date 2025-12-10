@@ -127,8 +127,9 @@ class SurahChangeSurahReader extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Obx(
-          () => Text(
+        GetBuilder<AudioCtrl>(
+          id: 'change_surah_reader',
+          builder: (surahAudioCtrl) => Text(
             ReadersConstants
                 .activeSurahReaders[surahAudioCtrl.state.surahReaderIndex.value]
                 .name

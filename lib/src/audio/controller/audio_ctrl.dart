@@ -289,7 +289,7 @@ class AudioCtrl extends GetxController {
       state.isDownloading.value = false;
     }
 
-    update(['audio_seekBar_id']);
+    // update(['audio_seekBar_id']);
     return path;
   }
 
@@ -371,13 +371,14 @@ class AudioCtrl extends GetxController {
   }
 
   Future<void> initializeSurahDownloadStatus() async {
-    Map<int, bool> initialStatus = await checkAllSurahsDownloaded();
+    Map<String, bool> initialStatus = await checkAllSurahsDownloaded();
     state.surahDownloadStatus.value = initialStatus;
   }
 
   void updateDownloadStatus(int surahNumber, bool downloaded) {
-    final newStatus = Map<int, bool>.from(state.surahDownloadStatus.value);
-    newStatus[surahNumber] = downloaded;
+    String key = '${state.surahReaderIndex.value}_$surahNumber';
+    final newStatus = Map<String, bool>.from(state.surahDownloadStatus.value);
+    newStatus[key] = downloaded;
     state.surahDownloadStatus.value = newStatus;
   }
 
@@ -385,12 +386,15 @@ class AudioCtrl extends GetxController {
     updateDownloadStatus(surahNumber, true);
   }
 
-  Future<Map<int, bool>> checkAllSurahsDownloaded() async {
-    Map<int, bool> surahDownloadStatus = {};
+  Future<Map<String, bool>> checkAllSurahsDownloaded() async {
+    Map<String, bool> surahDownloadStatus = {};
+    int currentReaderIndex = state.surahReaderIndex.value;
+
     if (kIsWeb) {
       // على الويب لا ندير ملفات محلية؛ اعتبر جميع السور غير مُحمّلة محليًا
       for (int i = 1; i <= 114; i++) {
-        surahDownloadStatus[i] = false;
+        String key = '${currentReaderIndex}_$i';
+        surahDownloadStatus[key] = false;
       }
       return surahDownloadStatus;
     }
@@ -400,7 +404,8 @@ class AudioCtrl extends GetxController {
       String filePath =
           '${directory.path}/${state.surahReaderNamePath}${i.toString().padLeft(3, '0')}.mp3';
       File file = File(filePath);
-      surahDownloadStatus[i] = await file.exists();
+      String key = '${currentReaderIndex}_$i';
+      surahDownloadStatus[key] = await file.exists();
     }
     return surahDownloadStatus;
   }

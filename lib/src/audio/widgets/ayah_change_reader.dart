@@ -145,11 +145,11 @@ class AyahChangeReader extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Obx(
-          () => Text(
+        GetBuilder<AudioCtrl>(
+          id: 'change_ayah_reader',
+          builder: (audioCtrl) => Text(
             ReadersConstants
-                .activeAyahReaders[
-                    AudioCtrl.instance.state.ayahReaderIndex.value]
+                .activeAyahReaders[audioCtrl.state.ayahReaderIndex.value]
                 .name
                 .tr,
             style: QuranLibrary().cairoStyle.copyWith(

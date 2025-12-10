@@ -50,13 +50,24 @@ extension SurahUi on AudioCtrl {
     }
   }
 
-  void changeSurahReadersOnTap(BuildContext context, int index) {
-    initializeSurahDownloadStatus();
+  Future<void> changeSurahReadersOnTap(BuildContext context, int index) async {
+    // إيقاف التشغيل وإلغاء الاشتراكات أولاً
+    await state.stopAllAudio();
+
+    // تغيير القارئ وحفظ الاختيار
     state.box.write(StorageConstants.surahReaderIndex, index);
     state.surahReaderIndex.value = index;
+
+    // إعادة تهيئة حالة التحميل للقارئ الجديد
+    await initializeSurahDownloadStatus();
+
     // إعادة تعيين المصدر وفق القارئ الجديد بأمان
-    changeAudioSource();
-    Navigator.of(context).pop();
+    await changeAudioSource();
+
+    update(['change_surah_reader']);
+    if (context.mounted) {
+      Navigator.of(context).pop();
+    }
   }
 
   Future<void> changeAyahReadersOnTap(BuildContext context, int index) async {
@@ -65,7 +76,7 @@ extension SurahUi on AudioCtrl {
     state.box.write(StorageConstants.ayahReaderIndex, index);
     state.ayahReaderIndex.value = index;
     Navigator.of(context).pop();
-    update(['audio_seekBar_id']);
+    update(['change_ayah_reader']);
     await _updateDownloadedAyahsMap();
     if (context.mounted) {
       state.isPlaying.value

@@ -18,8 +18,8 @@ extension SurahAudioStorage on AudioCtrl {
   Future<void> loadLastSurahAndPosition() async {
     final lastSurahData = await loadLastSurahListen();
 
-    // state.selectedSurahIndex.value =
-    //     lastSurahData[StorageConstants.lastSurah] - 1;
+    state.currentAudioListSurahNum.value =
+        lastSurahData[StorageConstants.lastSurah];
     state.selectedSurahIndex.value =
         lastSurahData[StorageConstants.selectedSurahIndex];
     state.lastPosition.value = lastSurahData[StorageConstants.lastPosition];

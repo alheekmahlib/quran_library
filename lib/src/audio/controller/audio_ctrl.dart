@@ -28,7 +28,7 @@ class AudioCtrl extends GetxController {
     await Future.wait([
       _addDownloadedSurahToPlaylist(),
       _updateDownloadedAyahsMap(),
-      // loadLastSurahAndPosition(),
+      loadLastSurahAndPosition(),
     ]);
     getAyahUQNumber(state._quranRepository.getLastPage() ?? 1);
 

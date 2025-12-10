@@ -320,13 +320,13 @@ class AudioCtrl extends GetxController {
       }
       state.progressString.value = "0";
       state.progress.value = 0;
-      update(['seekBar_id']);
+      update(['surahDownloadManager_id']);
 
       await dio.download(url, path, onReceiveProgress: (rec, total) {
         state.progressString.value = ((rec / total) * 100).toStringAsFixed(0);
         state.progress.value = (rec / total).toDouble();
         state.downloadProgress.value = rec;
-        update(['seekBar_id']);
+        update(['surahDownloadManager_id']);
       }, cancelToken: state.cancelToken);
 
       if (updateGlobalDownloading) {
@@ -365,7 +365,7 @@ class AudioCtrl extends GetxController {
         state.isDownloading.value = false;
       }
       state.progressString.value = "0";
-      update(['seekBar_id']);
+      update(['surahDownloadManager_id']);
       return false;
     }
   }

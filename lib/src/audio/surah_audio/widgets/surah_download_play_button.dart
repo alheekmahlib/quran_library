@@ -6,9 +6,10 @@ class SurahDownloadPlayButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final surahAudioCtrl = AudioCtrl.instance;
-    return Obx(
-      () => surahAudioCtrl.state.isDownloading.value
+    // final surahAudioCtrl = AudioCtrl.instance;
+    return GetBuilder<AudioCtrl>(
+      id: 'surahDownloadManager_id',
+      builder: (surahAudioCtrl) => surahAudioCtrl.state.isDownloading.value
           ? IconButton(
               icon: Icon(
                 Icons.close,

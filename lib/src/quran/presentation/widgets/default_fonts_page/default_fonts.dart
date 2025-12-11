@@ -161,7 +161,7 @@ class DefaultFontsBuild extends StatelessWidget {
                               fontSize: pageIndex == 0 || pageIndex == 1
                                   ? 22.55.sp
                                   : null,
-                              fontFamily: 'hafs',
+                              fontFamily: quranCtrl.currentFontFamily,
                               height: 1.7.h,
                               package: 'quran_library',
                             ),

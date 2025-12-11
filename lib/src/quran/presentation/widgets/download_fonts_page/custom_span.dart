@@ -182,9 +182,9 @@ TextSpan _span({
             text: '$ayahNum'.convertEnglishNumbersToArabic(ayahNum.toString()),
             style: TextStyle(
               fontFamily: 'ayahNumber',
-              fontSize: fontSize,
+              fontSize: fontSize! + 25,
               // letterSpacing: 5,
-              height: 2.1,
+              height: 1.6,
               package: 'quran_library',
               color: ayahIconColor ?? Theme.of(context).colorScheme.primary,
               backgroundColor: ayahBookmarked.contains(ayahUQNum)

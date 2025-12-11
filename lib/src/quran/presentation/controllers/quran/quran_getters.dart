@@ -5,6 +5,13 @@ part of '/quran.dart';
 extension QuranGetters on QuranCtrl {
   /// -------- [Getter] ----------
 
+  /// Get current recitation based on fontsSelected value
+  QuranRecitation get currentRecitation =>
+      QuranRecitation.fromIndex(state.fontsSelected.value);
+
+  /// Get current font family for the selected recitation
+  String get currentFontFamily => currentRecitation.fontFamily;
+
   // شرح: تحسين PageController للحصول على أداء أفضل
   // Explanation: Optimized PageController for better performance
   PageController get quranPagesController {
@@ -483,6 +490,8 @@ extension QuranGetters on QuranCtrl {
       if (AudioCtrl.instance.state.isPlaying.value) {
         isShowControl.toggle();
         update(['isShowControl']);
+      } else if (selectedAyahsByUnequeNumber.isNotEmpty) {
+        clearSelection();
       } else {
         clearSelection();
         isShowControl.toggle();

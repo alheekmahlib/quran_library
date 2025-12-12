@@ -84,7 +84,10 @@ class PlaySurahsWidget extends StatelessWidget {
                                       .state.currentAudioListSurahNum.value)
                                   .value
                               ? const SizedBox.shrink()
-                              : SurahDownloadPlayButton(style: style),
+                              : SurahDownloadPlayButton(
+                                  style: style,
+                                  surahNumber: surahCtrl
+                                      .state.currentAudioListSurahNum.value),
                         ),
                   const SizedBox(width: 8),
                   SurahRepeatWidget(style: style)

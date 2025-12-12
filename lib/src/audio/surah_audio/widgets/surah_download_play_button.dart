@@ -2,7 +2,9 @@ part of '../../audio.dart';
 
 class SurahDownloadPlayButton extends StatelessWidget {
   final SurahAudioStyle? style;
-  const SurahDownloadPlayButton({super.key, this.style});
+  final int surahNumber;
+  const SurahDownloadPlayButton(
+      {super.key, this.style, required this.surahNumber});
 
   @override
   Widget build(BuildContext context) {
@@ -51,7 +53,8 @@ class SurahDownloadPlayButton extends StatelessWidget {
                           .value) {
                         surahAudioCtrl.state.isPlaying.value = true;
                       } else {
-                        await surahAudioCtrl.startDownload();
+                        await surahAudioCtrl.startDownload(
+                            surahNumber: surahNumber);
                       }
                     },
                   );

@@ -132,22 +132,109 @@ class PortraitWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SlidingPanel(
-      controller: surahCtrl.state.panelController,
-      config: SlidingPanelConfig(
-        anchorPosition: 100,
-        expandPosition: UiHelper.currentOrientation(
-            size.height * .7, size.height * .8, context),
-      ),
-      pageContent: SurahBackDropWidget(
-          style: style, isDark: dark, languageCode: languageCode),
-      panelContent: Obx(
-        () => !surahCtrl.state.isSheetOpen.value
-            ? SurahCollapsedPlayWidget(
-                style: style, isDark: dark, languageCode: languageCode)
-            : PlaySurahsWidget(
-                style: style, isDark: dark, languageCode: languageCode),
-      ),
+    final bg =
+        style?.audioSliderBackgroundColor ?? AppColors.getBackgroundColor(dark);
+    final borderColor =
+        (style?.backgroundColor ?? AppColors.getBackgroundColor(dark))
+            .withValues(alpha: 0.15);
+    return Stack(
+      children: [
+        SurahBackDropWidget(
+            style: style, isDark: dark, languageCode: languageCode),
+        Align(
+          alignment: Alignment.bottomCenter,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              GestureDetector(
+                // عند السحب للأعلى يفتح السلايدر، وعند السحب للأسفل يغلق
+                // On vertical drag: up opens, down closes
+                onVerticalDragUpdate: (details) {
+                  if (details.primaryDelta != null) {
+                    if (details.primaryDelta! < -8) {
+                      // سحب للأعلى: فتح السلايدر
+                      // Drag up: open
+                      Future.delayed(
+                        const Duration(milliseconds: 10),
+                        () {
+                          surahCtrl.state.isSheetOpen.value = true;
+                          surahCtrl.update(['change_sheet_state']);
+                        },
+                      );
+                    } else if (details.primaryDelta! > 8) {
+                      // سحب للأسفل: إغلاق السلايدر
+                      // Drag down: close
+
+                      surahCtrl.state.isSheetOpen.value = false;
+                      surahCtrl.update(['change_sheet_state']);
+                    }
+                  }
+                },
+                child: Container(
+                  width: UiHelper.currentOrientation(
+                      size.width, size.width * .5, context),
+                  margin: const EdgeInsets.only(left: 16, right: 16, top: 16),
+                  decoration: BoxDecoration(
+                    color: bg,
+                    borderRadius: const BorderRadius.all(
+                      Radius.circular(8),
+                    ),
+                    border: Border.all(color: borderColor, width: 1),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: .2),
+                        spreadRadius: 1,
+                        blurRadius: 5,
+                        offset: const Offset(
+                          0,
+                          -5,
+                        ), // changes position of shadow
+                      ),
+                    ],
+                  ),
+                  child: GetBuilder<AudioCtrl>(
+                    id: 'change_sheet_state',
+                    builder: (surahCtrl) => AnimatedSize(
+                      duration: const Duration(milliseconds: 300),
+                      alignment: AlignmentGeometry.bottomCenter,
+                      child: AnimatedCrossFade(
+                        // مطابقة مدة الأنيميشن مع السلايدر لتجنب overflow
+                        // Match animation duration with slider to avoid overflow
+                        duration: const Duration(milliseconds: 200),
+                        reverseDuration: const Duration(
+                          milliseconds: 200,
+                        ),
+                        secondCurve: Curves.linear,
+                        firstChild: SurahCollapsedPlayWidget(
+                            style: style,
+                            isDark: dark,
+                            languageCode: languageCode),
+                        secondChild: PlaySurahsWidget(
+                            style: style,
+                            isDark: dark,
+                            languageCode: languageCode),
+                        crossFadeState: !surahCtrl.state.isSheetOpen.value
+                            ? CrossFadeState.showFirst
+                            : CrossFadeState.showSecond,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        // SlidingPanel(
+        //   controller: surahCtrl.state.panelController,
+        //   config: SlidingPanelConfig(
+        //     anchorPosition: 100,
+        //     expandPosition: UiHelper.currentOrientation(
+        //         size.height * .7, size.height * .8, context),
+        //   ),
+        //   pageContent:
+        //   panelContent:
+        // ),
+      ],
     );
   }
 }

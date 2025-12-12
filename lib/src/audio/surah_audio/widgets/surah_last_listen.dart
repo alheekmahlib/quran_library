@@ -32,7 +32,7 @@ class SurahLastListen extends StatelessWidget {
           surahAudioCtrl.enableSurahPositionSaving();
           surahAudioCtrl.loadLastSurahAndPosition();
           surahAudioCtrl.state.audioPlayer.play();
-          surahAudioCtrl.state.panelController.expand();
+          surahAudioCtrl.state.isSheetOpen.value = true;
         },
         child: Container(
           // اجعل العرض مرنًا ليناسب الحاوية الأب

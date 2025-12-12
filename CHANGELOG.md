@@ -1,7 +1,7 @@
 ## 2.3.2
 
-* **CHANGES:**
-	* .
+* **DELETE:**
+	* Delete flutter_sliding_panel package and replace it with AnimatedSize and AnimatedCrossFade.
 * **ADD:**
 	* Add Kashida to Tafsir & Surah info text.
 	* Add `svgBannerColor` to `BannerStyle` to change SVG banner color.
@@ -11,6 +11,7 @@
 	* Dark mode issue in Ayah audio download manager.
 	* Custom Tafsir Performance.
 	* Download Tafsir & translation icon color in dark mode.
+	* Surah last listen.
 
 ## 2.3.1
 

@@ -76,7 +76,6 @@ class AudioCtrl extends GetxController {
 
     // تسجيل الخدمة كنشطة / Register service as active
     SurahState.setAudioServiceActive(true);
-    sheetState();
   }
 
   @override

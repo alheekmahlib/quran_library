@@ -94,7 +94,6 @@ class SurahState {
   RxString appIconUrl =
       'https://raw.githubusercontent.com/alheekmahlib/thegarlanded/master/Photos/Packages/quran_library/quran_library_logo.jpg'
           .obs;
-  SlidingPanelController panelController = SlidingPanelController();
   RxBool isSheetOpen = false.obs;
   RxInt get currentAudioListSurahNum => (selectedSurahIndex.value + 1).obs;
 

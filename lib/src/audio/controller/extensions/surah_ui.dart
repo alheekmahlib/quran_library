@@ -86,18 +86,4 @@ extension SurahUi on AudioCtrl {
           : null;
     }
   }
-
-  void sheetState() {
-    state.panelController.addListener(() {
-      // تحديث حالة الـ Sheet بناءً على الوضعية الحالية
-      // Update Sheet state based on current status
-      if (state.panelController.status.index == 0) {
-        state.isSheetOpen.value = true;
-        log('Sheet is now open', name: 'SurahAudioController');
-      } else {
-        state.isSheetOpen.value = false;
-        log('Sheet is now closed', name: 'SurahAudioController');
-      }
-    });
-  }
 }

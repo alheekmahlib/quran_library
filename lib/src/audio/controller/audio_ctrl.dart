@@ -100,14 +100,16 @@ class AudioCtrl extends GetxController {
     state._playerStateSubscription?.cancel();
     state._playerStateSubscription =
         state.audioPlayer.playerStateStream.listen((playerState) async {
+      // فحص الحالة فقط عند الاكتمال - تقليل الاستدعاءات
       if (playerState.processingState != ProcessingState.completed) return;
       if (!state.isPlayingSurahsMode) return;
       if (state.surahAutoNextInProgress) return;
+
       state.surahAutoNextInProgress = true;
       final now = DateTime.now().millisecondsSinceEpoch / 1000.0;
       final last = state.lastTime ?? 0.0;
-      // منع التفعيل المزدوج خلال نافذة زمنية قصيرة
-      if ((now - last) < 0.3) {
+      // زيادة النافذة الزمنية لمنع التفعيل المزدوج - من 0.3 إلى 1 ثانية
+      if ((now - last) < 1.0) {
         state.surahAutoNextInProgress = false;
         return;
       }
@@ -466,16 +468,30 @@ class AudioCtrl extends GetxController {
   void enableSurahPositionSaving() {
     // إلغاء أي اشتراك سابق لتفادي التكرار
     state._surahPositionSubscription?.cancel();
+    state._savePositionTimer?.cancel();
+
+    int? lastSavedPosition;
 
     state._surahPositionSubscription =
         state.audioPlayer.positionStream.listen((position) {
       // حفظ الموضع فقط في وضع السور
       if (state.isPlayingSurahsMode) {
-        state.lastPosition.value = position.inSeconds;
-        state.seekNextSeconds.value = position.inSeconds;
-        SchedulerBinding.instance.addPostFrameCallback((_) {
-          state.box.write(StorageConstants.lastPosition, position.inSeconds);
-        });
+        final positionInSeconds = position.inSeconds;
+        state.lastPosition.value = positionInSeconds;
+        state.seekNextSeconds.value = positionInSeconds;
+
+        // لا تحفظ في Storage إلا إذا مر 3 ثوانٍ أو تغير الموضع بشكل كبير (للتنقل اليدوي)
+        if (lastSavedPosition == null ||
+            (positionInSeconds - lastSavedPosition!).abs() >= 3) {
+          // إلغاء أي timer سابق
+          state._savePositionTimer?.cancel();
+
+          // إنشاء timer جديد لحفظ الموضع بعد 3 ثوانٍ
+          state._savePositionTimer = Timer(const Duration(seconds: 3), () {
+            state.box.write(StorageConstants.lastPosition, positionInSeconds);
+            lastSavedPosition = positionInSeconds;
+          });
+        }
       }
     });
   }
@@ -484,6 +500,16 @@ class AudioCtrl extends GetxController {
   void disableSurahPositionSaving() {
     state._surahPositionSubscription?.cancel();
     state._surahPositionSubscription = null;
+
+    // حفظ الموضع الأخير قبل التعطيل
+    if (state._savePositionTimer?.isActive ?? false) {
+      state._savePositionTimer?.cancel();
+      if (state.isPlayingSurahsMode && state.lastPosition.value > 0) {
+        state.box
+            .write(StorageConstants.lastPosition, state.lastPosition.value);
+      }
+    }
+    state._savePositionTimer = null;
   }
 
   Future<void> setCachedArtUri() async {

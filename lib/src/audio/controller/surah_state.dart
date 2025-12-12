@@ -13,6 +13,8 @@ class SurahState {
   StreamSubscription? _currentIndexSubscription;
   // StreamSubscription مخصص لحفظ آخر استماع للسور فقط
   StreamSubscription<Duration>? _surahPositionSubscription;
+  // Timer لحفظ موضع السورة بشكل دوري (كل 3 ثوان)
+  Timer? _savePositionTimer;
 
   // getter وsetter للحالة النشطة / getter and setter for active state
   static bool get isAudioServiceActive => _isAudioServiceActive;
@@ -101,9 +103,11 @@ class SurahState {
     _playerStateSubscription?.cancel();
     _currentIndexSubscription?.cancel();
     _surahPositionSubscription?.cancel();
+    _savePositionTimer?.cancel();
     _playerStateSubscription = null;
     _currentIndexSubscription = null;
     _surahPositionSubscription = null;
+    _savePositionTimer = null;
   }
 
   /// إيقاف جميع الأصوات / Stop all audio

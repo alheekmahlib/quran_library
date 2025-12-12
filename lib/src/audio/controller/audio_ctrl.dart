@@ -473,7 +473,9 @@ class AudioCtrl extends GetxController {
       if (state.isPlayingSurahsMode) {
         state.lastPosition.value = position.inSeconds;
         state.seekNextSeconds.value = position.inSeconds;
-        state.box.write(StorageConstants.lastPosition, position.inSeconds);
+        SchedulerBinding.instance.addPostFrameCallback((_) {
+          state.box.write(StorageConstants.lastPosition, position.inSeconds);
+        });
       }
     });
   }

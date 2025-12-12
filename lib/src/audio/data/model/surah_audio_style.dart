@@ -167,6 +167,10 @@ class SurahAudioStyle {
   /// Custom "last listen" text
   final String? lastListenText;
 
+  /// لون "شريط التقدم" المخصص
+  /// Custom "progress" color
+  final Color? downloadProgressColor;
+
   /// منشئ فئة SurahAudioStyle
   /// SurahAudioStyle class constructor
   SurahAudioStyle({
@@ -211,6 +215,7 @@ class SurahAudioStyle {
     this.lastListenText,
     this.dialogHeaderTitle,
     this.backIconColor,
+    this.downloadProgressColor,
   });
 
   SurahAudioStyle copyWith({
@@ -255,6 +260,7 @@ class SurahAudioStyle {
     String? lastListenText,
     String? dialogHeaderTitle,
     Color? backIconColor,
+    Color? downloadProgressColor,
   }) {
     return SurahAudioStyle(
       textColor: textColor ?? this.textColor,
@@ -310,6 +316,8 @@ class SurahAudioStyle {
       lastListenText: lastListenText ?? this.lastListenText,
       dialogHeaderTitle: dialogHeaderTitle ?? this.dialogHeaderTitle,
       backIconColor: backIconColor ?? this.backIconColor,
+      downloadProgressColor:
+          downloadProgressColor ?? this.downloadProgressColor,
     );
   }
 
@@ -391,6 +399,7 @@ class SurahAudioStyle {
       // نص آخر استماع الافتراضي
       lastListenText: 'آخر إستماع',
       dialogHeaderTitle: 'تغيير القارئ',
+      downloadProgressColor: Colors.white,
     );
   }
 }

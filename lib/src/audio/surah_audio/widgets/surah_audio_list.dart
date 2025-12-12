@@ -119,8 +119,6 @@ class BuildEnhancedSurahItem extends StatelessWidget {
         () {
           final isSelected =
               surahAudioCtrl.state.selectedSurahIndex.value == index;
-          final isDownloaded =
-              surahAudioCtrl.state.isSurahDownloadedByNumber(surahNumber);
           return AnimatedContainer(
             duration: const Duration(milliseconds: 200),
             padding:
@@ -287,59 +285,61 @@ class BuildEnhancedSurahItem extends StatelessWidget {
                 // Explanation: Enhanced play icon
                 kIsWeb
                     ? const SizedBox.shrink()
-                    : Column(
-                        children: [
-                          Container(
-                            width: 36.0,
-                            height: 36.0,
-                            decoration: BoxDecoration(
-                              color: isSelected
-                                  ? (style?.primaryColor ??
-                                      Theme.of(context).colorScheme.primary)
-                                  : (style?.primaryColor ??
-                                          Theme.of(context).colorScheme.primary)
-                                      .withValues(alpha: 0.1),
-                              borderRadius: BorderRadius.circular(18.0),
-                            ),
-                            child: GestureDetector(
-                              onTap: () => surahAudioCtrl.downloadSurah(
-                                  surahNum: surahNumber),
-                              child: Obx(
-                                () => Icon(
-                                  isDownloaded.value
-                                      ? Icons.download_done
-                                      : Icons.cloud_download_outlined,
-                                  color: isSelected
-                                      ? Colors.white
-                                      : (style?.primaryColor ??
-                                          Theme.of(context)
-                                              .colorScheme
-                                              .primary),
-                                  size: 20.0,
-                                ),
-                              ),
-                            ),
-                          ),
-                          Obx(
-                            () {
-                              if (index ==
-                                      surahAudioCtrl
-                                          .state.selectedSurahIndex.value &&
-                                  surahAudioCtrl.state.isDownloading.value &&
-                                  !isDownloaded.value) {
-                                return SizedBox(
-                                  height: 10,
-                                  width: 40,
-                                  child: LinearProgressIndicator(
-                                    value: surahAudioCtrl.state.progress.value,
-                                  ),
-                                );
-                              }
-                              return const SizedBox.shrink();
-                            },
-                          )
-                        ],
-                      ),
+                    : SurahDownloadPlayButton(
+                        style: style, surahNumber: index + 1),
+                // Column(
+                //   children: [
+                //     Container(
+                //       width: 36.0,
+                //       height: 36.0,
+                //       decoration: BoxDecoration(
+                //         color: isSelected
+                //             ? (style?.primaryColor ??
+                //                 Theme.of(context).colorScheme.primary)
+                //             : (style?.primaryColor ??
+                //                     Theme.of(context).colorScheme.primary)
+                //                 .withValues(alpha: 0.1),
+                //         borderRadius: BorderRadius.circular(18.0),
+                //       ),
+                //       child: GestureDetector(
+                //         onTap: () => surahAudioCtrl.downloadSurah(
+                //             surahNum: surahNumber),
+                //         child: Obx(
+                //           () => Icon(
+                //             isDownloaded.value
+                //                 ? Icons.download_done
+                //                 : Icons.cloud_download_outlined,
+                //             color: isSelected
+                //                 ? Colors.white
+                //                 : (style?.primaryColor ??
+                //                     Theme.of(context)
+                //                         .colorScheme
+                //                         .primary),
+                //             size: 20.0,
+                //           ),
+                //         ),
+                //       ),
+                //     ),
+                //     Obx(
+                //       () {
+                //         if (index ==
+                //                 surahAudioCtrl
+                //                     .state.selectedSurahIndex.value &&
+                //             surahAudioCtrl.state.isDownloading.value &&
+                //             !isDownloaded.value) {
+                //           return SizedBox(
+                //             height: 10,
+                //             width: 40,
+                //             child: LinearProgressIndicator(
+                //               value: surahAudioCtrl.state.progress.value,
+                //             ),
+                //           );
+                //         }
+                //         return const SizedBox.shrink();
+                //       },
+                //     )
+                //   ],
+                // ),
               ],
             ),
           );

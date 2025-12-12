@@ -25,10 +25,10 @@ class AudioCtrl extends GetxController {
     if (!kIsWeb) {
       state._dir ??= await getApplicationDocumentsDirectory();
     }
+    // loadLastSurahAndPosition();
     await Future.wait([
       _addDownloadedSurahToPlaylist(),
       _updateDownloadedAyahsMap(),
-      loadLastSurahAndPosition(),
     ]);
     getAyahUQNumber(state._quranRepository.getLastPage() ?? 1);
 
@@ -490,6 +490,8 @@ class AudioCtrl extends GetxController {
           state._savePositionTimer = Timer(const Duration(seconds: 3), () {
             state.box.write(StorageConstants.lastPosition, positionInSeconds);
             lastSavedPosition = positionInSeconds;
+
+            saveLastSurahListen(state.currentAudioListSurahNum.value);
           });
         }
       }

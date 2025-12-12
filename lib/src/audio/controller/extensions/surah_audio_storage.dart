@@ -3,36 +3,28 @@ part of '../../audio.dart';
 extension SurahAudioStorage on AudioCtrl {
   /// -------- [Storage] ----------
 
-  Future loadLastSurahListen() async {
-    int? lastSurah = state.box.read(StorageConstants.lastSurah) ?? 1;
-    int? selectedSurah =
+  /// تحميل آخر سورة ومكان مستمع إليهما من التخزين المحلي
+  void loadLastSurahAndPosition() {
+    final int lastSurah = state.box.read(StorageConstants.lastSurah) ?? 1;
+    final int selectedSurah =
         state.box.read(StorageConstants.selectedSurahIndex) ?? 0;
-    int? lastPosition = state.box.read(StorageConstants.lastPosition) ?? 0;
-    return {
-      StorageConstants.lastSurah: lastSurah,
-      StorageConstants.selectedSurahIndex: selectedSurah,
-      StorageConstants.lastPosition: lastPosition,
-    };
+    final int lastPosition = state.box.read(StorageConstants.lastPosition) ?? 0;
+
+    state.currentAudioListSurahNum.value = lastSurah;
+    state.selectedSurahIndex.value = selectedSurah;
+    state.lastPosition.value = lastPosition;
+
+    log('Loaded last Surah index: ${state.selectedSurahIndex.value + 1}, last Surah ${state.currentAudioListSurahNum.value} position: ${state.lastPosition.value}');
   }
 
-  Future<void> loadLastSurahAndPosition() async {
-    final lastSurahData = await loadLastSurahListen();
-
-    state.currentAudioListSurahNum.value =
-        lastSurahData[StorageConstants.lastSurah];
-    state.selectedSurahIndex.value =
-        lastSurahData[StorageConstants.selectedSurahIndex];
-    state.lastPosition.value = lastSurahData[StorageConstants.lastPosition];
-    log('Loaded last surah: ${state.selectedSurahIndex.value + 1}, position: ${state.lastPosition.value}');
-  }
-
-  void saveLastSurahListen() {
-    state.box.write(
-        StorageConstants.lastSurah, state.currentAudioListSurahNum.value);
+  void saveLastSurahListen(int? surahNumber) {
+    state.box.write(StorageConstants.lastSurah,
+        surahNumber ?? state.selectedSurahIndex.value + 1);
     state.box.write(
       StorageConstants.selectedSurahIndex,
       state.selectedSurahIndex.value,
     );
+    log('Saved last Surah index: ${state.selectedSurahIndex.value + 1}, last Surah ${surahNumber ?? state.selectedSurahIndex.value + 1}');
   }
 
   void loadReaderIndex() {

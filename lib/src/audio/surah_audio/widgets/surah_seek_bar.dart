@@ -39,7 +39,8 @@ class SurahSeekBar extends StatelessWidget {
                       // bufferedPosition: positionData.bufferedPosition,
                       onChangeEnd: (newPosition) {
                         c.state.audioPlayer.seek(newPosition);
-                        c.saveLastSurahListen();
+                        // c.saveLastSurahListen(
+                        //     c.state.currentAudioListSurahNum.value);
                         c.state.seekNextSeconds.value =
                             positionData.position.inSeconds;
                       },

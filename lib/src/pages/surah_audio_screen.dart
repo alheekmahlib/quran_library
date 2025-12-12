@@ -19,7 +19,7 @@ class SurahAudioScreen extends StatelessWidget {
     final textColor = s.textColor ?? AppColors.getTextColor(dark);
     final size = MediaQuery.sizeOf(context);
 
-    surahCtrl.loadLastSurahAndPosition();
+    // surahCtrl.loadLastSurahAndPosition();
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (bool didPop, _) {

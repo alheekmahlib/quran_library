@@ -68,7 +68,7 @@ extension SurahGetters on AudioCtrl {
       );
 
   Future<void> lastAudioSource() async {
-    await loadLastSurahAndPosition();
+    loadLastSurahAndPosition();
     await updateMediaItemAndPlay();
   }
 

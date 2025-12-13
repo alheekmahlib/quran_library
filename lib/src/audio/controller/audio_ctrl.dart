@@ -467,8 +467,9 @@ class AudioCtrl extends GetxController {
   void enableSurahPositionSaving() {
     // إلغاء أي اشتراك سابق لتفادي التكرار
     state._surahPositionSubscription?.cancel();
-    state._savePositionTimer?.cancel();
 
+    // استخدام DateTime لتتبع آخر وقت حفظ فعلي
+    DateTime? lastSaveTime;
     int? lastSavedPosition;
 
     state._surahPositionSubscription =
@@ -479,19 +480,19 @@ class AudioCtrl extends GetxController {
         state.lastPosition.value = positionInSeconds;
         state.seekNextSeconds.value = positionInSeconds;
 
-        // لا تحفظ في Storage إلا إذا مر 3 ثوانٍ أو تغير الموضع بشكل كبير (للتنقل اليدوي)
-        if (lastSavedPosition == null ||
-            (positionInSeconds - lastSavedPosition!).abs() >= 3) {
-          // إلغاء أي timer سابق
-          state._savePositionTimer?.cancel();
+        final now = DateTime.now();
+        final shouldSave = lastSaveTime == null ||
+            now.difference(lastSaveTime!).inSeconds >= 3 ||
+            (lastSavedPosition != null &&
+                (positionInSeconds - lastSavedPosition!).abs() >= 5);
 
-          // إنشاء timer جديد لحفظ الموضع بعد 3 ثوانٍ
-          state._savePositionTimer = Timer(const Duration(seconds: 3), () {
-            state.box.write(StorageConstants.lastPosition, positionInSeconds);
-            lastSavedPosition = positionInSeconds;
+        // احفظ فقط إذا مر 3 ثوان من آخر حفظ، أو تغير الموضع بشكل كبير (تنقل يدوي)
+        if (shouldSave) {
+          state.box.write(StorageConstants.lastPosition, positionInSeconds);
+          lastSavedPosition = positionInSeconds;
+          lastSaveTime = now;
 
-            saveLastSurahListen(state.currentAudioListSurahNum.value);
-          });
+          saveLastSurahListen(state.currentAudioListSurahNum.value);
         }
       }
     });
@@ -502,15 +503,11 @@ class AudioCtrl extends GetxController {
     state._surahPositionSubscription?.cancel();
     state._surahPositionSubscription = null;
 
-    // حفظ الموضع الأخير قبل التعطيل
-    if (state._savePositionTimer?.isActive ?? false) {
-      state._savePositionTimer?.cancel();
-      if (state.isPlayingSurahsMode && state.lastPosition.value > 0) {
-        state.box
-            .write(StorageConstants.lastPosition, state.lastPosition.value);
-      }
+    // حفظ الموضع والسورة الأخيرة قبل التعطيل
+    if (state.isPlayingSurahsMode && state.lastPosition.value > 0) {
+      state.box.write(StorageConstants.lastPosition, state.lastPosition.value);
+      saveLastSurahListen(state.currentAudioListSurahNum.value);
     }
-    state._savePositionTimer = null;
   }
 
   Future<void> setCachedArtUri() async {

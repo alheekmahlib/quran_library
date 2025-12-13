@@ -153,14 +153,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.1"
-  equatable:
-    dependency: transitive
-    description:
-      name: equatable
-      sha256: "567c64b3cb4cf82397aac55f4f0cbd3ca20d77c6c03bedbc4ceaddc08904aef7"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.0.7"
   fake_async:
     dependency: transitive
     description:
@@ -219,14 +211,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.5.2"
-  flutter_sliding_panel:
-    dependency: transitive
-    description:
-      name: flutter_sliding_panel
-      sha256: "2bb06ac71954b8304092485a0e6fdd03eafb4bb0d2b915ce98e61a62fc8a580d"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.0.5"
   flutter_svg:
     dependency: transitive
     description:

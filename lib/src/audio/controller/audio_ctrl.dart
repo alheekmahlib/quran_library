@@ -1,10 +1,10 @@
 part of '../audio.dart';
 
 class AudioCtrl extends GetxController {
-  AudioCtrl._();
+  // AudioCtrl._();
   static AudioCtrl get instance => Get.isRegistered<AudioCtrl>()
       ? Get.find<AudioCtrl>()
-      : Get.put<AudioCtrl>(AudioCtrl._(), permanent: true);
+      : Get.put<AudioCtrl>(AudioCtrl(), permanent: true);
 
   SurahState state = SurahState();
 

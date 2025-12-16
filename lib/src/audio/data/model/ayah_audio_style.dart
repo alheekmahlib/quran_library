@@ -36,6 +36,7 @@ class AyahAudioStyle {
   final TextStyle? tabLabelStyle;
   final String? readersTabText;
   final String? downloadedSurahsTabText;
+  final String? noInternetConnectionText;
 
   AyahAudioStyle({
     this.textColor,
@@ -73,6 +74,7 @@ class AyahAudioStyle {
     this.readersTabText,
     this.downloadedSurahsTabText,
     this.dialogHeaderTitle,
+    this.noInternetConnectionText,
   });
 
   AyahAudioStyle copyWith({
@@ -111,6 +113,7 @@ class AyahAudioStyle {
     String? readersTabText,
     String? downloadedSurahsTabText,
     String? dialogHeaderTitle,
+    String? noInternetConnectionText,
   }) {
     return AyahAudioStyle(
       textColor: textColor ?? this.textColor,
@@ -162,6 +165,8 @@ class AyahAudioStyle {
       downloadedSurahsTabText:
           downloadedSurahsTabText ?? this.downloadedSurahsTabText,
       dialogHeaderTitle: dialogHeaderTitle ?? this.dialogHeaderTitle,
+      noInternetConnectionText:
+          noInternetConnectionText ?? this.noInternetConnectionText,
     );
   }
 
@@ -231,6 +236,7 @@ class AyahAudioStyle {
       readersTabText: 'القراء',
       downloadedSurahsTabText: 'السور المحملة',
       dialogHeaderTitle: 'تغيير القارئ',
+      noInternetConnectionText: 'لا يوجد اتصال بالإنترنت',
     );
   }
 }

@@ -30,6 +30,7 @@ class QuranLibrary {
     if (_isInitialized) return;
 
     await GetStorage.init();
+    Get.put(ConnectivityService());
 
     // تهيئة backend الصوت للويندوز قبل إنشاء أي AudioPlayer
     // Initialize Windows audio backend before constructing any AudioPlayer
@@ -803,8 +804,12 @@ class QuranLibrary {
   /// // Play Surah Al-Baqarah (Surah number 2)
   /// await quranLibrary().playSurah(surahNumber: 2);
   /// ```
-  Future<void> playSurah({required int surahNumber}) async =>
-      await AudioCtrl.instance.playSurah(surahNumber: surahNumber);
+  Future<void> playSurah(
+          {required BuildContext context,
+          required int surahNumber,
+          SurahAudioStyle? style}) async =>
+      await AudioCtrl.instance
+          .playSurah(context: context, surahNumber: surahNumber, style: style);
 
   /// ينتقل إلى السورة التالية وبدء تشغيلها صوتياً بالكامل.
   /// يتم استخدام هذه الدالة للانتقال السريع للسورة التالية أثناء التشغيل الصوتي.

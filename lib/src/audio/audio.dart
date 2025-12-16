@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:developer' show log;
 import 'dart:io' show Directory, File, HttpHeaders, Platform;
 
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -21,6 +20,7 @@ import '../core/utils/app_colors.dart';
 import '../core/utils/ui_helper.dart';
 import '../core/widgets/header_dialog_widget.dart';
 import '../quran/core/helpers/responsive.dart';
+import '../service/connectivity_service.dart';
 import 'core/custom_paint/custom_slider.dart';
 
 // Export audio dependencies for main app usage

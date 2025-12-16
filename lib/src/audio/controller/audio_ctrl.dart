@@ -7,10 +7,12 @@ class AudioCtrl extends GetxController {
       : Get.put<AudioCtrl>(AudioCtrl(), permanent: true);
 
   SurahState state = SurahState();
+  final ConnectivityService _connectivityService = Get.find();
 
   @override
   Future<void> onInit() async {
     super.onInit();
+    checkConnectivitySubscription();
     loadReaderIndex();
     await initializeSurahDownloadStatus();
     // تأكد من مزامنة حالة آيات السور مع الملفات الفعلية عند التشغيل/Hot reload
@@ -80,6 +82,7 @@ class AudioCtrl extends GetxController {
 
   @override
   void onClose() {
+    super.onClose();
     // إيقاف جميع المشغلات والاشتراكات / Stop all players and subscriptions
     state.cancelAllSubscriptions();
     state.audioPlayer.pause();
@@ -88,10 +91,27 @@ class AudioCtrl extends GetxController {
     // إلغاء تسجيل الخدمة / Unregister service
     SurahState.setAudioServiceActive(false);
     state.audioServiceInitialized.value = false;
-    super.onClose();
   }
 
   /// -------- [Methods] ----------
+
+  void checkConnectivitySubscription() {
+    state.isConnected.value =
+        _connectivityService.currentStatus == ConnectivityStatus.connected;
+
+    // بدء الاستماع للتغيرات
+    state._subscription =
+        _connectivityService.connectionStream.listen((status) {
+      state.isConnected.value = status == ConnectivityStatus.connected;
+      if (state.isConnected.value) {
+        // يمكنك هنا تنفيذ أي منطق عند عودة الاتصال
+        log("Internet connection restored!", name: 'AudioCtrl');
+      } else {
+        // تنفيذ منطق عند انقطاع الاتصال
+        log("Internet connection lost!", name: 'AudioCtrl');
+      }
+    });
+  }
 
   /// تفعيل مستمع وضع السور: عند اكتمال السورة انتقل تلقائيًا للسورة التالية
   void enableSurahAutoNextListener() {
@@ -204,8 +224,7 @@ class AudioCtrl extends GetxController {
       ));
       state.audioPlayer.play();
     } else {
-      if ((await Connectivity().checkConnectivity())
-          .contains(ConnectivityResult.none)) {
+      if (!state.isConnected.value) {
         // عدم استخدام BuildContext عبر async gap - استخدام Get.snackbar بدلاً من ذلك
         // Show no internet connection error without using BuildContext
         if (Get.context != null) {
@@ -242,7 +261,7 @@ class AudioCtrl extends GetxController {
     String path = join((await state.dir).path, fileName);
     var file = File(path);
     bool exists = await file.exists();
-    final connectivity = (await Connectivity().checkConnectivity());
+    // final connectivity = (await Connectivity().checkConnectivity());
 
     if (!exists) {
       if (setDownloadingStatus && state.isDownloading.isFalse) {
@@ -257,9 +276,9 @@ class AudioCtrl extends GetxController {
 
       if (context!.mounted) {
         if (showSnakbars && !state.snackBarShownForBatch) {
-          if (connectivity.contains(ConnectivityResult.none)) {
+          if (!state.isConnected.value) {
             ToastUtils().showToast(context, 'لا يوجد اتصال بالإنترنت');
-          } else if (connectivity.contains(ConnectivityResult.mobile)) {
+          } else if (state.isConnected.value) {
             state.snackBarShownForBatch = true; // Set the flag to true
             ToastUtils()
                 .showToast(context, 'تنبيه: أنت تستخدم بيانات الجوال للتحميل');
@@ -268,7 +287,7 @@ class AudioCtrl extends GetxController {
       }
 
       // Proceed with the download
-      if (!connectivity.contains(ConnectivityResult.none)) {
+      if (state.isConnected.value) {
         try {
           await _downloadFile(path, url,
               ayahUqNumber: ayahUqNumber,
@@ -427,8 +446,6 @@ class AudioCtrl extends GetxController {
   }
 
   Future<void> startDownload({int? surahNumber}) async {
-    // إزالة BuildContext تماماً وجعل الدالة تستخدم Get.context داخلياً
-    // Remove BuildContext completely and let the function use Get.context internally
     await state.stopAllAudio();
     await downloadSurah(surahNum: surahNumber);
   }

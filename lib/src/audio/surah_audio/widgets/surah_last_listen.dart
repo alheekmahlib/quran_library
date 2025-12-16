@@ -26,14 +26,8 @@ class SurahLastListen extends StatelessWidget {
       enabled: true,
       label: 'lastListen'.tr,
       child: GestureDetector(
-        onTap: () async {
-          surahAudioCtrl.state.isPlayingSurahsMode = true;
-          surahAudioCtrl.enableSurahAutoNextListener();
-          surahAudioCtrl.enableSurahPositionSaving();
-          surahAudioCtrl.loadLastSurahAndPosition();
-          surahAudioCtrl.state.audioPlayer.play();
-          surahAudioCtrl.state.isSheetOpen.value = true;
-        },
+        onTap: () =>
+            surahAudioCtrl.lastListenSurahOnTap(context: context, style: style),
         child: Container(
           // اجعل العرض مرنًا ليناسب الحاوية الأب
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),

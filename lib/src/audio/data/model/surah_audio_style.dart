@@ -171,6 +171,10 @@ class SurahAudioStyle {
   /// Custom "progress" color
   final Color? downloadProgressColor;
 
+  /// نص "لا يوجد اتصال بالإنترنت" المخصص
+  /// Custom "no internet connection" text
+  final String? noInternetConnectionText;
+
   /// منشئ فئة SurahAudioStyle
   /// SurahAudioStyle class constructor
   SurahAudioStyle({
@@ -216,6 +220,7 @@ class SurahAudioStyle {
     this.dialogHeaderTitle,
     this.backIconColor,
     this.downloadProgressColor,
+    this.noInternetConnectionText,
   });
 
   SurahAudioStyle copyWith({
@@ -261,6 +266,7 @@ class SurahAudioStyle {
     String? dialogHeaderTitle,
     Color? backIconColor,
     Color? downloadProgressColor,
+    String? noInternetConnectionText,
   }) {
     return SurahAudioStyle(
       textColor: textColor ?? this.textColor,
@@ -318,6 +324,8 @@ class SurahAudioStyle {
       backIconColor: backIconColor ?? this.backIconColor,
       downloadProgressColor:
           downloadProgressColor ?? this.downloadProgressColor,
+      noInternetConnectionText:
+          noInternetConnectionText ?? this.noInternetConnectionText,
     );
   }
 
@@ -400,6 +408,7 @@ class SurahAudioStyle {
       lastListenText: 'آخر إستماع',
       dialogHeaderTitle: 'تغيير القارئ',
       downloadProgressColor: Colors.white,
+      noInternetConnectionText: 'لا يوجد اتصال بالإنترنت',
     );
   }
 }

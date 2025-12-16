@@ -6,57 +6,72 @@ extension AyahCtrlExtension on AudioCtrl {
   /// single Ayah
   ///
   Future<void> _playSingleAyahFile(
-      BuildContext context, int currentAyahUniqueNumber) async {
-    state.tmpDownloadedAyahsCount = 0;
-    // لا تعتمد على التخزين فقط؛ تحقق من الواقع (غير الويب)
-    bool isSurahDownloaded = false;
+      BuildContext context, int currentAyahUniqueNumber,
+      {AyahAudioStyle? ayahAudioStyle}) async {
+    bool? isSurahDownloaded;
+    String? filePath;
     if (!kIsWeb) {
       isSurahDownloaded = await isAyahSurahFullyDownloaded(currentSurahNumber);
+      filePath = join((await state.dir).path, currentAyahFileName);
+      log('Local file path for ayah $currentAyahUniqueNumber: $filePath isSurahDownloaded: $isSurahDownloaded',
+          name: 'AudioController');
     }
+    if (!state.isConnected.value && !isSurahDownloaded! && filePath!.isEmpty) {
+      log(
+        'No internet connection for playing single ayah: $currentAyahUniqueNumber',
+        name: 'AudioController',
+      );
+      ToastUtils().showToast(
+          context,
+          ayahAudioStyle?.noInternetConnectionText ??
+              'لا يوجد اتصال بالإنترنت');
+    } else {
+      log('Playing single ayah: $currentAyahUniqueNumber',
+          name: 'AudioController');
+      state.tmpDownloadedAyahsCount = 0;
 
-    try {
-      // إيقاف أي تشغيل سابق / Stop any previous playback
-      await state.stopAllAudio();
+      try {
+        // إيقاف أي تشغيل سابق / Stop any previous playback
+        await state.stopAllAudio();
 
-      QuranCtrl.instance
-          .toggleAyahSelection(state.currentAyahUniqueNumber.value);
-      if (kIsWeb) {
-        await state.audioPlayer.setAudioSource(
-          AudioSource.uri(
-            Uri.parse(currentAyahUrl),
-            tag: mediaItem,
-          ),
-        );
-      } else {
-        final filePath = isSurahDownloaded
-            ? join((await state.dir).path, currentAyahFileName)
-            : await _downloadFileIfNotExist(currentAyahUrl, currentAyahFileName,
-                context: context, ayahUqNumber: currentAyahUniqueNumber);
+        QuranCtrl.instance
+            .toggleAyahSelection(state.currentAyahUniqueNumber.value);
+        if (kIsWeb) {
+          await state.audioPlayer.setAudioSource(
+            AudioSource.uri(
+              Uri.parse(currentAyahUrl),
+              tag: mediaItem,
+            ),
+          );
+        } else {
+          await _downloadFileIfNotExist(currentAyahUrl, currentAyahFileName,
+              context: context, ayahUqNumber: currentAyahUniqueNumber);
 
-        await state.audioPlayer.setAudioSource(
-          AudioSource.file(
-            filePath,
-            tag: mediaItem,
-          ),
-        );
-      }
-      state.isAudioPreparing.value = false;
-      state.isPlaying.value = true;
-      await state.audioPlayer.play();
-      log('تحميل $currentAyahFileName تم بنجاح.');
-      state._playerStateSubscription ??=
-          state.audioPlayer.playerStateStream.listen((d) async {
-        if (d.processingState == ProcessingState.completed) {
-          state.isPlaying.value = false;
-          await state.audioPlayer.stop();
+          await state.audioPlayer.setAudioSource(
+            AudioSource.file(
+              filePath!,
+              tag: mediaItem,
+            ),
+          );
         }
-      });
-      return;
-    } catch (e) {
-      state.isAudioPreparing.value = false;
-      state.isPlaying.value = false;
-      await state.audioPlayer.stop();
-      log('Error in playFile: $e', name: 'AudioController');
+        state.isAudioPreparing.value = false;
+        state.isPlaying.value = true;
+        await state.audioPlayer.play();
+        log('تحميل $currentAyahFileName تم بنجاح.');
+        state._playerStateSubscription ??=
+            state.audioPlayer.playerStateStream.listen((d) async {
+          if (d.processingState == ProcessingState.completed) {
+            state.isPlaying.value = false;
+            await state.audioPlayer.stop();
+          }
+        });
+        return;
+      } catch (e) {
+        state.isAudioPreparing.value = false;
+        state.isPlaying.value = false;
+        await state.audioPlayer.stop();
+        log('Error in playFile: $e', name: 'AudioController');
+      }
     }
   }
 
@@ -307,6 +322,8 @@ extension AyahCtrlExtension on AudioCtrl {
       state.isAudioPreparing.value = false;
       return;
     }
+    log('Playing single ayah: $currentAyahUniqueNumber',
+        name: 'AudioController');
 
     // فعّل حالة التحضير هنا ليعمل المؤشر مع أي مصدر استدعاء (زر القائمة أو زر الآية)
     state.isAudioPreparing.value = true;
@@ -325,11 +342,16 @@ extension AyahCtrlExtension on AudioCtrl {
       () => QuranCtrl.instance.state.isPlayExpanded.value = true,
     );
 
+    bool isDark = isDarkMode ??
+        MediaQuery.of(context).platformBrightness == Brightness.dark;
     if (playSingleAyah) {
-      await _playSingleAyahFile(context, currentAyahUniqueNumber);
+      await _playSingleAyahFile(
+        context,
+        currentAyahUniqueNumber,
+        ayahAudioStyle: ayahAudioStyle ??
+            AyahAudioStyle.defaults(isDark: isDark, context: context),
+      );
     } else {
-      bool isDark = isDarkMode ??
-          MediaQuery.of(context).platformBrightness == Brightness.dark;
       await _playAyahsFile(
         context,
         currentAyahUniqueNumber,
@@ -340,7 +362,6 @@ extension AyahCtrlExtension on AudioCtrl {
         isDarkMode: isDark,
       );
     }
-    // }
   }
 
   Future<void> skipNextAyah(BuildContext context, int ayahUniqueNumber) async {

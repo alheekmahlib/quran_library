@@ -60,19 +60,10 @@ class SurahOnlinePlayButton extends StatelessWidget {
                       Theme.of(context).colorScheme.primary,
                 ),
                 onPressed: () async {
-                  // تفعيل وضع السور مع تشغيل تلقائي للسورة التالية عند الاكتمال
-                  surahAudioCtrl.state.isPlayingSurahsMode = true;
-                  surahAudioCtrl.enableSurahAutoNextListener();
-                  surahAudioCtrl.enableSurahPositionSaving();
-                  surahAudioCtrl.cancelDownload();
-                  surahAudioCtrl.state.isPlaying.value = true;
-                  // await surahAudioCtrl.state.audioPlayer.pause();
-                  surahAudioCtrl.state
-                          .isSurahDownloadedByNumber(surahAudioCtrl
-                              .state.currentAudioListSurahNum.value)
-                          .value
-                      ? await surahAudioCtrl.startDownload()
-                      : await surahAudioCtrl.state.audioPlayer.play();
+                  surahAudioCtrl.playSurah(
+                      context: context,
+                      surahNumber:
+                          surahAudioCtrl.state.currentAudioListSurahNum.value);
                 },
               );
             } else if (processingState != ProcessingState.completed ||

@@ -29,25 +29,32 @@ extension SurahUi on AudioCtrl {
   }
 
   /// اختيار سورة من القائمة مع ضبط الحالة المناسبة لوضع السور
-  Future<void> selectSurahFromList(int index, {bool autoPlay = false}) async {
-    // التحويل إلى وضع السور وتعطيل أي مستمعات قديمة
-    state.isPlayingSurahsMode = true;
-    disableSurahAutoNextListener();
-    state.cancelAllSubscriptions();
+  Future<void> selectSurahFromList(BuildContext context, int index,
+      {bool autoPlay = false, SurahAudioStyle? style}) async {
+    if (!state.isConnected.value &&
+        state.isSurahDownloadedByNumber(index + 1).value) {
+      // التحويل إلى وضع السور وتعطيل أي مستمعات قديمة
+      state.isPlayingSurahsMode = true;
+      disableSurahAutoNextListener();
+      state.cancelAllSubscriptions();
 
-    // عيّن الفهرس الجديد
-    state.selectedSurahIndex.value = index;
+      // عيّن الفهرس الجديد
+      state.selectedSurahIndex.value = index;
 
-    // بدّل المصدر بأمان
-    await changeAudioSource();
-    update(['CollSurahName']);
+      // بدّل المصدر بأمان
+      await changeAudioSource();
+      update(['CollSurahName']);
 
-    // شغّل تلقائيًا إذا طُلب ذلك
-    if (autoPlay) {
-      enableSurahAutoNextListener();
-      enableSurahPositionSaving();
-      state.isPlaying.value = true;
-      await state.audioPlayer.play();
+      // شغّل تلقائيًا إذا طُلب ذلك
+      if (autoPlay) {
+        enableSurahAutoNextListener();
+        enableSurahPositionSaving();
+        state.isPlaying.value = true;
+        await state.audioPlayer.play();
+      }
+    } else {
+      ToastUtils().showToast(context,
+          style?.noInternetConnectionText ?? 'لا يوجد اتصال بالإنترنت');
     }
   }
 
@@ -84,6 +91,24 @@ extension SurahUi on AudioCtrl {
           ? playAyah(context, state.currentAyahUniqueNumber.value,
               playSingleAyah: state.playSingleAyahOnly)
           : null;
+    }
+  }
+
+  void lastListenSurahOnTap(
+      {required BuildContext context, SurahAudioStyle? style}) {
+    if (!state.isConnected.value &&
+        state
+            .isSurahDownloadedByNumber(state.currentAudioListSurahNum.value)
+            .value) {
+      state.isPlayingSurahsMode = true;
+      enableSurahAutoNextListener();
+      enableSurahPositionSaving();
+      loadLastSurahAndPosition();
+      state.audioPlayer.play();
+      state.isSheetOpen.value = true;
+    } else {
+      ToastUtils().showToast(context,
+          style?.noInternetConnectionText ?? 'لا يوجد اتصال بالإنترنت');
     }
   }
 }

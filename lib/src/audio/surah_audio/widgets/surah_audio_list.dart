@@ -113,7 +113,8 @@ class BuildEnhancedSurahItem extends StatelessWidget {
     return GestureDetector(
       onTap: () async {
         // اختيار السورة وضبط المصدر بأمان (من دون تشغيل تلقائي)
-        await surahAudioCtrl.selectSurahFromList(index, autoPlay: false);
+        await surahAudioCtrl.selectSurahFromList(context, index,
+            autoPlay: false);
       },
       child: Obx(
         () {

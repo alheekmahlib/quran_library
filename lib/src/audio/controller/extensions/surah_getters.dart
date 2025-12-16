@@ -1,17 +1,6 @@
 part of '../../audio.dart';
 
 extension SurahGetters on AudioCtrl {
-  /// التحقق من وجود اتصال فعّال بالشبكة (ليست None)
-  Future<bool> _hasConnectivity() async {
-    try {
-      final result = await Connectivity().checkConnectivity();
-      return !result.contains(ConnectivityResult.none);
-    } catch (_) {
-      // في حال حدوث خطأ غير متوقع اعتبر عدم وجود اتصال لتفادي محاولة الشبكة
-      return false;
-    }
-  }
-
   /// -------- [Getters] ----------
 
   String get localSurahFilePath {
@@ -80,7 +69,7 @@ extension SurahGetters on AudioCtrl {
         .isSurahDownloadedByNumber(state.currentAudioListSurahNum.value)
         .value;
     // إذا لم تكن السورة محمّلة وتبين عدم وجود اتصال، لا نحاول تحميل الشبكة
-    if (!isDownloaded && !await _hasConnectivity()) {
+    if (!isDownloaded && !state.isConnected.value) {
       if (Get.context != null) {
         ToastUtils().showToast(
             Get.context!, 'لا يوجد اتصال بالإنترنت والسورة غير محمّلة محليًا');

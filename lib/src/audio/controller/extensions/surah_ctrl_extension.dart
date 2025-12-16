@@ -35,23 +35,32 @@ extension SurahCtrlExtension on AudioCtrl {
     }
   }
 
-  Future<void> playSurah({required int surahNumber}) async {
-    // التحقق من إمكانية التشغيل / Check if playback is allowed
-    if (!await canPlayAudio()) {
-      return;
-    }
+  Future<void> playSurah(
+      {required BuildContext context,
+      required int surahNumber,
+      SurahAudioStyle? style}) async {
+    if (!state.isConnected.value &&
+        state.isSurahDownloadedByNumber(surahNumber).value) {
+      await startDownload();
+    } else if (!state.isConnected.value) {
+      ToastUtils().showToast(context,
+          style?.noInternetConnectionText ?? 'لا يوجد اتصال بالإنترنت');
+    } else {
+      // التحقق من إمكانية التشغيل / Check if playback is allowed
+      if (!await canPlayAudio()) {
+        return;
+      }
 
-    state.isPlayingSurahsMode = true;
-    enableSurahAutoNextListener();
-    enableSurahPositionSaving();
-    state.currentAudioListSurahNum.value = surahNumber;
-    changeAudioSource();
-    cancelDownload();
-    state.isPlaying.value = true;
-    // await state.audioPlayer.pause();
-    state.isSurahDownloadedByNumber(surahNumber).value
-        ? await startDownload()
-        : await state.audioPlayer.play();
+      state.isPlayingSurahsMode = true;
+      enableSurahAutoNextListener();
+      enableSurahPositionSaving();
+      state.currentAudioListSurahNum.value = surahNumber;
+      cancelDownload();
+      state.isPlaying.value = true;
+      state.isSurahDownloadedByNumber(surahNumber).value
+          ? await startDownload()
+          : await state.audioPlayer.play();
+    }
   }
 
   Future<void> _addFileAudioSourceToPlayList(String filePath) async {

@@ -7,7 +7,7 @@ class AudioCtrl extends GetxController {
       : Get.put<AudioCtrl>(AudioCtrl(), permanent: true);
 
   SurahState state = SurahState();
-  final ConnectivityService _connectivityService = Get.find();
+  final InternetConnectionService _connectivityService = Get.find();
 
   @override
   Future<void> onInit() async {

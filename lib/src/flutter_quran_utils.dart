@@ -30,7 +30,7 @@ class QuranLibrary {
     if (_isInitialized) return;
 
     await GetStorage.init();
-    Get.put(ConnectivityService());
+    Get.put(InternetConnectionService());
 
     // تهيئة backend الصوت للويندوز قبل إنشاء أي AudioPlayer
     // Initialize Windows audio backend before constructing any AudioPlayer

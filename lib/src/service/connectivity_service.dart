@@ -9,7 +9,7 @@ enum ConnectivityStatus {
   disconnected,
 }
 
-class ConnectivityService {
+class InternetConnectionService {
   // StreamController لبث التغيرات في حالة الاتصال
   final StreamController<ConnectivityStatus> _connectionStatusController =
       StreamController<ConnectivityStatus>.broadcast();
@@ -25,7 +25,7 @@ class ConnectivityService {
   // اشتراك لمراقبة التغيرات من مكتبة connectivity_plus
   late StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
 
-  ConnectivityService() {
+  InternetConnectionService() {
     _initialize();
   }
 

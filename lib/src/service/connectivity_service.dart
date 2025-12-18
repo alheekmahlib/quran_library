@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 // enum لتسهيل التعامل مع حالات الاتصال
 enum ConnectivityStatus {
   connected,
+  phoneData,
   disconnected,
 }
 
@@ -47,8 +48,9 @@ class InternetConnectionService {
     // التحقق مما إذا كانت النتيجة تحتوي على 'none'
     if (result.contains(ConnectivityResult.none)) {
       newStatus = ConnectivityStatus.disconnected;
+    } else if (result.contains(ConnectivityResult.mobile)) {
+      newStatus = ConnectivityStatus.phoneData;
     } else {
-      // إذا لم تكن 'none'، فهذا يعني وجود اتصال (سواء Wi-Fi, mobile, etc.)
       newStatus = ConnectivityStatus.connected;
     }
 

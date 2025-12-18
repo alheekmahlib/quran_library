@@ -120,8 +120,7 @@ class RichTextBuild extends StatelessWidget {
                     if (onAyahLongPress != null) {
                       onAyahLongPress!(details, ayah);
                       quranCtrl.toggleAyahSelection(uq);
-                      quranCtrl.state.overlayEntry?.remove();
-                      quranCtrl.state.overlayEntry = null;
+                      quranCtrl.state.isShowMenu.value = false;
                     } else {
                       int? bookmarkId;
                       for (final b in bookmarks.values.expand((list) => list)) {
@@ -139,35 +138,23 @@ class RichTextBuild extends StatelessWidget {
                         } else {
                           quranCtrl.toggleAyahSelection(uq);
                         }
-                        quranCtrl.state.overlayEntry?.remove();
-                        quranCtrl.state.overlayEntry = null;
+                        quranCtrl.state.isShowMenu.value = false;
 
-                        // إنشاء OverlayEntry جديد
-                        if (!context.mounted) return;
-                        final overlay = Overlay.of(context);
                         final themedTafsirStyle =
                             TafsirTheme.of(context)?.style;
-                        final newOverlayEntry = OverlayEntry(
-                          builder: (context) => AyahMenuDialog(
-                            context: context,
-                            isDark: isDark,
-                            ayah: ayah,
-                            position: details.globalPosition,
-                            index: ayahIndex,
-                            pageIndex: pageIndex,
-                            anotherMenuChild: anotherMenuChild,
-                            anotherMenuChildOnTap: anotherMenuChildOnTap,
-                            secondMenuChild: secondMenuChild,
-                            secondMenuChildOnTap: secondMenuChildOnTap,
-                            externalTafsirStyle: themedTafsirStyle,
-                          ),
+                        showAyahMenuDialog(
+                          context: context,
+                          isDark: isDark,
+                          ayah: ayah,
+                          position: details.globalPosition,
+                          index: ayahIndex,
+                          pageIndex: pageIndex,
+                          anotherMenuChild: anotherMenuChild,
+                          anotherMenuChildOnTap: anotherMenuChildOnTap,
+                          secondMenuChild: secondMenuChild,
+                          secondMenuChildOnTap: secondMenuChildOnTap,
+                          externalTafsirStyle: themedTafsirStyle,
                         );
-
-                        quranCtrl.state.overlayEntry = newOverlayEntry;
-
-                        // إدخال OverlayEntry في Overlay
-                        quranCtrl.state.overlayEntry = newOverlayEntry;
-                        overlay.insert(newOverlayEntry);
                       }
                     }
                   },

@@ -39,10 +39,11 @@ extension SurahCtrlExtension on AudioCtrl {
       {required BuildContext context,
       required int surahNumber,
       SurahAudioStyle? style}) async {
-    if (!state.isConnected.value &&
-        state.isSurahDownloadedByNumber(surahNumber).value) {
-      await startDownload();
-    } else if (!state.isConnected.value) {
+    final isConnected = InternetConnectionController.instance.isConnected;
+
+    if (!isConnected && state.isSurahDownloadedByNumber(surahNumber).value) {
+      await startDownloadOrPlayExistsSurah();
+    } else if (!isConnected) {
       ToastUtils().showToast(context,
           style?.noInternetConnectionText ?? 'لا يوجد اتصال بالإنترنت');
     } else {
@@ -58,7 +59,7 @@ extension SurahCtrlExtension on AudioCtrl {
       cancelDownload();
       state.isPlaying.value = true;
       state.isSurahDownloadedByNumber(surahNumber).value
-          ? await startDownload()
+          ? await startDownloadOrPlayExistsSurah()
           : await state.audioPlayer.play();
     }
   }

@@ -287,8 +287,7 @@ class QuranPagesScreen extends StatelessWidget {
                   } else {
                     quranCtrl.showControlToggle(
                         enableMultiSelect: !enableMultiSelect);
-                    quranCtrl.state.overlayEntry?.remove();
-                    quranCtrl.state.overlayEntry = null;
+                    quranCtrl.state.isShowMenu.value = false;
                   }
                 },
                 hoverColor: Colors.transparent,
@@ -368,8 +367,7 @@ class QuranPagesScreen extends StatelessWidget {
                       if (onPageChanged != null) {
                         onPageChanged!(globalIndex);
                       } else {
-                        quranCtrl.state.overlayEntry?.remove();
-                        quranCtrl.state.overlayEntry = null;
+                        quranCtrl.state.isShowMenu.value = false;
                       }
                       quranCtrl.state.currentPageNumber.value = globalIndex + 1;
                       quranCtrl.saveLastPage(globalIndex + 1);

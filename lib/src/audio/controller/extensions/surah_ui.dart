@@ -31,8 +31,8 @@ extension SurahUi on AudioCtrl {
   /// اختيار سورة من القائمة مع ضبط الحالة المناسبة لوضع السور
   Future<void> selectSurahFromList(BuildContext context, int index,
       {bool autoPlay = false, SurahAudioStyle? style}) async {
-    if (!state.isConnected.value &&
-        state.isSurahDownloadedByNumber(index + 1).value) {
+    final isConnected = InternetConnectionController.instance.isConnected;
+    if (isConnected || state.isSurahDownloadedByNumber(index + 1).value) {
       // التحويل إلى وضع السور وتعطيل أي مستمعات قديمة
       state.isPlayingSurahsMode = true;
       disableSurahAutoNextListener();
@@ -96,7 +96,8 @@ extension SurahUi on AudioCtrl {
 
   void lastListenSurahOnTap(
       {required BuildContext context, SurahAudioStyle? style}) {
-    if (!state.isConnected.value &&
+    final isConnected = InternetConnectionController.instance.isConnected;
+    if (!isConnected &&
         state
             .isSurahDownloadedByNumber(state.currentAudioListSurahNum.value)
             .value) {

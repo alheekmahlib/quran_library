@@ -90,6 +90,7 @@ class _QuranTopBar extends StatelessWidget {
                             BlendMode.srcIn)),
                     onPressed: () async {
                       await AudioCtrl.instance.state.audioPlayer.stop();
+                      QuranCtrl.instance.state.isShowMenu.value = false;
                       // await AudioCtrl.instance.lastAudioSource();
                       if (context.mounted) {
                         Navigator.push(

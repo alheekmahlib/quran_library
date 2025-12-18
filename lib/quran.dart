@@ -27,6 +27,7 @@ import 'src/core/utils/ui_helper.dart';
 import 'src/core/widgets/header_dialog_widget.dart';
 import 'src/quran/core/helpers/responsive.dart';
 import 'src/service/connectivity_service.dart';
+import 'src/service/internet_connection_controller.dart';
 import 'src/tafsir/tafsir.dart';
 
 part 'src/core/theme/quran_library_theme.dart';

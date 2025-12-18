@@ -486,6 +486,7 @@ extension QuranGetters on QuranCtrl {
   bool get isDownloadFonts => (state.fontsSelected.value == 1);
 
   void showControlToggle({bool enableMultiSelect = false}) {
+    state.isShowMenu.value = false;
     if (!enableMultiSelect) {
       if (AudioCtrl.instance.state.isPlaying.value) {
         isShowControl.toggle();

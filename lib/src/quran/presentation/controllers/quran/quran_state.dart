@@ -26,7 +26,7 @@ class QuranState {
   RxInt fontsSelected = 0.obs;
   RxDouble fontsDownloadProgress = 0.0.obs;
   RxBool isPreparingDownload = false.obs;
-  OverlayEntry? overlayEntry;
+  RxBool isShowMenu = false.obs;
 
   // صفحات الخطوط التي تم تحميلها لتجنب إعادة التحميل
   // Loaded fonts pages cache to avoid reloading
@@ -61,13 +61,6 @@ class QuranState {
     fontsSelected.close();
     fontsDownloadProgress.close();
     isPreparingDownload.close();
-    // تنظيف آمن للـ OverlayEntry
-    try {
-      overlayEntry?.remove();
-      overlayEntry = null;
-    } catch (e) {
-      // تجاهل الأخطاء إذا كان الـ Overlay قد تم التخلص منه بالفعل
-    }
     quranPageRLFocusNode.dispose();
     _debounceTimer?.cancel();
   }

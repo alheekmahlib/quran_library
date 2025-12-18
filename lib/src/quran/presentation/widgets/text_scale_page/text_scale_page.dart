@@ -68,8 +68,7 @@ class _QuranTextScale extends StatelessWidget {
 
           quranCtrl.showControlToggle();
           quranCtrl.clearSelection();
-          quranCtrl.state.overlayEntry?.remove();
-          quranCtrl.state.overlayEntry = null;
+          quranCtrl.state.isShowMenu.value = false;
         },
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 8.0),

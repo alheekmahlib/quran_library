@@ -341,8 +341,7 @@ class SurahDisplayScreen extends StatelessWidget {
                       onPagePress!();
                     } else {
                       quranCtrl.showControlToggle();
-                      quranCtrl.state.overlayEntry?.remove();
-                      quranCtrl.state.overlayEntry = null;
+                      quranCtrl.state.isShowMenu.value = false;
                     }
                   },
                   focusColor: Colors.transparent,

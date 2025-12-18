@@ -103,35 +103,22 @@ class DefaultFontsBuild extends StatelessWidget {
                             } else {
                               quranCtrl.toggleAyahSelection(ayah.ayahUQNumber);
                             }
-                            quranCtrl.state.overlayEntry?.remove();
-                            quranCtrl.state.overlayEntry = null;
-
-                            // إنشاء OverlayEntry جديد
-                            if (!context.mounted) return;
-                            final overlay = Overlay.of(context);
                             // التقاط النمط مبكرًا من سياق تحت QuranLibraryTheme
                             final themedTafsirStyle =
                                 TafsirTheme.of(context)?.style;
-                            final newOverlayEntry = OverlayEntry(
-                              builder: (context) => AyahMenuDialog(
-                                context: context,
-                                isDark: isDark,
-                                ayah: ayah,
-                                position: details.globalPosition,
-                                index: ayah.ayahNumber,
-                                pageIndex: pageIndex,
-                                anotherMenuChild: anotherMenuChild,
-                                anotherMenuChildOnTap: anotherMenuChildOnTap,
-                                secondMenuChild: secondMenuChild,
-                                secondMenuChildOnTap: secondMenuChildOnTap,
-                                externalTafsirStyle: themedTafsirStyle,
-                              ),
+                            showAyahMenuDialog(
+                              context: context,
+                              isDark: isDark,
+                              ayah: ayah,
+                              position: details.globalPosition,
+                              index: ayah.ayahNumber,
+                              pageIndex: pageIndex,
+                              anotherMenuChild: anotherMenuChild,
+                              anotherMenuChildOnTap: anotherMenuChildOnTap,
+                              secondMenuChild: secondMenuChild,
+                              secondMenuChildOnTap: secondMenuChildOnTap,
+                              externalTafsirStyle: themedTafsirStyle,
                             );
-
-                            quranCtrl.state.overlayEntry = newOverlayEntry;
-
-                            // إدخال OverlayEntry في Overlay
-                            overlay.insert(newOverlayEntry);
                           }
                         }
                       },

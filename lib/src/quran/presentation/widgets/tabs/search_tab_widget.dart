@@ -66,8 +66,7 @@ class _SearchTabState extends State<_SearchTab> {
               onTap: () {
                 final ctrl = QuranCtrl.instance;
                 // إزالة أي Overlay قد يعترض التركيز
-                ctrl.state.overlayEntry?.remove();
-                ctrl.state.overlayEntry = null;
+                ctrl.state.isShowMenu.value = false;
                 // تعطيل تركيز PageView مؤقتًا على الويب
                 if (kIsWeb) {
                   ctrl.state.quranPageRLFocusNode.canRequestFocus = false;

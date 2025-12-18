@@ -30,7 +30,8 @@ class QuranLibrary {
     if (_isInitialized) return;
 
     await GetStorage.init();
-    Get.put(InternetConnectionService());
+    Get.put(InternetConnectionService(), permanent: true);
+    Get.put(InternetConnectionController(), permanent: true);
 
     // تهيئة backend الصوت للويندوز قبل إنشاء أي AudioPlayer
     // Initialize Windows audio backend before constructing any AudioPlayer
@@ -878,7 +879,8 @@ class QuranLibrary {
   /// await quranLibrary().startDownloadSurah(surahNumber: 2);
   /// ```
   Future<void> startDownloadSurah({required int surahNumber}) async =>
-      await AudioCtrl.instance.startDownload(surahNumber: surahNumber);
+      await AudioCtrl.instance
+          .startDownloadOrPlayExistsSurah(surahNumber: surahNumber);
 
   /// يلغي عملية تحميل الملفات الصوتية الجارية حالياً.
   /// هذه الدالة مفيدة عندما يريد المستخدم إيقاف التحميل لتوفير البيانات أو تحرير مساحة التخزين.

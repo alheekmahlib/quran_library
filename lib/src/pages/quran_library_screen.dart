@@ -392,8 +392,7 @@ class QuranLibraryScreen extends StatelessWidget {
     QuranCtrl.instance.state.currentPageNumber.value = pageIndex + 1;
     return PopScope(
       onPopInvokedWithResult: (b, _) async {
-        QuranCtrl.instance.state.overlayEntry?.remove();
-        QuranCtrl.instance.state.overlayEntry = null;
+        QuranCtrl.instance.state.isShowMenu.value = false;
       },
       child: ScaleKitBuilder(
         designWidth: 375,
@@ -523,16 +522,7 @@ class QuranLibraryScreen extends StatelessWidget {
                                           if (onPageChanged != null) {
                                             // لا تلمس الـ Overlay إذا كان المستخدم يدير الحدث بنفسه
                                             onPageChanged!(pageIndex);
-                                          } else {
-                                            // إزالة الـ Overlay فقط إذا كان ظاهرًا
-                                            if (quranCtrl.state.overlayEntry !=
-                                                null) {
-                                              quranCtrl.state.overlayEntry
-                                                  ?.remove();
-                                              quranCtrl.state.overlayEntry =
-                                                  null;
-                                            }
-                                          }
+                                          } else {}
                                           quranCtrl.state.currentPageNumber
                                               .value = pageIndex + 1;
                                           quranCtrl.saveLastPage(pageIndex + 1);
@@ -551,10 +541,8 @@ class QuranLibraryScreen extends StatelessWidget {
                                               onPagePress!();
                                             } else {
                                               quranCtrl.showControlToggle();
-                                              quranCtrl.state.overlayEntry
-                                                  ?.remove();
-                                              quranCtrl.state.overlayEntry =
-                                                  null;
+                                              QuranCtrl.instance.state
+                                                  .isShowMenu.value = false;
                                             }
                                           },
                                           hoverColor: Colors.transparent,
@@ -618,8 +606,8 @@ class QuranLibraryScreen extends StatelessWidget {
                                         onPagePress!();
                                       } else {
                                         quranCtrl.showControlToggle();
-                                        quranCtrl.state.overlayEntry?.remove();
-                                        quranCtrl.state.overlayEntry = null;
+                                        quranCtrl.state.isShowMenu.value =
+                                            false;
                                       }
                                     },
                                     hoverColor: Colors.transparent,

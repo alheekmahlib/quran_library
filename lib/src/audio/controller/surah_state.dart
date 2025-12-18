@@ -97,7 +97,6 @@ class SurahState {
 
   /// إيقاف جميع الاشتراكات / Cancel all subscriptions
   void cancelAllSubscriptions() {
-    _subscription.cancel();
     _playerStateSubscription?.cancel();
     _currentIndexSubscription?.cancel();
     _surahPositionSubscription?.cancel();
@@ -116,8 +115,4 @@ class SurahState {
   RxDouble ayahDownloadProgress = 0.0.obs;
   RxBool isAudioPreparing = false.obs;
   final QuranRepository _quranRepository = QuranRepository();
-
-  late StreamSubscription<ConnectivityStatus> _subscription;
-
-  var isConnected = false.obs;
 }

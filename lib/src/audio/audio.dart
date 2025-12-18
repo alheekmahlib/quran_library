@@ -21,6 +21,7 @@ import '../core/utils/ui_helper.dart';
 import '../core/widgets/header_dialog_widget.dart';
 import '../quran/core/helpers/responsive.dart';
 import '../service/connectivity_service.dart';
+import '../service/internet_connection_controller.dart';
 import 'core/custom_paint/custom_slider.dart';
 
 // Export audio dependencies for main app usage

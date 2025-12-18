@@ -23,6 +23,7 @@ class AyahMenuDialog extends StatelessWidget {
     this.secondMenuChild,
     this.secondMenuChildOnTap,
     this.externalTafsirStyle,
+    this.onDismiss,
   });
 
   /// The AyahModel that is the target of the long click event.
@@ -48,26 +49,37 @@ class AyahMenuDialog extends StatelessWidget {
   final BuildContext context;
   final bool isDark;
   final TafsirStyle? externalTafsirStyle;
+  final VoidCallback? onDismiss;
 
   @override
-  Widget build(BuildContext context) {
-    final themed = AyahLongClickTheme.of(context)?.style;
-    final s =
-        themed ?? AyahMenuStyle.defaults(isDark: isDark, context: context);
+  Widget build(BuildContext overlayContext) {
+    final rootContext = context;
+
+    void close() {
+      QuranCtrl.instance.state.isShowMenu.value = false;
+      onDismiss?.call();
+    }
+
+    final themed = AyahLongClickTheme.of(overlayContext)?.style;
+    final s = themed ??
+        AyahMenuStyle.defaults(isDark: isDark, context: overlayContext);
 
     // الحصول على نمط الصوت / Get audio style
-    final sAudio = AyahAudioStyle.defaults(isDark: isDark, context: context);
+    final sAudio =
+        AyahAudioStyle.defaults(isDark: isDark, context: overlayContext);
 
     // محاولة الحصول على نمط مدير التحميل من الثيم أولاً / Try to get download manager style from theme first
-    final themedDownloadManager = AyahDownloadManagerTheme.of(context)?.style;
+    final themedDownloadManager =
+        AyahDownloadManagerTheme.of(overlayContext)?.style;
     final sDownloadManager = themedDownloadManager ??
-        AyahDownloadManagerStyle.defaults(isDark: isDark, context: context);
+        AyahDownloadManagerStyle.defaults(
+            isDark: isDark, context: overlayContext);
 
     final List<Widget> customMenuItems = s.customMenuItems ?? const [];
 
     // الحصول على أبعاد الشاشة والهوامش الآمنة / Get screen dimensions and safe area
-    final screenSize = MediaQuery.of(context).size;
-    final padding = MediaQuery.of(context).padding;
+    final screenSize = MediaQuery.of(overlayContext).size;
+    final padding = MediaQuery.of(overlayContext).padding;
 
     // حساب العرض الفعلي للحوار بناءً على المحتوى / Calculate actual dialog width based on content
     int itemsCount = 5 +
@@ -120,294 +132,353 @@ class AyahMenuDialog extends StatelessWidget {
     if (s.showTafsirButton ?? true) itemsCount += 1;
     // لا نعيد إضافة عناصر custom ثانيةً لتجنّب مضاعفة الحساب
 
-    return Positioned(
-      top: top,
-      left: left,
-      child: Container(
-        decoration: BoxDecoration(
-            borderRadius:
-                BorderRadius.all(Radius.circular(s.outerBorderRadius ?? 8.0)),
-            color: s.backgroundColor,
-            boxShadow: s.boxShadow),
-        child: Container(
-          padding: s.padding ??
-              const EdgeInsets.symmetric(horizontal: 6.0, vertical: 2.0),
-          margin: s.margin ?? const EdgeInsets.all(4.0),
-          decoration: BoxDecoration(
-            borderRadius:
-                BorderRadius.all(Radius.circular(s.borderRadius ?? 6.0)),
-            border: Border.all(
-              width: s.borderWidth ?? 2.0,
-              color: s.borderColor ??
-                  Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
-            ),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: () {
-              final List<Widget> widgets = [];
-              Widget divider() => context.verticalDivider(
-                    height: s.dividerHeight,
-                    color: s.dividerColor,
-                  );
-
-              void addDividerIfNeeded() {
-                if (widgets.isNotEmpty) widgets.add(divider());
-              }
-
-              // عناصر إضافية مخصّصة (من الستايل ثم الاستدعاء)
-              if (customMenuItems.isNotEmpty) {
-                for (final item in customMenuItems) {
-                  addDividerIfNeeded();
-                  widgets.add(
-                    GestureDetector(
-                      behavior: HitTestBehavior.translucent,
-                      onTap: () {
-                        // إزالة الـ Overlay بعد النقر لضمان سلوك موحّد
-                        QuranCtrl.instance.state.overlayEntry?.remove();
-                        QuranCtrl.instance.state.overlayEntry = null;
-                      },
-                      child: item,
+    return Obx(
+      () => QuranCtrl.instance.state.isShowMenu.value
+          ? Positioned(
+              top: top,
+              left: left,
+              child: Container(
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.all(
+                        Radius.circular(s.outerBorderRadius ?? 8.0)),
+                    color: s.backgroundColor,
+                    boxShadow: s.boxShadow),
+                child: Container(
+                  padding: s.padding ??
+                      const EdgeInsets.symmetric(
+                          horizontal: 6.0, vertical: 2.0),
+                  margin: s.margin ?? const EdgeInsets.all(4.0),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.all(
+                        Radius.circular(s.borderRadius ?? 6.0)),
+                    border: Border.all(
+                      width: s.borderWidth ?? 2.0,
+                      color: s.borderColor ??
+                          Theme.of(overlayContext)
+                              .colorScheme
+                              .primary
+                              .withValues(alpha: 0.1),
                     ),
-                  );
-                }
-              }
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: () {
+                      final List<Widget> widgets = [];
+                      Widget divider() => overlayContext.verticalDivider(
+                            height: s.dividerHeight,
+                            color: s.dividerColor,
+                          );
 
-              // عنصر إضافي أول (للتوافق مع الماضي)
-              if (anotherMenuChild != null) {
-                addDividerIfNeeded();
-                widgets.add(
-                  GestureDetector(
-                    onTap: () {
-                      if (anotherMenuChildOnTap != null) {
-                        anotherMenuChildOnTap!(ayah!);
+                      void addDividerIfNeeded() {
+                        if (widgets.isNotEmpty) widgets.add(divider());
                       }
-                      QuranCtrl.instance.state.overlayEntry?.remove();
-                      QuranCtrl.instance.state.overlayEntry = null;
-                    },
-                    child: anotherMenuChild!,
-                  ),
-                );
-              }
 
-              // عنصر إضافي ثانٍ (للتوافق مع الماضي)
-              if (secondMenuChild != null) {
-                addDividerIfNeeded();
-                widgets.add(
-                  GestureDetector(
-                    onTap: () {
-                      if (secondMenuChildOnTap != null) {
-                        secondMenuChildOnTap!(ayah!);
+                      // عناصر إضافية مخصّصة (من الستايل ثم الاستدعاء)
+                      if (customMenuItems.isNotEmpty) {
+                        for (final item in customMenuItems) {
+                          addDividerIfNeeded();
+                          widgets.add(
+                            GestureDetector(
+                              behavior: HitTestBehavior.translucent,
+                              onTap: () {
+                                close();
+                              },
+                              child: item,
+                            ),
+                          );
+                        }
                       }
-                      QuranCtrl.instance.state.overlayEntry?.remove();
-                      QuranCtrl.instance.state.overlayEntry = null;
-                    },
-                    child: secondMenuChild!,
-                  ),
-                );
-              }
 
-              // زر تشغيل جميع الآيات
-              if (s.showPlayButton ?? true) {
-                addDividerIfNeeded();
-                widgets.add(
-                  GestureDetector(
-                    onTap: () {
-                      AudioCtrl.instance.playAyah(
-                        context,
-                        ayah!.ayahUQNumber,
-                        playSingleAyah: true,
-                        ayahAudioStyle: sAudio,
-                        ayahDownloadManagerStyle: sDownloadManager,
-                        isDarkMode: isDark,
-                      );
-                      log('Second Menu Child Tapped: ${ayah!.ayahUQNumber}');
-                      QuranCtrl.instance.state.overlayEntry?.remove();
-                      QuranCtrl.instance.state.overlayEntry = null;
-                    },
-                    child: Icon(
-                      s.playIconData,
-                      color: s.playIconColor,
-                      size: s.iconSize,
-                    ),
-                  ),
-                );
-              }
-
-              // زر تشغيل جميع الآيات
-              if ((s.showPlayAllButton ?? true) && !kIsWeb) {
-                addDividerIfNeeded();
-                widgets.add(
-                  GestureDetector(
-                    onTap: () {
-                      AudioCtrl.instance.playAyah(
-                        context,
-                        ayah!.ayahUQNumber,
-                        playSingleAyah: false,
-                        ayahAudioStyle: sAudio,
-                        ayahDownloadManagerStyle: sDownloadManager,
-                        isDarkMode: isDark,
-                      );
-                      log('Second Menu Child Tapped: ${ayah!.ayahUQNumber}');
-                      QuranCtrl.instance.state.overlayEntry?.remove();
-                      QuranCtrl.instance.state.overlayEntry = null;
-                    },
-                    child: Icon(
-                      s.playAllIconData,
-                      color: s.playAllIconColor,
-                      size: s.iconSize,
-                    ),
-                  ),
-                );
-              }
-
-              // زر التفسير
-              if (s.showTafsirButton ?? true) {
-                addDividerIfNeeded();
-                widgets.add(
-                  GestureDetector(
-                    onTap: () {
-                      showTafsirOnTap(
-                        context: context,
-                        isDark: isDark,
-                        ayahNum: (QuranCtrl
-                                        .instance.state.fontsSelected.value ==
-                                    1 ||
-                                QuranCtrl.instance.state.fontsSelected.value ==
-                                    2 ||
-                                QuranCtrl.instance.state.scaleFactor.value >
-                                    1.3)
-                            ? ayah!.ayahNumber
-                            : ayah!.ayahNumber,
-                        pageIndex: pageIndex,
-                        ayahUQNum: (QuranCtrl
-                                        .instance.state.fontsSelected.value ==
-                                    1 ||
-                                QuranCtrl.instance.state.fontsSelected.value ==
-                                    2 ||
-                                QuranCtrl.instance.state.scaleFactor.value >
-                                    1.3)
-                            ? ayah!.ayahUQNumber
-                            : ayah!.ayahUQNumber,
-                        ayahNumber:
-                            (QuranCtrl.instance.state.fontsSelected.value ==
-                                        1 ||
-                                    QuranCtrl.instance.state.fontsSelected
-                                            .value ==
-                                        2 ||
-                                    QuranCtrl.instance.state.scaleFactor.value >
-                                        1.3)
-                                ? ayah!.ayahNumber
-                                : ayah!.ayahNumber,
-                        externalTafsirStyle: externalTafsirStyle,
-                      );
-                      QuranCtrl.instance.state.overlayEntry?.remove();
-                      QuranCtrl.instance.state.overlayEntry = null;
-                    },
-                    child: Icon(
-                      s.tafsirIconData,
-                      color: s.tafsirIconColor,
-                      size: s.iconSize,
-                    ),
-                  ),
-                );
-              }
-
-              // زر النسخ
-              if (s.showCopyButton ?? true) {
-                addDividerIfNeeded();
-                widgets.add(
-                  GestureDetector(
-                    onTap: () {
-                      if (QuranCtrl.instance.state.fontsSelected.value == 1) {
-                        Clipboard.setData(ClipboardData(text: ayah!.text));
-                        ToastUtils().showToast(
-                          context,
-                          s.copySuccessMessage ?? 'تم النسخ الى الحافظة',
-                        );
-                      } else {
-                        Clipboard.setData(ClipboardData(
-                            text: QuranCtrl
-                                .instance.staticPages[ayah!.page - 1].ayahs
-                                .firstWhere((element) =>
-                                    element.ayahUQNumber == ayah!.ayahUQNumber)
-                                .text));
-                        ToastUtils().showToast(
-                          context,
-                          s.copySuccessMessage ?? 'تم النسخ الى الحافظة',
+                      // عنصر إضافي أول (للتوافق مع الماضي)
+                      if (anotherMenuChild != null) {
+                        addDividerIfNeeded();
+                        widgets.add(
+                          GestureDetector(
+                            onTap: () {
+                              if (anotherMenuChildOnTap != null) {
+                                anotherMenuChildOnTap!(ayah!);
+                              }
+                              close();
+                            },
+                            child: anotherMenuChild!,
+                          ),
                         );
                       }
-                      QuranCtrl.instance.state.overlayEntry?.remove();
-                      QuranCtrl.instance.state.overlayEntry = null;
-                    },
-                    child: Icon(
-                      s.copyIconData,
-                      color: s.copyIconColor,
-                      size: s.iconSize,
-                    ),
+
+                      // عنصر إضافي ثانٍ (للتوافق مع الماضي)
+                      if (secondMenuChild != null) {
+                        addDividerIfNeeded();
+                        widgets.add(
+                          GestureDetector(
+                            onTap: () {
+                              if (secondMenuChildOnTap != null) {
+                                secondMenuChildOnTap!(ayah!);
+                              }
+                              close();
+                            },
+                            child: secondMenuChild!,
+                          ),
+                        );
+                      }
+
+                      // زر تشغيل جميع الآيات
+                      if (s.showPlayButton ?? true) {
+                        addDividerIfNeeded();
+                        widgets.add(
+                          GestureDetector(
+                            onTap: () {
+                              close();
+
+                              AudioCtrl.instance.playAyah(
+                                rootContext,
+                                ayah!.ayahUQNumber,
+                                playSingleAyah: true,
+                                ayahAudioStyle: sAudio,
+                                ayahDownloadManagerStyle: sDownloadManager,
+                                isDarkMode: isDark,
+                              );
+                              log('Second Menu Child Tapped: ${ayah!.ayahUQNumber}');
+                            },
+                            child: Icon(
+                              s.playIconData,
+                              color: s.playIconColor,
+                              size: s.iconSize,
+                            ),
+                          ),
+                        );
+                      }
+
+                      // زر تشغيل جميع الآيات
+                      if ((s.showPlayAllButton ?? true) && !kIsWeb) {
+                        addDividerIfNeeded();
+                        widgets.add(
+                          GestureDetector(
+                            onTap: () {
+                              close();
+
+                              AudioCtrl.instance.playAyah(
+                                rootContext,
+                                ayah!.ayahUQNumber,
+                                playSingleAyah: false,
+                                ayahAudioStyle: sAudio,
+                                ayahDownloadManagerStyle: sDownloadManager,
+                                isDarkMode: isDark,
+                              );
+                              log('Second Menu Child Tapped: ${ayah!.ayahUQNumber}');
+                            },
+                            child: Icon(
+                              s.playAllIconData,
+                              color: s.playAllIconColor,
+                              size: s.iconSize,
+                            ),
+                          ),
+                        );
+                      }
+
+                      // زر التفسير
+                      if (s.showTafsirButton ?? true) {
+                        addDividerIfNeeded();
+                        widgets.add(
+                          GestureDetector(
+                            onTap: () {
+                              close();
+
+                              showTafsirOnTap(
+                                context: rootContext,
+                                isDark: isDark,
+                                ayahNum: (QuranCtrl.instance.state.fontsSelected
+                                                .value ==
+                                            1 ||
+                                        QuranCtrl.instance.state.fontsSelected
+                                                .value ==
+                                            2 ||
+                                        QuranCtrl.instance.state.scaleFactor
+                                                .value >
+                                            1.3)
+                                    ? ayah!.ayahNumber
+                                    : ayah!.ayahNumber,
+                                pageIndex: pageIndex,
+                                ayahUQNum: (QuranCtrl.instance.state
+                                                .fontsSelected.value ==
+                                            1 ||
+                                        QuranCtrl.instance.state.fontsSelected
+                                                .value ==
+                                            2 ||
+                                        QuranCtrl.instance.state.scaleFactor
+                                                .value >
+                                            1.3)
+                                    ? ayah!.ayahUQNumber
+                                    : ayah!.ayahUQNumber,
+                                ayahNumber: (QuranCtrl.instance.state
+                                                .fontsSelected.value ==
+                                            1 ||
+                                        QuranCtrl.instance.state.fontsSelected
+                                                .value ==
+                                            2 ||
+                                        QuranCtrl.instance.state.scaleFactor
+                                                .value >
+                                            1.3)
+                                    ? ayah!.ayahNumber
+                                    : ayah!.ayahNumber,
+                                externalTafsirStyle: externalTafsirStyle,
+                              );
+                            },
+                            child: Icon(
+                              s.tafsirIconData,
+                              color: s.tafsirIconColor,
+                              size: s.iconSize,
+                            ),
+                          ),
+                        );
+                      }
+
+                      // زر النسخ
+                      if (s.showCopyButton ?? true) {
+                        addDividerIfNeeded();
+                        widgets.add(
+                          GestureDetector(
+                            onTap: () {
+                              if (QuranCtrl
+                                      .instance.state.fontsSelected.value ==
+                                  1) {
+                                Clipboard.setData(
+                                    ClipboardData(text: ayah!.text));
+                              } else {
+                                Clipboard.setData(ClipboardData(
+                                    text: QuranCtrl.instance
+                                        .staticPages[ayah!.page - 1].ayahs
+                                        .firstWhere((element) =>
+                                            element.ayahUQNumber ==
+                                            ayah!.ayahUQNumber)
+                                        .text));
+                              }
+                              close();
+                            },
+                            child: Icon(
+                              s.copyIconData,
+                              color: s.copyIconColor,
+                              size: s.iconSize,
+                            ),
+                          ),
+                        );
+                      }
+
+                      // أزرار العلامات المرجعية
+                      if (s.showBookmarkButtons ?? true) {
+                        final colors = s.bookmarkColorCodes ??
+                            const [
+                              0xAAFFD354,
+                              0xAAF36077,
+                              0xAA00CD00,
+                            ];
+                        for (final colorCode in colors) {
+                          widgets.add(
+                            Padding(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: s.iconHorizontalPadding ?? 8.0,
+                              ),
+                              child: GestureDetector(
+                                onTap: () {
+                                  if (QuranCtrl.instance.state.fontsSelected.value == 1 ||
+                                      QuranCtrl.instance.state.fontsSelected
+                                              .value ==
+                                          2 ||
+                                      QuranCtrl.instance.state.scaleFactor
+                                              .value >
+                                          1.3) {
+                                    BookmarksCtrl.instance.saveBookmark(
+                                      surahName: QuranCtrl.instance
+                                          .getSurahDataByAyah(ayah!)
+                                          .arabicName,
+                                      ayahNumber: ayah!.ayahNumber,
+                                      ayahId: ayah!.ayahUQNumber,
+                                      page: ayah!.page,
+                                      colorCode: colorCode,
+                                    );
+                                  } else {
+                                    BookmarksCtrl.instance.saveBookmark(
+                                      surahName: ayah!.arabicName!,
+                                      ayahNumber: ayah!.ayahNumber,
+                                      ayahId: ayah!.ayahUQNumber,
+                                      page: ayah!.page,
+                                      colorCode: colorCode,
+                                    );
+                                  }
+                                  close();
+                                },
+                                child: Icon(
+                                  s.bookmarkIconData,
+                                  color: Color(colorCode),
+                                  size: s.iconSize,
+                                ),
+                              ),
+                            ),
+                          );
+                        }
+                      }
+
+                      return widgets;
+                    }(),
                   ),
-                );
-              }
-
-              // أزرار العلامات المرجعية
-              if (s.showBookmarkButtons ?? true) {
-                final colors = s.bookmarkColorCodes ??
-                    const [
-                      0xAAFFD354,
-                      0xAAF36077,
-                      0xAA00CD00,
-                    ];
-                for (final colorCode in colors) {
-                  widgets.add(
-                    Padding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: s.iconHorizontalPadding ?? 8.0,
-                      ),
-                      child: GestureDetector(
-                        onTap: () {
-                          if (QuranCtrl.instance.state.fontsSelected.value == 1 ||
-                              QuranCtrl.instance.state.fontsSelected.value ==
-                                  2 ||
-                              QuranCtrl.instance.state.scaleFactor.value >
-                                  1.3) {
-                            BookmarksCtrl.instance.saveBookmark(
-                              surahName: QuranCtrl.instance
-                                  .getSurahDataByAyah(ayah!)
-                                  .arabicName,
-                              ayahNumber: ayah!.ayahNumber,
-                              ayahId: ayah!.ayahUQNumber,
-                              page: ayah!.page,
-                              colorCode: colorCode,
-                            );
-                          } else {
-                            BookmarksCtrl.instance.saveBookmark(
-                              surahName: ayah!.arabicName!,
-                              ayahNumber: ayah!.ayahNumber,
-                              ayahId: ayah!.ayahUQNumber,
-                              page: ayah!.page,
-                              colorCode: colorCode,
-                            );
-                          }
-                          QuranCtrl.instance.state.overlayEntry?.remove();
-                          QuranCtrl.instance.state.overlayEntry = null;
-                        },
-                        child: Icon(
-                          s.bookmarkIconData,
-                          color: Color(colorCode),
-                          size: s.iconSize,
-                        ),
-                      ),
-                    ),
-                  );
-                }
-              }
-
-              return widgets;
-            }(),
-          ),
-        ),
-      ),
+                ),
+              ),
+            )
+          : const SizedBox.shrink(),
     );
   }
+}
+
+Future<void> showAyahMenuDialog({
+  required BuildContext context,
+  required bool isDark,
+  required AyahModel ayah,
+  required Offset position,
+  required int index,
+  required int pageIndex,
+  Widget? anotherMenuChild,
+  void Function(AyahModel ayah)? anotherMenuChildOnTap,
+  Widget? secondMenuChild,
+  void Function(AyahModel ayah)? secondMenuChildOnTap,
+  TafsirStyle? externalTafsirStyle,
+}) async {
+  final ctrl = QuranCtrl.instance;
+  if (ctrl.state.isShowMenu.value) return;
+
+  ctrl.state.isShowMenu.value = true;
+  await showGeneralDialog<void>(
+    context: context,
+    barrierDismissible: true,
+    barrierLabel: MaterialLocalizations.of(context).modalBarrierDismissLabel,
+    barrierColor: Colors.transparent,
+    transitionDuration: Duration.zero,
+    pageBuilder: (dialogContext, _, __) {
+      return Material(
+        type: MaterialType.transparency,
+        child: Stack(
+          children: [
+            AyahMenuDialog(
+              context: context,
+              isDark: isDark,
+              ayah: ayah,
+              position: position,
+              index: index,
+              pageIndex: pageIndex,
+              anotherMenuChild: anotherMenuChild,
+              anotherMenuChildOnTap: anotherMenuChildOnTap,
+              secondMenuChild: secondMenuChild,
+              secondMenuChildOnTap: secondMenuChildOnTap,
+              externalTafsirStyle: externalTafsirStyle,
+              onDismiss: () {
+                ctrl.showControlToggle();
+                Navigator.of(dialogContext).pop();
+              },
+            ),
+          ],
+        ),
+      );
+    },
+  ).whenComplete(() {
+    ctrl.state.isShowMenu.value = false;
+  });
 }

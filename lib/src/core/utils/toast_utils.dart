@@ -2,19 +2,45 @@ part of '/quran.dart';
 
 class ToastUtils {
   void showToast(BuildContext context, String msg) {
-    final bool isDark = Theme.of(context).brightness == Brightness.dark;
-    final style = SnackBarTheme.of(context)?.style ??
-        SnackBarStyle.defaults(isDark: isDark, context: context);
+    bool isMounted(BuildContext ctx) {
+      if (ctx is Element) return ctx.mounted;
+      return true;
+    }
+
+    BuildContext? resolveSafeContext(BuildContext ctx) {
+      if (isMounted(ctx)) return ctx;
+      final fallbackContexts = <BuildContext?>[
+        Get.context,
+        Get.overlayContext,
+        Get.key.currentContext,
+      ];
+      for (final c in fallbackContexts) {
+        if (c != null && isMounted(c)) return c;
+      }
+      return null;
+    }
+
+    final ctx = resolveSafeContext(context);
+    if (ctx == null) return;
+
+    final bool isDark =
+        (MediaQuery.maybeOf(ctx)?.platformBrightness == Brightness.dark);
+
+    final style = SnackBarTheme.of(ctx)?.style ??
+        SnackBarStyle.defaults(isDark: isDark, context: ctx);
 
     // إذا كانت الإشعارات المعروضة عبر SnackBar معطلة، لا تقم بعرض أي شيء
     if (style.enabled == false) return;
+
+    final messenger = ScaffoldMessenger.maybeOf(ctx);
+    if (messenger == null) return;
 
     final snackBar = SnackBar(
       content: Text(
         msg,
         style: style.textStyle ??
             QuranLibrary().naskhStyle.copyWith(
-                  color: AppColors.getTextColor(isDark),
+                  color: AppColors.getTextColor(false),
                 ),
         textAlign: TextAlign.center,
       ),
@@ -23,7 +49,7 @@ class ToastUtils {
       behavior: style.behavior ?? SnackBarBehavior.floating,
       margin: style.margin ??
           EdgeInsets.only(
-            bottom: MediaQuery.of(context).viewInsets.bottom + 16,
+            bottom: (MediaQuery.maybeOf(ctx)?.viewInsets.bottom ?? 0) + 16,
             right: 16,
             left: 16,
           ),
@@ -35,7 +61,7 @@ class ToastUtils {
             )
           : null,
     );
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    messenger.showSnackBar(snackBar);
   }
 
   ///Singleton factory

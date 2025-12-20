@@ -21,7 +21,8 @@ class InternetConnectionController extends GetxController {
       ConnectivityStatus.disconnected.obs;
 
   bool get isConnected =>
-      connectionStatus.value == ConnectivityStatus.connected;
+      connectionStatus.value == ConnectivityStatus.connected ||
+      connectionStatus.value == ConnectivityStatus.phoneData;
 
   bool get isPhoneData =>
       connectionStatus.value == ConnectivityStatus.phoneData;

@@ -36,6 +36,7 @@ class SurahSeekBar extends StatelessWidget {
                           style!.seekBarInactiveTrackColor ?? Colors.grey,
                       thumbColor: style!.seekBarThumbColor ??
                           Theme.of(context).colorScheme.primary,
+                      timeContainerColor: style?.timeContainerColor,
                       // bufferedPosition: positionData.bufferedPosition,
                       onChangeEnd: (newPosition) {
                         c.state.audioPlayer.seek(newPosition);

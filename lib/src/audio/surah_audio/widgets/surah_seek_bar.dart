@@ -8,14 +8,12 @@ class SurahSeekBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetBuilder<AudioCtrl>(
-        id: 'seekBar_id',
+        id: 'surahDownloadManager_id',
         builder: (c) => c.state.isDownloading.value
-            ? GetX<AudioCtrl>(builder: (c) {
-                return PackageSliderWidget.downloading(
-                    currentPosition: c.state.downloadProgress.value.toInt(),
-                    filesCount: c.state.fileSize.value,
-                    horizontalPadding: 32.0);
-              })
+            ? PackageSliderWidget.downloading(
+                currentPosition: c.state.downloadProgress.value.toInt(),
+                filesCount: c.state.fileSize.value,
+                horizontalPadding: 32.0)
             : StreamBuilder<PackagePositionData>(
                 stream: c.positionDataStream,
                 builder: (context, snapshot) {

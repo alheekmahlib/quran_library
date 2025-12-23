@@ -46,6 +46,14 @@ class SurahDisplayScreen extends StatelessWidget {
     this.searchTabStyle,
     this.ayahLongClickStyle,
     this.tafsirStyle,
+    this.bookmarksTabStyle,
+    this.ayahDownloadManagerStyle,
+    this.topBottomQuranStyle,
+    this.snackBarStyle,
+    this.ayahMenuStyle,
+    this.topBarStyle,
+    this.downloadFontsDialogStyle,
+    this.isFontsLocal = false,
   });
 
   /// رقم السورة المراد عرضها
@@ -241,6 +249,42 @@ class SurahDisplayScreen extends StatelessWidget {
   /// [ayahLongClickStyle] Ayah long click style customization for the Quran
   final AyahMenuStyle? ayahLongClickStyle;
 
+  /// تخصيص نمط تبويب الفواصل الخاص بالمصحف
+  ///
+  /// [bookmarksTabStyle] Bookmarks tab style customization for the Quran
+  final BookmarksTabStyle? bookmarksTabStyle;
+
+  // تخصيص نمط التنزيل الآيات
+  /// [ayahDownloadManagerStyle] Ayah download manager style customization
+  final AyahDownloadManagerStyle? ayahDownloadManagerStyle;
+
+  // تخصيص نمط الجزء العلوي والسفلي للمصحف
+  /// [topBottomQuranStyle] top/bottom style customization for the Quran
+  final TopBottomQuranStyle? topBottomQuranStyle;
+
+  /// تخصيص نمط Snackbar الخاص بالمكتبة
+  /// [snackBarStyle] SnackBar style customization for the library
+  final SnackBarStyle? snackBarStyle;
+
+  /// تخصيص نمط الضغط المطوّل على الآية
+  /// [ayahMenuStyle] Long press style customization for ayahs
+  final AyahMenuStyle? ayahMenuStyle;
+
+  /// تخصيص نمط شريط الأعلى الخاص بالمصحف
+  ///
+  /// Customize the style of the Quran top bar
+  final QuranTopBarStyle? topBarStyle;
+
+  /// تغيير نمط نافذة تحميل الخطوط بواسطة هذه الفئة [DownloadFontsDialogStyle]
+  ///
+  /// [DownloadFontsDialogStyle] Change the style of Download fonts dialog by DownloadFontsDialogStyle class
+  final DownloadFontsDialogStyle? downloadFontsDialogStyle;
+
+  /// إذا كنت تريد استخدام خطوط موجودة مسبقًا في التطبيق، اجعل هذا المتغيير true [isFontsLocal]
+  ///
+  /// [isFontsLocal] If you want to use fonts that exists in the app, make this variable true
+  final bool? isFontsLocal;
+
   final quranCtrl = QuranCtrl.instance;
 
   @override
@@ -261,116 +305,151 @@ class SurahDisplayScreen extends StatelessWidget {
     final String languageCode = appLanguageCode ?? deviceLocale;
     // شرح: تهيئة الشاشة وإعداد المقاييس
     // Explanation: Initialize screen and setup dimensions
-    return ScaleKitBuilder(
-      designWidth: 375,
-      designHeight: 812,
-      designType: DeviceType.mobile,
-      child: QuranLibraryTheme(
-        snackBarStyle:
-            SnackBarStyle.defaults(isDark: isDark, context: parentContext),
-        ayahLongClickStyle: ayahLongClickStyle ??
-            AyahMenuStyle.defaults(isDark: isDark, context: parentContext),
-        indexTabStyle: indexTabStyle ??
-            IndexTabStyle.defaults(isDark: isDark, context: parentContext),
-        topBarStyle:
-            QuranTopBarStyle.defaults(isDark: isDark, context: parentContext),
-        searchTabStyle: searchTabStyle ??
-            SearchTabStyle.defaults(isDark: isDark, context: parentContext),
-        surahInfoStyle: surahInfoStyle ??
-            SurahInfoStyle.defaults(isDark: isDark, context: parentContext),
-        tafsirStyle: tafsirStyle ??
-            TafsirStyle.defaults(isDark: isDark, context: parentContext),
-        bookmarksTabStyle:
-            BookmarksTabStyle.defaults(isDark: isDark, context: parentContext),
-        topBottomQuranStyle: TopBottomQuranStyle.defaults(
-            isDark: isDark, context: parentContext),
-        ayahDownloadManagerStyle: AyahDownloadManagerStyle.defaults(
-            isDark: isDark, context: parentContext),
-        child: GetBuilder<SurahCtrl>(
-          init: SurahCtrl.instance,
-          initState: (state) {
-            // شرح: تحميل السورة عند بناء الشاشة
-            // Explanation: Load surah when building screen
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              if (!context.mounted) return;
-              final ctrl = state.controller!;
-              // شرح: إعادة تحميل السورة إذا تغير رقمها
-              // Explanation: Reload surah if its number changed
-              AudioCtrl.instance;
-              if (ctrl.surahNumber != surahNumber) {
-                ctrl.loadSurah(surahNumber);
-              }
-            });
-          },
-          builder: (surahCtrl) {
-            return Directionality(
-              textDirection: TextDirection.rtl,
-              child: Scaffold(
-                backgroundColor:
-                    backgroundColor ?? AppColors.getBackgroundColor(isDark),
-                appBar: appBar ??
-                    (useDefaultAppBar
-                        ? AppBar(
-                            backgroundColor: backgroundColor ??
-                                AppColors.getBackgroundColor(isDark),
-                            elevation: 0,
-                            centerTitle: true,
-                            title: Text(
-                              surahCtrl.getSurahName(),
-                              style: QuranLibrary().naskhStyle.copyWith(
-                                    color: AppColors.getTextColor(isDark),
-                                    fontSize: 22,
+    return PopScope(
+      onPopInvokedWithResult: (b, _) async {
+        QuranCtrl.instance.state.isShowMenu.value = false;
+      },
+      child: ScaleKitBuilder(
+        designWidth: 375,
+        designHeight: 812,
+        designType: DeviceType.mobile,
+        child: QuranLibraryTheme(
+          snackBarStyle: snackBarStyle ??
+              SnackBarStyle.defaults(isDark: isDark, context: context),
+          ayahLongClickStyle: ayahMenuStyle ??
+              AyahMenuStyle.defaults(isDark: isDark, context: context),
+          indexTabStyle: indexTabStyle ??
+              IndexTabStyle.defaults(isDark: isDark, context: context),
+          topBarStyle: topBarStyle ??
+              QuranTopBarStyle.defaults(isDark: isDark, context: context),
+          searchTabStyle: searchTabStyle ??
+              SearchTabStyle.defaults(isDark: isDark, context: context),
+          surahInfoStyle: surahInfoStyle ??
+              SurahInfoStyle.defaults(isDark: isDark, context: context),
+          tafsirStyle: tafsirStyle ??
+              TafsirStyle.defaults(isDark: isDark, context: context),
+          bookmarksTabStyle: bookmarksTabStyle ??
+              BookmarksTabStyle.defaults(isDark: isDark, context: context),
+          topBottomQuranStyle: topBottomQuranStyle ??
+              TopBottomQuranStyle.defaults(isDark: isDark, context: context),
+          ayahDownloadManagerStyle: ayahDownloadManagerStyle ??
+              AyahDownloadManagerStyle.defaults(
+                  isDark: isDark, context: context),
+          child: GetBuilder<SurahCtrl>(
+            init: SurahCtrl.instance,
+            initState: (state) {
+              // شرح: تحميل السورة عند بناء الشاشة
+              // Explanation: Load surah when building screen
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (!context.mounted) return;
+                // على الويب: لا تسرق التركيز من حقول الكتابة
+                if (kIsWeb) {
+                  final pf = FocusManager.instance.primaryFocus;
+                  final isTextFieldFocused =
+                      pf?.context?.widget is EditableText;
+                  if (!isTextFieldFocused) {
+                    FocusScope.of(context)
+                        .requestFocus(quranCtrl.state.quranPageRLFocusNode);
+                  }
+                }
+                final ctrl = state.controller!;
+                // شرح: إعادة تحميل السورة إذا تغير رقمها
+                // Explanation: Reload surah if its number changed
+                AudioCtrl.instance;
+                if (ctrl.surahNumber != surahNumber) {
+                  ctrl.loadSurah(surahNumber);
+                }
+              });
+            },
+            builder: (surahCtrl) {
+              return Directionality(
+                textDirection: TextDirection.rtl,
+                child: Scaffold(
+                  resizeToAvoidBottomInset: false,
+                  backgroundColor:
+                      backgroundColor ?? AppColors.getBackgroundColor(isDark),
+                  body: SafeArea(
+                      child: InkWell(
+                    onTap: () {
+                      if (onPagePress != null) {
+                        onPagePress!();
+                      } else {
+                        quranCtrl.showControlToggle();
+                        quranCtrl.state.isShowMenu.value = false;
+                      }
+                    },
+                    focusColor: Colors.transparent,
+                    splashColor: Colors.transparent,
+                    highlightColor: Colors.transparent,
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        _buildSurahBody(parentContext, surahCtrl),
+                        GetBuilder<QuranCtrl>(
+                          id: 'isShowControl',
+                          builder: (quranCtrl) {
+                            final visible = quranCtrl.isShowControl.value;
+                            return RepaintBoundary(
+                              child: IgnorePointer(
+                                ignoring: !visible,
+                                child: AnimatedOpacity(
+                                  opacity: visible ? 1.0 : 0.0,
+                                  duration: const Duration(milliseconds: 150),
+                                  curve: Curves.easeInOut,
+                                  child: Stack(
+                                    alignment: Alignment.center,
+                                    children: [
+                                      // السلايدر السفلي - يظهر من الأسفل للأعلى
+                                      // Bottom slider - appears from bottom to top
+                                      isShowAudioSlider!
+                                          ? AyahsAudioWidget(
+                                              style: ayahStyle ??
+                                                  AyahAudioStyle.defaults(
+                                                      isDark: isDark,
+                                                      context: context),
+                                              isDark: isDark,
+                                              languageCode: languageCode,
+                                              downloadManagerStyle:
+                                                  ayahDownloadManagerStyle,
+                                            )
+                                          : const SizedBox.shrink(),
+                                      kIsWeb
+                                          ? JumpingPageControllerWidget(
+                                              backgroundColor: backgroundColor,
+                                              isDark: isDark,
+                                              textColor: textColor,
+                                              quranCtrl: quranCtrl,
+                                            )
+                                          : const SizedBox.shrink(),
+                                      appBar == null &&
+                                              useDefaultAppBar &&
+                                              visible
+                                          ? _QuranTopBar(
+                                              languageCode,
+                                              isDark,
+                                              style: surahStyle ??
+                                                  SurahAudioStyle(),
+                                              backgroundColor: backgroundColor,
+                                              downloadFontsDialogStyle:
+                                                  downloadFontsDialogStyle,
+                                              isFontsLocal: isFontsLocal,
+                                              isSingleSurah: true,
+                                            )
+                                          : const SizedBox.shrink(),
+                                    ],
                                   ),
-                            ),
-                            iconTheme: IconThemeData(
-                              color: AppColors.getTextColor(isDark),
-                            ),
-                          )
-                        : null),
-                drawer: appBar == null && useDefaultAppBar
-                    ? _QuranTopBar(
-                        languageCode,
-                        isDark,
-                        backgroundColor: backgroundColor,
-                      )
-                    : null,
-                body: SafeArea(
-                    child: InkWell(
-                  onTap: () {
-                    if (onPagePress != null) {
-                      onPagePress!();
-                    } else {
-                      quranCtrl.showControlToggle();
-                      quranCtrl.state.isShowMenu.value = false;
-                    }
-                  },
-                  focusColor: Colors.transparent,
-                  splashColor: Colors.transparent,
-                  highlightColor: Colors.transparent,
-                  child: Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      _buildSurahBody(parentContext, surahCtrl),
-
-                      // السلايدر السفلي - يظهر من الأسفل للأعلى
-                      // Bottom slider - appears from bottom to top
-                      isShowAudioSlider!
-                          ? Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 16.0),
-                              child: AyahsAudioWidget(
-                                style: ayahStyle ??
-                                    AyahAudioStyle.defaults(
-                                        isDark: isDark, context: context),
+                                ),
                               ),
-                            )
-                          : const SizedBox.shrink(),
-                    ],
-                  ),
-                )),
-              ),
-            );
-          },
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+                  )),
+                ),
+              );
+            },
+          ),
         ),
       ),
     );
@@ -408,7 +487,22 @@ class SurahDisplayScreen extends StatelessWidget {
       () => PageView.builder(
         controller: surahCtrl.pageController,
         itemCount: surahCtrl.surahPages.length,
-        onPageChanged: onPageChanged,
+        onPageChanged: (pageIndex) {
+          // تشغيل العمليات في الخلفية لتجنب تجميد UI
+          // Run operations in background to avoid UI freeze
+          WidgetsBinding.instance.addPostFrameCallback((_) async {
+            if (!context.mounted) return;
+            if (onPageChanged != null) {
+              // لا تلمس الـ Overlay إذا كان المستخدم يدير الحدث بنفسه
+              onPageChanged!(pageIndex);
+            } else {}
+            quranCtrl.state.currentPageNumber.value = pageIndex + 1;
+            quranCtrl.saveLastPage(pageIndex + 1);
+            if (QuranLibrary().currentFontsSelected == 1) {
+              await quranCtrl.prepareFonts(50);
+            }
+          });
+        },
         itemBuilder: (context, pageIndex) {
           return _buildSurahPage(
             context,
@@ -546,21 +640,10 @@ class SurahDisplayScreen extends StatelessWidget {
   Widget _buildSurahHeader(BuildContext context) {
     return SurahHeaderWidget(
       surahNumber,
-      bannerStyle: bannerStyle ??
-          BannerStyle(
-            isImage: false,
-            bannerSvgPath: isDark
-                ? AssetsPath.assets.surahSvgBannerDark
-                : AssetsPath.assets.surahSvgBanner,
-            bannerSvgHeight: 40.0,
-            bannerSvgWidth: 150.0,
-            bannerImagePath: '',
-            bannerImageHeight: 50,
-            bannerImageWidth: double.infinity,
-          ),
+      bannerStyle: bannerStyle ?? BannerStyle.defaults(isDark: isDark),
       surahNameStyle: surahNameStyle ??
           SurahNameStyle(
-            surahNameSize: 70,
+            surahNameSize: 27,
             surahNameColor: AppColors.getTextColor(isDark),
           ),
       onSurahBannerPress: onSurahBannerPress,
@@ -571,16 +654,14 @@ class SurahDisplayScreen extends StatelessWidget {
   /// بناء البسملة
   /// Build Basmala
   Widget _buildBasmala() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 16.0),
-      child: BasmallahWidget(
-        surahNumber: surahNumber,
-        basmalaStyle: basmalaStyle ??
-            BasmalaStyle(
-              basmalaColor: AppColors.getTextColor(isDark),
-              basmalaFontSize: 50.0,
-            ),
-      ),
+    return BasmallahWidget(
+      surahNumber: surahNumber,
+      basmalaStyle: basmalaStyle ??
+          BasmalaStyle(
+            basmalaColor: AppColors.getTextColor(isDark),
+            basmalaFontSize: 25.0,
+            verticalPadding: 0.0,
+          ),
     );
   }
 

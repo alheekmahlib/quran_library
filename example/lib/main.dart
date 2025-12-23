@@ -1,6 +1,4 @@
 // import 'package:device_preview/device_preview.dart';
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:quran_library/quran_library.dart';
@@ -59,9 +57,9 @@ class _MyAppState extends State<MyApp> {
       },
       home: const Scaffold(
         // body: SingleAyah(),
-        // body: SingleSurah(),
+        body: SingleSurah(),
         // body: QuranPages(),
-        body: FullQuran(),
+        // body: FullQuran(),
       ),
     );
   }
@@ -121,28 +119,11 @@ class SingleSurah extends StatelessWidget {
   Widget build(BuildContext context) {
     return SurahDisplayScreen(
       parentContext: context,
-      surahNumber: 18,
+      surahNumber: 3,
       isDark: false,
       appLanguageCode: 'ar',
-      useDefaultAppBar: false,
-      anotherMenuChild:
-          const Icon(Icons.play_arrow_outlined, size: 28, color: Colors.grey),
-      anotherMenuChildOnTap: (ayah) {
-        // SurahAudioController.instance.state.currentAyahUnequeNumber =
-        //     ayah.ayahUQNumber;
-        AudioCtrl.instance
-            .playAyah(context, ayah.ayahUQNumber, playSingleAyah: true);
-        log('Another Menu Child Tapped: ${ayah.ayahUQNumber}');
-      },
-      secondMenuChild:
-          const Icon(Icons.playlist_play, size: 28, color: Colors.grey),
-      secondMenuChildOnTap: (ayah) {
-        // SurahAudioController.instance.state.currentAyahUnequeNumber =
-        //     ayah.ayahUQNumber;
-        AudioCtrl.instance
-            .playAyah(context, ayah.ayahUQNumber, playSingleAyah: false);
-        log('Second Menu Child Tapped: ${ayah.ayahUQNumber}');
-      },
+      useDefaultAppBar: true,
+      onPageChanged: (_) {},
     );
   }
 }
@@ -193,24 +174,6 @@ class QuranPages extends StatelessWidget {
           (startSurah: 2, startAyah: 30, endSurah: 2, endAyah: 35)
         ],
         withPageView: true, // تمكين/تعطيل السحب بين الصفحات
-        anotherMenuChild:
-            const Icon(Icons.play_arrow_outlined, size: 28, color: Colors.teal),
-        anotherMenuChildOnTap: (ayah) {
-          // SurahAudioController.instance.state.currentAyahUnequeNumber =
-          //     ayah.ayahUQNumber;
-          AudioCtrl.instance
-              .playAyah(context, ayah.ayahUQNumber, playSingleAyah: true);
-          log('Another Menu Child Tapped: ${ayah.ayahUQNumber}');
-        },
-        secondMenuChild:
-            const Icon(Icons.playlist_play, size: 28, color: Colors.teal),
-        secondMenuChildOnTap: (ayah) {
-          // SurahAudioController.instance.state.currentAyahUnequeNumber =
-          //     ayah.ayahUQNumber;
-          AudioCtrl.instance
-              .playAyah(context, ayah.ayahUQNumber, playSingleAyah: false);
-          log('Second Menu Child Tapped: ${ayah.ayahUQNumber}');
-        },
       ),
     );
   }

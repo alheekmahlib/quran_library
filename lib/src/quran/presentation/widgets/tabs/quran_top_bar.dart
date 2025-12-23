@@ -7,6 +7,7 @@ class _QuranTopBar extends StatelessWidget {
   final bool? isFontsLocal;
   final DownloadFontsDialogStyle? downloadFontsDialogStyle;
   final Color? backgroundColor;
+  final bool? isSingleSurah;
 
   const _QuranTopBar(
     this.languageCode,
@@ -15,6 +16,7 @@ class _QuranTopBar extends StatelessWidget {
     this.isFontsLocal,
     this.downloadFontsDialogStyle,
     this.backgroundColor,
+    this.isSingleSurah = false,
   });
 
   @override
@@ -108,7 +110,7 @@ class _QuranTopBar extends StatelessWidget {
                       }
                     },
                   ),
-                if (defaults.showFontsButton ?? true)
+                if ((defaults.showFontsButton ?? true) && (!isSingleSurah!))
                   FontsDownloadDialog(
                     downloadFontsDialogStyle: downloadFontsDialogStyle ??
                         DownloadFontsDialogStyle.defaults(isDark, context),
@@ -155,6 +157,7 @@ class _QuranTopBar extends StatelessWidget {
         indexTabStyle: indexTabStyle,
         searchTabStyle: searchTabStyle,
         bookmarksTabStyle: bookmarksTabStyle,
+        isSingleSurah: isSingleSurah!,
       ),
     );
   }
@@ -169,6 +172,7 @@ class _MenuBottomSheet extends StatelessWidget {
   final IndexTabStyle indexTabStyle;
   final SearchTabStyle searchTabStyle;
   final BookmarksTabStyle bookmarksTabStyle;
+  final bool isSingleSurah;
 
   const _MenuBottomSheet({
     required this.isDark,
@@ -178,6 +182,7 @@ class _MenuBottomSheet extends StatelessWidget {
     required this.indexTabStyle,
     required this.searchTabStyle,
     required this.bookmarksTabStyle,
+    this.isSingleSurah = false,
   });
 
   @override
@@ -187,7 +192,7 @@ class _MenuBottomSheet extends StatelessWidget {
         style.accentColor ?? Theme.of(context).colorScheme.primary;
 
     return DefaultTabController(
-      length: 3,
+      length: isSingleSurah ? 2 : 3,
       child: SafeArea(
         top: false,
         child: Container(
@@ -232,7 +237,8 @@ class _MenuBottomSheet extends StatelessWidget {
                   unselectedLabelStyle:
                       QuranLibrary().cairoStyle.copyWith(fontSize: 15),
                   tabs: [
-                    Tab(text: style.tabIndexLabel ?? 'الفهرس'),
+                    if (!isSingleSurah)
+                      Tab(text: style.tabIndexLabel ?? 'الفهرس'),
                     Tab(text: style.tabSearchLabel ?? 'البحث'),
                     Tab(text: style.tabBookmarksLabel ?? 'الفواصل'),
                   ],
@@ -242,11 +248,12 @@ class _MenuBottomSheet extends StatelessWidget {
               Expanded(
                 child: TabBarView(
                   children: [
-                    _IndexTab(
-                      isDark: isDark,
-                      languageCode: languageCode,
-                      style: indexTabStyle,
-                    ),
+                    if (!isSingleSurah)
+                      _IndexTab(
+                        isDark: isDark,
+                        languageCode: languageCode,
+                        style: indexTabStyle,
+                      ),
                     _SearchTab(
                       isDark: isDark,
                       languageCode: languageCode,

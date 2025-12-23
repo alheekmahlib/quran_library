@@ -1,3 +1,9 @@
+## 2.3.3
+
+* **FIX:**
+	* Organize code in `SurahDisplayScreen`.
+	* Organize code in `QuranPagesScreen`.
+
 ## 2.3.2
 
 * **DELETE:**

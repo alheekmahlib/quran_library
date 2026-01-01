@@ -57,9 +57,9 @@ class _MyAppState extends State<MyApp> {
       },
       home: const Scaffold(
         // body: SingleAyah(),
-        body: SingleSurah(),
+        // body: SingleSurah(),
         // body: QuranPages(),
-        // body: FullQuran(),
+        body: FullQuran(),
       ),
     );
   }

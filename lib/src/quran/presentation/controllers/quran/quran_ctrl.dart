@@ -386,10 +386,16 @@ class QuranCtrl extends GetxController {
     final Orientation orientation = MediaQuery.of(context).orientation;
 
     // احسب قيمة الـ viewportFraction الهدف بناءً على حجم/اتجاه الشاشة
-    final double targetFraction =
-        (Responsive.isDesktop(context) && orientation == Orientation.landscape)
-            ? 0.5
-            : 1.0;
+    // استخدم GetPlatform.isDesktop للتحقق من المنصة (macOS, Windows, Linux)
+    // مع التأكد من أن الشاشة عريضة بما يكفي لعرض صفحتين
+    final bool isWideDesktop =
+        Responsive.isDesktop(context) && orientation == Orientation.landscape;
+    double targetFraction = isWideDesktop ? 0.5 : 1.0;
+
+    log(
+        'getPageController: isDesktop=${GetPlatform.isDesktop}, isWideDesktop=$isWideDesktop, '
+        'targetFraction=$targetFraction',
+        name: 'QuranCtrl');
 
     // إذا لم يكن لدينا عملاء (أول إنشاء) أو تغيّرت القيمة، أعد إنشاء المتحكم
     final bool needsNewController = !quranPagesController.hasClients ||
@@ -397,10 +403,17 @@ class QuranCtrl extends GetxController {
 
     if (needsNewController) {
       // حافظ على الفهرس الحالي للصفحة
-      int currentIndex = state.currentPageNumber.value - 1;
+      // استخدم الصفحة من الـ controller إذا كان له clients،
+      // وإلا استخدم state.currentPageNumber أو القيمة المحفوظة في التخزين
+      int currentIndex;
       if (quranPagesController.hasClients) {
         final double? p = quranPagesController.page;
-        if (p != null) currentIndex = p.round();
+        currentIndex =
+            (p != null) ? p.round() : state.currentPageNumber.value - 1;
+      } else {
+        // إذا لم يكن هناك clients، استخدم القيمة المحفوظة مباشرة
+        final savedPage = _quranRepository.getLastPage() ?? 1;
+        currentIndex = savedPage - 1;
       }
       currentIndex = currentIndex.clamp(0, 603);
 
@@ -422,62 +435,6 @@ class QuranCtrl extends GetxController {
         });
       }
     }
-
-    // إضافة مستمع تمرير لمرة واحدة
-    // if (!_scrollListenerAttached) {
-    //   _scrollListenerAttached = true;
-    //   quranPagesController.addListener(() {
-    //     final metrics = quranPagesController.positions.isNotEmpty
-    //         ? quranPagesController.position
-    //         : null;
-    //     if (metrics == null) return;
-    //     final viewport = metrics.viewportDimension;
-    //     if (viewport == 0) return;
-
-    //     final page = metrics.pixels / viewport;
-
-    //     // تحديد الصفحة الحالية والاتجاه
-    //     final currentIndex = page.floor().clamp(0, 603);
-    //     final delta = page - currentIndex;
-
-    //     // اقتراب من الحافة اليمنى/اليسرى لبدء تحميل مبكر
-    //     const threshold = 0.82; // بدء التهيئة قبل السنيب
-    //     int? targetNeighbor;
-    //     if (delta > threshold && currentIndex + 1 < 604) {
-    //       targetNeighbor = currentIndex + 1; // يسار -> الصفحة التالية (RTL)
-    //     } else if (delta < (1 - threshold) && currentIndex - 1 >= 0) {
-    //       // عند بداية الصفحة، حضّر السابقة
-    //       targetNeighbor = currentIndex - 1;
-    //     }
-
-    //     if (targetNeighbor != null &&
-    //         targetNeighbor != _lastPrefetchedForPage) {
-    //       _lastPrefetchedForPage = targetNeighbor;
-    //       // اختيار عدد الجيران بحسب الجهاز: هواتف ±1، غيرها ±2
-    //       final isWeak =
-    //           Platform.isAndroid || Platform.isIOS || Platform.isFuchsia;
-    //       final neighborOffsets =
-    //           isWeak ? const [0, 1, -1] : const [0, 1, -1, 2, -2];
-    //       final targets = neighborOffsets
-    //           .map((o) => targetNeighbor! + o)
-    //           .where((i) => i >= 0 && i < 604)
-    //           .toList();
-
-    //       // جدولة بوقت الخمول لضمان عدم حجب UI
-    //       SchedulerBinding.instance.scheduleTask(() async {
-    //         if (!isDownloadFonts) return;
-    //         for (final t in targets) {
-    //           try {
-    //             await prepareFonts(t, isFontsLocal: false);
-    //           } catch (_) {
-    //             // تجاهل أخطاء التهيئة المسبقة
-    //           }
-    //         }
-    //       }, Priority.idle);
-    //     }
-    //   });
-    // }
-
     return quranPagesController;
   }
 

@@ -1,3 +1,8 @@
+## 2.3.4
+
+* **FIX:**
+	* Make the `viewportFraction` display two pages of the Quran on desktop, web, and landscape display for tablets & iPad.
+
 ## 2.3.3
 
 * **FIX:**

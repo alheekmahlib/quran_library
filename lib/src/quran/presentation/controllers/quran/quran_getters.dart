@@ -15,15 +15,14 @@ extension QuranGetters on QuranCtrl {
   // شرح: تحسين PageController للحصول على أداء أفضل
   // Explanation: Optimized PageController for better performance
   PageController get quranPagesController {
-    // إذا لم يكن الـ controller مُهيأً بعد أو لا يحتوي على clients، أنشئه
-    if (QuranCtrl.instance._pageController == null ||
-        !QuranCtrl.instance._pageController!.hasClients) {
-      QuranCtrl.instance._pageController = PageController(
-        initialPage: (_quranRepository.getLastPage() ?? 1) - 1,
-        keepPage: true,
-        viewportFraction: 1.0,
-      );
-    }
+    // إذا لم يكن الـ controller مُهيأً بعد، أنشئه
+    // لا تتحقق من hasClients هنا لأن ذلك يسبب إعادة إنشاء الـ controller
+    // قبل أن يتم ربطه بالـ PageView
+    QuranCtrl.instance._pageController ??= PageController(
+      initialPage: (_quranRepository.getLastPage() ?? 1) - 1,
+      keepPage: true,
+      viewportFraction: 1.0,
+    );
     return QuranCtrl.instance._pageController!;
   }
 

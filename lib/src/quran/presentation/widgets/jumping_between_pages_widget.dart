@@ -32,11 +32,12 @@ class JumpingPageControllerWidget extends StatelessWidget {
               iconColor: textColor ?? AppColors.getTextColor(isDark),
               iconData: Icons.arrow_back_ios_new,
               onPressed: () {
-                log('Current Page: ${quranCtrl.state.currentPageNumber.value}');
-                quranCtrl.animateToPage(
-                    quranCtrl.state.currentPageNumber.value -= 2);
-                if (quranCtrl.state.currentPageNumber.value < 1) {
-                  quranCtrl.state.currentPageNumber.value = 1;
+                // الانتقال للصفحة السابقة
+                // currentPageNumber يبدأ من 1، و animateToPage يتوقع index يبدأ من 0
+                // الصفحة السابقة = currentPageNumber - 2 (كـ index)
+                final currentPage = quranCtrl.state.currentPageNumber.value;
+                if (currentPage > 1) {
+                  quranCtrl.animateToPage(currentPage - 2);
                 }
               },
             ),
@@ -48,9 +49,13 @@ class JumpingPageControllerWidget extends StatelessWidget {
               iconColor: textColor ?? AppColors.getTextColor(isDark),
               iconData: Icons.arrow_forward_ios_outlined,
               onPressed: () {
-                log('Current Page: ${quranCtrl.state.currentPageNumber.value}');
-                quranCtrl
-                    .animateToPage(quranCtrl.state.currentPageNumber.value);
+                // الانتقال للصفحة التالية
+                // currentPageNumber يبدأ من 1، و animateToPage يتوقع index يبدأ من 0
+                // الصفحة التالية = currentPageNumber (كـ index)
+                final currentPage = quranCtrl.state.currentPageNumber.value;
+                if (currentPage < 604) {
+                  quranCtrl.animateToPage(currentPage);
+                }
               },
             ),
           ],

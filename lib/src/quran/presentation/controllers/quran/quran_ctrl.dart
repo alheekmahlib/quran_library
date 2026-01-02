@@ -366,6 +366,7 @@ class QuranCtrl extends GetxController {
   // Explanation: Improved navigation for smoother scrolling
   void animateToPage(int page) {
     if (quranPagesController.hasClients) {
+      log('Animating to page: $page', name: 'QuranCtrl');
       // استخدام animateToPage بدلاً من jumpToPage للحصول على انتقال أكثر سلاسة
       // Use animateToPage instead of jumpToPage for smoother transition
       quranPagesController.animateToPage(
@@ -374,6 +375,7 @@ class QuranCtrl extends GetxController {
         curve: Curves.easeInOut,
       );
     } else {
+      log('Creating new PageController for page: $page', name: 'QuranCtrl');
       quranPagesController = PageController(
         initialPage: page,
         keepPage: true,

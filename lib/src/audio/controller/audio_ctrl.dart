@@ -617,8 +617,8 @@ class AudioCtrl extends GetxController {
   }
 
   void getAyahUQNumber(int pageNumber) {
-    final ayahs = QuranCtrl.instance
-        .getCurrentPageAyahsSeparatedForBasmalah(pageNumber - 1);
+    final ayahs =
+        QuranCtrl.instance.getCurrentPageAyahsSeparatedForBasmalah(pageNumber);
     log('Fetching AyahUQNumber for page $pageNumber', name: 'AudioCtrl');
     if (ayahs.isNotEmpty) {
       state.currentAyahUniqueNumber.value = ayahs.first.first.ayahUQNumber;

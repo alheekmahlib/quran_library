@@ -1,3 +1,8 @@
+## 2.3.6
+
+* **FIX:**
+	* Ayah highlights display for tablets & iPad.
+
 ## 2.3.5
 
 * **FIX:**

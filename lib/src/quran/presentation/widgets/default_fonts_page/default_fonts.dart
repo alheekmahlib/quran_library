@@ -149,7 +149,7 @@ class DefaultFontsBuild extends StatelessWidget {
                                   ? 22.55.sp
                                   : null,
                               fontFamily: quranCtrl.currentFontFamily,
-                              height: 1.7.h,
+                              height: 1.4,
                               package: 'quran_library',
                             ),
                             children: [

@@ -48,7 +48,8 @@ class GetSingleAyah extends StatelessWidget {
         QuranCtrl.instance
             .getPageNumberByAyahAndSurahNumber(ayahNumber, surahNumber);
     log('surahNumber: $surahNumber, ayahNumber: $ayahNumber, pageNumber: $pageNumber');
-    final bool currentFontsSelected = QuranLibrary().currentFontsSelected == 1;
+    final bool currentFontsSelected =
+        QuranCtrl.instance.currentRecitation.requiresDownload;
     if (ayah.text.isEmpty) {
       return Text(
         'الآية غير موجودة',

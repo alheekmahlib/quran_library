@@ -498,7 +498,7 @@ class SurahDisplayScreen extends StatelessWidget {
             } else {}
             quranCtrl.state.currentPageNumber.value = pageIndex + 1;
             quranCtrl.saveLastPage(pageIndex + 1);
-            if (QuranLibrary().currentFontsSelected == 1) {
+            if (quranCtrl.currentRecitation.requiresDownload) {
               await quranCtrl.prepareFonts(50);
             }
           });

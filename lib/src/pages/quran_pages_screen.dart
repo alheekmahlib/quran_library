@@ -407,7 +407,7 @@ class QuranPagesScreen extends StatelessWidget {
                           quranCtrl.state.currentPageNumber.value =
                               globalIndex + 1;
                           quranCtrl.saveLastPage(globalIndex + 1);
-                          if (QuranLibrary().currentFontsSelected == 1) {
+                          if (quranCtrl.currentRecitation.requiresDownload) {
                             await quranCtrl.prepareFonts(globalIndex);
                           }
                         });

@@ -20,11 +20,6 @@ extension FontsDownloadWidgetExtension on QuranCtrl {
     final ctrl = QuranCtrl.instance;
     final fontsLocal = isFontsLocal ?? false;
 
-    final List<String> titleList = [
-      downloadFontsDialogStyle?.defaultFontText ?? 'الخط الأساسي (حفص)',
-      downloadFontsDialogStyle?.downloadedFontsText ?? 'خط المصحف (حفص)',
-    ];
-
     // Theming fallbacks
     final Color accent = downloadFontsDialogStyle?.linearProgressColor ??
         Theme.of(context).colorScheme.primary;
@@ -44,19 +39,29 @@ extension FontsDownloadWidgetExtension on QuranCtrl {
                 : accent.withValues(alpha: .2);
 
     Widget buildTile({
-      required int index,
+      required QuranRecitation recitation,
     }) {
+      final int index = recitation.recitationIndex;
       final bool isSelected = ctrl.state.fontsSelected.value == index;
-      final bool isDownloadOption = index == 1 || index == 2;
+      final bool isDownloadOption = recitation.requiresDownload;
+      final bool webUnsupported =
+          kIsWeb && recitation == QuranRecitation.hafsMushafTajweed;
 
       Widget trailingForDownload() {
         return Obx(() {
-          // تمييز حالة ورش عن حالة الخطوط
-          final bool isWarsh = index == 2;
+          final bool isThisDownloading =
+              ctrl.state.downloadingFontIndex.value == index;
           final preparing =
-              isWarsh ? false : ctrl.state.isPreparingDownload.value;
-          final downloading = ctrl.state.isDownloadingFonts.value;
-          final downloaded = ctrl.state.isFontDownloaded.value;
+              isThisDownloading ? ctrl.state.isPreparingDownload.value : false;
+          final downloading =
+              isThisDownloading ? ctrl.state.isDownloadingFonts.value : false;
+
+          final downloaded = fontsLocal ||
+              (kIsWeb && !webUnsupported) ||
+              !isDownloadOption ||
+              ctrl.state.fontsDownloadedList.contains(index) ||
+              (ctrl.state.isFontDownloaded.value &&
+                  ctrl.state.fontsDownloadedList.isEmpty);
 
           // Keep a consistent button area size
           const double buttonHeight = 55;
@@ -78,12 +83,10 @@ extension FontsDownloadWidgetExtension on QuranCtrl {
                   )
                 else
                   IconButton(
-                    tooltip: downloaded
-                        ? (isWarsh ? 'حذف بيانات ورش' : 'حذف الخطوط')
-                        : (isWarsh ? 'تحميل بيانات ورش' : 'تحميل الخطوط'),
+                    tooltip: downloaded ? 'حذف الخطوط' : 'تحميل الخطوط',
                     onPressed: () async {
                       if (downloaded) {
-                        await ctrl.deleteFonts();
+                        await ctrl.deleteFontsForIndex(index);
                       } else {
                         if (!ctrl.state.isDownloadingFonts.value &&
                             !ctrl.state.isPreparingDownload.value) {
@@ -110,8 +113,12 @@ extension FontsDownloadWidgetExtension on QuranCtrl {
         if (!isDownloadOption) return const SizedBox.shrink();
         if (fontsLocal || kIsWeb) return const SizedBox.shrink();
         return Obx(() {
-          final preparing = ctrl.state.isPreparingDownload.value;
-          final downloading = ctrl.state.isDownloadingFonts.value;
+          final bool isThisDownloading =
+              ctrl.state.downloadingFontIndex.value == index;
+          final preparing =
+              isThisDownloading ? ctrl.state.isPreparingDownload.value : false;
+          final downloading =
+              isThisDownloading ? ctrl.state.isDownloadingFonts.value : false;
           final progress = ctrl.state.fontsDownloadProgress.value;
 
           // Keep a consistent button area size
@@ -176,9 +183,22 @@ extension FontsDownloadWidgetExtension on QuranCtrl {
             borderRadius: BorderRadius.circular(12.0),
           ),
           child: Obx(() {
-            final bool isWarsh = index == 2;
-            final downloading = ctrl.state.isDownloadingFonts.value;
+            final bool isThisDownloading =
+                ctrl.state.downloadingFontIndex.value == index;
+            final downloading =
+                isThisDownloading ? ctrl.state.isDownloadingFonts.value : false;
             final progress = ctrl.state.fontsDownloadProgress.value;
+
+            final downloaded = fontsLocal ||
+                (kIsWeb && !webUnsupported) ||
+                !isDownloadOption ||
+                ctrl.state.fontsDownloadedList.contains(index) ||
+                (ctrl.state.isFontDownloaded.value &&
+                    ctrl.state.fontsDownloadedList.isEmpty);
+
+            final bool canSelect = !isDownloadOption || downloaded;
+            final bool canTap =
+                fontsLocal || (kIsWeb && !webUnsupported) || canSelect;
             return Stack(
               alignment: Alignment.center,
               children: [
@@ -187,23 +207,9 @@ extension FontsDownloadWidgetExtension on QuranCtrl {
                   minTileHeight: isSelected ? 65 : 55,
                   contentPadding: const EdgeInsetsDirectional.symmetric(
                       horizontal: 12, vertical: 0),
-                  onTap: (fontsLocal ||
-                          ctrl.state.isFontDownloaded.value ||
-                          kIsWeb)
-                      ? () {
-                          ctrl.state.fontsSelected.value = index;
-                          GetStorage()
-                              .write(_StorageConstants().fontsSelected, index);
-                          log('fontsSelected: $index');
-                          // QuranCtrl.instance.update();
-                          Get.forceAppUpdate().then((_) async {
-                            index == 1 ? await initFontLoader() : null;
-                            index == 1
-                                ? prepareFonts(
-                                    state.currentPageNumber.value - 1)
-                                : null;
-                          });
-                        }
+                  onTap: canTap
+                      ? () => ctrl.selectRecitation(recitation,
+                          isFontsLocal: fontsLocal)
                       : null,
                   leading: (fontsLocal || kIsWeb || !isDownloadOption)
                       ? null
@@ -217,14 +223,16 @@ extension FontsDownloadWidgetExtension on QuranCtrl {
                           fit: BoxFit.scaleDown,
                           child: Text(
                             downloading && isDownloadOption
-                                ? (isWarsh
+                                ? '${downloadFontsDialogStyle?.downloadingText ?? 'جاري التحميل'} ${progress.toStringAsFixed(1)}%'
+                                    .convertNumbersAccordingToLang(
+                                        languageCode: languageCode ?? 'ar')
+                                : (index == 0
                                     ? (downloadFontsDialogStyle
-                                            ?.downloadingText ??
-                                        'جاري تحميل ورش')
-                                    : '${downloadFontsDialogStyle?.downloadingText ?? 'جاري التحميل'} ${progress.toStringAsFixed(1)}%'
-                                        .convertNumbersAccordingToLang(
-                                            languageCode: languageCode ?? 'ar'))
-                                : titleList[index],
+                                            ?.defaultFontText ??
+                                        recitation.arabicName)
+                                    : (downloadFontsDialogStyle
+                                            ?.downloadedFontsText ??
+                                        recitation.arabicName)),
                             style: downloadFontsDialogStyle?.fontNameStyle ??
                                 TextStyle(
                                   fontSize: 16,
@@ -289,13 +297,8 @@ extension FontsDownloadWidgetExtension on QuranCtrl {
           const SizedBox(height: 20),
 
           Column(
-            children: List.generate(
-                QuranRecitation.values
-                    .map(
-                      (q) => buildTile(index: q.index),
-                    )
-                    .length,
-                (i) => buildTile(index: i)),
+            children: List.generate(QuranRecitation.values.length,
+                (i) => buildTile(recitation: QuranRecitation.values[i])),
           ),
 
           // Options

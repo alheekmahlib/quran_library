@@ -52,6 +52,15 @@ enum QuranRecitation {
     englishName: 'Hafs Mushaf',
     fontFamily: 'hafs',
     dataSource: DataSource.downloaded(),
+  ),
+
+  /// حفص - خط التجويد (requires download)
+  hafsMushafTajweed(
+    recitationIndex: 2,
+    arabicName: 'خط التجويد (حفص)',
+    englishName: 'Hafs Mushaf Tajweed',
+    fontFamily: 'p',
+    dataSource: DataSource.downloaded(),
   );
 
   /// ورش - خط المصحف

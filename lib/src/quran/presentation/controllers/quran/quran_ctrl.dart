@@ -51,8 +51,12 @@ class QuranCtrl extends GetxController {
     junpTolastPage();
     if (!kIsWeb) {
       _dir = await getApplicationDocumentsDirectory();
-      if (GetStorage().read(_StorageConstants().fontsSelected) == 1 ||
-          state.fontsSelected.value == 1) {
+      final storedSelected =
+          GetStorage().read(_StorageConstants().fontsSelected);
+      if (storedSelected == 1 ||
+          storedSelected == 2 ||
+          state.fontsSelected.value == 1 ||
+          state.fontsSelected.value == 2) {
         await initFontLoader();
       }
     }

@@ -64,27 +64,77 @@ class _QuranFontsPage extends StatelessWidget {
     final isLandscape =
         MediaQuery.of(context).orientation == Orientation.landscape;
     return GetBuilder<QuranCtrl>(
-      builder: (quranCtrl) => Container(
-        padding: pageIndex == 0 || pageIndex == 1
-            ? EdgeInsets.symmetric(
-                horizontal: MediaQuery.sizeOf(context).width * .08)
-            : const EdgeInsets.symmetric(horizontal: 16.0),
-        margin: pageIndex == 0 || pageIndex == 1
-            ? EdgeInsets.symmetric(
-                vertical: UiHelper.currentOrientation(
-                    MediaQuery.sizeOf(context).width * .16,
-                    MediaQuery.sizeOf(context).height * .01,
-                    context))
-            : EdgeInsets.zero,
-        child: quranCtrl.state.pages.isEmpty
-            ? circularProgressWidget ??
-                const CircularProgressIndicator.adaptive()
-            : (!kIsWeb && (Platform.isAndroid || Platform.isIOS))
-                ? isLandscape &&
-                        (Responsive.isMobile(context) ||
-                            Responsive.isMobileLarge(context))
-                    ? SingleChildScrollView(
-                        child: PageBuild(
+      builder: (quranCtrl) {
+        if (quranCtrl.isQpcV4Enabled && !quranCtrl.isQpcV4AllPagesPrebuilt) {
+          Future(() => quranCtrl.ensureQpcV4AllPagesPrebuilt());
+          return Center(
+            child: SizedBox(
+              width: 220,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const CircularProgressIndicator.adaptive(),
+                  const SizedBox(height: 16),
+                  LinearProgressIndicator(
+                    value: quranCtrl.qpcV4PrebuildProgress,
+                    minHeight: 6,
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
+
+        return Container(
+          padding: pageIndex == 0 || pageIndex == 1
+              ? EdgeInsets.symmetric(
+                  horizontal: MediaQuery.sizeOf(context).width * .08)
+              : const EdgeInsets.symmetric(horizontal: 16.0),
+          margin: pageIndex == 0 || pageIndex == 1
+              ? EdgeInsets.symmetric(
+                  vertical: UiHelper.currentOrientation(
+                      MediaQuery.sizeOf(context).width * .16,
+                      MediaQuery.sizeOf(context).height * .01,
+                      context))
+              : EdgeInsets.zero,
+          child: quranCtrl.state.pages.isEmpty
+              ? circularProgressWidget ??
+                  const CircularProgressIndicator.adaptive()
+              : (!kIsWeb && (Platform.isAndroid || Platform.isIOS))
+                  ? isLandscape &&
+                          (Responsive.isMobile(context) ||
+                              Responsive.isMobileLarge(context))
+                      ? SingleChildScrollView(
+                          child: PageBuild(
+                            pageIndex: pageIndex,
+                            surahNumber: surahNumber,
+                            bannerStyle: bannerStyle,
+                            isDark: isDark,
+                            surahNameStyle: surahNameStyle,
+                            onSurahBannerPress: onSurahBannerPress,
+                            basmalaStyle: basmalaStyle,
+                            textColor: textColor,
+                            bookmarks: bookmarks,
+                            onAyahLongPress: onAyahLongPress,
+                            secondMenuChild: secondMenuChild,
+                            secondMenuChildOnTap: secondMenuChildOnTap,
+                            bookmarkList: bookmarkList,
+                            ayahIconColor: ayahIconColor,
+                            showAyahBookmarkedIcon: showAyahBookmarkedIcon,
+                            bookmarksAyahs: bookmarksAyahs,
+                            bookmarksColor: bookmarksColor,
+                            ayahSelectedBackgroundColor:
+                                ayahSelectedBackgroundColor,
+                            isFontsLocal: isFontsLocal,
+                            fontsName: fontsName,
+                            ayahBookmarked: ayahBookmarked,
+                            anotherMenuChild: anotherMenuChild,
+                            anotherMenuChildOnTap: anotherMenuChildOnTap,
+                            context: context,
+                            quranCtrl: quranCtrl,
+                          ),
+                        )
+                      : PageBuild(
                           pageIndex: pageIndex,
                           surahNumber: surahNumber,
                           bannerStyle: bannerStyle,
@@ -111,64 +161,36 @@ class _QuranFontsPage extends StatelessWidget {
                           anotherMenuChildOnTap: anotherMenuChildOnTap,
                           context: context,
                           quranCtrl: quranCtrl,
-                        ),
-                      )
-                    : PageBuild(
-                        pageIndex: pageIndex,
-                        surahNumber: surahNumber,
-                        bannerStyle: bannerStyle,
-                        isDark: isDark,
-                        surahNameStyle: surahNameStyle,
-                        onSurahBannerPress: onSurahBannerPress,
-                        basmalaStyle: basmalaStyle,
-                        textColor: textColor,
-                        bookmarks: bookmarks,
-                        onAyahLongPress: onAyahLongPress,
-                        secondMenuChild: secondMenuChild,
-                        secondMenuChildOnTap: secondMenuChildOnTap,
-                        bookmarkList: bookmarkList,
-                        ayahIconColor: ayahIconColor,
-                        showAyahBookmarkedIcon: showAyahBookmarkedIcon,
-                        bookmarksAyahs: bookmarksAyahs,
-                        bookmarksColor: bookmarksColor,
-                        ayahSelectedBackgroundColor:
-                            ayahSelectedBackgroundColor,
-                        isFontsLocal: isFontsLocal,
-                        fontsName: fontsName,
-                        ayahBookmarked: ayahBookmarked,
-                        anotherMenuChild: anotherMenuChild,
-                        anotherMenuChildOnTap: anotherMenuChildOnTap,
-                        context: context,
-                        quranCtrl: quranCtrl,
-                      )
-                : PageBuild(
-                    pageIndex: pageIndex,
-                    surahNumber: surahNumber,
-                    bannerStyle: bannerStyle,
-                    isDark: isDark,
-                    surahNameStyle: surahNameStyle,
-                    onSurahBannerPress: onSurahBannerPress,
-                    basmalaStyle: basmalaStyle,
-                    textColor: textColor,
-                    bookmarks: bookmarks,
-                    onAyahLongPress: onAyahLongPress,
-                    secondMenuChild: secondMenuChild,
-                    secondMenuChildOnTap: secondMenuChildOnTap,
-                    bookmarkList: bookmarkList,
-                    ayahIconColor: ayahIconColor,
-                    showAyahBookmarkedIcon: showAyahBookmarkedIcon,
-                    bookmarksAyahs: bookmarksAyahs,
-                    bookmarksColor: bookmarksColor,
-                    ayahSelectedBackgroundColor: ayahSelectedBackgroundColor,
-                    isFontsLocal: isFontsLocal,
-                    fontsName: fontsName,
-                    ayahBookmarked: ayahBookmarked,
-                    anotherMenuChild: anotherMenuChild,
-                    anotherMenuChildOnTap: anotherMenuChildOnTap,
-                    context: context,
-                    quranCtrl: quranCtrl,
-                  ),
-      ),
+                        )
+                  : PageBuild(
+                      pageIndex: pageIndex,
+                      surahNumber: surahNumber,
+                      bannerStyle: bannerStyle,
+                      isDark: isDark,
+                      surahNameStyle: surahNameStyle,
+                      onSurahBannerPress: onSurahBannerPress,
+                      basmalaStyle: basmalaStyle,
+                      textColor: textColor,
+                      bookmarks: bookmarks,
+                      onAyahLongPress: onAyahLongPress,
+                      secondMenuChild: secondMenuChild,
+                      secondMenuChildOnTap: secondMenuChildOnTap,
+                      bookmarkList: bookmarkList,
+                      ayahIconColor: ayahIconColor,
+                      showAyahBookmarkedIcon: showAyahBookmarkedIcon,
+                      bookmarksAyahs: bookmarksAyahs,
+                      bookmarksColor: bookmarksColor,
+                      ayahSelectedBackgroundColor: ayahSelectedBackgroundColor,
+                      isFontsLocal: isFontsLocal,
+                      fontsName: fontsName,
+                      ayahBookmarked: ayahBookmarked,
+                      anotherMenuChild: anotherMenuChild,
+                      anotherMenuChildOnTap: anotherMenuChildOnTap,
+                      context: context,
+                      quranCtrl: quranCtrl,
+                    ),
+        );
+      },
     );
   }
 }

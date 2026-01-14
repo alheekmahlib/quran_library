@@ -90,7 +90,7 @@ class GetSingleAyah extends StatelessWidget {
             text: useDefaultFont!
                 ? '${ayah.text} '
                 : currentFontsSelected || !useDefaultFont!
-                    ? '${ayah.codeV2!.replaceAll('\n', '').split(' ').join(' ')} '
+                    ? '${ayah.text.replaceAll('\n', '').split(' ').join(' ')} '
                     : '${ayah.text} ',
           ),
           useDefaultFont!

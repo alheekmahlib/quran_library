@@ -9,6 +9,30 @@ class QuranCtrl extends GetxController {
 
   final QuranRepository _quranRepository;
 
+  // --- QPC v4 (الخط المحمّل) ---
+  QpcV4AssetsStore? _qpcV4Store;
+  Future<void>? _qpcV4LoadFuture;
+  QpcV4PageRenderer? _qpcV4PageRenderer;
+  final Map<int, List<QpcV4RenderBlock>> _qpcV4BlocksByPage = {};
+  Future<void>? _qpcV4PrebuildAllFuture;
+  bool _qpcV4PrebuildStarted = false;
+
+  bool get isQpcV4AllPagesPrebuilt => _qpcV4BlocksByPage.length >= 604;
+
+  double get qpcV4PrebuildProgress {
+    const totalPages = 604;
+    final p = _qpcV4BlocksByPage.length / totalPages;
+    if (p.isNaN || p.isInfinite) return 0.0;
+    return p.clamp(0.0, 1.0);
+  }
+
+  // uq index: (surah,ayah) -> ayahUQNumber
+  final Map<int, int> _ayahUqBySurahAyahKey = {};
+  final Map<int, AyahModel> _ayahByUqCache = {};
+
+  bool get isQpcV4Enabled =>
+      state.fontsSelected.value == 1 || state.fontsSelected.value == 2;
+
   RxList<QuranPageModel> staticPages = <QuranPageModel>[].obs;
   RxList<int> quranStops = <int>[].obs;
   RxList<int> surahsStart = <int>[].obs;
@@ -84,6 +108,13 @@ class QuranCtrl extends GetxController {
     if (!kIsWeb) {
       disposeFontLoader();
     }
+
+    _qpcV4BlocksByPage.clear();
+    _ayahUqBySurahAyahKey.clear();
+    _ayahByUqCache.clear();
+    _qpcV4PageRenderer = null;
+    _qpcV4Store = null;
+    _qpcV4LoadFuture = null;
   }
 
   /// -------- [Methods] ----------
@@ -110,8 +141,161 @@ class QuranCtrl extends GetxController {
             .toList());
       });
       state.isQuranLoaded = true;
+      _buildAyahUqIndexIfNeeded();
+
+      // تحميل كسول لملفات QPC v4 فقط عند تفعيل الخط المحمّل (code v4)
+      if (isQpcV4Enabled) {
+        // لا ننتظر هنا لتجنب إبطاء init في الحالات الأخرى.
+        Future(() => _ensureQpcV4AssetsLoaded());
+      }
       // log('Pages Length: ${state.pages.length}', name: 'Quran Controller');
     }
+  }
+
+  int _surahAyahKey(int surahNumber, int ayahNumber) =>
+      surahNumber * 1000 + ayahNumber;
+
+  void _buildAyahUqIndexIfNeeded() {
+    if (_ayahUqBySurahAyahKey.isNotEmpty) return;
+    for (final surah in state.surahs) {
+      for (final ayah in surah.ayahs) {
+        _ayahUqBySurahAyahKey[
+                _surahAyahKey(surah.surahNumber, ayah.ayahNumber)] =
+            ayah.ayahUQNumber;
+        _ayahByUqCache[ayah.ayahUQNumber] = ayah;
+      }
+    }
+  }
+
+  int resolveAyahUq({required int surahNumber, required int ayahNumber}) {
+    _buildAyahUqIndexIfNeeded();
+    return _ayahUqBySurahAyahKey[_surahAyahKey(surahNumber, ayahNumber)] ?? 0;
+  }
+
+  AyahModel getAyahByUq(int ayahUqNumber) {
+    _buildAyahUqIndexIfNeeded();
+    final cached = _ayahByUqCache[ayahUqNumber];
+    if (cached != null) return cached;
+    final found = state.allAyahs.firstWhereOrNull(
+      (a) => a.ayahUQNumber == ayahUqNumber,
+    );
+    return found ?? AyahModel.empty();
+  }
+
+  Future<void> _ensureQpcV4AssetsLoaded() async {
+    if (!isQpcV4Enabled) return;
+    if (_qpcV4Store != null) return;
+
+    _qpcV4LoadFuture ??= () async {
+      try {
+        _qpcV4Store = await QpcV4AssetsLoader.load();
+        _qpcV4PageRenderer = QpcV4PageRenderer(
+          store: _qpcV4Store!,
+          ayahUqResolver: ({required surahNumber, required ayahNumber}) =>
+              resolveAyahUq(surahNumber: surahNumber, ayahNumber: ayahNumber),
+        );
+      } catch (e, st) {
+        log('Failed to load QPC v4 assets: $e', name: 'QPCv4', stackTrace: st);
+      } finally {
+        // إعادة بناء الواجهة إن كانت الصفحة الحالية تعتمد على QPC
+        update();
+      }
+    }();
+
+    await _qpcV4LoadFuture;
+  }
+
+  /// يبني كل صفحات QPC v4 مرة واحدة لتجنّب التقطيع أثناء التقليب.
+  ///
+  /// ملاحظة: التنفيذ يتم على دفعات مع yield لتفادي تجميد واجهة المستخدم.
+  Future<void> ensureQpcV4AllPagesPrebuilt() async {
+    if (!isQpcV4Enabled) return;
+    await _ensureQpcV4AssetsLoaded();
+    final renderer = _qpcV4PageRenderer;
+    if (renderer == null) return;
+
+    // لا تعِد البناء إن تم البدء/الاكتمال.
+    if (_qpcV4PrebuildAllFuture != null) {
+      await _qpcV4PrebuildAllFuture;
+      return;
+    }
+
+    _qpcV4PrebuildAllFuture = () async {
+      if (_qpcV4BlocksByPage.length >= 604) return;
+      _qpcV4PrebuildStarted = true;
+
+      // نبني بزمن-ميزانية (تقريباً إطار واحد) لتقليل الـ jank أثناء التنفيذ.
+      const totalPages = 604;
+      const timeBudgetMs = 8;
+      final sw = Stopwatch()..start();
+
+      for (var page = 1; page <= totalPages; page++) {
+        if (!isQpcV4Enabled) break;
+        if (_qpcV4BlocksByPage.containsKey(page)) continue;
+        _qpcV4BlocksByPage[page] = renderer.buildPage(pageNumber: page);
+
+        if (sw.elapsedMilliseconds >= timeBudgetMs) {
+          // yield إلى event loop حتى لا ننافس الرسم/الـ gestures.
+          update();
+          await Future<void>.delayed(Duration.zero);
+          sw
+            ..reset()
+            ..start();
+        }
+      }
+
+      // إعادة رسم بعد اكتمال التحضير.
+      update();
+    }();
+
+    await _qpcV4PrebuildAllFuture;
+  }
+
+  List<QpcV4RenderBlock> getQpcV4BlocksForPageSync(int pageNumber) {
+    final cached = _qpcV4BlocksByPage[pageNumber];
+    if (cached != null) return cached;
+
+    // تجنّب البناء المتزامن داخل build للصفحة (يسبب jank).
+    // إذا لم تكن الصفحة جاهزة، نطلق التحضير الكامل أو تحضير هذه الصفحة بشكل غير متزامن.
+    if (isQpcV4Enabled) {
+      if (!_qpcV4PrebuildStarted) {
+        Future(() => ensureQpcV4AllPagesPrebuilt());
+      } else {
+        final renderer = _qpcV4PageRenderer;
+        if (renderer != null) {
+          Future(() {
+            if (_qpcV4BlocksByPage.containsKey(pageNumber)) return;
+            _qpcV4BlocksByPage[pageNumber] =
+                renderer.buildPage(pageNumber: pageNumber);
+            update();
+          });
+        }
+      }
+    }
+
+    return const <QpcV4RenderBlock>[];
+  }
+
+  Future<void> prewarmQpcV4Pages(int pageIndex) async {
+    if (!isQpcV4Enabled) return;
+    await _ensureQpcV4AssetsLoaded();
+    if (_qpcV4PageRenderer == null) return;
+
+    final basePage = pageIndex + 1;
+    final candidates = <int>{
+      basePage,
+      basePage - 1,
+      basePage + 1,
+      basePage - 2,
+      basePage + 2,
+    }.where((p) => p >= 1 && p <= 604);
+
+    for (final p in candidates) {
+      if (_qpcV4BlocksByPage.containsKey(p)) continue;
+      _qpcV4BlocksByPage[p] = _qpcV4PageRenderer!.buildPage(pageNumber: p);
+    }
+
+    update();
   }
 
   void junpTolastPage() {

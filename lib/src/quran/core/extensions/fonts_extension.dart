@@ -179,6 +179,11 @@ extension FontsExtension on QuranCtrl {
   /// **الدالة المعدلة:** تحضير الخطوط للصفحة الحالية والصفحات المجاورة
   Future<void> prepareFonts(int pageIndex, {bool isFontsLocal = false}) async {
     if (_requiresDownloadedFonts) {
+      // تحضير كامل صفحات QPC v4 لتفادي التقطيع أثناء تقليب الصفحات.
+      if (isQpcV4Enabled) {
+        Future(() => ensureQpcV4AllPagesPrebuilt());
+      }
+
       // إذا كان محمّلًا بالفعل محليًا لا نعيد الإرسال
       if (state.loadedFontPages.contains(pageIndex) || isFontsLocal) return;
 

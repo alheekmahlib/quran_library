@@ -543,6 +543,8 @@ class QuranLibraryScreen extends StatelessWidget {
                                               quranCtrl.showControlToggle();
                                               QuranCtrl.instance.state
                                                   .isShowMenu.value = false;
+                                              quranCtrl.state.floatingController
+                                                  .close();
                                             }
                                           },
                                           hoverColor: Colors.transparent,
@@ -608,6 +610,8 @@ class QuranLibraryScreen extends StatelessWidget {
                                         quranCtrl.showControlToggle();
                                         quranCtrl.state.isShowMenu.value =
                                             false;
+                                        quranCtrl.state.floatingController
+                                            .close();
                                       }
                                     },
                                     hoverColor: Colors.transparent,
@@ -711,6 +715,10 @@ class QuranLibraryScreen extends StatelessWidget {
                               ),
                             );
                           },
+                        ),
+                        TajweedMenuWidget(
+                          languageCode: appLanguageCode ?? 'ar',
+                          isDark: isDark,
                         ),
                       ],
                     ),

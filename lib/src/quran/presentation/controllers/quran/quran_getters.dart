@@ -109,59 +109,6 @@ extension QuranGetters on QuranCtrl {
     await selectRecitation(QuranRecitation.fromIndex(fontIndex));
   }
 
-  List<int> get _startSurahsNumbers => [
-        1,
-        2,
-        3,
-        4,
-        6,
-        7,
-        8,
-        9,
-        10,
-        13,
-        15,
-        17,
-        19,
-        21,
-        22,
-        23,
-        24,
-        26,
-        27,
-        31,
-        32,
-        33,
-        34,
-        37,
-        38,
-        41,
-        42,
-        44,
-        45,
-        47,
-        48,
-        50,
-        53,
-        58,
-        60,
-        62,
-        64,
-        65,
-        66,
-        67,
-        72,
-        73,
-        78,
-        80,
-        82,
-        86,
-        103,
-        106,
-        109,
-        112,
-      ];
-
   List<int> get _topOfThePageIndex => [
         435,
         583,
@@ -513,6 +460,22 @@ extension QuranGetters on QuranCtrl {
         update(['isShowControl']);
       }
     }
+  }
+
+  List<TajweedRuleModel> getTajweedRulesListForLanguage({
+    required String languageCode,
+    String fallbackLanguageCode = 'ar',
+  }) {
+    final Map<String, dynamic> root = tajweedRules.first;
+    final List<dynamic> rules = (root['rules'] as List<dynamic>?) ?? const [];
+
+    return rules
+        .whereType<Map<String, dynamic>>()
+        .map((r) => TajweedRuleModel.fromJson(r).forLanguage(
+              languageCode,
+              fallbackLanguageCode: fallbackLanguageCode,
+            ))
+        .toList(growable: false);
   }
 }
 

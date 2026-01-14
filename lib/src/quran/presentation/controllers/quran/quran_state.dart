@@ -47,6 +47,8 @@ class QuranState {
   // المؤقت الخاص بالـ Debouncing
   Timer? _debounceTimer;
 
+  final floatingController = FloatingMenuExpendableController();
+
   // ملاحظة: تم إزالة GlobalKey<ScaffoldState> لتجنب التعارض مع التطبيقات الأخرى
   // Note: GlobalKey<ScaffoldState> has been removed to avoid conflicts with other applications
 

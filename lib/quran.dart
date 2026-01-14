@@ -92,6 +92,7 @@ part 'src/quran/presentation/widgets/download_fonts_page/page_build.dart';
 part 'src/quran/presentation/widgets/download_fonts_page/quran_fonts_page.dart';
 part 'src/quran/presentation/widgets/download_fonts_page/rich_text_build.dart';
 part 'src/quran/presentation/widgets/fonts_download_dialog.dart';
+part 'src/quran/presentation/widgets/fonts_download_widget.dart';
 part 'src/quran/presentation/widgets/jumping_between_pages_widget.dart';
 part 'src/quran/presentation/widgets/page_view_build.dart';
 part 'src/quran/presentation/widgets/surah_header_widget.dart';

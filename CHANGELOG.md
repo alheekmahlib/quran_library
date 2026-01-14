@@ -3,6 +3,9 @@
 * **ADD:**
 	* Tajweed fonts (hafs).
 
+* **FIX:**
+	* Restructuring the code for downloading fonts.
+
 * **DELETE:**
 	* Unused parameters.
 

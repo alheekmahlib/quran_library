@@ -24,9 +24,6 @@ class PageViewBuild extends StatelessWidget {
     super.key,
     required this.circularProgressWidget,
     required this.languageCode,
-    required this.juzName,
-    required this.sajdaName,
-    required this.topTitleChild,
     required this.bookmarkList,
     required this.ayahSelectedFontColor,
     required this.textColor,
@@ -44,10 +41,6 @@ class PageViewBuild extends StatelessWidget {
     required this.isDark,
     required this.fontsName,
     required this.ayahBookmarked,
-    required this.anotherMenuChild,
-    required this.anotherMenuChildOnTap,
-    required this.secondMenuChild,
-    required this.secondMenuChildOnTap,
     required this.userContext,
     required this.pageIndex,
     required this.quranCtrl,
@@ -56,9 +49,6 @@ class PageViewBuild extends StatelessWidget {
 
   final Widget? circularProgressWidget;
   final String? languageCode;
-  final String? juzName;
-  final String? sajdaName;
-  final Widget? topTitleChild;
   final List bookmarkList;
   final Color? ayahSelectedFontColor;
   final Color? textColor;
@@ -77,10 +67,6 @@ class PageViewBuild extends StatelessWidget {
   final bool isDark;
   final String? fontsName;
   final List<int>? ayahBookmarked;
-  final Widget? anotherMenuChild;
-  final void Function(AyahModel ayah)? anotherMenuChildOnTap;
-  final Widget? secondMenuChild;
-  final void Function(AyahModel ayah)? secondMenuChildOnTap;
   final BuildContext userContext;
   final int pageIndex;
   final QuranCtrl quranCtrl;
@@ -114,10 +100,7 @@ class PageViewBuild extends StatelessWidget {
                     child: TopAndBottomWidget(
                       pageIndex: pageIndex,
                       languageCode: languageCode,
-                      juzName: juzName,
-                      sajdaName: sajdaName,
                       isRight: pageIndex.isEven ? true : false,
-                      topTitleChild: topTitleChild,
                       child: _QuranFontsPage(
                         context: userContext,
                         pageIndex: pageIndex,
@@ -141,10 +124,6 @@ class PageViewBuild extends StatelessWidget {
                         isFontsLocal: isFontsLocal,
                         fontsName: fontsName,
                         ayahBookmarked: ayahBookmarked!,
-                        anotherMenuChild: anotherMenuChild,
-                        anotherMenuChildOnTap: anotherMenuChildOnTap,
-                        secondMenuChild: secondMenuChild,
-                        secondMenuChildOnTap: secondMenuChildOnTap,
                       ),
                     ))
             : quranCtrl.staticPages.isEmpty || quranCtrl.isLoading.value
@@ -167,15 +146,8 @@ class PageViewBuild extends StatelessWidget {
                     newSurahs: newSurahs,
                     ayahSelectedBackgroundColor: ayahSelectedBackgroundColor,
                     deviceSize: deviceSize,
-                    juzName: juzName,
-                    sajdaName: sajdaName,
-                    topTitleChild: topTitleChild,
                     isDark: isDark,
                     ayahBookmarked: ayahBookmarked!,
-                    anotherMenuChild: anotherMenuChild,
-                    anotherMenuChildOnTap: anotherMenuChildOnTap,
-                    secondMenuChild: secondMenuChild,
-                    secondMenuChildOnTap: secondMenuChildOnTap,
                     ayahIconColor:
                         ayahIconColor ?? Theme.of(context).colorScheme.primary,
                     showAyahBookmarkedIcon: showAyahBookmarkedIcon,
@@ -187,10 +159,7 @@ class PageViewBuild extends StatelessWidget {
             : TopAndBottomWidget(
                 pageIndex: pageIndex,
                 languageCode: languageCode,
-                juzName: juzName,
-                sajdaName: sajdaName,
                 isRight: pageIndex.isEven ? true : false,
-                topTitleChild: topTitleChild,
                 child: _QuranTextScale(
                   context: userContext,
                   pageIndex: pageIndex,
@@ -213,10 +182,6 @@ class PageViewBuild extends StatelessWidget {
                   isDark: isDark,
                   circularProgressWidget: circularProgressWidget,
                   ayahBookmarked: ayahBookmarked!,
-                  anotherMenuChild: anotherMenuChild,
-                  anotherMenuChildOnTap: anotherMenuChildOnTap,
-                  secondMenuChild: secondMenuChild,
-                  secondMenuChildOnTap: secondMenuChildOnTap,
                 ),
               ),
       ),

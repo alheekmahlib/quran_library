@@ -13,8 +13,6 @@ class PageBuild extends StatelessWidget {
     required this.textColor,
     required this.bookmarks,
     required this.onAyahLongPress,
-    required this.secondMenuChild,
-    required this.secondMenuChildOnTap,
     required this.bookmarkList,
     required this.ayahIconColor,
     required this.showAyahBookmarkedIcon,
@@ -24,8 +22,6 @@ class PageBuild extends StatelessWidget {
     required this.isFontsLocal,
     required this.fontsName,
     required this.ayahBookmarked,
-    required this.anotherMenuChild,
-    required this.anotherMenuChildOnTap,
     required this.context,
     required this.quranCtrl,
   });
@@ -41,8 +37,6 @@ class PageBuild extends StatelessWidget {
   final Map<int, List<BookmarkModel>> bookmarks;
   final Function(LongPressStartDetails details, AyahModel ayah)?
       onAyahLongPress;
-  final Widget? secondMenuChild;
-  final void Function(AyahModel ayah)? secondMenuChildOnTap;
   final List? bookmarkList;
   final Color? ayahIconColor;
   final bool showAyahBookmarkedIcon;
@@ -52,8 +46,6 @@ class PageBuild extends StatelessWidget {
   final bool? isFontsLocal;
   final String? fontsName;
   final List<int> ayahBookmarked;
-  final Widget? anotherMenuChild;
-  final void Function(AyahModel ayah)? anotherMenuChildOnTap;
   final BuildContext context;
   final QuranCtrl quranCtrl;
 
@@ -114,8 +106,6 @@ class PageBuild extends StatelessWidget {
                   isDark: isDark,
                   bookmarks: bookmarks,
                   onAyahLongPress: onAyahLongPress,
-                  secondMenuChild: secondMenuChild,
-                  secondMenuChildOnTap: secondMenuChildOnTap,
                   bookmarkList: bookmarkList,
                   ayahIconColor: ayahIconColor,
                   showAyahBookmarkedIcon: showAyahBookmarkedIcon,
@@ -128,8 +118,6 @@ class PageBuild extends StatelessWidget {
                   isFontsLocal: isFontsLocal!,
                   fontsName: fontsName!,
                   ayahBookmarked: ayahBookmarked,
-                  anotherMenuChild: anotherMenuChild,
-                  anotherMenuChildOnTap: anotherMenuChildOnTap,
                   isCentered: b.isCentered,
                 ),
               );

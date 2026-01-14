@@ -2,9 +2,6 @@ part of '/quran.dart';
 
 class BuildTopSection extends StatelessWidget {
   final bool isRight;
-  final Widget? topTitleChild;
-  final String? surahName;
-  final String? juzName;
   final String? languageCode;
   final bool isSurah;
   final int pageIndex;
@@ -12,9 +9,6 @@ class BuildTopSection extends StatelessWidget {
   BuildTopSection({
     super.key,
     required this.isRight,
-    this.topTitleChild,
-    this.surahName,
-    this.juzName,
     this.languageCode,
     this.isSurah = false,
     required this.pageIndex,
@@ -36,11 +30,9 @@ class BuildTopSection extends StatelessWidget {
         quranCtrl.getSurahsByPageNumber(pageIndex + 1);
     final juz = quranCtrl.getJuzByPage(pageIndex);
 
-    final Widget? effectiveTopTitleChild =
-        topTitleChild ?? topBottomStyle.customChild;
-    final String effectiveJuzName =
-        (juzName ?? topBottomStyle.juzName) ?? 'الجزء';
-    final String? effectiveSurahName = surahName ?? topBottomStyle.surahName;
+    final Widget? effectiveTopTitleChild = topBottomStyle.customChild;
+    final String effectiveJuzName = (topBottomStyle.juzName) ?? 'الجزء';
+    final String? effectiveSurahName = topBottomStyle.surahName;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),

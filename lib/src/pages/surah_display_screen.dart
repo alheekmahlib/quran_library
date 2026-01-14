@@ -28,15 +28,8 @@ class SurahDisplayScreen extends StatelessWidget {
     this.surahInfoStyle,
     this.surahNameStyle,
     this.textColor,
-    this.topTitleChild,
     this.useDefaultAppBar = true,
     this.ayahBookmarked = const [],
-    this.anotherMenuChild,
-    this.anotherMenuChildOnTap,
-    this.juzName,
-    this.sajdaName,
-    this.secondMenuChild,
-    this.secondMenuChildOnTap,
     this.ayahStyle,
     this.surahStyle,
     this.isShowAudioSlider = true,
@@ -138,10 +131,6 @@ class SurahDisplayScreen extends StatelessWidget {
   /// Text color
   final Color? textColor;
 
-  /// عنصر في أعلى العنوان
-  /// Top title child widget
-  final Widget? topTitleChild;
-
   /// استخدام شريط التطبيقات الافتراضي
   /// Use default app bar
   final bool useDefaultAppBar;
@@ -149,42 +138,6 @@ class SurahDisplayScreen extends StatelessWidget {
   /// قائمة الآيات المحفوظة
   /// List of bookmarked ayahs
   final List<int> ayahBookmarked;
-
-  /// اسم الجزء
-  /// Juz name
-  final String? juzName;
-
-  /// اسم السجدة
-  /// Sajda name
-  final String? sajdaName;
-
-  /// زر إضافي أول لقائمة خيارات الآية - يمكن إضافة أيقونة أو نص مخصص [anotherMenuChild]
-  ///
-  /// [anotherMenuChild] First additional button for ayah options menu - you can add custom icon or text
-  @Deprecated(
-      'In versions after 2.2.5 this parameter will be removed. Please use customMenuItems in AyahMenuStyle instead.')
-  final Widget? anotherMenuChild;
-
-  /// دالة يتم استدعاؤها عند الضغط على الزر الإضافي الأول في قائمة خيارات الآية [anotherMenuChildOnTap]
-  ///
-  /// [anotherMenuChildOnTap] Function called when pressing the first additional button in ayah options menu
-  @Deprecated(
-      'In versions after 2.2.5 this parameter will be removed. Please use customMenuItems in AyahMenuStyle instead.')
-  final void Function(AyahModel ayah)? anotherMenuChildOnTap;
-
-  /// زر إضافي ثاني لقائمة خيارات الآية - يمكن إضافة أيقونة أو نص مخصص [secondMenuChild]
-  ///
-  /// [secondMenuChild] Second additional button for ayah options menu - you can add custom icon or text
-  @Deprecated(
-      'In versions after 2.2.5 this parameter will be removed. Please use customMenuItems in AyahMenuStyle instead.')
-  final Widget? secondMenuChild;
-
-  /// دالة يتم استدعاؤها عند الضغط على الزر الإضافي الثاني في قائمة خيارات الآية [secondMenuChildOnTap]
-  ///
-  /// [secondMenuChildOnTap] Function called when pressing the second additional button in ayah options menu
-  @Deprecated(
-      'In versions after 2.2.5 this parameter will be removed. Please use customMenuItems in AyahMenuStyle instead.')
-  final void Function(AyahModel ayah)? secondMenuChildOnTap;
 
   /// نمط تخصيص مظهر المشغل الصوتي للآيات - يتحكم في الألوان والخطوط والأيقونات [ayahStyle]
   ///
@@ -562,11 +515,7 @@ class SurahDisplayScreen extends StatelessWidget {
     return TopAndBottomWidget(
       pageIndex: currentPage - 1,
       languageCode: appLanguageCode,
-      juzName: juzName,
-      sajdaName: sajdaName,
       isRight: pageIndex.isEven ? true : false,
-      topTitleChild: topTitleChild,
-      surahName: surahCtrl.getSurahName(),
       isSurah: true,
       surahNumber: surahNumber,
       child: RepaintBoundary(
@@ -614,11 +563,7 @@ class SurahDisplayScreen extends StatelessWidget {
                             ayahSelectedBackgroundColor:
                                 ayahSelectedBackgroundColor,
                             ayahBookmarked: ayahBookmarked,
-                            anotherMenuChildOnTap: anotherMenuChildOnTap,
-                            anotherMenuChild: anotherMenuChild,
                             ayahSelectedFontColor: ayahSelectedFontColor,
-                            secondMenuChild: secondMenuChild,
-                            secondMenuChildOnTap: secondMenuChildOnTap,
                             ayahIconColor: ayahIconColor,
                             showAyahBookmarkedIcon: showAyahBookmarkedIcon,
                           ),
@@ -681,11 +626,7 @@ class SurahDisplayScreen extends StatelessWidget {
     return TopAndBottomWidget(
         pageIndex: currentPageNumber - 1,
         languageCode: appLanguageCode,
-        juzName: juzName,
-        sajdaName: sajdaName,
         isRight: pageIndex.isEven ? true : false,
-        topTitleChild: topTitleChild,
-        surahName: surahCtrl.getSurahName(),
         isSurah: true,
         child: (!kIsWeb && (Platform.isAndroid || Platform.isIOS))
             ? isLandscape
@@ -779,11 +720,7 @@ class SurahDisplayScreen extends StatelessWidget {
                               ayahSelectedBackgroundColor:
                                   ayahSelectedBackgroundColor,
                               ayahBookmarked: ayahBookmarked,
-                              anotherMenuChild: anotherMenuChild,
-                              anotherMenuChildOnTap: anotherMenuChildOnTap,
                               ayahSelectedFontColor: ayahSelectedFontColor,
-                              secondMenuChild: secondMenuChild,
-                              secondMenuChildOnTap: secondMenuChildOnTap,
                               ayahIconColor: ayahIconColor,
                               showAyahBookmarkedIcon: showAyahBookmarkedIcon,
                             ),

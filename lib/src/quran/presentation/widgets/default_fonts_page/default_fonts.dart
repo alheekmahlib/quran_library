@@ -16,11 +16,7 @@ class DefaultFontsBuild extends StatelessWidget {
     required this.pageIndex,
     required this.ayahBookmarked,
     this.ayahSelectedFontColor,
-    this.anotherMenuChild,
-    this.anotherMenuChildOnTap,
     required this.isDark,
-    this.secondMenuChild,
-    this.secondMenuChildOnTap,
     this.ayahIconColor,
     required this.showAyahBookmarkedIcon,
   });
@@ -41,11 +37,7 @@ class DefaultFontsBuild extends StatelessWidget {
   final List? bookmarkList;
   final int pageIndex;
   final List<int> ayahBookmarked;
-  final Widget? anotherMenuChild;
-  final void Function(AyahModel ayah)? anotherMenuChildOnTap;
   final bool isDark;
-  final Widget? secondMenuChild;
-  final void Function(AyahModel ayah)? secondMenuChildOnTap;
   final Color? ayahIconColor;
   final bool showAyahBookmarkedIcon;
 
@@ -113,10 +105,6 @@ class DefaultFontsBuild extends StatelessWidget {
                               position: details.globalPosition,
                               index: ayah.ayahNumber,
                               pageIndex: pageIndex,
-                              anotherMenuChild: anotherMenuChild,
-                              anotherMenuChildOnTap: anotherMenuChildOnTap,
-                              secondMenuChild: secondMenuChild,
-                              secondMenuChildOnTap: secondMenuChildOnTap,
                               externalTafsirStyle: themedTafsirStyle,
                             );
                           }

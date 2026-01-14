@@ -1,5 +1,13 @@
 ## 2.3.6
 
+* **ADD:**
+	* Tajweed fonts (hafs).
+
+* **DELETE:**
+	* Unused parameters.
+
+## 2.3.6
+
 * **FIX:**
 	* Ayah highlights display for tablets & iPad.
 

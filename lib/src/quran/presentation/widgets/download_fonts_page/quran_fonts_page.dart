@@ -26,10 +26,6 @@ class _QuranFontsPage extends StatelessWidget {
   final bool? isFontsLocal;
   final String? fontsName;
   final List<int> ayahBookmarked;
-  final Widget? anotherMenuChild;
-  final void Function(AyahModel ayah)? anotherMenuChildOnTap;
-  final Widget? secondMenuChild;
-  final void Function(AyahModel ayah)? secondMenuChildOnTap;
 
   const _QuranFontsPage({
     required this.context,
@@ -53,10 +49,6 @@ class _QuranFontsPage extends StatelessWidget {
     this.isFontsLocal,
     this.fontsName,
     required this.ayahBookmarked,
-    this.anotherMenuChild,
-    this.anotherMenuChildOnTap,
-    this.secondMenuChild,
-    this.secondMenuChildOnTap,
   });
 
   @override
@@ -116,8 +108,6 @@ class _QuranFontsPage extends StatelessWidget {
                             textColor: textColor,
                             bookmarks: bookmarks,
                             onAyahLongPress: onAyahLongPress,
-                            secondMenuChild: secondMenuChild,
-                            secondMenuChildOnTap: secondMenuChildOnTap,
                             bookmarkList: bookmarkList,
                             ayahIconColor: ayahIconColor,
                             showAyahBookmarkedIcon: showAyahBookmarkedIcon,
@@ -128,8 +118,6 @@ class _QuranFontsPage extends StatelessWidget {
                             isFontsLocal: isFontsLocal,
                             fontsName: fontsName,
                             ayahBookmarked: ayahBookmarked,
-                            anotherMenuChild: anotherMenuChild,
-                            anotherMenuChildOnTap: anotherMenuChildOnTap,
                             context: context,
                             quranCtrl: quranCtrl,
                           ),
@@ -145,8 +133,6 @@ class _QuranFontsPage extends StatelessWidget {
                           textColor: textColor,
                           bookmarks: bookmarks,
                           onAyahLongPress: onAyahLongPress,
-                          secondMenuChild: secondMenuChild,
-                          secondMenuChildOnTap: secondMenuChildOnTap,
                           bookmarkList: bookmarkList,
                           ayahIconColor: ayahIconColor,
                           showAyahBookmarkedIcon: showAyahBookmarkedIcon,
@@ -157,8 +143,6 @@ class _QuranFontsPage extends StatelessWidget {
                           isFontsLocal: isFontsLocal,
                           fontsName: fontsName,
                           ayahBookmarked: ayahBookmarked,
-                          anotherMenuChild: anotherMenuChild,
-                          anotherMenuChildOnTap: anotherMenuChildOnTap,
                           context: context,
                           quranCtrl: quranCtrl,
                         )
@@ -173,8 +157,6 @@ class _QuranFontsPage extends StatelessWidget {
                       textColor: textColor,
                       bookmarks: bookmarks,
                       onAyahLongPress: onAyahLongPress,
-                      secondMenuChild: secondMenuChild,
-                      secondMenuChildOnTap: secondMenuChildOnTap,
                       bookmarkList: bookmarkList,
                       ayahIconColor: ayahIconColor,
                       showAyahBookmarkedIcon: showAyahBookmarkedIcon,
@@ -184,8 +166,6 @@ class _QuranFontsPage extends StatelessWidget {
                       isFontsLocal: isFontsLocal,
                       fontsName: fontsName,
                       ayahBookmarked: ayahBookmarked,
-                      anotherMenuChild: anotherMenuChild,
-                      anotherMenuChildOnTap: anotherMenuChildOnTap,
                       context: context,
                       quranCtrl: quranCtrl,
                     ),

@@ -8,8 +8,6 @@ class QpcV4RichTextLine extends StatelessWidget {
     required this.isDark,
     required this.bookmarks,
     required this.onAyahLongPress,
-    required this.secondMenuChild,
-    required this.secondMenuChildOnTap,
     required this.bookmarkList,
     required this.ayahIconColor,
     required this.showAyahBookmarkedIcon,
@@ -22,8 +20,6 @@ class QpcV4RichTextLine extends StatelessWidget {
     required this.isFontsLocal,
     required this.fontsName,
     required this.ayahBookmarked,
-    required this.anotherMenuChild,
-    required this.anotherMenuChildOnTap,
     required this.isCentered,
   });
 
@@ -33,8 +29,6 @@ class QpcV4RichTextLine extends StatelessWidget {
   final Map<int, List<BookmarkModel>> bookmarks;
   final Function(LongPressStartDetails details, AyahModel ayah)?
       onAyahLongPress;
-  final Widget? secondMenuChild;
-  final void Function(AyahModel ayah)? secondMenuChildOnTap;
   final List? bookmarkList;
   final Color? ayahIconColor;
   final bool showAyahBookmarkedIcon;
@@ -47,8 +41,6 @@ class QpcV4RichTextLine extends StatelessWidget {
   final bool isFontsLocal;
   final String fontsName;
   final List<int> ayahBookmarked;
-  final Widget? anotherMenuChild;
-  final Function(AyahModel ayah)? anotherMenuChildOnTap;
   final bool isCentered;
 
   @override
@@ -128,10 +120,6 @@ class QpcV4RichTextLine extends StatelessWidget {
                       position: details.globalPosition,
                       index: segmentIndex,
                       pageIndex: pageIndex,
-                      anotherMenuChild: anotherMenuChild,
-                      anotherMenuChildOnTap: anotherMenuChildOnTap,
-                      secondMenuChild: secondMenuChild,
-                      secondMenuChildOnTap: secondMenuChildOnTap,
                       externalTafsirStyle: themedTafsirStyle,
                     );
                   },

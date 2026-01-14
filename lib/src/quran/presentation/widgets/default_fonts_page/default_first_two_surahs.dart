@@ -18,10 +18,6 @@ class DefaultFirstTwoSurahs extends StatelessWidget {
     required this.bookmarkList,
     required this.ayahSelectedBackgroundColor,
     required this.ayahBookmarked,
-    required this.anotherMenuChild,
-    required this.anotherMenuChildOnTap,
-    required this.secondMenuChild,
-    required this.secondMenuChildOnTap,
     required this.context,
     required this.ayahIconColor,
     required this.showAyahBookmarkedIcon,
@@ -43,10 +39,6 @@ class DefaultFirstTwoSurahs extends StatelessWidget {
   final List? bookmarkList;
   final Color? ayahSelectedBackgroundColor;
   final List<int> ayahBookmarked;
-  final Widget? anotherMenuChild;
-  final void Function(AyahModel ayah)? anotherMenuChildOnTap;
-  final Widget? secondMenuChild;
-  final void Function(AyahModel ayah)? secondMenuChildOnTap;
   final BuildContext context;
   final Color ayahIconColor;
   final bool showAyahBookmarkedIcon;
@@ -119,10 +111,6 @@ class DefaultFirstTwoSurahs extends StatelessWidget {
                           ayahSelectedBackgroundColor:
                               ayahSelectedBackgroundColor,
                           ayahBookmarked: ayahBookmarked,
-                          anotherMenuChild: anotherMenuChild,
-                          anotherMenuChildOnTap: anotherMenuChildOnTap,
-                          secondMenuChild: secondMenuChild,
-                          secondMenuChildOnTap: secondMenuChildOnTap,
                           ayahIconColor: ayahIconColor,
                           showAyahBookmarkedIcon: showAyahBookmarkedIcon,
                         ),

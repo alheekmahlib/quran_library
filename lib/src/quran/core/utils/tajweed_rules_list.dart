@@ -4,7 +4,6 @@ final List<Map<String, dynamic>> tajweedRules = [
   {
     'defaultLanguage': 'ar',
     'languages': ['ar', 'en', 'bn', 'id', 'ur', 'tr', 'ku', 'ms', 'es'],
-    // قواعد التجويد (Legend) بالترتيب نفسه في القوائم القديمة.
     'rules': [
       {
         'index': 0,

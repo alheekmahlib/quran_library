@@ -10,10 +10,6 @@ class TextScaleRichTextBuild extends StatelessWidget {
     required this.pageIndex,
     required this.ayahBookmarked,
     required this.onAyahLongPress,
-    required this.anotherMenuChild,
-    required this.anotherMenuChildOnTap,
-    required this.secondMenuChild,
-    required this.secondMenuChildOnTap,
     required this.bookmarkList,
     required this.ayahIconColor,
     required this.showAyahBookmarkedIcon,
@@ -31,10 +27,6 @@ class TextScaleRichTextBuild extends StatelessWidget {
   final List<int> ayahBookmarked;
   final Function(LongPressStartDetails details, AyahModel ayah)?
       onAyahLongPress;
-  final Widget? anotherMenuChild;
-  final void Function(AyahModel ayah)? anotherMenuChildOnTap;
-  final Widget? secondMenuChild;
-  final void Function(AyahModel ayah)? secondMenuChildOnTap;
   final List? bookmarkList;
   final Color? ayahIconColor;
   final bool showAyahBookmarkedIcon;
@@ -134,10 +126,6 @@ class TextScaleRichTextBuild extends StatelessWidget {
                           position: details.globalPosition,
                           index: ayahIndex,
                           pageIndex: pageIndex,
-                          anotherMenuChild: anotherMenuChild,
-                          anotherMenuChildOnTap: anotherMenuChildOnTap,
-                          secondMenuChild: secondMenuChild,
-                          secondMenuChildOnTap: secondMenuChildOnTap,
                           externalTafsirStyle: themedTafsirStyle,
                         );
                       }

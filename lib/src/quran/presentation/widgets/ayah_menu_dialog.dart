@@ -17,11 +17,7 @@ class AyahMenuDialog extends StatelessWidget {
     required this.position,
     required this.index,
     required this.pageIndex,
-    this.anotherMenuChild,
-    this.anotherMenuChildOnTap,
     required this.isDark,
-    this.secondMenuChild,
-    this.secondMenuChildOnTap,
     this.externalTafsirStyle,
     this.onDismiss,
   });
@@ -42,10 +38,6 @@ class AyahMenuDialog extends StatelessWidget {
   final Offset position;
   final int index;
   final int pageIndex;
-  final Widget? anotherMenuChild;
-  final Widget? secondMenuChild;
-  final void Function(AyahModel ayah)? anotherMenuChildOnTap;
-  final void Function(AyahModel ayah)? secondMenuChildOnTap;
   final BuildContext context;
   final bool isDark;
   final TafsirStyle? externalTafsirStyle;
@@ -85,8 +77,6 @@ class AyahMenuDialog extends StatelessWidget {
     int itemsCount = 5 +
         customMenuItems
             .length; // عدد الأيقونات الأساسية (3 ألوان + نسخ + تفسير) / Basic icons count
-    if (anotherMenuChild != null) itemsCount += 1;
-    if (secondMenuChild != null) itemsCount += 1;
     if (customMenuItems.isNotEmpty) itemsCount += customMenuItems.length;
     double dialogWidth = (itemsCount * 40) +
         (itemsCount * 16) +
@@ -188,38 +178,6 @@ class AyahMenuDialog extends StatelessWidget {
                             ),
                           );
                         }
-                      }
-
-                      // عنصر إضافي أول (للتوافق مع الماضي)
-                      if (anotherMenuChild != null) {
-                        addDividerIfNeeded();
-                        widgets.add(
-                          GestureDetector(
-                            onTap: () {
-                              if (anotherMenuChildOnTap != null) {
-                                anotherMenuChildOnTap!(ayah!);
-                              }
-                              close();
-                            },
-                            child: anotherMenuChild!,
-                          ),
-                        );
-                      }
-
-                      // عنصر إضافي ثانٍ (للتوافق مع الماضي)
-                      if (secondMenuChild != null) {
-                        addDividerIfNeeded();
-                        widgets.add(
-                          GestureDetector(
-                            onTap: () {
-                              if (secondMenuChildOnTap != null) {
-                                secondMenuChildOnTap!(ayah!);
-                              }
-                              close();
-                            },
-                            child: secondMenuChild!,
-                          ),
-                        );
                       }
 
                       // زر تشغيل جميع الآيات
@@ -436,10 +394,6 @@ Future<void> showAyahMenuDialog({
   required Offset position,
   required int index,
   required int pageIndex,
-  Widget? anotherMenuChild,
-  void Function(AyahModel ayah)? anotherMenuChildOnTap,
-  Widget? secondMenuChild,
-  void Function(AyahModel ayah)? secondMenuChildOnTap,
   TafsirStyle? externalTafsirStyle,
 }) async {
   final ctrl = QuranCtrl.instance;
@@ -464,10 +418,6 @@ Future<void> showAyahMenuDialog({
               position: position,
               index: index,
               pageIndex: pageIndex,
-              anotherMenuChild: anotherMenuChild,
-              anotherMenuChildOnTap: anotherMenuChildOnTap,
-              secondMenuChild: secondMenuChild,
-              secondMenuChildOnTap: secondMenuChildOnTap,
               externalTafsirStyle: externalTafsirStyle,
               onDismiss: () {
                 ctrl.showControlToggle();

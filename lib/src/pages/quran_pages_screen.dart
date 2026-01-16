@@ -249,11 +249,11 @@ class QuranPagesScreen extends StatelessWidget {
     final int startIndex = sp - 1; // محول إلى 0-based
     final int count = (ep - sp) + 1; // عدد الصفحات
 
-    // if (QuranCtrl.instance.isDownloadFonts) {
-    //   // تنفيذ بعد انتهاء الإطار لتجنّب أي تجميد
-    //   Future.microtask(() => QuranCtrl.instance
-    //       .prepareFonts(startIndex, isFontsLocal: isFontsLocal!));
-    // }
+    if (QuranCtrl.instance.isDownloadFonts) {
+      // تنفيذ بعد انتهاء الإطار لتجنّب أي تجميد
+      Future.microtask(() => QuranCtrl.instance
+          .prepareFonts(startIndex, isFontsLocal: isFontsLocal!));
+    }
     final String deviceLocale = Localizations.localeOf(context).languageCode;
     final String languageCode = appLanguageCode ?? deviceLocale;
     return PopScope(
@@ -459,13 +459,16 @@ class QuranPagesScreen extends StatelessWidget {
                                                   languageCode,
                                                   isDark,
                                                   style: surahStyle ??
-                                                      SurahAudioStyle(),
+                                                      SurahAudioStyle.defaults(
+                                                          isDark: isDark,
+                                                          context: context),
                                                   backgroundColor:
                                                       backgroundColor,
                                                   downloadFontsDialogStyle:
                                                       downloadFontsDialogStyle,
                                                   isFontsLocal: isFontsLocal,
                                                   isSingleSurah: true,
+                                                  isPagesView: true,
                                                 )
                                               : const SizedBox.shrink(),
                                         ],

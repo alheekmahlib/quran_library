@@ -81,7 +81,7 @@ class _QuranFontsPage extends StatelessWidget {
           padding: pageIndex == 0 || pageIndex == 1
               ? EdgeInsets.symmetric(
                   horizontal: MediaQuery.sizeOf(context).width * .08)
-              : const EdgeInsets.symmetric(horizontal: 16.0),
+              : const EdgeInsets.symmetric(horizontal: 8.0),
           margin: pageIndex == 0 || pageIndex == 1
               ? EdgeInsets.symmetric(
                   vertical: UiHelper.currentOrientation(

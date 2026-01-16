@@ -64,7 +64,7 @@ TextSpan _qpcV4SpanSegment({
   final baseTextStyle = TextStyle(
     fontFamily: isFontsLocal ? fontsName : quranCtrl.getFontPath(pageIndex),
     fontSize: fontSize,
-    height: 2.1,
+    height: 2.0,
     color: isDark && quranCtrl.state.fontsSelected.value == 2
         ? null
         : textColor ?? AppColors.getTextColor(isDark),
@@ -105,12 +105,12 @@ TextSpan _qpcV4SpanSegment({
             ),
           )
         : TextSpan(
-            text: '$ayahNumber'
-                .convertEnglishNumbersToArabic(ayahNumber.toString()),
+            text:
+                '${'$ayahNumber'.convertEnglishNumbersToArabic(ayahNumber.toString())}\u202F\u202F',
             style: TextStyle(
               fontFamily: 'ayahNumber',
               fontSize: fontSize + 25,
-              height: 1.6,
+              height: 1.5,
               package: 'quran_library',
               color: ayahIconColor ?? Theme.of(context).colorScheme.primary,
               backgroundColor: bg,

@@ -80,7 +80,6 @@ class QpcV4RichTextLine extends StatelessWidget {
                   ayahUQNum: uq,
                   ayahNumber: seg.ayahNumber,
                   glyphs: seg.glyphs,
-                  // نضيف رقم الآية (المزخرف في نظام التطبيق) فقط عند نهاية الآية.
                   showAyahNumber: seg.isAyahEnd,
                   onLongPressStart: (details) {
                     final ayahModel = quranCtrl.getAyahByUq(uq);

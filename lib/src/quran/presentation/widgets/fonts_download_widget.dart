@@ -125,8 +125,6 @@ class _FontsRecitationTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final int index = recitation.recitationIndex;
     final bool isDownloadOption = recitation.requiresDownload;
-    final bool webUnsupported =
-        kIsWeb && recitation == QuranRecitation.hafsMushafTajweed;
 
     return Obx(() {
       final bool isSelected = ctrl.state.fontsSelected.value == index;
@@ -144,12 +142,10 @@ class _FontsRecitationTile extends StatelessWidget {
         index: index,
         isFontsLocal: isFontsLocal,
         isDownloadOption: isDownloadOption,
-        webUnsupported: webUnsupported,
       );
 
       final bool canSelect = !isDownloadOption || downloaded;
-      final bool canTap =
-          isFontsLocal || (kIsWeb && !webUnsupported) || canSelect;
+      final bool canTap = isFontsLocal || kIsWeb || canSelect;
 
       return ClipRRect(
         borderRadius: BorderRadius.circular(12.0),
@@ -179,7 +175,7 @@ class _FontsRecitationTile extends StatelessWidget {
                 accent: accent,
                 background: background,
               ),
-              GestureDetector(
+              InkWell(
                 onTap: canTap
                     ? () => ctrl.selectRecitation(
                           recitation,
@@ -265,10 +261,9 @@ class _FontsRecitationTile extends StatelessWidget {
     required int index,
     required bool isFontsLocal,
     required bool isDownloadOption,
-    required bool webUnsupported,
   }) {
     return isFontsLocal ||
-        (kIsWeb && !webUnsupported) ||
+        (kIsWeb) ||
         !isDownloadOption ||
         ctrl.state.fontsDownloadedList.contains(index) ||
         (ctrl.state.isFontDownloaded.value &&

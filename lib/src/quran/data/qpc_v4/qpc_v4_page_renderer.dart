@@ -23,6 +23,7 @@ class QpcV4PageRenderer {
     final maxWordIndexByAyahKey = endMaps.maxWordIndexByAyahKey;
 
     final blocks = <QpcV4RenderBlock>[];
+    var needsSingleSpaceAtPageStart = true;
     for (var i = 0; i < lines.length; i++) {
       final line = lines[i];
       switch (line.lineType) {
@@ -44,15 +45,20 @@ class QpcV4PageRenderer {
           final rangeEnd = line.lastWordId;
           if (rangeStart == null || rangeEnd == null) break;
 
-          final segments = _buildAyahSegmentsForLine(
+          final result = _buildAyahSegmentsForLine(
             rangeStart: rangeStart,
             rangeEnd: rangeEnd,
             endWordIdByAyahKey: endWordIdByAyahKey,
             maxWordIndexByAyahKey: maxWordIndexByAyahKey,
+            addSingleSpaceBetweenFirstTwoWords: needsSingleSpaceAtPageStart,
           );
+          final segments = result.segments;
           if (segments.isNotEmpty) {
             blocks.add(QpcV4AyahLineBlock(
                 isCentered: line.isCentered, segments: segments));
+          }
+          if (result.didInsertSingleSpaceBetweenFirstTwoWords) {
+            needsSingleSpaceAtPageStart = false;
           }
           break;
       }
@@ -114,13 +120,18 @@ class QpcV4PageRenderer {
     );
   }
 
-  List<QpcV4AyahSegment> _buildAyahSegmentsForLine({
+  ({
+    List<QpcV4AyahSegment> segments,
+    bool didInsertSingleSpaceBetweenFirstTwoWords,
+  }) _buildAyahSegmentsForLine({
     required int rangeStart,
     required int rangeEnd,
     required Map<int, int> endWordIdByAyahKey,
     required Map<int, int> maxWordIndexByAyahKey,
+    required bool addSingleSpaceBetweenFirstTwoWords,
   }) {
     final segments = <QpcV4AyahSegment>[];
+    var didInsertSingleSpaceBetweenFirstTwoWords = false;
 
     int? currentSurah;
     int? currentAyah;
@@ -160,6 +171,8 @@ class QpcV4PageRenderer {
       buffer.clear();
     }
 
+    var realWordsWritten = 0;
+
     for (var wordId = rangeStart; wordId <= rangeEnd; wordId++) {
       final w = store.wordsById[wordId];
       if (w == null) continue;
@@ -182,17 +195,41 @@ class QpcV4PageRenderer {
         currentAyah = w.ayah;
       }
 
-      // فصل خفيف بين الكلمات بدون letterSpacing.
-      // استخدمنا Narrow No‑Break Space لتفادي التفاف/كسر السطر داخل نفس line block.
-      if (buffer.isNotEmpty) {
+      // حل مستهدف: المشكلة عندك فقط بين أول وثاني كلمة في الصفحة.
+      // لذلك نضيف فاصلًا مرة واحدة فقط قبل الكلمة الثانية الفعلية في أول سطر آيات.
+      // استخدمنا No‑Break Space لتجنب التفاف/كسر السطر.
+
+      // بعض العلامات (مثل زخرفة ۞) تكون "ملتصقة" بالكلمة التالية داخل نفس word
+      // (مثال: text="ﱁﱂ"). في هذه الحالة نُدخل الفاصل داخل النص بين أول محرف
+      // وباقي النص، ونعتبر أننا عالجنا فاصل بداية الصفحة.
+      if (addSingleSpaceBetweenFirstTwoWords && realWordsWritten == 0) {
+        final runes = w.text.runes.toList(growable: false);
+        if (runes.length > 1) {
+          buffer.write(String.fromCharCode(runes.first));
+          buffer.write('\u202F');
+          buffer.write(String.fromCharCodes(runes.skip(1)));
+          didInsertSingleSpaceBetweenFirstTwoWords = true;
+          lastWordIdInSegment = wordId;
+          realWordsWritten += 2;
+          continue;
+        }
+      }
+
+      if (addSingleSpaceBetweenFirstTwoWords && realWordsWritten == 1) {
         buffer.write('\u202F');
+        didInsertSingleSpaceBetweenFirstTwoWords = true;
       }
       buffer.write(w.text);
       lastWordIdInSegment = wordId;
+      realWordsWritten++;
     }
 
     flush();
-    return segments;
+    return (
+      segments: segments,
+      didInsertSingleSpaceBetweenFirstTwoWords:
+          didInsertSingleSpaceBetweenFirstTwoWords,
+    );
   }
 
   int? _inferBasmalahSurahNumber({

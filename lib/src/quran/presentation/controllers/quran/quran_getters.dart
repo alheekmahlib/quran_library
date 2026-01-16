@@ -54,12 +54,7 @@ extension QuranGetters on QuranCtrl {
     QuranRecitation recitation, {
     bool isFontsLocal = false,
   }) async {
-    if (kIsWeb && recitation == QuranRecitation.hafsMushafTajweed) {
-      log('Tajweed recitation is not supported on web yet.',
-          name: 'QuranGetters');
-      return;
-    }
-
+    state.loadedFontPages.clear();
     final int idx = recitation.recitationIndex;
 
     final bool isAvailable = !recitation.requiresDownload ||
@@ -91,7 +86,7 @@ extension QuranGetters on QuranCtrl {
 
     if (recitation.requiresDownload) {
       // حضّر الخطوط للصفحة الحالية والصفحات المجاورة
-      await prepareFonts(state.currentPageNumber.value - 1,
+      await prepareFonts((_quranRepository.getLastPage() ?? 1),
           isFontsLocal: isFontsLocal);
     }
   }

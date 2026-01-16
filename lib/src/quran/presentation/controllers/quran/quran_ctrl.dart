@@ -72,6 +72,7 @@ class QuranCtrl extends GetxController {
   @override
   void onInit() async {
     super.onInit();
+    state.currentPageNumber.value = _quranRepository.getLastPage() ?? 1;
     junpTolastPage();
     if (!kIsWeb) {
       _dir = await getApplicationDocumentsDirectory();
@@ -299,8 +300,7 @@ class QuranCtrl extends GetxController {
   }
 
   void junpTolastPage() {
-    lastPage = _quranRepository.getLastPage() ?? 1;
-    state.currentPageNumber.value = lastPage;
+    lastPage = state.currentPageNumber.value;
     if (lastPage != 0) {
       log('Jumping to last page: $lastPage', name: 'QuranCtrl');
       jumpToPage(lastPage - 1);

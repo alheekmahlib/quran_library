@@ -54,15 +54,25 @@ extension FontsExtension on QuranCtrl {
   /// URL مباشر لملف الخط على الويب (GitHub Raw)
   /// ملاحظة: بعض المستودعات/الفروع قد تختلف في المسار؛ جهّز بدائل متعددة وتحقّق بالتسلسل
   String getWebFontUrl(int pageIndex) {
-    final id = (pageIndex + 1).toString().padLeft(3, '0');
+    final id = _isTajweed
+        ? (pageIndex + 1)
+        : (pageIndex + 1).toString().padLeft(3, '0');
     // التجويد غير متاح كملفات منفصلة على الويب حالياً (متوفر فقط كـ zip).
-    return 'https://raw.githubusercontent.com/alheekmahlib/Islamic_database/main/quran_database/Quran%20Font/qcf4_woff/QCF4${id}_X-Regular.woff';
+    return state.fontsSelected.value == 2
+        ? 'https://raw.githubusercontent.com/alheekmahlib/Islamic_database/main/quran_database/Quran%20Font/tajweed_woff/p$id.woff'
+        : 'https://raw.githubusercontent.com/alheekmahlib/Islamic_database/main/quran_database/Quran%20Font/qcf4_woff/QCF4${id}_X-Regular.woff';
   }
 
   /// جميع المسارات المرشّحة لتحميل الخط على الويب (WOFF أولاً ثم TTF كاحتياط)
   List<String> _webFontCandidateUrls(int pageIndex) {
-    final id = (pageIndex + 1).toString().padLeft(3, '0');
-    if (_isTajweed) return const <String>[];
+    final id = _isTajweed
+        ? (pageIndex + 1)
+        : (pageIndex + 1).toString().padLeft(3, '0');
+    if (_isTajweed) {
+      return <String>[
+        'https://raw.githubusercontent.com/alheekmahlib/Islamic_database/main/quran_database/Quran%20Font/tajweed_woff/p$id.woff'
+      ];
+    }
     return [
       // CDN أولوية أولى: jsDelivr (يدعم CORS بشكل صحيح ويُخدِّم من GitHub)
       'https://cdn.jsdelivr.net/gh/alheekmahlib/Islamic_database@main/quran_database/Quran%20Font/qcf4_woff/QCF4${id}_X-Regular.woff',
@@ -126,12 +136,12 @@ extension FontsExtension on QuranCtrl {
   void _sendFontLoadRequest(
       int pageIndex, bool isFontsLocal, int generation) async {
     final fontName = getFontPath(pageIndex);
-    final url = _isTajweed ? '' : getWebFontUrl(pageIndex);
+    final url = getWebFontUrl(pageIndex);
     // يجب أن يكون _dir متاحًا في QuranCtrl
     final fontsDir = Directory(_dir.path);
     final fontPath = getFontFullPath(fontsDir, pageIndex);
     // final localExists = await File(fontPath).exists();
-    final candidateUrls = _isTajweed ? null : _webFontCandidateUrls(pageIndex);
+    final candidateUrls = _webFontCandidateUrls(pageIndex);
     final message = FontLoadMessage(
         pageIndex: pageIndex,
         fontPath: fontPath,
@@ -178,6 +188,7 @@ extension FontsExtension on QuranCtrl {
 
   /// **الدالة المعدلة:** تحضير الخطوط للصفحة الحالية والصفحات المجاورة
   Future<void> prepareFonts(int pageIndex, {bool isFontsLocal = false}) async {
+    log('Preparing fonts for page ${pageIndex + 1}...', name: 'FontsLoad');
     if (_requiresDownloadedFonts) {
       // تحضير كامل صفحات QPC v4 لتفادي التقطيع أثناء تقليب الصفحات.
       if (isQpcV4Enabled) {
@@ -191,7 +202,7 @@ extension FontsExtension on QuranCtrl {
       if (!kIsWeb) {
         _sendFontLoadRequest(pageIndex, isFontsLocal, currentGeneration);
       } else {
-        await loadFont(pageIndex);
+        await loadFont(state.currentPageNumber.value - 1);
       }
 
       // جدولة الصفحات المجاورة بعد تأخير بسيط
@@ -549,24 +560,10 @@ extension FontsExtension on QuranCtrl {
       }
       final fontLoader = FontLoader(getFontPath(pageIndex));
       if (kIsWeb) {
-        if (_isTajweed) {
-          throw Exception(
-              'Tajweed fonts are not available on web. Please use Hafs or Hafs Mushaf.');
-        }
         log('Loading font for page ${pageIndex + 1} from web...',
             name: 'FontsLoad');
         fontLoader.addFont(_getWebFontBytes(pageIndex));
       }
-      // else {
-
-      //   // التحميل من التخزين المحلي (سواء كانت isFontsLocal true أم false)
-      //   final fontFile = File(getFontFullPath(_dir, pageIndex));
-      //   if (!await fontFile.exists()) {
-      //     throw Exception(
-      //         "Font file not exists for page: ${(pageIndex + 1).toString().padLeft(3, '0')}");
-      //   }
-      //   fontLoader.addFont(_getFontLoaderBytes(fontFile));
-      // }
       await fontLoader.load();
       state.loadedFontPages.add(pageIndex);
       update();

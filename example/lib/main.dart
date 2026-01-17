@@ -57,9 +57,9 @@ class _MyAppState extends State<MyApp> {
       },
       home: const Scaffold(
         // body: SingleAyah(),
-        body: SingleSurah(),
+        // body: SingleSurah(),
         // body: QuranPages(),
-        // body: FullQuran(),
+        body: FullQuran(),
       ),
     );
   }
@@ -136,8 +136,8 @@ class SingleAyah extends StatelessWidget {
   Widget build(BuildContext context) {
     return const Center(
       child: GetSingleAyah(
-        surahNumber: 114,
-        ayahNumber: 4,
+        surahNumber: 10,
+        ayahNumber: 2,
         fontSize: 30,
         isBold: false,
       ),

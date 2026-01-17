@@ -7,7 +7,7 @@
 	* Restructuring the code for downloading fonts.
 
 * **DELETE:**
-	* Unused parameters.
+	* Unused parameters. 
 
 ## 2.3.6
 

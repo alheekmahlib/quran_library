@@ -161,7 +161,7 @@ class MyQuranPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return QuranLibraryScreen(
-      parentContext: context, // Required
+      parentContext: context, // Required 
     );
   }
 }

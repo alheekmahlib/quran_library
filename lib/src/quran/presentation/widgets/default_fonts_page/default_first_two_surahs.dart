@@ -83,6 +83,7 @@ class DefaultFirstTwoSurahs extends StatelessWidget {
           ...quranCtrl.staticPages[pageIndex].lines.map((line) {
             return RepaintBoundary(
               child: GetBuilder<BookmarksCtrl>(
+                id: 'bookmarks',
                 builder: (bookmarkCtrl) {
                   return Column(
                     mainAxisAlignment: MainAxisAlignment.center,

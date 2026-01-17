@@ -39,6 +39,7 @@ class TopAndBottomWidget extends StatelessWidget {
               languageCode: languageCode,
               pageIndex: pageIndex,
               isSurah: isSurah!,
+              surahNumber: surahNumber,
             ),
           ),
 
@@ -76,6 +77,7 @@ class TopAndBottomWidget extends StatelessWidget {
                   languageCode: languageCode,
                   pageIndex: pageIndex,
                   isSurah: isSurah!,
+                  surahNumber: surahNumber,
                 ),
                 Flexible(
                   child: child,
@@ -94,6 +96,7 @@ class TopAndBottomWidget extends StatelessWidget {
                     languageCode: languageCode,
                     pageIndex: pageIndex,
                     isSurah: isSurah!,
+                    surahNumber: surahNumber,
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 40.0),

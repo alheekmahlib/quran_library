@@ -57,8 +57,8 @@ class _MyAppState extends State<MyApp> {
       },
       home: const Scaffold(
         // body: SingleAyah(),
-        // body: SingleSurah(),
-        body: QuranPages(),
+        body: SingleSurah(),
+        // body: QuranPages(),
         // body: FullQuran(),
       ),
     );
@@ -119,11 +119,10 @@ class SingleSurah extends StatelessWidget {
   Widget build(BuildContext context) {
     return SurahDisplayScreen(
       parentContext: context,
-      surahNumber: 3,
+      surahNumber: 109,
       isDark: false,
       appLanguageCode: 'ar',
       useDefaultAppBar: true,
-      onPageChanged: (_) {},
     );
   }
 }

@@ -107,104 +107,49 @@ class SurahCtrl extends GetxController {
 
     if (ayahs.isEmpty) return;
 
-    // شرح: إنشاء صفحة واحدة تحتوي على جميع آيات السورة
-    // Explanation: Create a single page containing all surah ayahs
-    final surahPage = QuranPageModel(
-      pageNumber: 1,
-      ayahs: ayahs,
-      lines: [],
-      numberOfNewSurahs: 1,
-    );
+    // ملاحظة مهمة:
+    // التقسيم السابق كان مبنيًا على عدد الأسطر، وقد ينتج "صفحتين" داخل نفس
+    // رقم صفحة المصحف الحقيقي (مثال: 50 ثم 50)، وبالتالي يظهر أن رقم الصفحة
+    // لا يتغير عند أول قلبة.
+    //
+    // هنا نعيد بناء صفحات السورة بناءً على صفحات المصحف الحقيقية (Ayah.page)
+    // باستخدام صفحات QuranCtrl.staticPages الجاهزة.
+    final quranCtrl = QuranCtrl.instance;
 
-    // شرح: استخدام نفس منطق QuranCtrl لملء الأسطر
-    // Explanation: Use the same QuranCtrl logic to fill lines
-    List<AyahModel> ayas = [];
-    for (AyahModel aya in ayahs) {
-      // شرح: إذا كانت آية جديدة (رقم 1) وليست الأولى، نبدأ سطر جديد
-      // Explanation: If it's a new ayah (number 1) and not the first, start new line
-      if (aya.ayahNumber == 1 && ayas.isNotEmpty) {
-        ayas.clear();
+    final startPage = ayahs.first.page;
+    final endPage = ayahs.last.page;
+    if (startPage <= 0 || endPage <= 0) return;
+
+    for (int page = startPage; page <= endPage; page++) {
+      if (page - 1 < 0 || page - 1 >= quranCtrl.staticPages.length) continue;
+
+      final staticPage = quranCtrl.staticPages[page - 1];
+
+      // فلترة آيات الصفحة لتكون من السورة فقط.
+      final pageAyahs = staticPage.ayahs
+          .where((a) => a.surahNumber == _surahNumber)
+          .toList(growable: false);
+
+      if (pageAyahs.isEmpty) continue;
+
+      // فلترة الأسطر مع الحفاظ على نفس التجزئة (QPC) قدر الإمكان.
+      final pageLines = <LineModel>[];
+      for (final line in staticPage.lines) {
+        final filtered = line.ayahs
+            .where((a) => a.surahNumber == _surahNumber)
+            .toList(growable: false);
+        if (filtered.isEmpty) continue;
+        pageLines.add(LineModel(filtered, centered: line.centered));
       }
 
-      if (aya.text.contains('\n')) {
-        final lines = aya.text.split('\n');
-        for (int i = 0; i < lines.length; i++) {
-          bool centered = false;
-          if ((aya.centered ?? false) && i == lines.length - 2) {
-            centered = true;
-          }
-          final a = AyahModel.fromAya(
-            ayah: aya,
-            aya: lines[i],
-            ayaText: lines[i],
-            centered: centered,
-          );
-          ayas.add(a);
-          if (i < lines.length - 1) {
-            surahPage.lines.add(LineModel([...ayas]));
-            ayas.clear();
-          }
-        }
-      } else {
-        ayas.add(aya);
-      }
-    }
-
-    // شرح: إذا بقيت آيات في ayas بعد آخر سطر
-    // Explanation: If there are remaining ayahs in ayas after last line
-    if (ayas.isNotEmpty) {
-      surahPage.lines.add(LineModel([...ayas]));
-    }
-
-    // شرح: تقسيم الأسطر إلى صفحات متعددة (7 أسطر للبقرة، 13 سطر للسور الأخرى في الصفحة الأولى، 15 سطر للباقي)
-    // Explanation: Divide lines into multiple pages (7 lines for Al-Baqarah, 13 lines for other surahs on first page, 15 lines for others)
-    int getFirstPageLines() {
-      if (_surahNumber == 2) {
-        return 6; // سورة البقرة
-      } else if (_surahNumber == 9) {
-        return 14; // سورة التوبة
-      } else {
-        return 13; // باقي السور
-      }
-    }
-
-    final firstPageLines = getFirstPageLines();
-    const int normalPageLines = 15;
-    final allLines = surahPage.lines;
-
-    int pageNumber = 1;
-    int currentIndex = 0;
-
-    while (currentIndex < allLines.length) {
-      // شرح: تحديد عدد الأسطر للصفحة الحالية
-      // Explanation: Determine number of lines for current page
-      final linesForThisPage =
-          (pageNumber == 1) ? firstPageLines : normalPageLines;
-
-      final endIndex = (currentIndex + linesForThisPage < allLines.length)
-          ? currentIndex + linesForThisPage
-          : allLines.length;
-
-      final pageLines = allLines.sublist(currentIndex, endIndex);
-      final pageAyahs = <AyahModel>[];
-
-      // شرح: جمع جميع الآيات من أسطر الصفحة
-      // Explanation: Collect all ayahs from page lines
-      for (final line in pageLines) {
-        pageAyahs.addAll(line.ayahs);
-      }
-
-      final pageModel = QuranPageModel(
-        pageNumber: pageNumber,
-        ayahs: pageAyahs,
-        lines: pageLines,
-        numberOfNewSurahs: pageNumber == 1 ? 1 : 0,
+      surahPages.add(
+        QuranPageModel(
+          pageNumber: page,
+          ayahs: pageAyahs,
+          lines: pageLines,
+          numberOfNewSurahs: page == startPage ? 1 : 0,
+        ),
       );
-
-      surahPages.add(pageModel);
-
-      currentIndex = endIndex;
-      pageNumber++;
     }
   }
 
@@ -270,22 +215,12 @@ class SurahCtrl extends GetxController {
   /// الحصول على رقم الصفحة الحقيقي في القرآن الكريم
   /// Get the real page number in the Quran
   int getRealQuranPageNumber(int surahPageIndex) {
-    if (_surahNumber == null || surahAyahs.isEmpty) return 1;
-
-    // شرح: البحث عن الآية الأولى في الصفحة المحددة
-    // Explanation: Find the first ayah in the specified page
-    if (surahPageIndex >= 0 && surahPageIndex < surahPages.length) {
-      final pageAyahs = surahPages[surahPageIndex].ayahs;
-      if (pageAyahs.isNotEmpty) {
-        // شرح: إرجاع رقم الصفحة الحقيقي من الآية الأولى
-        // Explanation: Return the real page number from the first ayah
-        return pageAyahs.first.page;
-      }
+    if (surahPageIndex < 0 || surahPageIndex >= surahPages.length) {
+      return surahAyahs.isNotEmpty ? surahAyahs.first.page : 1;
     }
 
-    // شرح: في حالة عدم وجود آيات، نرجع الصفحة الأولى للسورة
-    // Explanation: If no ayahs found, return the first page of the surah
-    return surahAyahs.isNotEmpty ? surahAyahs.first.page : 1;
+    // بعد إعادة بناء surahPages على صفحات المصحف الحقيقية، pageNumber هو الرقم الحقيقي.
+    return surahPages[surahPageIndex].pageNumber;
   }
 
   /// الحصول على رقم الصفحة الحقيقي الحالي (الصفحة المعروضة حالياً)
@@ -380,7 +315,8 @@ class SurahCtrl extends GetxController {
 
     // شرح: المساحة المتبقية للأسطر
     // Explanation: Remaining space for lines
-    final remainingHeight = (availableHeight - usedSpace) * 0.95;
+    final remainingHeight = (availableHeight - usedSpace) *
+        (surahNumber == 2 && pageIndex == 0 ? 0.40 : 0.95);
 
     // شرح: الحصول على عدد الأسطر المتوقع
     // Explanation: Get expected lines count

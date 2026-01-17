@@ -96,6 +96,7 @@ part 'src/quran/presentation/widgets/fonts_download_widget.dart';
 part 'src/quran/presentation/widgets/jumping_between_pages_widget.dart';
 part 'src/quran/presentation/widgets/page_view_build.dart';
 part 'src/quran/presentation/widgets/surah_header_widget.dart';
+part 'src/quran/presentation/widgets/surah_page/surah_page_view_build.dart';
 part 'src/quran/presentation/widgets/tabs/bookmark_tab_widget.dart';
 part 'src/quran/presentation/widgets/tabs/index_tab_widget.dart';
 part 'src/quran/presentation/widgets/tabs/quran_top_bar.dart';

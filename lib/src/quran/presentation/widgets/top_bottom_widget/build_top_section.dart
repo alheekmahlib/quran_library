@@ -5,6 +5,7 @@ class BuildTopSection extends StatelessWidget {
   final String? languageCode;
   final bool isSurah;
   final int pageIndex;
+  final int? surahNumber;
 
   BuildTopSection({
     super.key,
@@ -12,6 +13,7 @@ class BuildTopSection extends StatelessWidget {
     this.languageCode,
     this.isSurah = false,
     required this.pageIndex,
+    this.surahNumber = 0,
   });
 
   final surahCtrl = SurahCtrl.instance;
@@ -32,7 +34,7 @@ class BuildTopSection extends StatelessWidget {
 
     final Widget? effectiveTopTitleChild = topBottomStyle.customChild;
     final String effectiveJuzName = (topBottomStyle.juzName) ?? 'الجزء';
-    final String? effectiveSurahName = topBottomStyle.surahName;
+    // final String? effectiveSurahName = topBottomStyle.surahName;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -49,10 +51,17 @@ class BuildTopSection extends StatelessWidget {
                   style: _getTextStyle(context, juzColor),
                 ),
                 const Spacer(),
-                effectiveSurahName != null
+                isSurah
                     ? Text(
-                        effectiveSurahName,
-                        style: _getTextStyle(context, surahColor),
+                        ' surah${(surahNumber).toString().padLeft(3, '0')} ',
+                        style: TextStyle(
+                          color: surahColor,
+                          letterSpacing: 5,
+                          fontFamily: "surah-name-v4",
+                          fontSize:
+                              UiHelper.currentOrientation(26.0, 32.0, context),
+                          package: "quran_library",
+                        ),
                       )
                     : surah.isNotEmpty
                         ? Row(
@@ -76,10 +85,17 @@ class BuildTopSection extends StatelessWidget {
             )
           : Row(
               children: [
-                effectiveSurahName != null
+                isSurah
                     ? Text(
-                        effectiveSurahName,
-                        style: _getTextStyle(context, surahColor),
+                        ' surah${(surahNumber).toString().padLeft(3, '0')} ',
+                        style: TextStyle(
+                          color: surahColor,
+                          letterSpacing: 5,
+                          fontFamily: "surah-name-v4",
+                          fontSize:
+                              UiHelper.currentOrientation(26.0, 32.0, context),
+                          package: "quran_library",
+                        ),
                       )
                     : surah.isNotEmpty
                         ? Row(

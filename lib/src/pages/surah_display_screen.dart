@@ -254,6 +254,7 @@ class SurahDisplayScreen extends StatelessWidget {
         }
       });
     }
+    quranCtrl.state.fontsSelected.value = 0;
     final String deviceLocale = Localizations.localeOf(context).languageCode;
     final String languageCode = appLanguageCode ?? deviceLocale;
     // شرح: تهيئة الشاشة وإعداد المقاييس
@@ -387,6 +388,7 @@ class SurahDisplayScreen extends StatelessWidget {
                                                   downloadFontsDialogStyle,
                                               isFontsLocal: isFontsLocal,
                                               isSingleSurah: true,
+                                              isPagesView: false,
                                             )
                                           : const SizedBox.shrink(),
                                     ],
@@ -449,11 +451,13 @@ class SurahDisplayScreen extends StatelessWidget {
               // لا تلمس الـ Overlay إذا كان المستخدم يدير الحدث بنفسه
               onPageChanged!(pageIndex);
             } else {}
-            quranCtrl.state.currentPageNumber.value = pageIndex + 1;
-            quranCtrl.saveLastPage(pageIndex + 1);
-            if (quranCtrl.currentRecitation.requiresDownload) {
-              await quranCtrl.prepareFonts(50);
-            }
+            final realQuranPage = surahCtrl.getRealQuranPageNumber(pageIndex);
+            quranCtrl.state.currentPageNumber.value = realQuranPage;
+            quranCtrl.saveLastPage(realQuranPage);
+            // if (quranCtrl.currentRecitation.requiresDownload) {
+            //   log('Preparing fonts for page $realQuranPage');
+            //   await quranCtrl.prepareFonts(realQuranPage);
+            // }
           });
         },
         itemBuilder: (context, pageIndex) {
@@ -472,268 +476,39 @@ class SurahDisplayScreen extends StatelessWidget {
   /// Build surah page
   Widget _buildSurahPage(BuildContext context, QuranPageModel surahPage,
       int pageIndex, SurahCtrl surahCtrl) {
-    final deviceSize = MediaQuery.of(context).size;
-    final isFirstPage = surahCtrl.isFirstPage(pageIndex);
-    final isFirstPageInFirstOrSecondSurah =
-        surahCtrl.isFirstPageInFirstOrSecondSurah(
-            pageIndex, surahCtrl.surahPages[pageIndex].ayahs[0].surahNumber!);
-    final isLandscape =
-        MediaQuery.of(context).orientation == Orientation.landscape;
+    int realPageIndex = surahCtrl.getRealQuranPageNumber(pageIndex);
+    log('Building surah page: $realPageIndex for index: $pageIndex');
 
     return Container(
       padding: EdgeInsets.symmetric(
         horizontal: UiHelper.currentOrientation(16.0, 64.0, context),
         vertical: 16.0,
       ),
-      child: (surahCtrl.surahPages[pageIndex].ayahs[0].surahNumber! == 1 ||
-                  surahCtrl.surahPages[pageIndex].ayahs[0].surahNumber! == 2) &&
-              pageIndex == 0
-          ? isLandscape
-              ? SingleChildScrollView(
-                  child: towFirstSurahs(
-                      context,
-                      isFirstPageInFirstOrSecondSurah,
-                      surahPage,
-                      deviceSize,
-                      surahCtrl,
-                      pageIndex),
-                )
-              : towFirstSurahs(context, isFirstPageInFirstOrSecondSurah,
-                  surahPage, deviceSize, surahCtrl, pageIndex)
-          : isLandscape
-              ? SingleChildScrollView(
-                  child: _pageBuild(isFirstPage, surahCtrl, context, surahPage,
-                      deviceSize, pageIndex))
-              : _pageBuild(isFirstPage, surahCtrl, context, surahPage,
-                  deviceSize, pageIndex),
-    );
-  }
-
-  Widget _pageBuild(bool isFirstPage, SurahCtrl surahCtrl, BuildContext context,
-      QuranPageModel surahPage, Size deviceSize, int pageIndex) {
-    final currentPage = surahCtrl.getRealQuranPageNumber(pageIndex);
-    return TopAndBottomWidget(
-      pageIndex: currentPage - 1,
-      languageCode: appLanguageCode,
-      isRight: pageIndex.isEven ? true : false,
-      isSurah: true,
-      surahNumber: surahNumber,
       child: RepaintBoundary(
-        child: Column(
-          children: [
-            // شرح: عرض شعار السورة في الصفحة الأولى فقط
-            // Explanation: Display surah banner only on first page
-            if (isFirstPage) _buildSurahHeader(context),
-
-            // شرح: عرض البسملة في الصفحة الأولى إذا لم تكن سورة التوبة
-            // Explanation: Display Basmala on first page if not Surah At-Tawbah
-            if (isFirstPage && surahCtrl.shouldShowBasmala()) _buildBasmala(),
-
-            Flexible(
-              child: GetBuilder<BookmarksCtrl>(
-                builder: (bookmarkCtrl) {
-                  return LayoutBuilder(builder: (context, constraints) {
-                    return Column(
-                      children: surahPage.lines.map((line) {
-                        return SizedBox(
-                          width: deviceSize.width - 20,
-                          height: surahCtrl.calculateDynamicLineHeight(
-                            availableHeight: constraints.maxHeight,
-                            pageIndex: pageIndex,
-                            hasHeader: pageIndex == 0,
-                            hasBasmala:
-                                pageIndex == 0 && surahCtrl.shouldShowBasmala(),
-                          ),
-                          child: DefaultFontsBuild(
-                            context,
-                            line,
-                            isDark: isDark,
-                            bookmarkCtrl.bookmarksAyahs,
-                            bookmarkCtrl.bookmarks,
-                            boxFit: line.ayahs.last.centered!
-                                ? BoxFit.contain
-                                : BoxFit.fill,
-                            onDefaultAyahLongPress: onAyahLongPress,
-                            bookmarksColor: bookmarksColor,
-                            textColor:
-                                textColor ?? (AppColors.getTextColor(isDark)),
-                            bookmarkList: bookmarkList,
-                            pageIndex:
-                                surahCtrl.getRealQuranPageNumber(pageIndex),
-                            ayahSelectedBackgroundColor:
-                                ayahSelectedBackgroundColor,
-                            ayahBookmarked: ayahBookmarked,
-                            ayahSelectedFontColor: ayahSelectedFontColor,
-                            ayahIconColor: ayahIconColor,
-                            showAyahBookmarkedIcon: showAyahBookmarkedIcon,
-                          ),
-                        );
-                      }).toList(),
-                    );
-                  });
-                },
-              ),
-            ),
-          ],
+        key: ValueKey('quran_partial_page_${realPageIndex - 1}'),
+        child: SurahPageViewBuild(
+          userContext: parentContext,
+          surahPage: surahPage,
+          surahPageIndex: pageIndex,
+          globalPageIndex: realPageIndex - 1,
+          surahNumber: surahNumber,
+          isDark: isDark,
+          languageCode: appLanguageCode,
+          circularProgressWidget: circularProgressWidget,
+          bookmarkList: bookmarkList,
+          ayahSelectedFontColor: ayahSelectedFontColor,
+          textColor: textColor,
+          ayahIconColor: ayahIconColor,
+          showAyahBookmarkedIcon: showAyahBookmarkedIcon,
+          onAyahLongPress: onAyahLongPress,
+          bookmarksColor: bookmarksColor,
+          surahNameStyle: surahNameStyle,
+          bannerStyle: bannerStyle,
+          basmalaStyle: basmalaStyle,
+          onSurahBannerPress: onSurahBannerPress,
+          ayahSelectedBackgroundColor: ayahSelectedBackgroundColor,
+          ayahBookmarked: ayahBookmarked,
         ),
-      ),
-    );
-  }
-
-  /// بناء شعار السورة
-  /// Build surah header
-  Widget _buildSurahHeader(BuildContext context) {
-    return SurahHeaderWidget(
-      surahNumber,
-      bannerStyle: bannerStyle ?? BannerStyle.defaults(isDark: isDark),
-      surahNameStyle: surahNameStyle ??
-          SurahNameStyle(
-            surahNameSize: 27,
-            surahNameColor: AppColors.getTextColor(isDark),
-          ),
-      onSurahBannerPress: onSurahBannerPress,
-      isDark: isDark,
-    );
-  }
-
-  /// بناء البسملة
-  /// Build Basmala
-  Widget _buildBasmala() {
-    return BasmallahWidget(
-      surahNumber: surahNumber,
-      basmalaStyle: basmalaStyle ??
-          BasmalaStyle(
-            basmalaColor: AppColors.getTextColor(isDark),
-            basmalaFontSize: 25.0,
-            verticalPadding: 0.0,
-          ),
-    );
-  }
-
-  /// بناء محتوى الصفحة للسورة الأولى والثانية
-  /// Build page content for first and second surah
-  Widget towFirstSurahs(
-    BuildContext context,
-    bool isFirstPageInFirstOrSecondSurah,
-    QuranPageModel surahPage,
-    Size deviceSize,
-    SurahCtrl surahCtrl,
-    int pageIndex,
-  ) {
-    final isLandscape =
-        MediaQuery.of(context).orientation == Orientation.landscape;
-    final currentPageNumber = surahCtrl.getRealQuranPageNumber(pageIndex);
-    return TopAndBottomWidget(
-        pageIndex: currentPageNumber - 1,
-        languageCode: appLanguageCode,
-        isRight: pageIndex.isEven ? true : false,
-        isSurah: true,
-        child: (!kIsWeb && (Platform.isAndroid || Platform.isIOS))
-            ? isLandscape
-                ? SingleChildScrollView(
-                    child: _firstTwoSurahs(
-                        context,
-                        isFirstPageInFirstOrSecondSurah,
-                        surahPage,
-                        deviceSize,
-                        surahCtrl,
-                        pageIndex,
-                        currentPageNumber - 1))
-                : _firstTwoSurahs(
-                    context,
-                    isFirstPageInFirstOrSecondSurah,
-                    surahPage,
-                    deviceSize,
-                    surahCtrl,
-                    pageIndex,
-                    currentPageNumber - 1)
-            : _firstTwoSurahs(
-                context,
-                isFirstPageInFirstOrSecondSurah,
-                surahPage,
-                deviceSize,
-                surahCtrl,
-                pageIndex,
-                currentPageNumber - 1));
-  }
-
-  Widget _firstTwoSurahs(
-      BuildContext context,
-      bool isFirstPage,
-      QuranPageModel surahPage,
-      Size deviceSize,
-      SurahCtrl surahCtrl,
-      int pageIndex,
-      int currentPage) {
-    final isLandscape =
-        MediaQuery.of(context).orientation == Orientation.landscape;
-    return Container(
-      height: isFirstPage
-          ? isLandscape
-              ? MediaQuery.sizeOf(context).height
-              : MediaQuery.sizeOf(context).height * .63
-          : null,
-      padding: isFirstPage
-          ? EdgeInsets.symmetric(
-              vertical: UiHelper.currentOrientation(
-                  MediaQuery.sizeOf(context).width * .16,
-                  MediaQuery.sizeOf(context).height * .01,
-                  context),
-              horizontal: UiHelper.currentOrientation(
-                  MediaQuery.sizeOf(context).width * .12, 0.0, context))
-          : EdgeInsets.zero,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          // شرح: عرض شعار السورة في الصفحة الأولى فقط
-          // Explanation: Display surah banner only on first page
-          if (isFirstPage) _buildSurahHeader(context),
-
-          // شرح: عرض البسملة في الصفحة الأولى إذا لم تكن سورة التوبة
-          // Explanation: Display Basmala on first page if not Surah At-Tawbah
-          if (isFirstPage && surahCtrl.shouldShowBasmala()) _buildBasmala(),
-
-          ...surahCtrl.surahPages[pageIndex].lines.map((line) {
-            return RepaintBoundary(
-              child: GetBuilder<BookmarksCtrl>(
-                builder: (bookmarkCtrl) {
-                  return RepaintBoundary(
-                    child: FittedBox(
-                      fit: BoxFit.fitWidth,
-                      child: Column(
-                        children: [
-                          SizedBox(
-                            width: deviceSize.width - 32,
-                            child: DefaultFontsBuild(
-                              context,
-                              line,
-                              isDark: isDark,
-                              bookmarkCtrl.bookmarksAyahs,
-                              bookmarkCtrl.bookmarks,
-                              boxFit: BoxFit.scaleDown,
-                              onDefaultAyahLongPress: onAyahLongPress,
-                              bookmarksColor: bookmarksColor,
-                              textColor:
-                                  textColor ?? (AppColors.getTextColor(isDark)),
-                              bookmarkList: bookmarkList,
-                              pageIndex: currentPage,
-                              ayahSelectedBackgroundColor:
-                                  ayahSelectedBackgroundColor,
-                              ayahBookmarked: ayahBookmarked,
-                              ayahSelectedFontColor: ayahSelectedFontColor,
-                              ayahIconColor: ayahIconColor,
-                              showAyahBookmarkedIcon: showAyahBookmarkedIcon,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                },
-              ),
-            );
-          }),
-        ],
       ),
     );
   }

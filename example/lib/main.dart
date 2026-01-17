@@ -76,7 +76,7 @@ class FullQuran extends StatelessWidget {
       parentContext: context,
       isDark: true,
       showAyahBookmarkedIcon: true,
-      appLanguageCode: 'en',
+      appLanguageCode: 'ar',
       // ayahIconColor: Colors.teal,
       // backgroundColor: Colors.white,
       // textColor: Colors.black,
@@ -119,11 +119,10 @@ class SingleSurah extends StatelessWidget {
   Widget build(BuildContext context) {
     return SurahDisplayScreen(
       parentContext: context,
-      surahNumber: 3,
+      surahNumber: 109,
       isDark: false,
       appLanguageCode: 'ar',
       useDefaultAppBar: true,
-      onPageChanged: (_) {},
     );
   }
 }
@@ -137,8 +136,8 @@ class SingleAyah extends StatelessWidget {
   Widget build(BuildContext context) {
     return const Center(
       child: GetSingleAyah(
-        surahNumber: 114,
-        ayahNumber: 4,
+        surahNumber: 10,
+        ayahNumber: 2,
         fontSize: 30,
         isBold: false,
       ),

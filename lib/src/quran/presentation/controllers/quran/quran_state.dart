@@ -26,6 +26,8 @@ class QuranState {
   RxInt fontsSelected = 0.obs;
   RxDouble fontsDownloadProgress = 0.0.obs;
   RxBool isPreparingDownload = false.obs;
+  // رقم خيار الخط الذي يتم تنزيله حاليًا (1/2)، أو -1 إذا لا يوجد تنزيل
+  RxInt downloadingFontIndex = (-1).obs;
   RxBool isShowMenu = false.obs;
 
   // صفحات الخطوط التي تم تحميلها لتجنب إعادة التحميل
@@ -45,6 +47,8 @@ class QuranState {
   // المؤقت الخاص بالـ Debouncing
   Timer? _debounceTimer;
 
+  final floatingController = FloatingMenuExpendableController();
+
   // ملاحظة: تم إزالة GlobalKey<ScaffoldState> لتجنب التعارض مع التطبيقات الأخرى
   // Note: GlobalKey<ScaffoldState> has been removed to avoid conflicts with other applications
 
@@ -61,6 +65,7 @@ class QuranState {
     fontsSelected.close();
     fontsDownloadProgress.close();
     isPreparingDownload.close();
+    downloadingFontIndex.close();
     quranPageRLFocusNode.dispose();
     _debounceTimer?.cancel();
   }

@@ -97,7 +97,7 @@ extension SurahUi on AudioCtrl {
   void lastListenSurahOnTap(
       {required BuildContext context, SurahAudioStyle? style}) {
     final isConnected = InternetConnectionController.instance.isConnected;
-    if (!isConnected &&
+    if (isConnected ||
         state
             .isSurahDownloadedByNumber(state.currentAudioListSurahNum.value)
             .value) {

@@ -9,24 +9,70 @@ extension FontsExtension on QuranCtrl {
   bool get isPhones =>
       !kIsWeb && (Platform.isAndroid || Platform.isIOS || Platform.isFuchsia);
 
-  String getFontFullPath(Directory fontsDir, int pageIndex) => isPhones
-      ? '${fontsDir.path}/qcf4_woff/qcf4_woff/QCF4${((pageIndex + 1).toString().padLeft(3, '0'))}_X-Regular.woff'
-      : '${fontsDir.path}/qcf4_ttf/qcf4_ttf/QCF4${((pageIndex + 1).toString().padLeft(3, '0'))}_X-Regular.ttf';
+  QuranRecitation get _activeRecitation => currentRecitation;
 
-  String getFontPath(int pageIndex) =>
-      'QCF4${((pageIndex + 1).toString().padLeft(3, '0'))}_X-Regular';
+  bool get _isTajweed => _activeRecitation == QuranRecitation.hafsMushafTajweed;
+
+  bool get _requiresDownloadedFonts => _activeRecitation.requiresDownload;
+
+  /// جذر مجلد الخطوط بعد فك الضغط (غير الويب)
+  Directory _fontsRootDirForIndex(int fontIndex) {
+    // 1: qcf4 (مصحف) | 2: tajweed
+    if (isPhones) {
+      return Directory(
+          fontIndex == 2 ? '${_dir.path}/woff' : '${_dir.path}/qcf4_woff');
+    }
+    return Directory(
+        fontIndex == 2 ? '${_dir.path}/ttf' : '${_dir.path}/qcf4_ttf');
+  }
+
+  String getFontFullPath(Directory appDir, int pageIndex) {
+    if (_isTajweed) {
+      // ملاحظة: ملفات التجويد داخل zip تأتي بشكل مسطح: p1.woff / p1.ttf ...
+      final fontsRoot =
+          Directory(isPhones ? '${appDir.path}/woff' : '${appDir.path}/ttf');
+      return isPhones
+          ? '${fontsRoot.path}/p${pageIndex + 1}.woff'
+          : '${fontsRoot.path}/p${pageIndex + 1}.ttf';
+    }
+
+    final id = (pageIndex + 1).toString().padLeft(3, '0');
+    final fontsRoot =
+        _fontsRootDirForIndex(QuranRecitation.hafsMushaf.recitationIndex);
+    return isPhones
+        ? '${fontsRoot.path}/qcf4_woff/QCF4${id}_X-Regular.woff'
+        : '${fontsRoot.path}/qcf4_ttf/QCF4${id}_X-Regular.ttf';
+  }
+
+  String getFontPath(int pageIndex) {
+    if (_isTajweed) {
+      return 'p${pageIndex + 1}';
+    }
+    return 'QCF4${((pageIndex + 1).toString().padLeft(3, '0'))}_X-Regular';
+  }
 
   /// URL مباشر لملف الخط على الويب (GitHub Raw)
   /// ملاحظة: بعض المستودعات/الفروع قد تختلف في المسار؛ جهّز بدائل متعددة وتحقّق بالتسلسل
   String getWebFontUrl(int pageIndex) {
-    final id = (pageIndex + 1).toString().padLeft(3, '0');
-    // المسار المرجّح (raw + main + مجلد واحد qcf4_woff)
-    return 'https://raw.githubusercontent.com/alheekmahlib/Islamic_database/main/quran_database/Quran%20Font/qcf4_woff/QCF4${id}_X-Regular.woff';
+    final id = _isTajweed
+        ? (pageIndex + 1)
+        : (pageIndex + 1).toString().padLeft(3, '0');
+    // التجويد غير متاح كملفات منفصلة على الويب حالياً (متوفر فقط كـ zip).
+    return state.fontsSelected.value == 2
+        ? 'https://raw.githubusercontent.com/alheekmahlib/Islamic_database/main/quran_database/Quran%20Font/tajweed_woff/p$id.woff'
+        : 'https://raw.githubusercontent.com/alheekmahlib/Islamic_database/main/quran_database/Quran%20Font/qcf4_woff/QCF4${id}_X-Regular.woff';
   }
 
   /// جميع المسارات المرشّحة لتحميل الخط على الويب (WOFF أولاً ثم TTF كاحتياط)
   List<String> _webFontCandidateUrls(int pageIndex) {
-    final id = (pageIndex + 1).toString().padLeft(3, '0');
+    final id = _isTajweed
+        ? (pageIndex + 1)
+        : (pageIndex + 1).toString().padLeft(3, '0');
+    if (_isTajweed) {
+      return <String>[
+        'https://raw.githubusercontent.com/alheekmahlib/Islamic_database/main/quran_database/Quran%20Font/tajweed_woff/p$id.woff'
+      ];
+    }
     return [
       // CDN أولوية أولى: jsDelivr (يدعم CORS بشكل صحيح ويُخدِّم من GitHub)
       'https://cdn.jsdelivr.net/gh/alheekmahlib/Islamic_database@main/quran_database/Quran%20Font/qcf4_woff/QCF4${id}_X-Regular.woff',
@@ -95,6 +141,7 @@ extension FontsExtension on QuranCtrl {
     final fontsDir = Directory(_dir.path);
     final fontPath = getFontFullPath(fontsDir, pageIndex);
     // final localExists = await File(fontPath).exists();
+    final candidateUrls = _webFontCandidateUrls(pageIndex);
     final message = FontLoadMessage(
         pageIndex: pageIndex,
         fontPath: fontPath,
@@ -102,7 +149,7 @@ extension FontsExtension on QuranCtrl {
         url: url,
         // لا نحاول الشبكة إذا الملف موجود محليًا (للعمل أوفلاين)
         isWeb: false, // (kIsWeb || !isFontsLocal) && !localExists,
-        candidateUrls: _webFontCandidateUrls(pageIndex),
+        candidateUrls: candidateUrls,
         generation: generation);
     FontLoaderIsolateManager.sendRequest(message);
   }
@@ -141,7 +188,13 @@ extension FontsExtension on QuranCtrl {
 
   /// **الدالة المعدلة:** تحضير الخطوط للصفحة الحالية والصفحات المجاورة
   Future<void> prepareFonts(int pageIndex, {bool isFontsLocal = false}) async {
-    if (state.fontsSelected.value == 1) {
+    log('Preparing fonts for page ${pageIndex + 1}...', name: 'FontsLoad');
+    if (_requiresDownloadedFonts) {
+      // تحضير كامل صفحات QPC v4 لتفادي التقطيع أثناء تقليب الصفحات.
+      if (isQpcV4Enabled) {
+        Future(() => ensureQpcV4AllPagesPrebuilt());
+      }
+
       // إذا كان محمّلًا بالفعل محليًا لا نعيد الإرسال
       if (state.loadedFontPages.contains(pageIndex) || isFontsLocal) return;
 
@@ -149,7 +202,7 @@ extension FontsExtension on QuranCtrl {
       if (!kIsWeb) {
         _sendFontLoadRequest(pageIndex, isFontsLocal, currentGeneration);
       } else {
-        await loadFont(pageIndex);
+        await loadFont(state.currentPageNumber.value - 1);
       }
 
       // جدولة الصفحات المجاورة بعد تأخير بسيط
@@ -201,8 +254,13 @@ extension FontsExtension on QuranCtrl {
   Future<void> loadFontFromZip([int? pageIndex]) async {
     try {
       // مسار مجلد الخطوط بعد فك الضغط
-      final fontsDir = Directory(
-          isPhones ? '${_dir.path}/qcf4_woff' : '${_dir.path}/qcf4_ttf');
+      final fontsDir = Directory(isPhones
+          ? state.fontsSelected.value == 2
+              ? '${_dir.path}/woff'
+              : '${_dir.path}/qcf4_woff'
+          : state.fontsSelected.value == 2
+              ? '${_dir.path}/ttf'
+              : '${_dir.path}/qcf4_ttf');
 
       final loadedSet = state.loadedFontPages; // في الذاكرة
 
@@ -251,9 +309,18 @@ extension FontsExtension on QuranCtrl {
   Future<void> downloadAllFontsZipFile(int fontIndex) async {
     // على الويب لا نحتاج التنزيل، سنحمّل مباشرة عند الحاجة
     if (kIsWeb) {
+      if (!state.fontsDownloadedList.contains(fontIndex)) {
+        state.fontsDownloadedList.add(fontIndex);
+      }
+      GetStorage().write(_StorageConstants().fontsDownloadedList,
+          state.fontsDownloadedList.toList());
+
+      GetStorage().write(_StorageConstants().isDownloadedCodeV4Fonts, true);
+
       state.isFontDownloaded.value = true;
       state.isDownloadingFonts.value = false;
       state.isPreparingDownload.value = false;
+      state.downloadingFontIndex.value = -1;
       update(['fontsDownloadingProgress']);
       return;
     }
@@ -263,40 +330,51 @@ extension FontsExtension on QuranCtrl {
     // }
 
     try {
+      state.downloadingFontIndex.value = fontIndex;
       state.isPreparingDownload.value = true;
       state.isDownloadingFonts.value = true;
       update(['fontsDownloadingProgress']);
 
       // قائمة بالروابط البديلة للتحميل
-      final urls = (!kIsWeb &&
-              (Platform.isAndroid || Platform.isIOS || Platform.isFuchsia))
-          ? [
-              'https://github.com/alheekmahlib/Islamic_database/releases/download/fonts/qcf4_woff.zip',
-              // مرايا WOFF
-              'https://cdn.jsdelivr.net/gh/alheekmahlib/Islamic_database@main/quran_database/Quran%20Font/qcf4_woff.zip',
-              'https://rawcdn.githack.com/alheekmahlib/Islamic_database/main/quran_database/Quran%20Font/qcf4_woff.zip',
-              'https://raw.githubusercontent.com/alheekmahlib/Islamic_database/main/quran_database/Quran%20Font/qcf4_woff.zip',
-              'https://github.com/alheekmahlib/Islamic_database/raw/refs/heads/main/quran_database/Quran%20Font/qcf4_woff.zip',
-            ]
-          : [
-              'https://github.com/alheekmahlib/Islamic_database/releases/download/fonts/qcf4_ttf.zip',
-              // مرايا TTF
-              'https://cdn.jsdelivr.net/gh/alheekmahlib/Islamic_database@main/quran_database/Quran%20Font/qcf4_ttf.zip',
-              'https://rawcdn.githack.com/alheekmahlib/Islamic_database/main/quran_database/Quran%20Font/qcf4_ttf.zip',
-              'https://raw.githubusercontent.com/alheekmahlib/Islamic_database/main/quran_database/Quran%20Font/qcf4_ttf.zip',
-              'https://github.com/alheekmahlib/Islamic_database/raw/refs/heads/main/quran_database/Quran%20Font/qcf4_ttf.zip',
-            ];
+      final urls = isPhones
+          ? fontIndex == 2
+              ? [
+                  'https://github.com/alheekmahlib/Islamic_database/releases/download/tajweed_fonts/woff.zip'
+                ]
+              : [
+                  'https://github.com/alheekmahlib/Islamic_database/releases/download/fonts/qcf4_woff.zip',
+                  // مرايا WOFF
+                  'https://cdn.jsdelivr.net/gh/alheekmahlib/Islamic_database@main/quran_database/Quran%20Font/qcf4_woff.zip',
+                  'https://rawcdn.githack.com/alheekmahlib/Islamic_database/main/quran_database/Quran%20Font/qcf4_woff.zip',
+                  'https://raw.githubusercontent.com/alheekmahlib/Islamic_database/main/quran_database/Quran%20Font/qcf4_woff.zip',
+                  'https://github.com/alheekmahlib/Islamic_database/raw/refs/heads/main/quran_database/Quran%20Font/qcf4_woff.zip',
+                ]
+          : fontIndex == 2
+              ? [
+                  'https://github.com/alheekmahlib/Islamic_database/releases/download/tajweed_fonts/ttf.zip'
+                ]
+              : [
+                  'https://github.com/alheekmahlib/Islamic_database/releases/download/fonts/qcf4_ttf.zip',
+                  // مرايا TTF
+                  'https://cdn.jsdelivr.net/gh/alheekmahlib/Islamic_database@main/quran_database/Quran%20Font/qcf4_ttf.zip',
+                  'https://rawcdn.githack.com/alheekmahlib/Islamic_database/main/quran_database/Quran%20Font/qcf4_ttf.zip',
+                  'https://raw.githubusercontent.com/alheekmahlib/Islamic_database/main/quran_database/Quran%20Font/qcf4_ttf.zip',
+                  'https://github.com/alheekmahlib/Islamic_database/raw/refs/heads/main/quran_database/Quran%20Font/qcf4_ttf.zip',
+                ];
 
       // حدد مسار الحفظ
-      final fontsDir = Directory(
-          isPhones ? '${_dir.path}/qcf4_woff' : '${_dir.path}/qcf4_ttf');
+      final fontsDir = _fontsRootDirForIndex(fontIndex);
       if (!await fontsDir.exists()) {
         await fontsDir.create(recursive: true);
       }
 
       final zipFile = File(isPhones
-          ? '${_dir.path}/qcf4_woff.zip'
-          : '${_dir.path}/qcf4_ttf.zip');
+          ? fontIndex == 2
+              ? '${_dir.path}/woff.zip'
+              : '${_dir.path}/qcf4_woff.zip'
+          : fontIndex == 2
+              ? '${_dir.path}/ttf.zip'
+              : '${_dir.path}/qcf4_ttf.zip');
 
       // حد أدنى للحجم لمنع ملفات HTML/أخطاء CDN المقنّعة
       const int minZipSizeBytes = 1024 * 1024; // ~1MB
@@ -427,14 +505,20 @@ extension FontsExtension on QuranCtrl {
       }
 
       // حفظ حالة التحميل
-      GetStorage().write(_StorageConstants().isDownloadedCodeV4Fonts, true);
-      state.fontsDownloadedList.add(fontIndex);
-      GetStorage().write(
-          _StorageConstants().fontsDownloadedList, state.fontsDownloadedList);
+      if (!state.fontsDownloadedList.contains(fontIndex)) {
+        state.fontsDownloadedList.add(fontIndex);
+      }
+      GetStorage().write(_StorageConstants().fontsDownloadedList,
+          state.fontsDownloadedList.toList());
 
-      state.isFontDownloaded.value = true;
+      final bool anyDownloaded = state.fontsDownloadedList.isNotEmpty;
+      GetStorage()
+          .write(_StorageConstants().isDownloadedCodeV4Fonts, anyDownloaded);
+      state.isFontDownloaded.value = anyDownloaded;
+
       state.isDownloadingFonts.value = false;
       state.isPreparingDownload.value = false;
+      state.downloadingFontIndex.value = -1;
       state.fontsDownloadProgress.value = 100.0;
       update(['fontsDownloadingProgress']);
       Get.forceAppUpdate();
@@ -443,6 +527,7 @@ extension FontsExtension on QuranCtrl {
       log('Failed to Download Code_v4 fonts: $e', name: 'FontsDownload');
       state.isDownloadingFonts.value = false;
       state.isPreparingDownload.value = false;
+      state.downloadingFontIndex.value = -1;
       state.fontsDownloadProgress.value = 0.0;
       update(['fontsDownloadingProgress']);
       throw Exception('Download failed: $e');
@@ -479,16 +564,6 @@ extension FontsExtension on QuranCtrl {
             name: 'FontsLoad');
         fontLoader.addFont(_getWebFontBytes(pageIndex));
       }
-      // else {
-
-      //   // التحميل من التخزين المحلي (سواء كانت isFontsLocal true أم false)
-      //   final fontFile = File(getFontFullPath(_dir, pageIndex));
-      //   if (!await fontFile.exists()) {
-      //     throw Exception(
-      //         "Font file not exists for page: ${(pageIndex + 1).toString().padLeft(3, '0')}");
-      //   }
-      //   fontLoader.addFont(_getFontLoaderBytes(fontFile));
-      // }
       await fontLoader.load();
       state.loadedFontPages.add(pageIndex);
       update();
@@ -515,31 +590,47 @@ extension FontsExtension on QuranCtrl {
   /// [fontIndex]: The index of the font to be deleted.
   ///
   /// Returns a [Future] that completes when the font has been deleted.
+  Future<void> deleteFontsForIndex(int fontIndex) async {
+    if (kIsWeb) return;
+
+    try {
+      final fontsDir = _fontsRootDirForIndex(fontIndex);
+      if (await fontsDir.exists()) {
+        await fontsDir.delete(recursive: true);
+        log('Fonts directory deleted: ${fontsDir.path}', name: 'FontsDelete');
+      }
+
+      state.fontsDownloadedList.remove(fontIndex);
+      GetStorage().write(_StorageConstants().fontsDownloadedList,
+          state.fontsDownloadedList.toList());
+
+      final bool anyDownloaded = state.fontsDownloadedList.isNotEmpty;
+      GetStorage()
+          .write(_StorageConstants().isDownloadedCodeV4Fonts, anyDownloaded);
+      state.isFontDownloaded.value = anyDownloaded;
+
+      if (state.fontsSelected.value == fontIndex) {
+        state.fontsSelected.value = 0;
+        GetStorage().write(_StorageConstants().fontsSelected, 0);
+      }
+
+      state.isDownloadingFonts.value = false;
+      state.isPreparingDownload.value = false;
+      state.downloadingFontIndex.value = -1;
+      state.fontsDownloadProgress.value = 0;
+
+      update(['fontsDownloadingProgress', 'fontsSelected']);
+      Get.forceAppUpdate();
+    } catch (e) {
+      log('Failed to delete fonts for index $fontIndex: $e',
+          name: 'FontsDelete');
+    }
+  }
+
   Future<void> deleteFonts() async {
     try {
-      state.fontsDownloadedList.value = [];
-      final fontsDir = Directory(
-          isPhones ? '${_dir.path}/qcf4_woff' : '${_dir.path}/qcf4_ttf');
-
-      // التحقق من وجود مجلد الخطوط
-      if (await fontsDir.exists()) {
-        // حذف جميع الملفات والمجلدات داخل مجلد الخطوط
-        await fontsDir.delete(recursive: true);
-        log('Fonts directory deleted successfully.');
-
-        // تحديث حالة التخزين المحلي
-        GetStorage().write(_StorageConstants().isDownloadedCodeV4Fonts, false);
-        GetStorage().write(_StorageConstants().fontsSelected, 0);
-        // state.fontsDownloadedList.elementAt(fontIndex);
-        GetStorage().write(
-            _StorageConstants().fontsDownloadedList, state.fontsDownloadedList);
-        state.isFontDownloaded.value = false;
-        state.fontsSelected.value = 0;
-        state.fontsDownloadProgress.value = 0;
-        Get.forceAppUpdate();
-      } else {
-        log('Fonts directory does not exist.');
-      }
+      await deleteFontsForIndex(1);
+      await deleteFontsForIndex(2);
     } catch (e) {
       log('Failed to delete fonts: $e');
     }
@@ -549,7 +640,9 @@ extension FontsExtension on QuranCtrl {
     if (GetStorage().read('isDownloadedCodeV2Fonts') == true) {
       try {
         state.fontsDownloadedList.value = [];
-        final fontsDir = Directory('${_dir.path}/quran_fonts');
+        final fontsDir = state.fontsSelected.value == 2
+            ? Directory('${_dir.path}/tajweed_fonts')
+            : Directory('${_dir.path}/quran_fonts');
 
         // التحقق من وجود مجلد الخطوط
         if (await fontsDir.exists()) {
@@ -622,13 +715,13 @@ void fontLoaderIsolate(SendPort sendPort) {
           if (await fontFile.exists()) {
             final bytes = await fontFile.readAsBytes();
             fontBytes = ByteData.view(Uint8List.fromList(bytes).buffer);
+          } else if (message.candidateUrls != null &&
+              message.candidateUrls!.isNotEmpty) {
+            // fallback إلى الشبكة فقط إذا تم تزويد مرايا فعلية
+            fontBytes = await _getWebFontBytesFromCandidatesIsolate(
+                message.candidateUrls!);
           } else {
-            // fallback إلى الشبكة إذا توفرت مرايا
-            final urls = (message.candidateUrls != null &&
-                    message.candidateUrls!.isNotEmpty)
-                ? message.candidateUrls!
-                : [message.url];
-            fontBytes = await _getWebFontBytesFromCandidatesIsolate(urls);
+            throw Exception('Font file not found at: ${message.fontPath}');
           }
         }
 

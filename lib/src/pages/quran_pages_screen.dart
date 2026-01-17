@@ -22,29 +22,22 @@ class QuranPagesScreen extends StatelessWidget {
     this.circularProgressWidget,
     this.downloadFontsDialogStyle,
     this.isDark = false,
-    this.juzName,
     this.appLanguageCode,
     this.onAyahLongPress,
     this.onPageChanged,
     this.onPagePress,
     this.onSurahBannerPress,
-    this.sajdaName,
     this.showAyahBookmarkedIcon = true,
     this.surahInfoStyle,
     this.surahNameStyle,
     this.surahNumber,
     this.textColor,
     this.singleAyahTextColors,
-    this.topTitleChild,
     this.useDefaultAppBar = true,
     this.withPageView = true,
     this.isFontsLocal = false,
     this.fontsName = '',
     this.ayahBookmarked = const [],
-    this.anotherMenuChild,
-    this.anotherMenuChildOnTap,
-    this.secondMenuChild,
-    this.secondMenuChildOnTap,
     this.ayahStyle,
     this.surahStyle,
     this.isShowAudioSlider = true,
@@ -90,18 +83,15 @@ class QuranPagesScreen extends StatelessWidget {
   final DownloadFontsDialogStyle? downloadFontsDialogStyle;
   final bool isDark;
   final String? appLanguageCode;
-  final String? juzName;
   final Function(int pageNumber)? onPageChanged;
   final VoidCallback? onPagePress;
   final void Function(LongPressStartDetails details, AyahModel ayah)?
       onAyahLongPress;
   final void Function(SurahNamesModel surah)? onSurahBannerPress;
-  final String? sajdaName;
   final bool showAyahBookmarkedIcon;
   final int? surahNumber;
   final SurahInfoStyle? surahInfoStyle;
   final SurahNameStyle? surahNameStyle;
-  final Widget? topTitleChild;
   final Color? textColor;
   final List<Color?>? singleAyahTextColors;
   final bool useDefaultAppBar;
@@ -109,18 +99,6 @@ class QuranPagesScreen extends StatelessWidget {
   final bool? isFontsLocal;
   final String? fontsName;
   final List<int>? ayahBookmarked;
-  @Deprecated(
-      'In versions after 2.2.5 this parameter will be removed. Please use customMenuItems in AyahMenuStyle instead.')
-  final Widget? anotherMenuChild;
-  @Deprecated(
-      'In versions after 2.2.5 this parameter will be removed. Please use customMenuItems in AyahMenuStyle instead.')
-  final void Function(AyahModel ayah)? anotherMenuChildOnTap;
-  @Deprecated(
-      'In versions after 2.2.5 this parameter will be removed. Please use customMenuItems in AyahMenuStyle instead.')
-  final Widget? secondMenuChild;
-  @Deprecated(
-      'In versions after 2.2.5 this parameter will be removed. Please use customMenuItems in AyahMenuStyle instead.')
-  final void Function(AyahModel ayah)? secondMenuChildOnTap;
   final AyahAudioStyle? ayahStyle;
   final SurahAudioStyle? surahStyle;
   final bool? isShowAudioSlider;
@@ -271,11 +249,11 @@ class QuranPagesScreen extends StatelessWidget {
     final int startIndex = sp - 1; // محول إلى 0-based
     final int count = (ep - sp) + 1; // عدد الصفحات
 
-    // if (QuranCtrl.instance.isDownloadFonts) {
-    //   // تنفيذ بعد انتهاء الإطار لتجنّب أي تجميد
-    //   Future.microtask(() => QuranCtrl.instance
-    //       .prepareFonts(startIndex, isFontsLocal: isFontsLocal!));
-    // }
+    if (QuranCtrl.instance.isDownloadFonts) {
+      // تنفيذ بعد انتهاء الإطار لتجنّب أي تجميد
+      Future.microtask(() => QuranCtrl.instance
+          .prepareFonts(startIndex, isFontsLocal: isFontsLocal!));
+    }
     final String deviceLocale = Localizations.localeOf(context).languageCode;
     final String languageCode = appLanguageCode ?? deviceLocale;
     return PopScope(
@@ -350,9 +328,6 @@ class QuranPagesScreen extends StatelessWidget {
                         child: PageViewBuild(
                           circularProgressWidget: circularProgressWidget,
                           languageCode: languageCode,
-                          juzName: juzName,
-                          sajdaName: sajdaName,
-                          topTitleChild: topTitleChild,
                           bookmarkList: bookmarkList,
                           ayahSelectedFontColor: ayahSelectedFontColor,
                           textColor: textColor,
@@ -371,10 +346,6 @@ class QuranPagesScreen extends StatelessWidget {
                           isDark: isDark,
                           fontsName: fontsName,
                           ayahBookmarked: ayahBookmarked,
-                          anotherMenuChild: anotherMenuChild,
-                          anotherMenuChildOnTap: anotherMenuChildOnTap,
-                          secondMenuChild: secondMenuChild,
-                          secondMenuChildOnTap: secondMenuChildOnTap,
                           userContext: parentContext,
                           pageIndex: globalIndex,
                           quranCtrl: quranCtrl,
@@ -407,7 +378,7 @@ class QuranPagesScreen extends StatelessWidget {
                           quranCtrl.state.currentPageNumber.value =
                               globalIndex + 1;
                           quranCtrl.saveLastPage(globalIndex + 1);
-                          if (QuranLibrary().currentFontsSelected == 1) {
+                          if (quranCtrl.currentRecitation.requiresDownload) {
                             await quranCtrl.prepareFonts(globalIndex);
                           }
                         });
@@ -488,13 +459,16 @@ class QuranPagesScreen extends StatelessWidget {
                                                   languageCode,
                                                   isDark,
                                                   style: surahStyle ??
-                                                      SurahAudioStyle(),
+                                                      SurahAudioStyle.defaults(
+                                                          isDark: isDark,
+                                                          context: context),
                                                   backgroundColor:
                                                       backgroundColor,
                                                   downloadFontsDialogStyle:
                                                       downloadFontsDialogStyle,
                                                   isFontsLocal: isFontsLocal,
                                                   isSingleSurah: true,
+                                                  isPagesView: true,
                                                 )
                                               : const SizedBox.shrink(),
                                         ],

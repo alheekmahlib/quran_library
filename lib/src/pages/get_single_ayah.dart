@@ -48,7 +48,8 @@ class GetSingleAyah extends StatelessWidget {
         QuranCtrl.instance
             .getPageNumberByAyahAndSurahNumber(ayahNumber, surahNumber);
     log('surahNumber: $surahNumber, ayahNumber: $ayahNumber, pageNumber: $pageNumber');
-    final bool currentFontsSelected = QuranLibrary().currentFontsSelected == 1;
+    final bool currentFontsSelected =
+        QuranCtrl.instance.currentRecitation.requiresDownload;
     if (ayah.text.isEmpty) {
       return Text(
         'الآية غير موجودة',
@@ -89,7 +90,7 @@ class GetSingleAyah extends StatelessWidget {
             text: useDefaultFont!
                 ? '${ayah.text} '
                 : currentFontsSelected || !useDefaultFont!
-                    ? '${ayah.codeV2!.replaceAll('\n', '').split(' ').join(' ')} '
+                    ? '${ayah.text.replaceAll('\n', '').split(' ').join(' ')} '
                     : '${ayah.text} ',
           ),
           useDefaultFont!

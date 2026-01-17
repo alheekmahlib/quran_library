@@ -114,5 +114,5 @@ class SurahState {
 
   RxDouble ayahDownloadProgress = 0.0.obs;
   RxBool isAudioPreparing = false.obs;
-  final QuranRepository _quranRepository = QuranRepository();
+  // final QuranRepository _quranRepository = QuranRepository();
 }

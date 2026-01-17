@@ -31,44 +31,23 @@ class QuranLibraryScreen extends StatelessWidget {
     this.circularProgressWidget,
     this.downloadFontsDialogStyle,
     this.isDark = false,
-    @Deprecated(
-        'In versions after 2.2.5 this parameter will be removed. Please use juzName in TopBottomQuranStyle instead.')
-    this.juzName,
     this.appLanguageCode,
     this.onAyahLongPress,
     this.onPageChanged,
     this.onPagePress,
     this.onSurahBannerPress,
     this.pageIndex = 0,
-    @Deprecated(
-        'In versions after 2.2.5 this parameter will be removed. Please use sajdaName in TopBottomQuranStyle instead.')
-    this.sajdaName,
     this.showAyahBookmarkedIcon = true,
     this.surahInfoStyle,
     this.surahNameStyle,
     this.surahNumber,
     this.textColor,
     this.singleAyahTextColors,
-    @Deprecated(
-        'In versions after 2.2.5 this parameter will be removed. Please use topTitleChild in TopBottomQuranStyle instead.')
-    this.topTitleChild,
     this.useDefaultAppBar = true,
     this.withPageView = true,
     this.isFontsLocal = false,
     this.fontsName = '',
     this.ayahBookmarked = const [],
-    @Deprecated(
-        'In versions after 2.2.5 this parameter will be removed. Please use customMenuItems in AyahMenuStyle instead.')
-    this.anotherMenuChild,
-    @Deprecated(
-        'In versions after 2.2.5 this parameter will be removed. Please use customMenuItems in AyahMenuStyle instead.')
-    this.anotherMenuChildOnTap,
-    @Deprecated(
-        'In versions after 2.2.5 this parameter will be removed. Please use customMenuItems in AyahMenuStyle instead.')
-    this.secondMenuChild,
-    @Deprecated(
-        'In versions after 2.2.5 this parameter will be removed. Please use customMenuItems in AyahMenuStyle instead.')
-    this.secondMenuChildOnTap,
     this.ayahStyle,
     this.surahStyle,
     this.isShowAudioSlider = true,
@@ -153,14 +132,6 @@ class QuranLibraryScreen extends StatelessWidget {
   /// the default language code is 'ar'
   final String? appLanguageCode;
 
-  /// إذا كنت تريد تغيير كلمة "الجزء" إلى كلمة أخرى أو ترجمتها فقط قم بتمريرها لـ [juzName]
-  ///
-  /// If you want to change the word “الجزء” to another word or translate it just pass it to [juzName].
-  ///
-  @Deprecated(
-      'In versions after 2.2.5 this parameter will be removed. Please use juzName in TopBottomQuranStyle instead.')
-  final String? juzName;
-
   /// إذا تم توفيره فسيتم استدعاؤه عند تغيير صفحة القرآن [onPageChanged]
   ///
   /// [onPageChanged] if provided it will be called when a quran page changed
@@ -190,14 +161,6 @@ class QuranLibraryScreen extends StatelessWidget {
   /// you can add some details about the surah
   final void Function(SurahNamesModel surah)? onSurahBannerPress;
 
-  /// إذا كنت تريد تغيير كلمة "سجدة" إلى كلمة أخرى أو ترجمتها فقط قم بتمريرها لـ [sajdaName]
-  ///
-  /// If you want to change the word “سجدة” to another word or translate it just pass it to [sajdaName].
-  ///
-  @Deprecated(
-      'In versions after 2.2.5 this parameter will be removed. Please use sajdaName in TopBottomQuranStyle instead.')
-  final String? sajdaName;
-
   /// يمكنك تمكين أو تعطيل عرض أيقونة الإشارة المرجعية للآية [showAyahBookmarkedIcon]
   ///
   /// [showAyahBookmarkedIcon] You can enable or disable the display of the Ayah bookmarked icon
@@ -217,14 +180,6 @@ class QuranLibraryScreen extends StatelessWidget {
   ///
   /// [SurahNameStyle] Change the style of surah name by SurahNameStyle class
   final SurahNameStyle? surahNameStyle;
-
-  /// إذا كنت تريد إضافة ويدجت بجانب اسم السورة [topTitleChild]
-  ///
-  /// If you want to add a widget next to the surah name [topTitleChild]
-  ///
-  @Deprecated(
-      'In versions after 2.2.5 this parameter will be removed. Please use topTitleChild in TopBottomQuranStyle instead.')
-  final Widget? topTitleChild;
 
   /// يمكنك تمرير لون نص القرآن [textColor]
   ///
@@ -257,34 +212,6 @@ class QuranLibraryScreen extends StatelessWidget {
   ///
   /// [ayahBookmarked] Pass the list of bookmarked ayahs
   final List<int>? ayahBookmarked;
-
-  /// زر إضافي أول لقائمة خيارات الآية - يمكن إضافة أيقونة أو نص مخصص [anotherMenuChild]
-  ///
-  /// [anotherMenuChild] First additional button for ayah options menu - you can add custom icon or text
-  @Deprecated(
-      'In versions after 2.2.5 this parameter will be removed. Please use customMenuItems in AyahMenuStyle instead.')
-  final Widget? anotherMenuChild;
-
-  /// دالة يتم استدعاؤها عند الضغط على الزر الإضافي الأول في قائمة خيارات الآية [anotherMenuChildOnTap]
-  ///
-  /// [anotherMenuChildOnTap] Function called when pressing the first additional button in ayah options menu
-  @Deprecated(
-      'In versions after 2.2.5 this parameter will be removed. Please use customMenuItems in AyahMenuStyle instead.')
-  final void Function(AyahModel ayah)? anotherMenuChildOnTap;
-
-  /// زر إضافي ثاني لقائمة خيارات الآية - يمكن إضافة أيقونة أو نص مخصص [secondMenuChild]
-  ///
-  /// [secondMenuChild] Second additional button for ayah options menu - you can add custom icon or text
-  @Deprecated(
-      'In versions after 2.2.5 this parameter will be removed. Please use customMenuItems in AyahMenuStyle instead.')
-  final Widget? secondMenuChild;
-
-  /// دالة يتم استدعاؤها عند الضغط على الزر الإضافي الثاني في قائمة خيارات الآية [secondMenuChildOnTap]
-  ///
-  /// [secondMenuChildOnTap] Function called when pressing the second additional button in ayah options menu
-  @Deprecated(
-      'In versions after 2.2.5 this parameter will be removed. Please use customMenuItems in AyahMenuStyle instead.')
-  final void Function(AyahModel ayah)? secondMenuChildOnTap;
 
   /// نمط تخصيص مظهر المشغل الصوتي للآيات - يتحكم في الألوان والخطوط والأيقونات [ayahStyle]
   ///
@@ -543,6 +470,8 @@ class QuranLibraryScreen extends StatelessWidget {
                                               quranCtrl.showControlToggle();
                                               QuranCtrl.instance.state
                                                   .isShowMenu.value = false;
+                                              quranCtrl.state.floatingController
+                                                  .close();
                                             }
                                           },
                                           hoverColor: Colors.transparent,
@@ -556,9 +485,6 @@ class QuranLibraryScreen extends StatelessWidget {
                                                 circularProgressWidget:
                                                     circularProgressWidget,
                                                 languageCode: languageCode,
-                                                juzName: juzName,
-                                                sajdaName: sajdaName,
-                                                topTitleChild: topTitleChild,
                                                 bookmarkList: bookmarkList,
                                                 ayahSelectedFontColor:
                                                     ayahSelectedFontColor,
@@ -581,14 +507,6 @@ class QuranLibraryScreen extends StatelessWidget {
                                                 isDark: isDark,
                                                 fontsName: fontsName,
                                                 ayahBookmarked: ayahBookmarked,
-                                                anotherMenuChild:
-                                                    anotherMenuChild,
-                                                anotherMenuChildOnTap:
-                                                    anotherMenuChildOnTap,
-                                                secondMenuChild:
-                                                    secondMenuChild,
-                                                secondMenuChildOnTap:
-                                                    secondMenuChildOnTap,
                                                 userContext: parentContext,
                                                 pageIndex: index,
                                                 quranCtrl: quranCtrl,
@@ -608,6 +526,8 @@ class QuranLibraryScreen extends StatelessWidget {
                                         quranCtrl.showControlToggle();
                                         quranCtrl.state.isShowMenu.value =
                                             false;
+                                        quranCtrl.state.floatingController
+                                            .close();
                                       }
                                     },
                                     hoverColor: Colors.transparent,
@@ -618,9 +538,6 @@ class QuranLibraryScreen extends StatelessWidget {
                                       circularProgressWidget:
                                           circularProgressWidget,
                                       languageCode: languageCode,
-                                      juzName: juzName,
-                                      sajdaName: sajdaName,
-                                      topTitleChild: topTitleChild,
                                       bookmarkList: bookmarkList,
                                       ayahSelectedFontColor:
                                           ayahSelectedFontColor,
@@ -641,12 +558,6 @@ class QuranLibraryScreen extends StatelessWidget {
                                       isDark: isDark,
                                       fontsName: fontsName,
                                       ayahBookmarked: ayahBookmarked,
-                                      anotherMenuChild: anotherMenuChild,
-                                      anotherMenuChildOnTap:
-                                          anotherMenuChildOnTap,
-                                      secondMenuChild: secondMenuChild,
-                                      secondMenuChildOnTap:
-                                          secondMenuChildOnTap,
                                       userContext: parentContext,
                                       pageIndex: pageIndex,
                                       quranCtrl: quranCtrl,
@@ -711,6 +622,10 @@ class QuranLibraryScreen extends StatelessWidget {
                               ),
                             );
                           },
+                        ),
+                        TajweedMenuWidget(
+                          languageCode: appLanguageCode ?? 'ar',
+                          isDark: isDark,
                         ),
                       ],
                     ),

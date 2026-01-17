@@ -4,14 +4,12 @@ class BuildBottomSection extends StatelessWidget {
   BuildBottomSection({
     super.key,
     required this.pageIndex,
-    required this.sajdaName,
     required this.isRight,
     required this.languageCode,
   });
 
   final bool isRight;
   final int pageIndex;
-  final String? sajdaName;
   final String languageCode;
   final quranCtrl = QuranCtrl.instance;
 
@@ -20,8 +18,7 @@ class BuildBottomSection extends StatelessWidget {
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
     final topBottomStyle = TopBottomTheme.of(context)?.style ??
         TopBottomQuranStyle.defaults(isDark: isDark, context: context);
-    final String effectiveSajdaName =
-        (sajdaName ?? topBottomStyle.sajdaName) ?? 'سجدة';
+    final String effectiveSajdaName = (topBottomStyle.sajdaName) ?? 'سجدة';
     final String effectiveHizbName = topBottomStyle.hizbName ?? 'الحزب';
     final Color hizbColor =
         topBottomStyle.hizbTextColor ?? const Color(0xff77554B);

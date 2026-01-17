@@ -41,9 +41,55 @@ extension QuranGetters on QuranCtrl {
   }
 
   RxBool get isDownloadedFonts =>
-      QuranCtrl.instance.state.fontsSelected.value == 1 ? true.obs : false.obs;
+      currentRecitation.requiresDownload ? true.obs : false.obs;
 
   bool get isPreparingDownloadFonts => state.isPreparingDownload.value;
+
+  /// اختيار قراءة/خط المصحف باستخدام [QuranRecitation] كمصدر الحقيقة.
+  ///
+  /// - يحافظ على التوافق مع النظام الحالي المعتمد على `fontsSelected`.
+  /// - يراعي الويب: لا تنزيلات، التحميل يكون عند الحاجة.
+  /// - يراعي حالة الخطوط المحلية [isFontsLocal] عند دمج المكتبة داخل تطبيقات أخرى.
+  Future<void> selectRecitation(
+    QuranRecitation recitation, {
+    bool isFontsLocal = false,
+  }) async {
+    state.loadedFontPages.clear();
+    final int idx = recitation.recitationIndex;
+
+    final bool isAvailable = !recitation.requiresDownload ||
+        kIsWeb ||
+        isFontsLocal ||
+        state.fontsDownloadedList.contains(idx) ||
+        (state.isFontDownloaded.value && state.fontsDownloadedList.isEmpty);
+
+    if (!isAvailable) {
+      // الواجهة هي التي ستعرض خيار التحميل؛ هنا نتجنب تغيير الحالة إلى وضع غير متاح.
+      log('Recitation not available yet (needs download): $idx',
+          name: 'QuranGetters');
+      return;
+    }
+
+    if (state.fontsSelected.value == idx) {
+      return;
+    }
+
+    state.fontsSelected.value = idx;
+    GetStorage().write(_StorageConstants().fontsSelected, idx);
+
+    // للخطوط التي تتطلب تحميل: حضّر الـ Isolate والصفحة الحالية
+    if (!kIsWeb && recitation.requiresDownload) {
+      await initFontLoader();
+    }
+
+    Get.forceAppUpdate();
+
+    if (recitation.requiresDownload) {
+      // حضّر الخطوط للصفحة الحالية والصفحات المجاورة
+      await prepareFonts((_quranRepository.getLastPage() ?? 1),
+          isFontsLocal: isFontsLocal);
+    }
+  }
 
   /// تبديل نوع الخط وتحميله إذا لم يكن محملاً من قبل
   ///
@@ -55,97 +101,8 @@ extension QuranGetters on QuranCtrl {
         GetStorage().read<bool>(_StorageConstants().isDownloadedCodeV4Fonts);
     state.isFontDownloaded.value = storageValue ?? false;
 
-    // التحقق مما إذا كان الخط المطلوب هو نفس الخط الحالي
-    // Check if the requested font is the same as the current font
-    if (state.fontsSelected.value == fontIndex &&
-        (fontIndex == 0 || state.isFontDownloaded.value)) {
-      log('Font is already selected', name: 'QuranGetters');
-      return;
-    }
-
-    // إذا كان الخط هو الخط الافتراضي (0)، فقط قم بتعيينه
-    // If the font is the default font (0), just set it
-    if (fontIndex == 0) {
-      state.fontsSelected.value = fontIndex;
-      GetStorage().write(_StorageConstants().fontsSelected, fontIndex);
-      Get.forceAppUpdate();
-      log('Default font selected', name: 'QuranGetters');
-      return;
-    }
-
-    // إذا كان الخط محملاً بالفعل، قم بتعيينه
-    // If the font is already downloaded, just set it
-    if (state.isFontDownloaded.value) {
-      state.fontsSelected.value = fontIndex;
-      GetStorage().write(_StorageConstants().fontsSelected, fontIndex);
-      update(['fontsSelected']);
-      Get.forceAppUpdate();
-      log('Downloaded font selected', name: 'QuranGetters');
-      return;
-    }
-
-    // إذا كان الخط غير محمل، قم بتحميله أولاً ثم تعيينه
-    // If the font is not downloaded, download it first then set it
-
-    state.fontsSelected.value = fontIndex;
-    GetStorage().write(_StorageConstants().fontsSelected, fontIndex);
-    update(['fontsSelected', 'fontsDownloadingProgress']);
-    Get.forceAppUpdate();
-    log('Font downloaded and selected', name: 'QuranGetters');
+    await selectRecitation(QuranRecitation.fromIndex(fontIndex));
   }
-
-  List<int> get _startSurahsNumbers => [
-        1,
-        2,
-        3,
-        4,
-        6,
-        7,
-        8,
-        9,
-        10,
-        13,
-        15,
-        17,
-        19,
-        21,
-        22,
-        23,
-        24,
-        26,
-        27,
-        31,
-        32,
-        33,
-        34,
-        37,
-        38,
-        41,
-        42,
-        44,
-        45,
-        47,
-        48,
-        50,
-        53,
-        58,
-        60,
-        62,
-        64,
-        65,
-        66,
-        67,
-        72,
-        73,
-        78,
-        80,
-        82,
-        86,
-        103,
-        106,
-        109,
-        112,
-      ];
 
   List<int> get _topOfThePageIndex => [
         435,
@@ -482,7 +439,7 @@ extension QuranGetters on QuranCtrl {
   ///
   /// Returns:
   ///   `bool`: true if the fonts are downloaded, false otherwise.
-  bool get isDownloadFonts => (state.fontsSelected.value == 1);
+  bool get isDownloadFonts => currentRecitation.requiresDownload;
 
   void showControlToggle({bool enableMultiSelect = false}) {
     state.isShowMenu.value = false;
@@ -498,6 +455,22 @@ extension QuranGetters on QuranCtrl {
         update(['isShowControl']);
       }
     }
+  }
+
+  List<TajweedRuleModel> getTajweedRulesListForLanguage({
+    required String languageCode,
+    String fallbackLanguageCode = 'ar',
+  }) {
+    final Map<String, dynamic> root = tajweedRules.first;
+    final List<dynamic> rules = (root['rules'] as List<dynamic>?) ?? const [];
+
+    return rules
+        .whereType<Map<String, dynamic>>()
+        .map((r) => TajweedRuleModel.fromJson(r).forLanguage(
+              languageCode,
+              fallbackLanguageCode: fallbackLanguageCode,
+            ))
+        .toList(growable: false);
   }
 }
 

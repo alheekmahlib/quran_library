@@ -8,6 +8,7 @@ class _QuranTopBar extends StatelessWidget {
   final DownloadFontsDialogStyle? downloadFontsDialogStyle;
   final Color? backgroundColor;
   final bool? isSingleSurah;
+  final bool? isPagesView;
 
   const _QuranTopBar(
     this.languageCode,
@@ -17,6 +18,7 @@ class _QuranTopBar extends StatelessWidget {
     this.downloadFontsDialogStyle,
     this.backgroundColor,
     this.isSingleSurah = false,
+    this.isPagesView = false,
   });
 
   @override
@@ -110,7 +112,8 @@ class _QuranTopBar extends StatelessWidget {
                       }
                     },
                   ),
-                if ((defaults.showFontsButton ?? true) && (!isSingleSurah!))
+                if ((defaults.showFontsButton ?? true) && (!isSingleSurah!) ||
+                    (isPagesView!))
                   FontsDownloadDialog(
                     downloadFontsDialogStyle: downloadFontsDialogStyle ??
                         DownloadFontsDialogStyle.defaults(isDark, context),

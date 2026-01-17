@@ -17,15 +17,8 @@ class _DefaultFontsPage extends StatelessWidget {
   final Color? ayahSelectedBackgroundColor;
   final List<String> newSurahs;
   final String? languageCode;
-  final String? juzName;
-  final String? sajdaName;
-  final Widget? topTitleChild;
   final bool isDark;
   final List<int> ayahBookmarked;
-  final Widget? anotherMenuChild;
-  final void Function(AyahModel ayah)? anotherMenuChildOnTap;
-  final Widget? secondMenuChild;
-  final void Function(AyahModel ayah)? secondMenuChildOnTap;
   final Color ayahIconColor;
   final bool showAyahBookmarkedIcon;
 
@@ -45,15 +38,8 @@ class _DefaultFontsPage extends StatelessWidget {
     this.ayahSelectedBackgroundColor,
     required this.newSurahs,
     this.languageCode,
-    this.juzName,
-    this.sajdaName,
-    this.topTitleChild,
     required this.isDark,
     required this.ayahBookmarked,
-    this.anotherMenuChild,
-    this.anotherMenuChildOnTap,
-    this.secondMenuChild,
-    this.secondMenuChildOnTap,
     required this.ayahIconColor,
     required this.showAyahBookmarkedIcon,
   });
@@ -74,10 +60,7 @@ class _DefaultFontsPage extends StatelessWidget {
           ? TopAndBottomWidget(
               pageIndex: pageIndex,
               languageCode: languageCode,
-              juzName: juzName,
-              sajdaName: sajdaName,
               isRight: pageIndex.isEven ? true : false,
-              topTitleChild: topTitleChild,
               child: (!kIsWeb && (Platform.isAndroid || Platform.isIOS))
                   ? isLandscape
                       ? SingleChildScrollView(
@@ -98,10 +81,6 @@ class _DefaultFontsPage extends StatelessWidget {
                             ayahSelectedBackgroundColor:
                                 ayahSelectedBackgroundColor,
                             ayahBookmarked: ayahBookmarked,
-                            anotherMenuChild: anotherMenuChild,
-                            anotherMenuChildOnTap: anotherMenuChildOnTap,
-                            secondMenuChild: secondMenuChild,
-                            secondMenuChildOnTap: secondMenuChildOnTap,
                             context: context,
                             ayahIconColor: ayahIconColor,
                             showAyahBookmarkedIcon: showAyahBookmarkedIcon,
@@ -124,10 +103,6 @@ class _DefaultFontsPage extends StatelessWidget {
                           ayahSelectedBackgroundColor:
                               ayahSelectedBackgroundColor,
                           ayahBookmarked: ayahBookmarked,
-                          anotherMenuChild: anotherMenuChild,
-                          anotherMenuChildOnTap: anotherMenuChildOnTap,
-                          secondMenuChild: secondMenuChild,
-                          secondMenuChildOnTap: secondMenuChildOnTap,
                           context: context,
                           ayahIconColor: ayahIconColor,
                           showAyahBookmarkedIcon: showAyahBookmarkedIcon,
@@ -148,10 +123,6 @@ class _DefaultFontsPage extends StatelessWidget {
                       bookmarkList: bookmarkList,
                       ayahSelectedBackgroundColor: ayahSelectedBackgroundColor,
                       ayahBookmarked: ayahBookmarked,
-                      anotherMenuChild: anotherMenuChild,
-                      anotherMenuChildOnTap: anotherMenuChildOnTap,
-                      secondMenuChild: secondMenuChild,
-                      secondMenuChildOnTap: secondMenuChildOnTap,
                       context: context,
                       ayahIconColor: ayahIconColor,
                       showAyahBookmarkedIcon: showAyahBookmarkedIcon,
@@ -160,9 +131,6 @@ class _DefaultFontsPage extends StatelessWidget {
           : DefaultOtherSurahs(
               pageIndex: pageIndex,
               languageCode: languageCode,
-              juzName: juzName,
-              sajdaName: sajdaName,
-              topTitleChild: topTitleChild,
               quranCtrl: quranCtrl,
               newSurahs: newSurahs,
               surahNumber: surahNumber,
@@ -178,10 +146,6 @@ class _DefaultFontsPage extends StatelessWidget {
               bookmarkList: bookmarkList,
               ayahSelectedBackgroundColor: ayahSelectedBackgroundColor,
               ayahBookmarked: ayahBookmarked,
-              anotherMenuChild: anotherMenuChild,
-              anotherMenuChildOnTap: anotherMenuChildOnTap,
-              secondMenuChild: secondMenuChild,
-              secondMenuChildOnTap: secondMenuChildOnTap,
               context: context,
               ayahIconColor: ayahIconColor,
               showAyahBookmarkedIcon: showAyahBookmarkedIcon,

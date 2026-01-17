@@ -41,7 +41,7 @@ class SurahHeaderWidget extends StatelessWidget {
           height: bannerStyle?.bannerImageHeight ?? 50.0,
           width: bannerStyle?.bannerImageWidth ?? double.infinity,
           margin: EdgeInsets.symmetric(
-              vertical: quranCtrl.state.fontsSelected.value == 1 ? 0.0 : 8.0),
+              vertical: quranCtrl.isQpcV4Enabled ? 0.0 : 8.0),
           padding: const EdgeInsets.symmetric(vertical: 0.0),
           decoration: BoxDecoration(
             image: DecorationImage(
@@ -65,7 +65,7 @@ class SurahHeaderWidget extends StatelessWidget {
       return Center(
         child: Padding(
           padding: EdgeInsets.symmetric(
-            vertical: quranCtrl.state.fontsSelected.value == 1 ? 24.0 : 8.0,
+            vertical: quranCtrl.isQpcV4Enabled ? 24.0 : 8.0,
           ),
           child: GestureDetector(
             onTap: () {

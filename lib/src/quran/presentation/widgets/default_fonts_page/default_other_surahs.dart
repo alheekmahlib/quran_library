@@ -5,9 +5,6 @@ class DefaultOtherSurahs extends StatelessWidget {
     super.key,
     required this.pageIndex,
     required this.languageCode,
-    required this.juzName,
-    required this.sajdaName,
-    required this.topTitleChild,
     required this.quranCtrl,
     required this.newSurahs,
     required this.surahNumber,
@@ -23,10 +20,6 @@ class DefaultOtherSurahs extends StatelessWidget {
     required this.bookmarkList,
     required this.ayahSelectedBackgroundColor,
     required this.ayahBookmarked,
-    required this.anotherMenuChild,
-    required this.anotherMenuChildOnTap,
-    required this.secondMenuChild,
-    required this.secondMenuChildOnTap,
     required this.context,
     required this.ayahIconColor,
     required this.showAyahBookmarkedIcon,
@@ -34,9 +27,6 @@ class DefaultOtherSurahs extends StatelessWidget {
 
   final int pageIndex;
   final String? languageCode;
-  final String? juzName;
-  final String? sajdaName;
-  final Widget? topTitleChild;
   final QuranCtrl quranCtrl;
   final List<String> newSurahs;
   final int? surahNumber;
@@ -53,10 +43,6 @@ class DefaultOtherSurahs extends StatelessWidget {
   final List? bookmarkList;
   final Color? ayahSelectedBackgroundColor;
   final List<int> ayahBookmarked;
-  final Widget? anotherMenuChild;
-  final void Function(AyahModel ayah)? anotherMenuChildOnTap;
-  final Widget? secondMenuChild;
-  final void Function(AyahModel ayah)? secondMenuChildOnTap;
   final BuildContext context;
   final Color ayahIconColor;
   final bool showAyahBookmarkedIcon;
@@ -71,9 +57,6 @@ class DefaultOtherSurahs extends StatelessWidget {
           pageIndex: pageIndex,
           isRight: pageIndex.isEven ? true : false,
           languageCode: languageCode,
-          juzName: juzName,
-          sajdaName: sajdaName,
-          topTitleChild: topTitleChild,
           child: isLandscape &&
                   (Responsive.isMobile(context) ||
                       Responsive.isMobileLarge(context))
@@ -95,10 +78,6 @@ class DefaultOtherSurahs extends StatelessWidget {
                     bookmarkList: bookmarkList,
                     ayahSelectedBackgroundColor: ayahSelectedBackgroundColor,
                     ayahBookmarked: ayahBookmarked,
-                    anotherMenuChild: anotherMenuChild,
-                    anotherMenuChildOnTap: anotherMenuChildOnTap,
-                    secondMenuChild: secondMenuChild,
-                    secondMenuChildOnTap: secondMenuChildOnTap,
                     context: context,
                     constraints: constraints,
                     ayahIconColor: ayahIconColor,
@@ -122,10 +101,6 @@ class DefaultOtherSurahs extends StatelessWidget {
                   bookmarkList: bookmarkList,
                   ayahSelectedBackgroundColor: ayahSelectedBackgroundColor,
                   ayahBookmarked: ayahBookmarked,
-                  anotherMenuChild: anotherMenuChild,
-                  anotherMenuChildOnTap: anotherMenuChildOnTap,
-                  secondMenuChild: secondMenuChild,
-                  secondMenuChildOnTap: secondMenuChildOnTap,
                   context: context,
                   constraints: constraints,
                   ayahIconColor: ayahIconColor,

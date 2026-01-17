@@ -390,12 +390,12 @@ class QuranLibrary {
           String? languageCode,
           bool isDark = false,
           bool isFontsLocal = false}) =>
-      quranCtrl.fontsDownloadWidget(
-        context,
+      FontsDownloadWidget(
         downloadFontsDialogStyle: downloadFontsDialogStyle,
         languageCode: languageCode,
         isDark: isDark,
         isFontsLocal: isFontsLocal,
+        ctrl: quranCtrl,
       );
 
   /// للحصول على طريقة تنزيل الخطوط فقط قم بإستدعاء [getFontsDownloadMethod]

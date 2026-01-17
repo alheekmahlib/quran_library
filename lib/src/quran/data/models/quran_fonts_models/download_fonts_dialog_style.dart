@@ -10,6 +10,7 @@ class DownloadFontsDialogStyle {
   final Color? backgroundColor;
 
   /// The text to be displayed as the title for the default font.
+  @Deprecated('استخدم recitationNames بدلًا من defaultFontText.')
   final String? defaultFontText;
 
   /// The color of the divider in the dialog. This can be null, in which case
@@ -17,7 +18,15 @@ class DownloadFontsDialogStyle {
   final Color? dividerColor;
 
   /// The text to be displayed as the title for the quran font.
+  @Deprecated('استخدم recitationNames بدلًا من downloadedFontsText.')
   final String? downloadedFontsText;
+
+  /// أسماء مخصّصة لقائمة القراءات/الخطوط.
+  ///
+  /// إذا تم تمرير هذه القائمة، فسيتم استخدام الاسم الموافق لترتيب
+  /// [QuranRecitation.values] عند العرض. إذا لم يوجد عنصر في القائمة للمؤشر
+  /// المطلوب، فسيتم الرجوع للاسم الافتراضي [QuranRecitation.arabicName].
+  final List<String>? recitationNames;
 
   /// The background color of the download button in the dialog.
   ///
@@ -142,6 +151,7 @@ class DownloadFontsDialogStyle {
     this.defaultFontText,
     this.dividerColor,
     this.downloadedFontsText,
+    this.recitationNames,
     this.downloadButtonBackgroundColor,
     this.downloadingStyle,
     this.downloadingText,
@@ -172,6 +182,7 @@ class DownloadFontsDialogStyle {
     String? defaultFontText,
     Color? dividerColor,
     String? downloadedFontsText,
+    List<String>? recitationNames,
     Color? downloadButtonBackgroundColor,
     TextStyle? downloadingStyle,
     String? downloadingText,
@@ -196,6 +207,7 @@ class DownloadFontsDialogStyle {
       defaultFontText: defaultFontText ?? this.defaultFontText,
       dividerColor: dividerColor ?? this.dividerColor,
       downloadedFontsText: downloadedFontsText ?? this.downloadedFontsText,
+      recitationNames: recitationNames ?? this.recitationNames,
       downloadButtonBackgroundColor:
           downloadButtonBackgroundColor ?? this.downloadButtonBackgroundColor,
       downloadingStyle: downloadingStyle ?? this.downloadingStyle,
@@ -230,12 +242,12 @@ class DownloadFontsDialogStyle {
     return DownloadFontsDialogStyle(
       // لون خلفية النافذة الافتراضي
       backgroundColor: AppColors.getBackgroundColor(isDarkMode),
-      // نص الخط الافتراضي
-      defaultFontText: 'الخط الأساسي',
       // لون الفاصل الافتراضي
       dividerColor: primary,
-      // نص خطوط القرآن المحملة الافتراضي
-      downloadedFontsText: 'خط المصحف',
+      // لا نضع أسماء افتراضية هنا: الواجهة ستستخدم QuranRecitation.arabicName.
+      defaultFontText: null,
+      downloadedFontsText: null,
+      recitationNames: null,
       // لون خلفية زر التحميل الافتراضي
       downloadButtonBackgroundColor: primary,
       // نص التحميل الافتراضي

@@ -31,11 +31,13 @@ class FontsDownloadDialog extends StatelessWidget {
                       borderRadius: BorderRadius.circular(8.0)),
                   elevation: 3,
                   backgroundColor: downloadFontsDialogStyle?.backgroundColor,
-                  child: quranCtrl.fontsDownloadWidget(context,
-                      downloadFontsDialogStyle: downloadFontsDialogStyle!,
-                      languageCode: languageCode,
-                      isDark: isDark,
-                      isFontsLocal: isFontsLocal),
+                  child: FontsDownloadWidget(
+                    downloadFontsDialogStyle: downloadFontsDialogStyle,
+                    languageCode: languageCode,
+                    isDark: isDark,
+                    isFontsLocal: isFontsLocal ?? false,
+                    ctrl: quranCtrl,
+                  ),
                 )),
         icon: downloadFontsDialogStyle?.iconWidget ??
             SvgPicture.asset(

@@ -8,19 +8,7 @@ class TopAndBottomWidget extends StatelessWidget {
   final bool? isSurah;
   final int? surahNumber;
   final String? languageCode;
-  @Deprecated(
-      'In versions after 2.2.5 this parameter will be removed. Please use juzName in TopBottomQuranStyle instead.')
-  final String? juzName;
-  @Deprecated(
-      'In versions after 2.2.5 this parameter will be removed. Please use sajdaName in TopBottomQuranStyle instead.')
-  final String? sajdaName;
-  @Deprecated(
-      'In versions after 2.2.5 this parameter will be removed. Please use surahName in TopBottomQuranStyle instead.')
-  final String? surahName;
   final Widget child;
-  @Deprecated(
-      'In versions after 2.2.5 this parameter will be removed. Please use topTitleChild in TopBottomQuranStyle instead.')
-  final Widget? topTitleChild;
 
   TopAndBottomWidget({
     super.key,
@@ -28,18 +16,6 @@ class TopAndBottomWidget extends StatelessWidget {
     required this.isRight,
     required this.child,
     this.languageCode,
-    @Deprecated(
-        'In versions after 2.2.5 this parameter will be removed. Please use juzName in TopBottomQuranStyle instead.')
-    this.juzName,
-    @Deprecated(
-        'In versions after 2.2.5 this parameter will be removed. Please use sajdaName in TopBottomQuranStyle instead.')
-    this.sajdaName,
-    @Deprecated(
-        'In versions after 2.2.5 this parameter will be removed. Please use topTitleChild in TopBottomQuranStyle instead.')
-    this.topTitleChild,
-    @Deprecated(
-        'In versions after 2.2.5 this parameter will be removed. Please use surahName in TopBottomQuranStyle instead.')
-    this.surahName,
     this.isSurah = false,
     this.surahNumber,
   });
@@ -61,11 +37,9 @@ class TopAndBottomWidget extends StatelessWidget {
             child: BuildTopSection(
               isRight: isRight,
               languageCode: languageCode,
-              juzName: juzName,
-              surahName: surahName,
               pageIndex: pageIndex,
-              topTitleChild: topTitleChild,
               isSurah: isSurah!,
+              surahNumber: surahNumber,
             ),
           ),
 
@@ -85,7 +59,6 @@ class TopAndBottomWidget extends StatelessWidget {
             alignment: Alignment.bottomCenter,
             child: BuildBottomSection(
                 pageIndex: pageIndex,
-                sajdaName: sajdaName,
                 isRight: isRight,
                 languageCode: languageCode!),
           ),
@@ -102,18 +75,15 @@ class TopAndBottomWidget extends StatelessWidget {
                 BuildTopSection(
                   isRight: isRight,
                   languageCode: languageCode,
-                  juzName: juzName,
-                  surahName: surahName,
                   pageIndex: pageIndex,
-                  topTitleChild: topTitleChild,
                   isSurah: isSurah!,
+                  surahNumber: surahNumber,
                 ),
                 Flexible(
                   child: child,
                 ),
                 BuildBottomSection(
                     pageIndex: pageIndex,
-                    sajdaName: sajdaName,
                     isRight: isRight,
                     languageCode: languageCode!),
               ],
@@ -124,11 +94,9 @@ class TopAndBottomWidget extends StatelessWidget {
                   BuildTopSection(
                     isRight: isRight,
                     languageCode: languageCode,
-                    juzName: juzName,
-                    surahName: surahName,
                     pageIndex: pageIndex,
-                    topTitleChild: topTitleChild,
                     isSurah: isSurah!,
+                    surahNumber: surahNumber,
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 40.0),
@@ -136,7 +104,6 @@ class TopAndBottomWidget extends StatelessWidget {
                   ),
                   BuildBottomSection(
                       pageIndex: pageIndex,
-                      sajdaName: sajdaName,
                       isRight: isRight,
                       languageCode: languageCode!),
                 ],

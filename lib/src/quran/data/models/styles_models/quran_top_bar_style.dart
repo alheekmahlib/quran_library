@@ -23,6 +23,7 @@ class QuranTopBarStyle {
   final String? backIconPath;
   final String? audioIconPath;
   final String? optionsIconPath;
+  final String? tajweedIconPath;
   final double? iconSize;
   final Color? iconColor; // overrides textColor for icons if provided
 
@@ -43,6 +44,7 @@ class QuranTopBarStyle {
   final bool? showAudioButton;
   final bool? showFontsButton;
   final bool? showBackButton;
+  final bool? showTajweedButton;
 
   // Custom widgets to add to the top bar
   final List<Widget>? customTopBarWidgets;
@@ -76,6 +78,8 @@ class QuranTopBarStyle {
     this.showFontsButton,
     this.optionsIconPath,
     this.customTopBarWidgets,
+    this.tajweedIconPath,
+    this.showTajweedButton,
   });
 
   QuranTopBarStyle copyWith({
@@ -107,6 +111,8 @@ class QuranTopBarStyle {
     bool? showBackButton,
     String? optionsIconPath,
     List<Widget>? customTopBarWidgets,
+    String? tajweedIconPath,
+    bool? showTajweedButton,
   }) =>
       QuranTopBarStyle(
         backIconPath: backIconPath ?? this.backIconPath,
@@ -138,6 +144,8 @@ class QuranTopBarStyle {
         showBackButton: showBackButton ?? this.showBackButton,
         optionsIconPath: optionsIconPath ?? this.optionsIconPath,
         customTopBarWidgets: customTopBarWidgets ?? this.customTopBarWidgets,
+        tajweedIconPath: tajweedIconPath ?? this.tajweedIconPath,
+        showTajweedButton: showTajweedButton ?? this.showTajweedButton,
       );
 
   /// Provide sensible defaults based on theme (isDark)
@@ -175,6 +183,8 @@ class QuranTopBarStyle {
       showBackButton: false,
       optionsIconPath: AssetsPath.assets.options,
       customTopBarWidgets: null,
+      tajweedIconPath: AssetsPath.assets.exclamation,
+      showTajweedButton: true,
     );
   }
 }

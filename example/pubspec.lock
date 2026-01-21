@@ -185,14 +185,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.1.1"
-  floating_menu_expendable:
-    dependency: transitive
-    description:
-      name: floating_menu_expendable
-      sha256: "40b6a5615fe72dbb0fb789da3596fa98134e170c8c8a387092f271f0ca6499ac"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.1.1+1"
   flutter:
     dependency: "direct main"
     description: flutter
@@ -523,7 +515,7 @@ packages:
       path: ".."
       relative: true
     source: path
-    version: "2.3.6"
+    version: "3.0.0"
   rxdart:
     dependency: transitive
     description:
@@ -738,5 +730,5 @@ packages:
     source: hosted
     version: "6.6.1"
 sdks:
-  dart: ">=3.10.4 <4.0.0"
+  dart: ">=3.9.0 <4.0.0"
   flutter: ">=3.35.0"

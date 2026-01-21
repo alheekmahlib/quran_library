@@ -26,6 +26,9 @@ class _QuranTopBar extends StatelessWidget {
     // Centralized theming (read from theme or fallback to defaults)
     final QuranTopBarStyle defaults = QuranTopBarTheme.of(context)?.style ??
         QuranTopBarStyle.defaults(isDark: isDark, context: context);
+
+    final TajweedMenuStyle tajweedStyle = TajweedMenuTheme.of(context)?.style ??
+        TajweedMenuStyle.defaults(isDark: isDark, context: context);
     final Color bgColor = backgroundColor ??
         (defaults.backgroundColor ?? AppColors.getBackgroundColor(isDark));
 
@@ -77,6 +80,19 @@ class _QuranTopBar extends StatelessWidget {
                   _showMenuBottomSheet(context, defaults);
                 },
               ),
+            if (defaults.showMenuButton ?? true)
+              IconButton(
+                icon: SvgPicture.asset(
+                    defaults.tajweedIconPath ?? AssetsPath.assets.exclamation,
+                    height: defaults.iconSize,
+                    colorFilter: ColorFilter.mode(
+                        defaults.iconColor ??
+                            Theme.of(context).colorScheme.primary,
+                        BlendMode.srcIn)),
+                onPressed: () {
+                  _showDialog(context, tajweedStyle);
+                },
+              ),
             const Spacer(),
             if (defaults.customTopBarWidgets != null)
               ...defaults.customTopBarWidgets!,
@@ -125,6 +141,21 @@ class _QuranTopBar extends StatelessWidget {
             )
           ],
         ),
+      ),
+    );
+  }
+
+  void _showDialog(BuildContext context, TajweedMenuStyle defaults) {
+    showDialog(
+      context: context,
+      builder: (ctx) => Dialog(
+        backgroundColor: backgroundColor ??
+            defaults.backgroundColor ??
+            AppColors.getBackgroundColor(isDark),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(defaults.borderRadius ?? 12),
+        ),
+        child: TajweedMenuWidget(isDark: isDark, languageCode: languageCode),
       ),
     );
   }

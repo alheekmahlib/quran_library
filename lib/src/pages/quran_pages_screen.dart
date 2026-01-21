@@ -43,6 +43,7 @@ class QuranPagesScreen extends StatelessWidget {
     this.isShowAudioSlider = true,
     this.appIconUrlForPlayAudioInBackground,
     this.topBarStyle,
+    this.tajweedMenuStyle,
     // تحديد الصفحات
     this.page,
     this.startPage,
@@ -104,6 +105,9 @@ class QuranPagesScreen extends StatelessWidget {
   final bool? isShowAudioSlider;
   final String? appIconUrlForPlayAudioInBackground;
   final QuranTopBarStyle? topBarStyle;
+
+  /// تخصيص نمط نافذة/قائمة أحكام التجويد
+  final TajweedMenuStyle? tajweedMenuStyle;
   final BuildContext parentContext;
 
   /// تخصيص نمط تبويب الفهرس الخاص بالمصحف
@@ -273,6 +277,8 @@ class QuranPagesScreen extends StatelessWidget {
               IndexTabStyle.defaults(isDark: isDark, context: context),
           topBarStyle: topBarStyle ??
               QuranTopBarStyle.defaults(isDark: isDark, context: context),
+          tajweedMenuStyle: tajweedMenuStyle ??
+              TajweedMenuStyle.defaults(isDark: isDark, context: context),
           searchTabStyle: searchTabStyle ??
               SearchTabStyle.defaults(isDark: isDark, context: context),
           surahInfoStyle: surahInfoStyle ??

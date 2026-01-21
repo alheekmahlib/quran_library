@@ -45,6 +45,7 @@ class SurahDisplayScreen extends StatelessWidget {
     this.snackBarStyle,
     this.ayahMenuStyle,
     this.topBarStyle,
+    this.tajweedMenuStyle,
     this.downloadFontsDialogStyle,
     this.isFontsLocal = false,
   });
@@ -228,6 +229,9 @@ class SurahDisplayScreen extends StatelessWidget {
   /// Customize the style of the Quran top bar
   final QuranTopBarStyle? topBarStyle;
 
+  /// تخصيص نمط نافذة/قائمة أحكام التجويد
+  final TajweedMenuStyle? tajweedMenuStyle;
+
   /// تغيير نمط نافذة تحميل الخطوط بواسطة هذه الفئة [DownloadFontsDialogStyle]
   ///
   /// [DownloadFontsDialogStyle] Change the style of Download fonts dialog by DownloadFontsDialogStyle class
@@ -276,6 +280,8 @@ class SurahDisplayScreen extends StatelessWidget {
               IndexTabStyle.defaults(isDark: isDark, context: context),
           topBarStyle: topBarStyle ??
               QuranTopBarStyle.defaults(isDark: isDark, context: context),
+          tajweedMenuStyle: tajweedMenuStyle ??
+              TajweedMenuStyle.defaults(isDark: isDark, context: context),
           searchTabStyle: searchTabStyle ??
               SearchTabStyle.defaults(isDark: isDark, context: context),
           surahInfoStyle: surahInfoStyle ??

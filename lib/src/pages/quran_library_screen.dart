@@ -53,6 +53,7 @@ class QuranLibraryScreen extends StatelessWidget {
     this.isShowAudioSlider = true,
     this.appIconPathForPlayAudioInBackground,
     this.topBarStyle,
+    this.tajweedMenuStyle,
     this.indexTabStyle,
     this.searchTabStyle,
     this.bookmarksTabStyle,
@@ -238,6 +239,11 @@ class QuranLibraryScreen extends StatelessWidget {
   /// Customize the style of the Quran top bar
   final QuranTopBarStyle? topBarStyle;
 
+  /// تخصيص نمط نافذة/قائمة أحكام التجويد
+  ///
+  /// Customize the style of Tajweed menu dialog
+  final TajweedMenuStyle? tajweedMenuStyle;
+
   /// السياق المطلوب من المستخدم لإدارة العمليات الداخلية للمكتبة [parentContext]
   /// مثل الوصول إلى MediaQuery، Theme، والتنقل بين الصفحات
   ///
@@ -334,6 +340,8 @@ class QuranLibraryScreen extends StatelessWidget {
                 IndexTabStyle.defaults(isDark: isDark, context: context),
             topBarStyle: topBarStyle ??
                 QuranTopBarStyle.defaults(isDark: isDark, context: context),
+            tajweedMenuStyle: tajweedMenuStyle ??
+                TajweedMenuStyle.defaults(isDark: isDark, context: context),
             searchTabStyle: searchTabStyle ??
                 SearchTabStyle.defaults(isDark: isDark, context: context),
             surahInfoStyle: surahInfoStyle ??
@@ -470,8 +478,6 @@ class QuranLibraryScreen extends StatelessWidget {
                                               quranCtrl.showControlToggle();
                                               QuranCtrl.instance.state
                                                   .isShowMenu.value = false;
-                                              quranCtrl.state.floatingController
-                                                  .close();
                                             }
                                           },
                                           hoverColor: Colors.transparent,
@@ -526,8 +532,6 @@ class QuranLibraryScreen extends StatelessWidget {
                                         quranCtrl.showControlToggle();
                                         quranCtrl.state.isShowMenu.value =
                                             false;
-                                        quranCtrl.state.floatingController
-                                            .close();
                                       }
                                     },
                                     hoverColor: Colors.transparent,
@@ -622,10 +626,6 @@ class QuranLibraryScreen extends StatelessWidget {
                               ),
                             );
                           },
-                        ),
-                        TajweedMenuWidget(
-                          languageCode: appLanguageCode ?? 'ar',
-                          isDark: isDark,
                         ),
                       ],
                     ),

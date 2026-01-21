@@ -6,6 +6,7 @@ class QuranLibraryTheme extends StatelessWidget {
   final AyahMenuStyle ayahLongClickStyle;
   final IndexTabStyle indexTabStyle;
   final QuranTopBarStyle topBarStyle;
+  final TajweedMenuStyle tajweedMenuStyle;
   final SearchTabStyle searchTabStyle;
   final SurahInfoStyle surahInfoStyle;
   final TafsirStyle tafsirStyle;
@@ -20,6 +21,7 @@ class QuranLibraryTheme extends StatelessWidget {
     required this.ayahLongClickStyle,
     required this.indexTabStyle,
     required this.topBarStyle,
+    required this.tajweedMenuStyle,
     required this.searchTabStyle,
     required this.surahInfoStyle,
     required this.tafsirStyle,
@@ -48,11 +50,14 @@ class QuranLibraryTheme extends StatelessWidget {
                   style: bookmarksTabStyle,
                   child: TopBottomTheme(
                     style: topBottomQuranStyle,
-                    child: QuranTopBarTheme(
-                      style: topBarStyle,
-                      child: AyahDownloadManagerTheme(
-                        style: ayahDownloadManagerStyle,
-                        child: child,
+                    child: TajweedMenuTheme(
+                      style: tajweedMenuStyle,
+                      child: QuranTopBarTheme(
+                        style: topBarStyle,
+                        child: AyahDownloadManagerTheme(
+                          style: ayahDownloadManagerStyle,
+                          child: child,
+                        ),
                       ),
                     ),
                   ),
@@ -117,6 +122,23 @@ class QuranTopBarTheme extends InheritedWidget {
 
   @override
   bool updateShouldNotify(covariant QuranTopBarTheme oldWidget) =>
+      style != oldWidget.style;
+}
+
+/// مزود نمط قائمة أحكام التجويد
+class TajweedMenuTheme extends InheritedWidget {
+  final TajweedMenuStyle style;
+  const TajweedMenuTheme({
+    super.key,
+    required this.style,
+    required super.child,
+  });
+
+  static TajweedMenuTheme? of(BuildContext context) =>
+      context.dependOnInheritedWidgetOfExactType<TajweedMenuTheme>();
+
+  @override
+  bool updateShouldNotify(covariant TajweedMenuTheme oldWidget) =>
       style != oldWidget.style;
 }
 

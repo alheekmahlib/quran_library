@@ -1,4 +1,4 @@
-## 2.3.6
+## 3.0.0
 
 * **ADD:**
 	* Tajweed fonts (hafs).

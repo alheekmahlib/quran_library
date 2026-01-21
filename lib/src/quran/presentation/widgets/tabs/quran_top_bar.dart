@@ -80,7 +80,8 @@ class _QuranTopBar extends StatelessWidget {
                   _showMenuBottomSheet(context, defaults);
                 },
               ),
-            if (defaults.showMenuButton ?? true)
+            if ((defaults.showMenuButton ?? true) &&
+                (QuranCtrl.instance.state.fontsSelected.value == 2))
               IconButton(
                 icon: SvgPicture.asset(
                     defaults.tajweedIconPath ?? AssetsPath.assets.exclamation,

@@ -37,7 +37,7 @@ class QpcV4RichTextLine extends StatelessWidget {
   final Color? ayahSelectedBackgroundColor;
   final BuildContext context;
   final QuranCtrl quranCtrl;
-  final List<QpcV4AyahSegment> segments;
+  final List<QpcV4WordSegment> segments;
   final bool isFontsLocal;
   final String fontsName;
   final List<int> ayahBookmarked;
@@ -46,6 +46,18 @@ class QpcV4RichTextLine extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bookmarksSet = bookmarksAyahs.toSet();
+    final wordInfoCtrl = WordInfoCtrl.instance;
+
+    // بعد تحميل بيانات القراءات، نحاول تهيئة سور هذه السطر بالخلفية
+    // لكي يظهر تلوين has_khilaf بأسرع وقت.
+    if (wordInfoCtrl.isKindAvailable(WordInfoKind.recitations)) {
+      final surahs = segments.map((s) => s.surahNumber).toSet();
+      Future(() async {
+        for (final s in surahs) {
+          await wordInfoCtrl.prewarmRecitationsSurah(s);
+        }
+      });
+    }
 
     return GetBuilder<QuranCtrl>(
       id: 'selection_page_',
@@ -57,84 +69,100 @@ class QpcV4RichTextLine extends StatelessWidget {
             maxWidth: constraints.maxWidth,
           );
 
-          return RichText(
-            textDirection: TextDirection.rtl,
-            textAlign: isCentered ? TextAlign.center : TextAlign.justify,
-            softWrap: true,
-            overflow: TextOverflow.visible,
-            maxLines: null,
-            text: TextSpan(
-              children: List.generate(segments.length, (segmentIndex) {
-                final seg = segments[segmentIndex];
-                final uq = seg.ayahUq;
-                final isSelectedCombined =
-                    quranCtrl.selectedAyahsByUnequeNumber.contains(uq) ||
-                        quranCtrl.externallyHighlightedAyahs.contains(uq);
+          return GetBuilder<WordInfoCtrl>(
+            id: 'word_info_data',
+            builder: (_) {
+              return RichText(
+                textDirection: TextDirection.rtl,
+                textAlign: isCentered ? TextAlign.center : TextAlign.justify,
+                softWrap: true,
+                overflow: TextOverflow.visible,
+                maxLines: null,
+                text: TextSpan(
+                  children: List.generate(segments.length, (segmentIndex) {
+                    final seg = segments[segmentIndex];
+                    final uq = seg.ayahUq;
+                    final isSelectedCombined =
+                        quranCtrl.selectedAyahsByUnequeNumber.contains(uq) ||
+                            quranCtrl.externallyHighlightedAyahs.contains(uq);
 
-                return _qpcV4SpanSegment(
-                  context: context,
-                  pageIndex: pageIndex,
-                  isSelected: isSelectedCombined,
-                  showAyahBookmarkedIcon: showAyahBookmarkedIcon,
-                  fontSize: fs,
-                  ayahUQNum: uq,
-                  ayahNumber: seg.ayahNumber,
-                  glyphs: seg.glyphs,
-                  showAyahNumber: seg.isAyahEnd,
-                  onLongPressStart: (details) {
-                    final ayahModel = quranCtrl.getAyahByUq(uq);
-
-                    if (onAyahLongPress != null) {
-                      onAyahLongPress!(details, ayahModel);
-                      quranCtrl.toggleAyahSelection(uq);
-                      quranCtrl.state.isShowMenu.value = false;
-                      return;
-                    }
-
-                    int? bookmarkId;
-                    for (final b in bookmarks.values.expand((list) => list)) {
-                      if (b.ayahId == uq) {
-                        bookmarkId = b.id;
-                        break;
-                      }
-                    }
-
-                    if (bookmarkId != null) {
-                      BookmarksCtrl.instance.removeBookmark(bookmarkId);
-                      return;
-                    }
-
-                    if (quranCtrl.isMultiSelectMode.value) {
-                      quranCtrl.toggleAyahSelectionMulti(uq);
-                    } else {
-                      quranCtrl.toggleAyahSelection(uq);
-                    }
-                    quranCtrl.state.isShowMenu.value = false;
-
-                    final themedTafsirStyle = TafsirTheme.of(context)?.style;
-                    showAyahMenuDialog(
-                      context: context,
-                      isDark: isDark,
-                      ayah: ayahModel,
-                      position: details.globalPosition,
-                      index: segmentIndex,
-                      pageIndex: pageIndex,
-                      externalTafsirStyle: themedTafsirStyle,
+                    final ref = WordRef(
+                      surahNumber: seg.surahNumber,
+                      ayahNumber: seg.ayahNumber,
+                      wordNumber: seg.wordNumber,
                     );
-                  },
-                  textColor: textColor ?? (AppColors.getTextColor(isDark)),
-                  ayahIconColor: ayahIconColor,
-                  bookmarks: bookmarks,
-                  bookmarksAyahs: bookmarksSet.toList(),
-                  bookmarksColor: bookmarksColor,
-                  ayahSelectedBackgroundColor: ayahSelectedBackgroundColor,
-                  isFontsLocal: isFontsLocal,
-                  fontsName: fontsName,
-                  ayahBookmarked: ayahBookmarked,
-                  isDark: isDark,
-                );
-              }),
-            ),
+
+                    final info = wordInfoCtrl.getRecitationsInfoSync(ref);
+                    final hasKhilaf = info?.hasKhilaf ?? false;
+
+                    return _qpcV4SpanSegment(
+                      context: context,
+                      pageIndex: pageIndex,
+                      isSelected: isSelectedCombined,
+                      showAyahBookmarkedIcon: showAyahBookmarkedIcon,
+                      fontSize: fs,
+                      ayahUQNum: uq,
+                      ayahNumber: seg.ayahNumber,
+                      glyphs: seg.glyphs,
+                      showAyahNumber: seg.isAyahEnd,
+                      wordRef: ref,
+                      isWordKhilaf: hasKhilaf,
+                      onLongPressStart: (details) {
+                        final ayahModel = quranCtrl.getAyahByUq(uq);
+
+                        if (onAyahLongPress != null) {
+                          onAyahLongPress!(details, ayahModel);
+                          quranCtrl.toggleAyahSelection(uq);
+                          quranCtrl.state.isShowMenu.value = false;
+                          return;
+                        }
+
+                        int? bookmarkId;
+                        for (final b in bookmarks.values.expand((list) => list)) {
+                          if (b.ayahId == uq) {
+                            bookmarkId = b.id;
+                            break;
+                          }
+                        }
+
+                        if (bookmarkId != null) {
+                          BookmarksCtrl.instance.removeBookmark(bookmarkId);
+                          return;
+                        }
+
+                        if (quranCtrl.isMultiSelectMode.value) {
+                          quranCtrl.toggleAyahSelectionMulti(uq);
+                        } else {
+                          quranCtrl.toggleAyahSelection(uq);
+                        }
+                        quranCtrl.state.isShowMenu.value = false;
+
+                        final themedTafsirStyle = TafsirTheme.of(context)?.style;
+                        showAyahMenuDialog(
+                          context: context,
+                          isDark: isDark,
+                          ayah: ayahModel,
+                          position: details.globalPosition,
+                          index: segmentIndex,
+                          pageIndex: pageIndex,
+                          externalTafsirStyle: themedTafsirStyle,
+                        );
+                      },
+                      textColor: textColor ?? (AppColors.getTextColor(isDark)),
+                      ayahIconColor: ayahIconColor,
+                      bookmarks: bookmarks,
+                      bookmarksAyahs: bookmarksSet.toList(),
+                      bookmarksColor: bookmarksColor,
+                      ayahSelectedBackgroundColor: ayahSelectedBackgroundColor,
+                      isFontsLocal: isFontsLocal,
+                      fontsName: fontsName,
+                      ayahBookmarked: ayahBookmarked,
+                      isDark: isDark,
+                    );
+                  }),
+                ),
+              );
+            },
           );
         },
       ),

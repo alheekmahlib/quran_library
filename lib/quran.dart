@@ -49,6 +49,7 @@ part 'src/quran/core/extensions/string_extensions.dart';
 part 'src/quran/core/extensions/surah_info_extension.dart';
 part 'src/quran/core/extensions/text_span_extension.dart';
 part 'src/quran/core/helpers/page_font_size.dart';
+part 'src/quran/core/services/zip_download_service.dart';
 part 'src/quran/core/utils/storage_constants.dart';
 part 'src/quran/core/utils/tajweed_rules_list.dart';
 part 'src/quran/data/models/ayah_model.dart';
@@ -71,15 +72,18 @@ part 'src/quran/data/models/styles_models/surah_name_style.dart';
 part 'src/quran/data/models/styles_models/tajweed_menu_style.dart';
 part 'src/quran/data/models/styles_models/top_bottom_quran_style.dart';
 part 'src/quran/data/models/surah_names_model.dart';
+part 'src/quran/data/models/word_info_models.dart';
 part 'src/quran/data/qpc_v4/qpc_v4_assets_loader.dart';
 part 'src/quran/data/qpc_v4/qpc_v4_models.dart';
 part 'src/quran/data/qpc_v4/qpc_v4_page_renderer.dart';
 part 'src/quran/data/repositories/quran_repository.dart';
+part 'src/quran/data/repositories/word_info_repository.dart';
 part 'src/quran/presentation/controllers/bookmark/bookmarks_ctrl.dart';
 part 'src/quran/presentation/controllers/quran/quran_ctrl.dart';
 part 'src/quran/presentation/controllers/quran/quran_getters.dart';
 part 'src/quran/presentation/controllers/quran/quran_state.dart';
 part 'src/quran/presentation/controllers/surah/surah_ctrl.dart';
+part 'src/quran/presentation/controllers/word_info/word_info_ctrl.dart';
 part 'src/quran/presentation/widgets/ayah_menu_dialog.dart';
 part 'src/quran/presentation/widgets/bsmallah_widget.dart';
 part 'src/quran/presentation/widgets/default_fonts_page/default_first_two_surahs.dart';
@@ -107,6 +111,8 @@ part 'src/quran/presentation/widgets/text_scale_page/text_scale_rich_text_build.
 part 'src/quran/presentation/widgets/top_bottom_widget/build_bottom_section.dart';
 part 'src/quran/presentation/widgets/top_bottom_widget/build_top_section.dart';
 part 'src/quran/presentation/widgets/top_bottom_widget/top_and_bottom_widget.dart';
+part 'src/quran/presentation/widgets/word_info/tap_long_press_recognizer.dart';
+part 'src/quran/presentation/widgets/word_info/word_info_dialog.dart';
 
 /// A comprehensive library for displaying the Holy Quran in Flutter applications.
 ///

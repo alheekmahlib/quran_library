@@ -547,7 +547,6 @@ TextField(
 * ### Word Info (Recitations / Tasreef / Eerab)
 
 ```dart
-/// فتح نافذة معلومات الكلمة (مع تحميل البيانات عند الحاجة)
 /// Open Word Info bottom sheet (with on-demand download)
 await QuranLibrary().showWordInfoByNumbers(
   context: context,
@@ -558,7 +557,6 @@ await QuranLibrary().showWordInfoByNumbers(
   isDark: true,
 );
 
-/// (اختياري) تحميل بيانات نوع معيّن بدون فتح الواجهة
 /// (Optional) download a specific kind programmatically
 if (!QuranLibrary().isWordInfoKindDownloaded(WordInfoKind.recitations)) {
   await QuranLibrary().downloadWordInfoKind(kind: WordInfoKind.recitations);
@@ -661,7 +659,6 @@ QuranLibrary().fetchTranslation();
 QuranLibrary().tafsirDownload(int i);
 
 /// (Optional) Download Tajweed (ayah-level) data used inside the Tafsir bottom sheet
-/// (اختياري) تحميل بيانات أحكام التجويد (على مستوى الآية) التي تظهر داخل نافذة التفسير
 if (!QuranLibrary().isTajweedAyahDownloaded) {
   await QuranLibrary().downloadTajweedAyah();
 }

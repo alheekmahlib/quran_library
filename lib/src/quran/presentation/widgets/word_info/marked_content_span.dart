@@ -10,15 +10,23 @@ TextSpan buildMarkedContentSpan({
   required String content,
   required TextStyle baseStyle,
   required TextStyle markedStyle,
+  TextStyle? curlyInnerStyle,
 }) {
   if (content.isEmpty) return TextSpan(text: '', style: baseStyle);
 
-  // تطبيع بسيط: بعض البيانات قد تحتوي على <br> بدل أسطر جديدة.
-  // ندعم: <br>, <br/>, <br /> وبأي حالة أحرف.
-  final normalized = content.replaceAll(
-    RegExp(r'<br\s*/?>', caseSensitive: false),
-    '\n',
-  );
+  // تطبيع بسيط للنص:
+  // - حذف أسطر جديدة (\n) وتحويلها لمسافة
+  // - حذف &quot;
+  // - دعم <br>, <br/>, <br /> (تحويلها لمسافة)
+  String normalized = content
+      .replaceAll(RegExp(r'<br\s*/?>', caseSensitive: false), ' ')
+      .replaceAll('&quot;', '')
+      .replaceAll('\n', ' ')
+      .replaceAll('\r', ' ')
+      .replaceAll('---{عند الوصل}---', '\n---{عند الوصل}---\n');
+
+  // تقليل تكرار المسافات بعد التطبيع.
+  normalized = normalized.replaceAll(RegExp(r'[ \t]{2,}'), ' ');
 
   final spans = <InlineSpan>[];
   int i = 0;
@@ -88,16 +96,25 @@ TextSpan buildMarkedContentSpan({
         break;
       }
 
-      spans.add(TextSpan(text: '{', style: baseStyle));
+      // استبدال الأقواس المعقوفة بأقواس مزخرفة.
+      final curlyBracketStyle = baseStyle.copyWith(
+        fontFamily: 'hafs',
+        package: 'quran_library',
+      );
+      spans.add(TextSpan(text: '﴿', style: curlyBracketStyle));
       if (end > next + 1) {
+        final curlyStyle = (curlyInnerStyle ?? markedStyle).copyWith(
+          fontFamily: 'hafs',
+          package: 'quran_library',
+        );
         spans.add(
           TextSpan(
             text: normalized.substring(next + 1, end),
-            style: markedStyle,
+            style: curlyStyle,
           ),
         );
       }
-      spans.add(TextSpan(text: '}', style: baseStyle));
+      spans.add(TextSpan(text: '﴾', style: curlyBracketStyle));
       i = end + 1;
       continue;
     }

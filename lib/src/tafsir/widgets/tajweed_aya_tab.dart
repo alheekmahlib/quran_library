@@ -33,7 +33,20 @@ class _TajweedAyaTab extends StatelessWidget {
     }
 
     if (surahNumber == 0) {
-      return const Center(child: Text('تعذّر تحديد رقم السورة'));
+      return Center(
+        child: Text(
+          tafsirStyle.tajweedSurahNumberErrorText ?? 'تعذّر تحديد رقم السورة',
+          style: tafsirStyle.tajweedStatusTextStyle ??
+              TextStyle(
+                fontSize: 14,
+                color: tafsirStyle.textColor ?? AppColors.getTextColor(isDark),
+                fontFamily: 'cairo',
+                package: 'quran_library',
+              ),
+          textDirection: TextDirection.rtl,
+          textAlign: TextAlign.center,
+        ),
+      );
     }
 
     if (tajweedCtrl.isAvailable) {
@@ -77,13 +90,15 @@ class _TajweedAyaTab extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    'بيانات أحكام التجويد غير محمّلة.',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: AppColors.getTextColor(isDark),
-                      fontFamily: 'cairo',
-                      package: 'quran_library',
-                    ),
+                    tafsirStyle.tajweedUnavailableText ??
+                        'بيانات أحكام التجويد غير محمّلة.',
+                    style: tafsirStyle.tajweedStatusTextStyle ??
+                        TextStyle(
+                          fontSize: 14,
+                          color: AppColors.getTextColor(isDark),
+                          fontFamily: 'cairo',
+                          package: 'quran_library',
+                        ),
                     textDirection: TextDirection.rtl,
                   ),
                   const SizedBox(height: 12),
@@ -94,9 +109,13 @@ class _TajweedAyaTab extends StatelessWidget {
                     isVisible: true,
                     isSelected: false,
                     downloaded: false,
-                    background: Colors.teal.withValues(alpha: 0.1),
-                    valueColor: Colors.teal,
-                    borderColor: Colors.teal,
+                    background:
+                        (tafsirStyle.tajweedAyahTextStyle?.color ?? Colors.teal)
+                            .withValues(alpha: 0.1),
+                    valueColor:
+                        tafsirStyle.tajweedAyahTextStyle?.color ?? Colors.teal,
+                    borderColor:
+                        tafsirStyle.tajweedAyahTextStyle?.color ?? Colors.teal,
                     downloading:
                         isDownloading || tajweedCtrl.isPreparingDownload.value,
                     preparing:
@@ -104,25 +123,30 @@ class _TajweedAyaTab extends StatelessWidget {
                     progress: tajweedCtrl.downloadProgress.value,
                     children: [
                       Text(
-                        isDownloading ? 'جاري التحميل...' : 'تحميل',
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: AppColors.getTextColor(isDark),
-                          fontFamily: 'cairo',
-                          package: 'quran_library',
-                        ),
+                        isDownloading
+                            ? (tafsirStyle.tajweedDownloadingText ??
+                                'جاري التحميل...')
+                            : (tafsirStyle.tajweedDownloadText ?? 'تحميل'),
+                        style: tafsirStyle.tajweedButtonTextStyle ??
+                            TextStyle(
+                              fontSize: 16,
+                              color: AppColors.getTextColor(isDark),
+                              fontFamily: 'cairo',
+                              package: 'quran_library',
+                            ),
                       ),
                       if (isDownloading ||
                           tajweedCtrl.isPreparingDownload.value) ...[
                         const SizedBox(width: 12),
                         Text(
                           '${tajweedCtrl.downloadProgress.value.toStringAsFixed(0)}%',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: AppColors.getTextColor(isDark),
-                            fontFamily: 'cairo',
-                            package: 'quran_library',
-                          ),
+                          style: tafsirStyle.tajweedProgressTextStyle ??
+                              TextStyle(
+                                fontSize: 14,
+                                color: AppColors.getTextColor(isDark),
+                                fontFamily: 'cairo',
+                                package: 'quran_library',
+                              ),
                         ),
                       ],
                     ],
@@ -143,22 +167,23 @@ class _TajweedAyaTab extends StatelessWidget {
               return FutureBuilder<TajweedAyahInfo?>(
                 future: f,
                 builder: (ctx, snap) {
-                  if (snap.connectionState == ConnectionState.waiting) {
-                    return const Center(
-                        child: CircularProgressIndicator.adaptive());
-                  }
+                  // if (snap.connectionState == ConnectionState.waiting) {
+                  //   return const Center(
+                  //       child: CircularProgressIndicator.adaptive());
+                  // }
 
                   if (snap.hasError) {
                     return Padding(
                       padding: const EdgeInsets.all(16),
                       child: Text(
-                        'تعذّر تحميل أحكام التجويد.\n${snap.error}',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: AppColors.getTextColor(isDark),
-                          fontFamily: 'cairo',
-                          package: 'quran_library',
-                        ),
+                        '${tafsirStyle.tajweedLoadErrorText ?? 'تعذّر تحميل أحكام التجويد.'}\n${snap.error}',
+                        style: tafsirStyle.tajweedStatusTextStyle ??
+                            TextStyle(
+                              fontSize: 14,
+                              color: AppColors.getTextColor(isDark),
+                              fontFamily: 'cairo',
+                              package: 'quran_library',
+                            ),
                         textDirection: TextDirection.rtl,
                       ),
                     );
@@ -169,36 +194,59 @@ class _TajweedAyaTab extends StatelessWidget {
                     return Padding(
                       padding: const EdgeInsets.all(16),
                       child: Text(
-                        'لا توجد بيانات تجويد لهذه الآية.',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: AppColors.getTextColor(isDark),
-                          fontFamily: 'cairo',
-                          package: 'quran_library',
-                        ),
+                        tafsirStyle.tajweedNoDataText ??
+                            'لا توجد بيانات تجويد لهذه الآية.',
+                        style: tafsirStyle.tajweedStatusTextStyle ??
+                            TextStyle(
+                              fontSize: 14,
+                              color: AppColors.getTextColor(isDark),
+                              fontFamily: 'cairo',
+                              package: 'quran_library',
+                            ),
                         textDirection: TextDirection.rtl,
                       ),
                     );
                   }
 
                   return SingleChildScrollView(
-                    padding: const EdgeInsets.all(16),
-                    child: SelectableText.rich(
-                      buildMarkedContentSpan(
-                        content: data.content,
-                        baseStyle: TextStyle(
-                          fontSize: 16,
-                          height: 1.7,
-                          color: AppColors.getTextColor(isDark),
-                          fontFamily: 'cairo',
-                          package: 'quran_library',
+                    // padding: const EdgeInsets.all(16),
+                    child: Column(
+                      children: [
+                        Text(
+                          '﴿${data.ayaText}﴾',
+                          textDirection: TextDirection.rtl,
+                          textAlign: TextAlign.center,
+                          style: tafsirStyle.tajweedAyahTextStyle ??
+                              const TextStyle(
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.teal,
+                                fontFamily: 'hafs',
+                                package: 'quran_library',
+                              ),
                         ),
-                        markedStyle: const TextStyle(
-                          color: Colors.teal,
-                          fontWeight: FontWeight.w700,
+                        const SizedBox(height: 12),
+                        SelectableText.rich(
+                          buildMarkedContentSpan(
+                            content: data.content,
+                            baseStyle: tafsirStyle.tajweedContentTextStyle ??
+                                TextStyle(
+                                  fontSize: 22,
+                                  height: 1.7,
+                                  color: AppColors.getTextColor(isDark),
+                                  fontFamily: 'naskh',
+                                  package: 'quran_library',
+                                ),
+                            markedStyle: tafsirStyle.tajweedMarkedTextStyle ??
+                                const TextStyle(
+                                  color: Colors.teal,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                          ),
+                          textAlign: TextAlign.justify,
+                          textDirection: TextDirection.rtl,
                         ),
-                      ),
-                      textDirection: TextDirection.rtl,
+                      ],
                     ),
                   );
                 },

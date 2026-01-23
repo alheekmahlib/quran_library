@@ -238,7 +238,7 @@ class _WordInfoKindTab extends StatelessWidget {
       ),
       child: GetBuilder<WordInfoCtrl>(
         id: 'word_info_download',
-        builder: (_) {
+        builder: (ctrl) {
           final isAvailable = ctrl.isKindAvailable(kind);
           final isDownloading =
               ctrl.isDownloading.value && ctrl.downloadingKind.value == kind;
@@ -310,15 +310,15 @@ class _WordInfoKindTab extends StatelessWidget {
 
           return GetBuilder<WordInfoCtrl>(
             id: 'word_info_data',
-            builder: (_) {
+            builder: (ctrl) {
               final f = ctrl.getWordInfo(kind: kind, ref: ref);
               return FutureBuilder<QiraatWordInfo?>(
                 future: f,
                 builder: (ctx, snap) {
-                  if (snap.connectionState == ConnectionState.waiting) {
-                    return const Center(
-                        child: CircularProgressIndicator.adaptive());
-                  }
+                  // if (snap.connectionState == ConnectionState.waiting) {
+                  //   return const Center(
+                  //       child: CircularProgressIndicator.adaptive());
+                  // }
 
                   if (snap.hasError) {
                     return Padding(
@@ -372,7 +372,7 @@ class _WordInfoKindTab extends StatelessWidget {
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
                             color: wordColor,
-                            fontFamily: 'cairo',
+                            fontFamily: 'naskh',
                             package: 'quran_library',
                           ),
                         ),
@@ -381,10 +381,10 @@ class _WordInfoKindTab extends StatelessWidget {
                           buildMarkedContentSpan(
                             content: data.content,
                             baseStyle: TextStyle(
-                              fontSize: 16,
+                              fontSize: 22,
                               height: 1.5,
                               color: AppColors.getTextColor(isDark),
-                              fontFamily: 'cairo',
+                              fontFamily: 'naskh',
                               package: 'quran_library',
                             ),
                             markedStyle: const TextStyle(
@@ -392,6 +392,7 @@ class _WordInfoKindTab extends StatelessWidget {
                               fontWeight: FontWeight.w700,
                             ),
                           ),
+                          textAlign: TextAlign.justify,
                           textDirection: TextDirection.rtl,
                         ),
                       ],

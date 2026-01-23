@@ -3,10 +3,12 @@ part of '../../../tafsir.dart';
 class TajweedAyahInfo {
   final int ayaNumber;
   final String content;
+  final String ayaText;
 
   const TajweedAyahInfo({
     required this.ayaNumber,
     required this.content,
+    required this.ayaText,
   });
 
   factory TajweedAyahInfo.fromJson(Map<String, dynamic> jsonMap) {
@@ -15,6 +17,7 @@ class TajweedAyahInfo {
           int.tryParse(jsonMap['aya_number']?.toString() ?? '') ??
           0,
       content: (jsonMap['content'] ?? '').toString(),
+      ayaText: (jsonMap['aya_text'] ?? '').toString(),
     );
   }
 }

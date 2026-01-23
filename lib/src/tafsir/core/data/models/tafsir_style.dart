@@ -39,6 +39,20 @@ class TafsirStyle {
   final String? dialogHeaderTitle;
   final Color? dialogCloseIconColor;
 
+  // Tajweed (Ayah) tab texts/styles
+  final String? tajweedSurahNumberErrorText;
+  final String? tajweedUnavailableText;
+  final String? tajweedDownloadText;
+  final String? tajweedDownloadingText;
+  final String? tajweedLoadErrorText;
+  final String? tajweedNoDataText;
+  final TextStyle? tajweedAyahTextStyle;
+  final TextStyle? tajweedMarkedTextStyle;
+  final TextStyle? tajweedStatusTextStyle;
+  final TextStyle? tajweedButtonTextStyle;
+  final TextStyle? tajweedProgressTextStyle;
+  final TextStyle? tajweedContentTextStyle;
+
   TafsirStyle({
     this.backgroundColor,
     this.textColor,
@@ -77,6 +91,18 @@ class TafsirStyle {
     this.dialogHeaderTitleColor,
     this.dialogHeaderTitle,
     this.dialogCloseIconColor,
+    this.tajweedSurahNumberErrorText,
+    this.tajweedUnavailableText,
+    this.tajweedDownloadText,
+    this.tajweedDownloadingText,
+    this.tajweedLoadErrorText,
+    this.tajweedNoDataText,
+    this.tajweedAyahTextStyle,
+    this.tajweedMarkedTextStyle,
+    this.tajweedStatusTextStyle,
+    this.tajweedButtonTextStyle,
+    this.tajweedProgressTextStyle,
+    this.tajweedContentTextStyle,
   });
 
   TafsirStyle copyWith({
@@ -117,6 +143,18 @@ class TafsirStyle {
     Color? dialogHeaderTitleColor,
     String? dialogHeaderTitle,
     Color? dialogCloseIconColor,
+    String? tajweedSurahNumberErrorText,
+    String? tajweedUnavailableText,
+    String? tajweedDownloadText,
+    String? tajweedDownloadingText,
+    String? tajweedLoadErrorText,
+    String? tajweedNoDataText,
+    TextStyle? tajweedAyahTextStyle,
+    TextStyle? tajweedMarkedTextStyle,
+    TextStyle? tajweedStatusTextStyle,
+    TextStyle? tajweedButtonTextStyle,
+    TextStyle? tajweedProgressTextStyle,
+    TextStyle? tajweedContentTextStyle,
   }) {
     return TafsirStyle(
       tafsirNameWidget: tafsirNameWidget ?? this.tafsirNameWidget,
@@ -169,6 +207,26 @@ class TafsirStyle {
           dialogHeaderTitleColor ?? this.dialogHeaderTitleColor,
       dialogHeaderTitle: dialogHeaderTitle ?? this.dialogHeaderTitle,
       dialogCloseIconColor: dialogCloseIconColor ?? this.dialogCloseIconColor,
+      tajweedSurahNumberErrorText:
+          tajweedSurahNumberErrorText ?? this.tajweedSurahNumberErrorText,
+      tajweedUnavailableText:
+          tajweedUnavailableText ?? this.tajweedUnavailableText,
+      tajweedDownloadText: tajweedDownloadText ?? this.tajweedDownloadText,
+      tajweedDownloadingText:
+          tajweedDownloadingText ?? this.tajweedDownloadingText,
+      tajweedLoadErrorText: tajweedLoadErrorText ?? this.tajweedLoadErrorText,
+      tajweedNoDataText: tajweedNoDataText ?? this.tajweedNoDataText,
+      tajweedAyahTextStyle: tajweedAyahTextStyle ?? this.tajweedAyahTextStyle,
+      tajweedMarkedTextStyle:
+          tajweedMarkedTextStyle ?? this.tajweedMarkedTextStyle,
+      tajweedStatusTextStyle:
+          tajweedStatusTextStyle ?? this.tajweedStatusTextStyle,
+      tajweedButtonTextStyle:
+          tajweedButtonTextStyle ?? this.tajweedButtonTextStyle,
+      tajweedProgressTextStyle:
+          tajweedProgressTextStyle ?? this.tajweedProgressTextStyle,
+      tajweedContentTextStyle:
+          tajweedContentTextStyle ?? this.tajweedContentTextStyle,
     );
   }
 
@@ -185,6 +243,14 @@ class TafsirStyle {
     const defaultTranslateName = 'الترجمة';
     const defaultFootnotesName = 'الحواشي';
     const defaultEmptyNote = '\n\nتفسير هذه الآية في الأيات السابقة';
+
+    // نصوص افتراضية لتبويب أحكام التجويد
+    const tajweedSurahNumberError = 'تعذّر تحديد رقم السورة';
+    const tajweedUnavailable = 'بيانات أحكام التجويد غير محمّلة.';
+    const tajweedDownload = 'تحميل';
+    const tajweedDownloading = 'جاري التحميل...';
+    const tajweedLoadError = 'تعذّر تحميل أحكام التجويد.';
+    const tajweedNoData = 'لا توجد بيانات تجويد لهذه الآية.';
 
     return TafsirStyle(
       // الألوان العامة
@@ -258,6 +324,50 @@ class TafsirStyle {
       fontSizeInactiveTrackColor: primary.withValues(alpha: 0.5),
       fontSizeIconSize: 34.0,
       downloadIconColor: primary,
+
+      // تبويب أحكام التجويد
+      tajweedSurahNumberErrorText: tajweedSurahNumberError,
+      tajweedUnavailableText: tajweedUnavailable,
+      tajweedDownloadText: tajweedDownload,
+      tajweedDownloadingText: tajweedDownloading,
+      tajweedLoadErrorText: tajweedLoadError,
+      tajweedNoDataText: tajweedNoData,
+      tajweedAyahTextStyle: const TextStyle(
+        fontSize: 24,
+        fontWeight: FontWeight.bold,
+        color: Colors.teal,
+        fontFamily: 'hafs',
+        package: 'quran_library',
+      ),
+      tajweedMarkedTextStyle: const TextStyle(
+        color: Colors.teal,
+        fontWeight: FontWeight.w700,
+      ),
+      tajweedStatusTextStyle: TextStyle(
+        fontSize: 14,
+        color: AppColors.getTextColor(isDark),
+        fontFamily: 'cairo',
+        package: 'quran_library',
+      ),
+      tajweedButtonTextStyle: TextStyle(
+        fontSize: 16,
+        color: AppColors.getTextColor(isDark),
+        fontFamily: 'cairo',
+        package: 'quran_library',
+      ),
+      tajweedProgressTextStyle: TextStyle(
+        fontSize: 14,
+        color: AppColors.getTextColor(isDark),
+        fontFamily: 'cairo',
+        package: 'quran_library',
+      ),
+      tajweedContentTextStyle: TextStyle(
+        fontSize: 22,
+        height: 1.7,
+        color: AppColors.getTextColor(isDark),
+        fontFamily: 'naskh',
+        package: 'quran_library',
+      ),
       dialogHeaderTitleColor: onBg,
       dialogCloseIconColor: onBg,
       dialogHeaderBackgroundGradient: LinearGradient(

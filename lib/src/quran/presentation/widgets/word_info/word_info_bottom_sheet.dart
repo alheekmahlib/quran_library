@@ -1,116 +1,5 @@
 part of '/quran.dart';
 
-TextSpan _buildMarkedContentSpan({
-  required String content,
-  required TextStyle baseStyle,
-  required TextStyle markedStyle,
-}) {
-  if (content.isEmpty) return TextSpan(text: '', style: baseStyle);
-
-  final spans = <InlineSpan>[];
-  int i = 0;
-  while (i < content.length) {
-    final atIndex = content.indexOf('@', i);
-    final curlyIndex = content.indexOf('{', i);
-    final parenIndex = content.indexOf('(', i);
-
-    int next = content.length;
-    String? marker;
-    if (atIndex != -1 && atIndex < next) {
-      next = atIndex;
-      marker = '@';
-    }
-    if (curlyIndex != -1 && curlyIndex < next) {
-      next = curlyIndex;
-      marker = '{';
-    }
-    if (parenIndex != -1 && parenIndex < next) {
-      next = parenIndex;
-      marker = '(';
-    }
-
-    if (marker == null) {
-      spans.add(TextSpan(text: content.substring(i), style: baseStyle));
-      break;
-    }
-
-    if (next > i) {
-      spans.add(TextSpan(text: content.substring(i, next), style: baseStyle));
-    }
-
-    if (marker == '@') {
-      final end = content.indexOf('/', next + 1);
-      if (end == -1) {
-        spans.add(TextSpan(text: content.substring(next), style: baseStyle));
-        break;
-      }
-
-      if (end > next + 1) {
-        spans.add(
-          TextSpan(
-            text: content.substring(next + 1, end),
-            style: markedStyle,
-          ),
-        );
-      }
-
-      // نستبدل '/' بمسافة واحدة (بدون مضاعفة المسافات إن كان بعدها فراغ).
-      final nextIndex = end + 1;
-      final hasNext = nextIndex < content.length;
-      final nextIsWhitespace =
-          hasNext ? RegExp(r'\s').hasMatch(content[nextIndex]) : false;
-      if (!nextIsWhitespace) {
-        spans.add(TextSpan(text: ' ', style: baseStyle));
-      }
-
-      i = end + 1;
-      continue;
-    }
-
-    if (marker == '{') {
-      final end = content.indexOf('}', next + 1);
-      if (end == -1) {
-        spans.add(TextSpan(text: content.substring(next), style: baseStyle));
-        break;
-      }
-
-      spans.add(TextSpan(text: '{', style: baseStyle));
-      if (end > next + 1) {
-        spans.add(
-          TextSpan(
-            text: content.substring(next + 1, end),
-            style: markedStyle,
-          ),
-        );
-      }
-      spans.add(TextSpan(text: '}', style: baseStyle));
-      i = end + 1;
-      continue;
-    }
-
-    // marker == '('
-    final end = content.indexOf(')', next + 1);
-    if (end == -1) {
-      spans.add(TextSpan(text: content.substring(next), style: baseStyle));
-      break;
-    }
-
-    spans.add(TextSpan(text: '(', style: baseStyle));
-    if (end > next + 1) {
-      spans.add(
-        TextSpan(
-          text: content.substring(next + 1, end),
-          style: markedStyle,
-        ),
-      );
-    }
-    spans.add(TextSpan(text: ')', style: baseStyle));
-    i = end + 1;
-  }
-
-  return TextSpan(children: spans, style: baseStyle);
-}
-
 Future<void> showWordInfoBottomSheet({
   required BuildContext context,
   required WordRef ref,
@@ -167,15 +56,15 @@ class WordInfoDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const tabs = [
-      Tab(text: 'القراءات'),
-      Tab(text: 'التصريف'),
-      Tab(text: 'الإعراب'),
-    ];
-
     final WordInfoBottomSheetStyle defaults =
         WordInfoDialogTheme.of(context)?.style ??
             WordInfoBottomSheetStyle.defaults(isDark: isDark, context: context);
+
+    final tabs = [
+      Tab(text: defaults.tabRecitationsText ?? 'القراءات'),
+      Tab(text: defaults.tabTasreefText ?? 'التصريف'),
+      Tab(text: defaults.tabEerabText ?? 'الإعراب'),
+    ];
 
     return Container(
       padding: defaults.padding ?? const EdgeInsets.symmetric(vertical: 8.0),
@@ -224,7 +113,8 @@ class WordInfoDialog extends StatelessWidget {
                           horizontal: defaults.horizontalMargin ?? 8,
                         ),
                         decoration: BoxDecoration(
-                          color: defaults.tabIndicatorColor!
+                          color: (defaults.tabIndicatorColor ??
+                                  Theme.of(context).colorScheme.primary)
                               .withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(16),
                         ),
@@ -257,7 +147,8 @@ class WordInfoDialog extends StatelessWidget {
                           children: [
                             _WordInfoKindTab(
                               kind: WordInfoKind.recitations,
-                              kindLabelAr: 'القراءات',
+                              kindLabelAr:
+                                  defaults.tabRecitationsText ?? 'القراءات',
                               ref: ref,
                               ctrl: ctrl,
                               isDark: isDark,
@@ -265,7 +156,7 @@ class WordInfoDialog extends StatelessWidget {
                             ),
                             _WordInfoKindTab(
                               kind: WordInfoKind.tasreef,
-                              kindLabelAr: 'التصريف',
+                              kindLabelAr: defaults.tabTasreefText ?? 'التصريف',
                               ref: ref,
                               ctrl: ctrl,
                               isDark: isDark,
@@ -273,7 +164,7 @@ class WordInfoDialog extends StatelessWidget {
                             ),
                             _WordInfoKindTab(
                               kind: WordInfoKind.eerab,
-                              kindLabelAr: 'الإعراب',
+                              kindLabelAr: defaults.tabEerabText ?? 'الإعراب',
                               ref: ref,
                               ctrl: ctrl,
                               isDark: isDark,
@@ -313,6 +204,11 @@ class _WordInfoKindTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final unavailableTemplate =
+        style.unavailableDataTemplate ?? 'بيانات {kind} غير محمّلة على الجهاز.';
+    final unavailableText =
+        unavailableTemplate.replaceAll('{kind}', kindLabelAr);
+
     return Container(
       margin: EdgeInsets.symmetric(
         vertical: style.verticalMargin ?? 8,
@@ -354,10 +250,10 @@ class _WordInfoKindTab extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    'بيانات $kindLabelAr غير محمّلة على الجهاز.',
+                    unavailableText,
                     style: style.bodyTextStyle ??
                         TextStyle(
-                          fontSize: 14,
+                          fontSize: 16,
                           color: AppColors.getTextColor(isDark),
                           fontFamily: 'cairo',
                           package: 'quran_library',
@@ -365,56 +261,48 @@ class _WordInfoKindTab extends StatelessWidget {
                     textDirection: TextDirection.rtl,
                   ),
                   const SizedBox(height: 12),
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: isDownloading
-                          ? null
-                          : () async {
-                              await ctrl.downloadKind(kind);
-                            },
-                      child: isDownloading
-                          ? Text(
-                              'جاري التحميل...',
-                              style: style.buttonTextStyle ??
-                                  TextStyle(
-                                    fontSize: 14,
-                                    color: AppColors.getTextColor(isDark),
-                                    fontFamily: 'cairo',
-                                    package: 'quran_library',
-                                  ),
-                            )
-                          : Text(
-                              'تحميل',
-                              style: style.buttonTextStyle ??
-                                  TextStyle(
-                                    fontSize: 14,
-                                    color: AppColors.getTextColor(isDark),
-                                    fontFamily: 'cairo',
-                                    package: 'quran_library',
-                                  ),
+                  DownloadButtonWidget(
+                    onTap: () async {
+                      isDownloading ? null : await ctrl.downloadKind(kind);
+                    },
+                    isVisible: true,
+                    isSelected: false,
+                    downloaded: false,
+                    background: Colors.teal.withValues(alpha: 0.1),
+                    valueColor: Colors.teal,
+                    borderColor: Colors.teal,
+                    downloading:
+                        isDownloading || ctrl.isPreparingDownload.value,
+                    preparing: isDownloading || ctrl.isPreparingDownload.value,
+                    progress: ctrl.downloadProgress.value,
+                    children: [
+                      Text(
+                        isDownloading
+                            ? (style.downloadingText ?? 'جاري التحميل...')
+                            : (style.downloadText ?? 'تحميل'),
+                        style: style.buttonTextStyle ??
+                            TextStyle(
+                              fontSize: 16,
+                              color: AppColors.getTextColor(isDark),
+                              fontFamily: 'cairo',
+                              package: 'quran_library',
                             ),
-                    ),
+                      ),
+                      if (isDownloading || ctrl.isPreparingDownload.value) ...[
+                        const SizedBox(width: 12),
+                        Text(
+                          '${ctrl.downloadProgress.value.toStringAsFixed(0)}%',
+                          style: style.progressTextStyle ??
+                              TextStyle(
+                                fontSize: 16,
+                                color: AppColors.getTextColor(isDark),
+                                fontFamily: 'cairo',
+                                package: 'quran_library',
+                              ),
+                        ),
+                      ],
+                    ],
                   ),
-                  if (isDownloading || ctrl.isPreparingDownload.value) ...[
-                    const SizedBox(height: 12),
-                    LinearProgressIndicator(
-                      value: ctrl.downloadProgress.value > 0
-                          ? (ctrl.downloadProgress.value / 100).clamp(0, 1)
-                          : null,
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      '${ctrl.downloadProgress.value.toStringAsFixed(0)}%',
-                      style: style.progressTextStyle ??
-                          TextStyle(
-                            fontSize: 14,
-                            color: AppColors.getTextColor(isDark),
-                            fontFamily: 'cairo',
-                            package: 'quran_library',
-                          ),
-                    ),
-                  ],
                 ],
               ),
             );
@@ -436,7 +324,7 @@ class _WordInfoKindTab extends StatelessWidget {
                     return Padding(
                       padding: style.contentPadding ?? const EdgeInsets.all(16),
                       child: Text(
-                        'تعذّر تحميل بيانات هذه الكلمة.\n${snap.error}',
+                        '${style.loadErrorText ?? 'تعذّر تحميل بيانات هذه الكلمة.'}\n${snap.error}',
                         style: style.bodyTextStyle ??
                             TextStyle(
                               fontSize: 14,
@@ -454,7 +342,7 @@ class _WordInfoKindTab extends StatelessWidget {
                     return Padding(
                       padding: style.contentPadding ?? const EdgeInsets.all(16),
                       child: Text(
-                        'لا توجد بيانات لهذه الكلمة.',
+                        style.noDataText ?? 'لا توجد بيانات لهذه الكلمة.',
                         style: style.bodyTextStyle ??
                             TextStyle(
                               fontSize: 14,
@@ -490,7 +378,7 @@ class _WordInfoKindTab extends StatelessWidget {
                         ),
                         const SizedBox(height: 12),
                         SelectableText.rich(
-                          _buildMarkedContentSpan(
+                          buildMarkedContentSpan(
                             content: data.content,
                             baseStyle: TextStyle(
                               fontSize: 16,

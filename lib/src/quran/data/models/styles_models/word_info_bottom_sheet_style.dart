@@ -30,6 +30,16 @@ class WordInfoBottomSheetStyle {
   final TextStyle? titleTextStyle;
   final EdgeInsetsGeometry? titlePadding;
 
+  // Text overrides
+  final String? tabRecitationsText;
+  final String? tabTasreefText;
+  final String? tabEerabText;
+  final String? unavailableDataTemplate;
+  final String? downloadText;
+  final String? downloadingText;
+  final String? loadErrorText;
+  final String? noDataText;
+
   // Tabs
   final TextStyle? tabLabelStyle;
   final EdgeInsetsGeometry? tabIndicatorPadding;
@@ -70,6 +80,14 @@ class WordInfoBottomSheetStyle {
     this.titleText,
     this.titleTextStyle,
     this.titlePadding,
+    this.tabRecitationsText,
+    this.tabTasreefText,
+    this.tabEerabText,
+    this.unavailableDataTemplate,
+    this.downloadText,
+    this.downloadingText,
+    this.loadErrorText,
+    this.noDataText,
     this.tabLabelStyle,
     this.tabIndicatorPadding,
     this.tabIndicatorRadius,
@@ -106,6 +124,14 @@ class WordInfoBottomSheetStyle {
     String? titleText,
     TextStyle? titleTextStyle,
     EdgeInsetsGeometry? titlePadding,
+    String? tabRecitationsText,
+    String? tabTasreefText,
+    String? tabEerabText,
+    String? unavailableDataTemplate,
+    String? downloadText,
+    String? downloadingText,
+    String? loadErrorText,
+    String? noDataText,
     TextStyle? tabLabelStyle,
     EdgeInsetsGeometry? tabIndicatorPadding,
     double? tabIndicatorRadius,
@@ -141,6 +167,15 @@ class WordInfoBottomSheetStyle {
         titleText: titleText ?? this.titleText,
         titleTextStyle: titleTextStyle ?? this.titleTextStyle,
         titlePadding: titlePadding ?? this.titlePadding,
+        tabRecitationsText: tabRecitationsText ?? this.tabRecitationsText,
+        tabTasreefText: tabTasreefText ?? this.tabTasreefText,
+        tabEerabText: tabEerabText ?? this.tabEerabText,
+        unavailableDataTemplate:
+            unavailableDataTemplate ?? this.unavailableDataTemplate,
+        downloadText: downloadText ?? this.downloadText,
+        downloadingText: downloadingText ?? this.downloadingText,
+        loadErrorText: loadErrorText ?? this.loadErrorText,
+        noDataText: noDataText ?? this.noDataText,
         tabLabelStyle: tabLabelStyle ?? this.tabLabelStyle,
         tabIndicatorPadding: tabIndicatorPadding ?? this.tabIndicatorPadding,
         tabIndicatorRadius: tabIndicatorRadius ?? this.tabIndicatorRadius,
@@ -188,6 +223,14 @@ class WordInfoBottomSheetStyle {
       handleBorderRadius: 3,
       handleColor: Colors.grey.shade500,
       titleText: 'عن الكلمة',
+      tabRecitationsText: 'القراءات',
+      tabTasreefText: 'التصريف',
+      tabEerabText: 'الإعراب',
+      unavailableDataTemplate: 'بيانات {kind} غير محمّلة على الجهاز.',
+      downloadText: 'تحميل',
+      downloadingText: 'جاري التحميل...',
+      loadErrorText: 'تعذّر تحميل بيانات هذه الكلمة.',
+      noDataText: 'لا توجد بيانات لهذه الكلمة.',
       titleTextStyle: TextStyle(
         fontSize: 20,
         fontWeight: FontWeight.bold,
@@ -209,19 +252,19 @@ class WordInfoBottomSheetStyle {
       dividerHeight: 1,
       contentPadding: const EdgeInsets.all(16),
       bodyTextStyle: TextStyle(
-        fontSize: 14,
+        fontSize: 16,
         color: textColor,
         fontFamily: fontFamily,
         package: 'quran_library',
       ),
       buttonTextStyle: TextStyle(
-        fontSize: 14,
+        fontSize: 16,
         color: textColor,
         fontFamily: fontFamily,
         package: 'quran_library',
       ),
       progressTextStyle: TextStyle(
-        fontSize: 14,
+        fontSize: 16,
         color: textColor,
         fontFamily: fontFamily,
         package: 'quran_library',

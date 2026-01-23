@@ -2,9 +2,15 @@
 
 * **ADD:**
 	* Tajweed fonts (hafs).
+	* Word-level interaction support for QPC v4 (clickable words).
+	* Word Info bottom sheet with on-demand download.
+	* New Word Info providers: Recitations, Tasreef, and Eerab.
+	* Optional Tajweed (ayah-level) tab inside Tafsir bottom sheet with on-demand download.
 
 * **FIX:**
 	* Restructuring the code for downloading fonts.
+	* Surah number resolution in Tafsir/Tajweed view when using downloaded fonts.
+	* Auto-open download UI when switching to Recitations tab and data is missing.
 
 * **DELETE:**
 	* Unused parameters. 

@@ -49,6 +49,9 @@ class QuranTopBarStyle {
   // Custom widgets to add to the top bar
   final List<Widget>? customTopBarWidgets;
 
+  final String? quranTabText;
+  final String? tenRecitationsTabText;
+
   const QuranTopBarStyle({
     this.showBackButton,
     this.backIconPath,
@@ -80,6 +83,8 @@ class QuranTopBarStyle {
     this.customTopBarWidgets,
     this.tajweedIconPath,
     this.showTajweedButton,
+    this.quranTabText,
+    this.tenRecitationsTabText,
   });
 
   QuranTopBarStyle copyWith({
@@ -113,6 +118,8 @@ class QuranTopBarStyle {
     List<Widget>? customTopBarWidgets,
     String? tajweedIconPath,
     bool? showTajweedButton,
+    String? quranTabText,
+    String? tenRecitationsTabText,
   }) =>
       QuranTopBarStyle(
         backIconPath: backIconPath ?? this.backIconPath,
@@ -146,6 +153,9 @@ class QuranTopBarStyle {
         customTopBarWidgets: customTopBarWidgets ?? this.customTopBarWidgets,
         tajweedIconPath: tajweedIconPath ?? this.tajweedIconPath,
         showTajweedButton: showTajweedButton ?? this.showTajweedButton,
+        quranTabText: quranTabText ?? this.quranTabText,
+        tenRecitationsTabText:
+            tenRecitationsTabText ?? this.tenRecitationsTabText,
       );
 
   /// Provide sensible defaults based on theme (isDark)
@@ -185,6 +195,8 @@ class QuranTopBarStyle {
       customTopBarWidgets: null,
       tajweedIconPath: AssetsPath.assets.exclamation,
       showTajweedButton: true,
+      quranTabText: 'القرآن الكريم',
+      tenRecitationsTabText: 'القراءات العشر',
     );
   }
 }

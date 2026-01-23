@@ -544,6 +544,27 @@ TextField(
 ```
 <img src="https://raw.githubusercontent.com/alheekmahlib/thegarlanded/master/Photos/Packages/quran_library/search_screen.png" width="320"/>
 
+* ### Word Info (Recitations / Tasreef / Eerab)
+
+```dart
+/// فتح نافذة معلومات الكلمة (مع تحميل البيانات عند الحاجة)
+/// Open Word Info bottom sheet (with on-demand download)
+await QuranLibrary().showWordInfoByNumbers(
+  context: context,
+  surahNumber: 1,
+  ayahNumber: 1,
+  wordNumber: 1,
+  initialKind: WordInfoKind.recitations,
+  isDark: true,
+);
+
+/// (اختياري) تحميل بيانات نوع معيّن بدون فتح الواجهة
+/// (Optional) download a specific kind programmatically
+if (!QuranLibrary().isWordInfoKindDownloaded(WordInfoKind.recitations)) {
+  await QuranLibrary().downloadWordInfoKind(kind: WordInfoKind.recitations);
+}
+```
+
 ## Fonts Download
 
 ## To download Quran fonts, you have two options:
@@ -638,6 +659,12 @@ QuranLibrary().fetchTranslation();
 
 /// Download the tafsir by the given index.
 QuranLibrary().tafsirDownload(int i);
+
+/// (Optional) Download Tajweed (ayah-level) data used inside the Tafsir bottom sheet
+/// (اختياري) تحميل بيانات أحكام التجويد (على مستوى الآية) التي تظهر داخل نافذة التفسير
+if (!QuranLibrary().isTajweedAyahDownloaded) {
+  await QuranLibrary().downloadTajweedAyah();
+}
 ```
 
 <img src="https://raw.githubusercontent.com/alheekmahlib/thegarlanded/master/Photos/Packages/quran_library/tafsir_screen.png" width="320"/>

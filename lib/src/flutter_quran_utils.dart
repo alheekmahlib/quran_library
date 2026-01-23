@@ -693,6 +693,130 @@ class QuranLibrary {
       await TafsirCtrl.instance
           .fetchTafsirPage(pageNumber, databaseName: databaseName!);
 
+  //////////// [Word Info] ////////////
+
+  /// فتح نافذة معلومات الكلمة (Word Info) وتحميل البيانات عند الحاجة.
+  ///
+  /// [ref] مرجع الكلمة (سورة/آية/رقم كلمة).
+  /// [initialKind] التبويب الذي تريد فتحه أولاً (القراءات/التصريف/الإعراب).
+  ///
+  /// Opens the Word Info bottom sheet and allows downloading data on demand.
+  ///
+  /// [ref] The word reference (surah/ayah/word).
+  /// [initialKind] The initial tab to open (recitations/tasreef/eerab).
+  ///
+  /// مثال للاستخدام / Example usage:
+  /// ```dart
+  /// await QuranLibrary().showWordInfo(
+  ///   context: context,
+  ///   ref: const WordRef(surahNumber: 1, ayahNumber: 1, wordNumber: 1),
+  ///   initialKind: WordInfoKind.recitations,
+  ///   isDark: true,
+  /// );
+  /// ```
+  Future<void> showWordInfo({
+    required BuildContext context,
+    required WordRef ref,
+    WordInfoKind initialKind = WordInfoKind.recitations,
+    bool isDark = false,
+  }) async {
+    await showWordInfoBottomSheet(
+      context: context,
+      ref: ref,
+      initialKind: initialKind,
+      isDark: isDark,
+    );
+  }
+
+  /// فتح نافذة معلومات الكلمة عبر أرقام (سورة/آية/كلمة).
+  ///
+  /// Opens Word Info by passing (surah/ayah/word) numbers.
+  Future<void> showWordInfoByNumbers({
+    required BuildContext context,
+    required int surahNumber,
+    required int ayahNumber,
+    required int wordNumber,
+    WordInfoKind initialKind = WordInfoKind.recitations,
+    bool isDark = false,
+  }) async {
+    await showWordInfo(
+      context: context,
+      ref: WordRef(
+        surahNumber: surahNumber,
+        ayahNumber: ayahNumber,
+        wordNumber: wordNumber,
+      ),
+      initialKind: initialKind,
+      isDark: isDark,
+    );
+  }
+
+  /// التحقق مما إذا كانت بيانات نوع معيّن من Word Info محمّلة.
+  ///
+  /// Checks whether a Word Info kind is downloaded/enabled.
+  bool isWordInfoKindDownloaded(WordInfoKind kind) =>
+      WordInfoCtrl.instance.isKindAvailable(kind);
+
+  /// بدء تحميل بيانات Word Info لنوع معيّن (تحميل اختياري).
+  ///
+  /// Starts downloading Word Info data for a specific kind (on-demand download).
+  Future<void> downloadWordInfoKind({required WordInfoKind kind}) async =>
+      await WordInfoCtrl.instance.downloadKind(kind);
+
+  /// لمعرفة ما إذا كانت بيانات Word Info قيد التحضير/التحميل.
+  ///
+  /// Whether Word Info data is preparing/downloading.
+  bool get isPreparingDownloadWordInfo =>
+      WordInfoCtrl.instance.isPreparingDownload.value;
+
+  /// لمعرفة ما إذا كان Word Info يتم تحميله الآن.
+  ///
+  /// Whether Word Info is currently downloading.
+  bool get isDownloadingWordInfo => WordInfoCtrl.instance.isDownloading.value;
+
+  /// نوع Word Info الذي يتم تحميله حاليًا (إن وجد).
+  ///
+  /// The Word Info kind currently being downloaded (if any).
+  WordInfoKind? get downloadingWordInfoKind =>
+      WordInfoCtrl.instance.downloadingKind.value;
+
+  /// نسبة تقدم تحميل Word Info (قيمة بين 0 و 1).
+  ///
+  /// Word Info download progress as a value between 0 and 1.
+  double get wordInfoDownloadProgress =>
+      WordInfoCtrl.instance.downloadProgress.value / 100;
+
+  //////////// [Tajweed (Ayah)] ////////////
+
+  /// التحقق مما إذا كانت بيانات أحكام التجويد (على مستوى الآية) مفعّلة/محمّلة.
+  ///
+  /// Checks whether Tajweed (ayah-level) data is enabled/downloaded.
+  bool get isTajweedAyahDownloaded => TajweedAyaCtrl.instance.isAvailable;
+
+  /// بدء تحميل بيانات أحكام التجويد (على مستوى الآية).
+  ///
+  /// Starts downloading Tajweed (ayah-level) data.
+  Future<void> downloadTajweedAyah() async =>
+      await TajweedAyaCtrl.instance.download();
+
+  /// لمعرفة ما إذا كانت بيانات التجويد قيد التحضير/التحميل.
+  ///
+  /// Whether Tajweed data is preparing/downloading.
+  bool get isPreparingDownloadTajweedAyah =>
+      TajweedAyaCtrl.instance.isPreparingDownload.value;
+
+  /// لمعرفة ما إذا كان التجويد يتم تحميله الآن.
+  ///
+  /// Whether Tajweed is currently downloading.
+  bool get isDownloadingTajweedAyah =>
+      TajweedAyaCtrl.instance.isDownloading.value;
+
+  /// نسبة تقدم تحميل التجويد (قيمة بين 0 و 1).
+  ///
+  /// Tajweed download progress as a value between 0 and 1.
+  double get tajweedAyahDownloadProgress =>
+      TajweedAyaCtrl.instance.downloadProgress.value / 100;
+
   /// يقوم بتشغيل آية أو مجموعة من الآيات الصوتية بدءًا من الآية المحددة.
   /// يمكن تشغيل آية واحدة فقط أو الاستمرار في تشغيل الآيات التالية.
   ///

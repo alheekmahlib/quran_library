@@ -215,8 +215,8 @@ class TafsirStyle {
       tafsirIsEmptyNote: defaultEmptyNote,
 
       // الهوامش
-      horizontalMargin: 0.0,
-      verticalMargin: 0.0,
+      horizontalMargin: 8.0,
+      verticalMargin: 4.0,
 
       // الحجم المقترح للـ BottomSheet
       heightOfBottomSheet: MediaQuery.of(context).size.height * 0.9,

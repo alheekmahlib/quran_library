@@ -379,130 +379,19 @@ extension FontsExtension on QuranCtrl {
       // حد أدنى للحجم لمنع ملفات HTML/أخطاء CDN المقنّعة
       const int minZipSizeBytes = 1024 * 1024; // ~1MB
 
-      final dio = Dio()
-        ..options.connectTimeout = const Duration(seconds: 20)
-        ..options.receiveTimeout = const Duration(minutes: 2);
-
-      bool extractionSucceeded = false;
-
-      for (final url in urls) {
-        try {
-          log('Attempting to download from: $url', name: 'FontsDownload');
-
-          final response = await dio.get(url,
-              options: Options(
-                responseType: ResponseType.stream,
-                followRedirects: true,
-                sendTimeout: const Duration(seconds: 30),
-                headers: {
-                  'User-Agent': 'Flutter/Quran-Library',
-                  'Accept': '*/*',
-                  'Accept-Encoding': 'identity',
-                },
-              ));
-
-          if (response.statusCode != 200) {
-            log('Failed to connect to $url: ${response.statusCode}',
-                name: 'FontsDownload');
-            continue;
-          }
-
-          final contentType =
-              response.headers.value(Headers.contentTypeHeader) ?? '';
-          final headerLenStr =
-              response.headers.value(Headers.contentLengthHeader);
-          final headerLen = int.tryParse(headerLenStr ?? '0') ?? 0;
-
-          if (contentType.startsWith('text/') || contentType.contains('html')) {
-            log('Rejected $url due to suspicious content-type: $contentType',
-                name: 'FontsDownload');
-            continue;
-          }
-          if (headerLen > 0 && headerLen < minZipSizeBytes) {
-            log('Rejected $url due to too small content-length: $headerLen',
-                name: 'FontsDownload');
-            continue;
-          }
-
-          // نزّل إلى الملف
-          final sink = zipFile.openWrite();
-          int downloaded = 0;
-          final completer = Completer<void>();
-
-          (response.data as ResponseBody).stream.listen(
-            (chunk) {
-              downloaded += chunk.length;
-              sink.add(chunk);
-              state.isDownloadingFonts.value = true;
-              state.isPreparingDownload.value = false;
-              if (headerLen > 0) {
-                state.fontsDownloadProgress.value =
-                    downloaded / headerLen * 100;
-                update(['fontsDownloadingProgress']);
-              }
-            },
-            onDone: () async {
-              await sink.flush();
-              await sink.close();
-              completer.complete();
-            },
-            onError: (e) async {
-              await sink.close();
-              completer.completeError(e);
-            },
-            cancelOnError: true,
-          );
-
-          await completer.future;
-
-          final size = await zipFile.length();
-          log('Downloaded ZIP file size: $size bytes');
-          if (size < minZipSizeBytes) {
-            log('Zip too small, trying next mirror...', name: 'FontsDownload');
-            try {
-              await zipFile.delete();
-            } catch (_) {}
-            continue;
-          }
-
-          try {
-            final bytes = await zipFile.readAsBytes();
-            final archive = ZipDecoder().decodeBytes(bytes);
-            if (archive.isEmpty) {
-              throw const FormatException(
-                  'Failed to extract ZIP file: Archive is empty');
-            }
-            for (final file in archive) {
-              final filename = '${fontsDir.path}/${file.name}';
-              if (file.isFile) {
-                final out = File(filename);
-                await out.create(recursive: true);
-                await out.writeAsBytes(file.content as List<int>);
-              }
-            }
-            extractionSucceeded = true;
-            break;
-          } catch (e) {
-            log('Failed to extract ZIP from $url: $e', name: 'FontsDownload');
-            try {
-              await zipFile.delete();
-            } catch (_) {}
-            continue;
-          }
-        } catch (e) {
-          log('Download error with URL, trying next: $e',
-              name: 'FontsDownload');
-          try {
-            if (await zipFile.exists()) await zipFile.delete();
-          } catch (_) {}
-          continue;
-        }
-      }
-
-      if (!extractionSucceeded) {
-        throw Exception(
-            'All mirrors failed to provide a valid ZIP or extraction failed');
-      }
+      await ZipDownloadService.downloadAndExtract(
+        urls: urls,
+        zipFile: zipFile,
+        destinationDir: fontsDir,
+        minZipSizeBytes: minZipSizeBytes,
+        logName: 'FontsDownload',
+        onProgress: (p) {
+          state.isDownloadingFonts.value = true;
+          state.isPreparingDownload.value = false;
+          state.fontsDownloadProgress.value = p;
+          update(['fontsDownloadingProgress']);
+        },
+      );
 
       // حفظ حالة التحميل
       if (!state.fontsDownloadedList.contains(fontIndex)) {

@@ -22,7 +22,8 @@ class TajweedMenuWidget extends StatelessWidget {
               ? Container(
                   height: defaults.height ?? 350,
                   width: defaults.width ?? 350,
-                  padding: defaults.listPadding ?? const EdgeInsets.all(16.0),
+                  padding:
+                      defaults.containerPadding ?? const EdgeInsets.all(16.0),
                   decoration: BoxDecoration(
                     color: defaults.backgroundColor ??
                         AppColors.getBackgroundColor(isDark),
@@ -32,8 +33,9 @@ class TajweedMenuWidget extends StatelessWidget {
                   child: Column(
                     children: [
                       Padding(
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 8.0, horizontal: 12.0),
+                        padding: defaults.headerPadding ??
+                            const EdgeInsets.symmetric(
+                                vertical: 8.0, horizontal: 12.0),
                         child: HeaderDialogWidget(
                           isDark: isDark,
                           title: defaults.headerTitle ?? 'أحكام التجويد',

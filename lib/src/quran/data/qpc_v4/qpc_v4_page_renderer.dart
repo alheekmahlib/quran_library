@@ -121,7 +121,7 @@ class QpcV4PageRenderer {
   }
 
   ({
-    List<QpcV4AyahSegment> segments,
+    List<QpcV4WordSegment> segments,
     bool didInsertSingleSpaceBetweenFirstTwoWords,
   }) _buildAyahSegmentsForLine({
     required int rangeStart,
@@ -130,46 +130,8 @@ class QpcV4PageRenderer {
     required Map<int, int> maxWordIndexByAyahKey,
     required bool addSingleSpaceBetweenFirstTwoWords,
   }) {
-    final segments = <QpcV4AyahSegment>[];
+    final segments = <QpcV4WordSegment>[];
     var didInsertSingleSpaceBetweenFirstTwoWords = false;
-
-    int? currentSurah;
-    int? currentAyah;
-    int? currentKey;
-    int? lastWordIdInSegment;
-    final buffer = StringBuffer();
-
-    void flush() {
-      if (currentKey == null || currentSurah == null || currentAyah == null) {
-        buffer.clear();
-        return;
-      }
-      final glyphs = buffer.toString();
-      if (glyphs.isEmpty) {
-        buffer.clear();
-        return;
-      }
-      final uq = ayahUqResolver(
-        surahNumber: currentSurah,
-        ayahNumber: currentAyah,
-      );
-      if (uq == 0) {
-        buffer.clear();
-        return;
-      }
-      final endWordId = endWordIdByAyahKey[currentKey];
-      final isAyahEnd = endWordId != null && lastWordIdInSegment == endWordId;
-      segments.add(
-        QpcV4AyahSegment(
-          ayahUq: uq,
-          surahNumber: currentSurah,
-          ayahNumber: currentAyah,
-          glyphs: glyphs,
-          isAyahEnd: isAyahEnd,
-        ),
-      );
-      buffer.clear();
-    }
 
     var realWordsWritten = 0;
 
@@ -184,16 +146,13 @@ class QpcV4PageRenderer {
         continue;
       }
 
-      if (currentKey == null) {
-        currentKey = key;
-        currentSurah = w.surah;
-        currentAyah = w.ayah;
-      } else if (key != currentKey) {
-        flush();
-        currentKey = key;
-        currentSurah = w.surah;
-        currentAyah = w.ayah;
+      final uq = ayahUqResolver(surahNumber: w.surah, ayahNumber: w.ayah);
+      if (uq == 0) {
+        continue;
       }
+
+      final endWordId = endWordIdByAyahKey[key];
+      final isAyahEnd = endWordId != null && wordId == endWordId;
 
       // حل مستهدف: المشكلة عندك فقط بين أول وثاني كلمة في الصفحة.
       // لذلك نضيف فاصلًا مرة واحدة فقط قبل الكلمة الثانية الفعلية في أول سطر آيات.
@@ -205,26 +164,44 @@ class QpcV4PageRenderer {
       if (addSingleSpaceBetweenFirstTwoWords && realWordsWritten == 0) {
         final runes = w.text.runes.toList(growable: false);
         if (runes.length > 1) {
-          buffer.write(String.fromCharCode(runes.first));
-          buffer.write('\u202F');
-          buffer.write(String.fromCharCodes(runes.skip(1)));
+          final glyphs =
+              '${String.fromCharCode(runes.first)}\u202F${String.fromCharCodes(runes.skip(1))}';
           didInsertSingleSpaceBetweenFirstTwoWords = true;
-          lastWordIdInSegment = wordId;
+          segments.add(
+            QpcV4WordSegment(
+              wordId: w.id,
+              ayahUq: uq,
+              surahNumber: w.surah,
+              ayahNumber: w.ayah,
+              wordNumber: w.wordIndex,
+              glyphs: glyphs,
+              isAyahEnd: isAyahEnd,
+            ),
+          );
           realWordsWritten += 2;
           continue;
         }
       }
 
+      var glyphs = w.text;
       if (addSingleSpaceBetweenFirstTwoWords && realWordsWritten == 1) {
-        buffer.write('\u202F');
+        glyphs = '\u202F$glyphs';
         didInsertSingleSpaceBetweenFirstTwoWords = true;
       }
-      buffer.write(w.text);
-      lastWordIdInSegment = wordId;
+
+      segments.add(
+        QpcV4WordSegment(
+          wordId: w.id,
+          ayahUq: uq,
+          surahNumber: w.surah,
+          ayahNumber: w.ayah,
+          wordNumber: w.wordIndex,
+          glyphs: glyphs,
+          isAyahEnd: isAyahEnd,
+        ),
+      );
       realWordsWritten++;
     }
-
-    flush();
     return (
       segments: segments,
       didInsertSingleSpaceBetweenFirstTwoWords:

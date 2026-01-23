@@ -36,6 +36,8 @@ TextSpan _qpcV4SpanSegment({
   required double fontSize,
   required int ayahUQNum,
   required int ayahNumber,
+  required WordRef wordRef,
+  required bool isWordKhilaf,
   required String glyphs,
   required bool showAyahNumber,
   _LongPressStartDetailsFunction? onLongPressStart,
@@ -51,6 +53,7 @@ TextSpan _qpcV4SpanSegment({
   required bool isDark,
 }) {
   final quranCtrl = QuranCtrl.instance;
+  final wordInfoCtrl = WordInfoCtrl.instance;
   final bg = _ayahBackgroundColor(
     ayahUQNum: ayahUQNum,
     isSelected: isSelected,
@@ -61,21 +64,37 @@ TextSpan _qpcV4SpanSegment({
     ayahSelectedBackgroundColor: ayahSelectedBackgroundColor,
   );
 
+  final bool forceRed = isWordKhilaf &&
+      !(quranCtrl.state.fontsSelected.value == 2) &&
+      WordInfoCtrl.instance.isTenRecitations;
+  final bool isWordSelected = wordInfoCtrl.selectedWordRef.value == wordRef;
+  final Color selectedWordBg = isDark
+      ? Colors.white.withValues(alpha: 0.18)
+      : const Color(0xFFFFF59D).withValues(alpha: 0.65);
+
   final baseTextStyle = TextStyle(
     fontFamily: isFontsLocal ? fontsName : quranCtrl.getFontPath(pageIndex),
     fontSize: fontSize,
     height: 2.0,
-    color: isDark && quranCtrl.state.fontsSelected.value == 2
+    color: forceRed
+        ? Colors.red
+        : (isDark && quranCtrl.state.fontsSelected.value == 2
+            ? null
+            : textColor ?? AppColors.getTextColor(isDark)),
+    backgroundColor: bg ?? (isWordSelected ? selectedWordBg : null),
+    foreground: forceRed
         ? null
-        : textColor ?? AppColors.getTextColor(isDark),
-    backgroundColor: bg,
-    foreground: isDark && quranCtrl.state.fontsSelected.value == 2
-        ? (Paint()
-          ..color = Colors.black
-          ..style = PaintingStyle.fill
-          ..invertColors = true
-          ..blendMode = BlendMode.plus)
-        : null,
+        : isDark && quranCtrl.state.fontsSelected.value == 2
+            ? (Paint()
+              ..color = Colors.black
+              ..style = PaintingStyle.fill
+              ..invertColors = true
+              ..blendMode = BlendMode.plus)
+            : null,
+    decoration: isWordSelected ? TextDecoration.underline : null,
+    decorationColor:
+        forceRed ? Colors.red : (textColor ?? AppColors.getTextColor(isDark)),
+    decorationThickness: isWordSelected ? 2.0 : null,
     // shadows: [
     //   Shadow(
     //     blurRadius: 0.5,
@@ -121,20 +140,34 @@ TextSpan _qpcV4SpanSegment({
           );
   }
 
+  final recognizer = TapLongPressRecognizer(
+    shortHoldDuration: const Duration(milliseconds: 250),
+    longHoldDuration: const Duration(milliseconds: 500),
+  )
+    ..onShortHoldStartCallback = () {
+      wordInfoCtrl.setSelectedWord(wordRef);
+    }
+    ..onShortHoldCompleteCallback = () {
+      () async {
+        await showWordInfoBottomSheet(
+            context: context, ref: wordRef, isDark: isDark);
+        wordInfoCtrl.clearSelectedWord();
+      }();
+    }
+    ..onLongHoldStartCallback = (details) {
+      wordInfoCtrl.clearSelectedWord();
+      onLongPressStart?.call(details);
+    };
+
   return TextSpan(
     children: <InlineSpan>[
       TextSpan(
         text: glyphs,
         style: baseTextStyle,
-        recognizer: LongPressGestureRecognizer(
-            duration: const Duration(milliseconds: 500))
-          ..onLongPressStart = onLongPressStart,
+        recognizer: recognizer,
       ),
       if (tail != null) tail,
     ],
-    recognizer:
-        LongPressGestureRecognizer(duration: const Duration(milliseconds: 500))
-          ..onLongPressStart = onLongPressStart,
   );
 }
 

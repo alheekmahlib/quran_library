@@ -147,114 +147,190 @@ class _FontsRecitationTile extends StatelessWidget {
       final bool canSelect = !isDownloadOption || downloaded;
       final bool canTap = isFontsLocal || kIsWeb || canSelect;
 
-      return ClipRRect(
-        borderRadius: BorderRadius.circular(12.0),
-        child: AnimatedContainer(
-          height: isSelected ? 65 : 55,
-          alignment: Alignment.center,
-          duration: const Duration(milliseconds: 200),
-          curve: Curves.easeInOut,
-          margin: const EdgeInsets.symmetric(vertical: 6.0),
-          decoration: BoxDecoration(
-            color:
-                isSelected ? accent.withValues(alpha: .05) : Colors.transparent,
-            border: Border.all(color: outlineColor, width: 1),
-            borderRadius: BorderRadius.circular(12.0),
-          ),
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              _DownloadProgressBackground(
-                isVisible: isDownloadOption &&
-                    !isFontsLocal &&
-                    !kIsWeb &&
-                    (preparing || downloading),
-                progress: progress,
-                downloading: downloading,
-                style: style,
-                accent: accent,
-                background: background,
-              ),
-              InkWell(
-                onTap: canTap
-                    ? () => ctrl.selectRecitation(
-                          recitation,
-                          isFontsLocal: isFontsLocal,
-                        )
-                    : null,
-                child: SizedBox(
-                  height: isSelected ? 65 : 55,
-                  child: Row(
-                    children: [
-                      (isFontsLocal || kIsWeb || !isDownloadOption)
-                          ? const SizedBox.shrink()
-                          : _DownloadActionButton(
-                              index: index,
-                              ctrl: ctrl,
-                              isSelected: isSelected,
-                              downloaded: downloaded,
-                              preparing: preparing,
-                              downloading: downloading,
-                              accent: accent,
-                              style: style,
-                            ),
-                      Expanded(
-                        flex: 9,
-                        child: Padding(
-                          padding: const EdgeInsetsDirectional.symmetric(
-                              horizontal: 12.0),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                flex: 9,
-                                child: Align(
-                                  alignment: AlignmentDirectional.centerStart,
-                                  child: FittedBox(
-                                    fit: BoxFit.scaleDown,
-                                    child: Text(
-                                      _titleText(
-                                        style: style,
-                                        isDownloadOption: isDownloadOption,
-                                        downloading: downloading,
-                                        progress: progress,
-                                        index: index,
-                                        recitation: recitation,
-                                        languageCode: languageCode,
-                                      ),
-                                      style: style?.fontNameStyle ??
-                                          TextStyle(
-                                            fontSize: 16,
-                                            fontFamily: 'cairo',
-                                            color: textColor,
-                                            package: 'quran_library',
-                                          ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              Expanded(
-                                flex: 1,
-                                child: Icon(
-                                  isSelected
-                                      ? Icons.radio_button_checked
-                                      : Icons.radio_button_unchecked,
-                                  color: accent,
-                                ),
-                              ),
-                            ],
+      return DownloadButtonWidget(
+        onTap: () => canTap
+            ? ctrl.selectRecitation(
+                recitation,
+                isFontsLocal: isFontsLocal,
+              )
+            : null,
+        preparing: preparing,
+        downloading: downloading,
+        progress: progress,
+        isSelected: isSelected,
+        downloaded: downloaded,
+        borderColor: outlineColor,
+        valueColor: style?.linearProgressColor ?? accent,
+        isVisible: isDownloadOption &&
+            !isFontsLocal &&
+            !kIsWeb &&
+            (preparing || downloading),
+        background: (style?.linearProgressBackgroundColor ?? background)
+            .withValues(alpha: .05),
+        children: [
+          (isFontsLocal || kIsWeb || !isDownloadOption)
+              ? const SizedBox.shrink()
+              : _DownloadActionButton(
+                  index: index,
+                  ctrl: ctrl,
+                  isSelected: isSelected,
+                  downloaded: downloaded,
+                  preparing: preparing,
+                  downloading: downloading,
+                  accent: accent,
+                  style: style,
+                ),
+          Expanded(
+            flex: 9,
+            child: Padding(
+              padding: const EdgeInsetsDirectional.symmetric(horizontal: 12.0),
+              child: Row(
+                children: [
+                  Expanded(
+                    flex: 9,
+                    child: Align(
+                      alignment: AlignmentDirectional.centerStart,
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Text(
+                          _titleText(
+                            style: style,
+                            isDownloadOption: isDownloadOption,
+                            downloading: downloading,
+                            progress: progress,
+                            index: index,
+                            recitation: recitation,
+                            languageCode: languageCode,
                           ),
+                          style: style?.fontNameStyle ??
+                              TextStyle(
+                                fontSize: 16,
+                                fontFamily: 'cairo',
+                                color: textColor,
+                                package: 'quran_library',
+                              ),
                         ),
                       ),
-                    ],
+                    ),
                   ),
-                ),
+                  Expanded(
+                    flex: 1,
+                    child: Icon(
+                      isSelected
+                          ? Icons.radio_button_checked
+                          : Icons.radio_button_unchecked,
+                      color: accent,
+                    ),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
-        ),
+        ],
       );
     });
   }
+
+  // Widget downloadButtonWidget(
+  //     bool isDownloadOption,
+  //     bool preparing,
+  //     bool downloading,
+  //     double progress,
+  //     bool canTap,
+  //     bool isSelected,
+  //     int index,
+  //     bool downloaded) {
+  //   return Stack(
+  //     alignment: Alignment.center,
+  //     children: [
+  //       _DownloadProgressBackground(
+  //         isVisible: isDownloadOption &&
+  //             !isFontsLocal &&
+  //             !kIsWeb &&
+  //             (preparing || downloading),
+  //         progress: progress,
+  //         downloading: downloading,
+  //         style: style,
+  //         accent: accent,
+  //         background: background,
+  //       ),
+  //       InkWell(
+  //         onTap: canTap
+  //             ? () => ctrl.selectRecitation(
+  //                   recitation,
+  //                   isFontsLocal: isFontsLocal,
+  //                 )
+  //             : null,
+  //         child: SizedBox(
+  //           height: isSelected ? 65 : 55,
+  //           child: Row(
+  //             children: [
+  //               (isFontsLocal || kIsWeb || !isDownloadOption)
+  //                   ? const SizedBox.shrink()
+  //                   : _DownloadActionButton(
+  //                       index: index,
+  //                       ctrl: ctrl,
+  //                       isSelected: isSelected,
+  //                       downloaded: downloaded,
+  //                       preparing: preparing,
+  //                       downloading: downloading,
+  //                       accent: accent,
+  //                       style: style,
+  //                     ),
+  //               Expanded(
+  //                 flex: 9,
+  //                 child: Padding(
+  //                   padding:
+  //                       const EdgeInsetsDirectional.symmetric(horizontal: 12.0),
+  //                   child: Row(
+  //                     children: [
+  //                       Expanded(
+  //                         flex: 9,
+  //                         child: Align(
+  //                           alignment: AlignmentDirectional.centerStart,
+  //                           child: FittedBox(
+  //                             fit: BoxFit.scaleDown,
+  //                             child: Text(
+  //                               _titleText(
+  //                                 style: style,
+  //                                 isDownloadOption: isDownloadOption,
+  //                                 downloading: downloading,
+  //                                 progress: progress,
+  //                                 index: index,
+  //                                 recitation: recitation,
+  //                                 languageCode: languageCode,
+  //                               ),
+  //                               style: style?.fontNameStyle ??
+  //                                   TextStyle(
+  //                                     fontSize: 16,
+  //                                     fontFamily: 'cairo',
+  //                                     color: textColor,
+  //                                     package: 'quran_library',
+  //                                   ),
+  //                             ),
+  //                           ),
+  //                         ),
+  //                       ),
+  //                       Expanded(
+  //                         flex: 1,
+  //                         child: Icon(
+  //                           isSelected
+  //                               ? Icons.radio_button_checked
+  //                               : Icons.radio_button_unchecked,
+  //                           color: accent,
+  //                         ),
+  //                       ),
+  //                     ],
+  //                   ),
+  //                 ),
+  //               ),
+  //             ],
+  //           ),
+  //         ),
+  //       ),
+  //     ],
+  //   );
+  // }
 
   static bool _isDownloaded({
     required QuranCtrl ctrl,
@@ -366,55 +442,6 @@ class _DownloadActionButton extends StatelessWidget {
               ),
             ),
         ],
-      ),
-    );
-  }
-}
-
-class _DownloadProgressBackground extends StatelessWidget {
-  final bool isVisible;
-  final double progress;
-  final bool downloading;
-  final DownloadFontsDialogStyle? style;
-  final Color accent;
-  final Color background;
-
-  const _DownloadProgressBackground({
-    required this.isVisible,
-    required this.progress,
-    required this.downloading,
-    required this.style,
-    required this.accent,
-    required this.background,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    if (!isVisible) return const SizedBox.shrink();
-
-    const double buttonHeight = 55;
-    const double radius = 8;
-
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(radius),
-      child: SizedBox(
-        width: double.infinity,
-        height: buttonHeight,
-        child: TweenAnimationBuilder<double>(
-          tween: Tween<double>(begin: 0.0, end: progress),
-          duration: const Duration(milliseconds: 1000),
-          curve: Curves.fastEaseInToSlowEaseOut,
-          builder: (context, value, child) => LinearProgressIndicator(
-            minHeight: buttonHeight,
-            value: downloading ? (value / 100).clamp(0.0, 1.0) : null,
-            backgroundColor:
-                (style?.linearProgressBackgroundColor ?? background)
-                    .withValues(alpha: .05),
-            valueColor: AlwaysStoppedAnimation<Color>(
-              (style?.linearProgressColor ?? accent).withValues(alpha: .25),
-            ),
-          ),
-        ),
       ),
     );
   }

@@ -71,6 +71,7 @@ part 'src/quran/data/models/styles_models/surah_info_style.dart';
 part 'src/quran/data/models/styles_models/surah_name_style.dart';
 part 'src/quran/data/models/styles_models/tajweed_menu_style.dart';
 part 'src/quran/data/models/styles_models/top_bottom_quran_style.dart';
+part 'src/quran/data/models/styles_models/word_info_dialog_style.dart';
 part 'src/quran/data/models/surah_names_model.dart';
 part 'src/quran/data/models/word_info_models.dart';
 part 'src/quran/data/qpc_v4/qpc_v4_assets_loader.dart';
@@ -112,7 +113,7 @@ part 'src/quran/presentation/widgets/top_bottom_widget/build_bottom_section.dart
 part 'src/quran/presentation/widgets/top_bottom_widget/build_top_section.dart';
 part 'src/quran/presentation/widgets/top_bottom_widget/top_and_bottom_widget.dart';
 part 'src/quran/presentation/widgets/word_info/tap_long_press_recognizer.dart';
-part 'src/quran/presentation/widgets/word_info/word_info_dialog.dart';
+part 'src/quran/presentation/widgets/word_info/word_info_bottom_sheet.dart';
 
 /// A comprehensive library for displaying the Holy Quran in Flutter applications.
 ///

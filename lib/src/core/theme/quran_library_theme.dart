@@ -142,6 +142,23 @@ class TajweedMenuTheme extends InheritedWidget {
       style != oldWidget.style;
 }
 
+/// مزود نمط حوار معلومات الكلمة (Word Info)
+class WordInfoDialogTheme extends InheritedWidget {
+  final WordInfoBottomSheetStyle style;
+  const WordInfoDialogTheme({
+    super.key,
+    required this.style,
+    required super.child,
+  });
+
+  static WordInfoDialogTheme? of(BuildContext context) =>
+      context.dependOnInheritedWidgetOfExactType<WordInfoDialogTheme>();
+
+  @override
+  bool updateShouldNotify(covariant WordInfoDialogTheme oldWidget) =>
+      style != oldWidget.style;
+}
+
 /// مزود نمط تبويب البحث
 class SearchTabTheme extends InheritedWidget {
   final SearchTabStyle style;

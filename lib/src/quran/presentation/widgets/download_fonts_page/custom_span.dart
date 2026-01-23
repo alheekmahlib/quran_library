@@ -149,7 +149,7 @@ TextSpan _qpcV4SpanSegment({
     }
     ..onShortHoldCompleteCallback = () {
       () async {
-        await showWordInfoDialog(
+        await showWordInfoBottomSheet(
             context: context, ref: wordRef, isDark: isDark);
         wordInfoCtrl.clearSelectedWord();
       }();

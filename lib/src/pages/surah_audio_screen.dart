@@ -196,7 +196,7 @@ class PortraitWidget extends StatelessWidget {
                     id: 'change_sheet_state',
                     builder: (surahCtrl) => AnimatedSize(
                       duration: const Duration(milliseconds: 300),
-                      alignment: AlignmentGeometry.bottomCenter,
+                      alignment: Alignment.bottomCenter,
                       child: AnimatedCrossFade(
                         // مطابقة مدة الأنيميشن مع السلايدر لتجنب overflow
                         // Match animation duration with slider to avoid overflow

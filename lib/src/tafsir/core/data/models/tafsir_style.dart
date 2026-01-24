@@ -52,6 +52,7 @@ class TafsirStyle {
   final TextStyle? tajweedButtonTextStyle;
   final TextStyle? tajweedProgressTextStyle;
   final TextStyle? tajweedContentTextStyle;
+  final TextStyle? tabBarLabelStyle;
 
   TafsirStyle({
     this.backgroundColor,
@@ -103,6 +104,7 @@ class TafsirStyle {
     this.tajweedButtonTextStyle,
     this.tajweedProgressTextStyle,
     this.tajweedContentTextStyle,
+    this.tabBarLabelStyle,
   });
 
   TafsirStyle copyWith({
@@ -155,6 +157,7 @@ class TafsirStyle {
     TextStyle? tajweedButtonTextStyle,
     TextStyle? tajweedProgressTextStyle,
     TextStyle? tajweedContentTextStyle,
+    TextStyle? tabBarLabelStyle,
   }) {
     return TafsirStyle(
       tafsirNameWidget: tafsirNameWidget ?? this.tafsirNameWidget,
@@ -227,6 +230,7 @@ class TafsirStyle {
           tajweedProgressTextStyle ?? this.tajweedProgressTextStyle,
       tajweedContentTextStyle:
           tajweedContentTextStyle ?? this.tajweedContentTextStyle,
+      tabBarLabelStyle: tabBarLabelStyle ?? this.tabBarLabelStyle,
     );
   }
 
@@ -379,6 +383,13 @@ class TafsirStyle {
         ],
       ),
       dialogHeaderTitle: 'تغيير التفسير',
+      tabBarLabelStyle: TextStyle(
+        fontFamily: 'cairo',
+        package: 'quran_library',
+        fontWeight: FontWeight.bold,
+        fontSize: 14,
+        color: AppColors.getTextColor(isDark),
+      ),
     );
   }
 }

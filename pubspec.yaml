@@ -79,8 +79,8 @@ flutter:
     - assets/jsons/
     - assets/svg/
     - assets/images/
-    - assets/saadi.json
-    - assets/en.json
+    - assets/saadi.json.gz
+    - assets/en.json.gz
 
   fonts:
     - family: kufi

@@ -52,6 +52,8 @@ class QuranTopBarStyle {
   final String? quranTabText;
   final String? tenRecitationsTabText;
 
+  final TextStyle? tabLabelStyle;
+
   const QuranTopBarStyle({
     this.showBackButton,
     this.backIconPath,
@@ -85,6 +87,7 @@ class QuranTopBarStyle {
     this.showTajweedButton,
     this.quranTabText,
     this.tenRecitationsTabText,
+    this.tabLabelStyle,
   });
 
   QuranTopBarStyle copyWith({
@@ -120,6 +123,7 @@ class QuranTopBarStyle {
     bool? showTajweedButton,
     String? quranTabText,
     String? tenRecitationsTabText,
+    TextStyle? tabLabelStyle,
   }) =>
       QuranTopBarStyle(
         backIconPath: backIconPath ?? this.backIconPath,
@@ -156,6 +160,7 @@ class QuranTopBarStyle {
         quranTabText: quranTabText ?? this.quranTabText,
         tenRecitationsTabText:
             tenRecitationsTabText ?? this.tenRecitationsTabText,
+        tabLabelStyle: tabLabelStyle ?? this.tabLabelStyle,
       );
 
   /// Provide sensible defaults based on theme (isDark)
@@ -197,6 +202,14 @@ class QuranTopBarStyle {
       showTajweedButton: true,
       quranTabText: 'القرآن الكريم',
       tenRecitationsTabText: 'القراءات العشر',
+      tabLabelStyle: TextStyle(
+        fontSize: 12,
+        fontWeight: FontWeight.w700,
+        height: 1.3,
+        color: AppColors.getTextColor(isDark),
+        fontFamily: 'cairo',
+        package: 'quran_library',
+      ),
     );
   }
 }

@@ -64,9 +64,9 @@ TextSpan _qpcV4SpanSegment({
     ayahSelectedBackgroundColor: ayahSelectedBackgroundColor,
   );
 
-  final bool forceRed = isWordKhilaf &&
-      !(quranCtrl.state.fontsSelected.value == 2) &&
-      WordInfoCtrl.instance.isTenRecitations;
+  final withTajweed = QuranCtrl.instance.state.isTajweedEnabled.value;
+  final bool forceRed =
+      isWordKhilaf && !withTajweed && WordInfoCtrl.instance.isTenRecitations;
   final bool isWordSelected = wordInfoCtrl.selectedWordRef.value == wordRef;
   final Color selectedWordBg = isDark
       ? Colors.white.withValues(alpha: 0.18)
@@ -76,19 +76,22 @@ TextSpan _qpcV4SpanSegment({
     fontFamily: isFontsLocal ? fontsName : quranCtrl.getFontPath(pageIndex),
     fontSize: fontSize,
     height: 2.0,
-    color: forceRed
-        ? Colors.red
-        : (isDark && quranCtrl.state.fontsSelected.value == 2
-            ? null
-            : textColor ?? AppColors.getTextColor(isDark)),
+    // color: forceRed
+    //     ? Colors.red
+    //     : (isDark && withTajweed
+    //         ? null
+    //         : textColor ?? AppColors.getTextColor(isDark)),
     backgroundColor: bg ?? (isWordSelected ? selectedWordBg : null),
-    foreground: forceRed
-        ? null
-        : isDark && quranCtrl.state.fontsSelected.value == 2
+    foreground: !withTajweed
+        ? (Paint()
+          ..colorFilter = ColorFilter.mode(
+              forceRed ? Colors.red : AppColors.getTextColor(isDark),
+              BlendMode.srcIn))
+        : isDark
             ? (Paint()
-              ..color = Colors.black
+              ..color = forceRed ? Colors.red : Colors.white
               ..style = PaintingStyle.fill
-              ..invertColors = true
+              ..invertColors = isDark ? true : false
               ..blendMode = BlendMode.plus)
             : null,
     decoration: isWordSelected ? TextDecoration.underline : null,

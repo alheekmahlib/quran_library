@@ -46,19 +46,19 @@ enum QuranRecitation {
   ),
 
   /// حفص - خط المصحف (requires download)
-  hafsMushaf(
-    recitationIndex: 1,
-    arabicName: 'خط المصحف (حفص)',
-    englishName: 'Hafs Mushaf',
-    fontFamily: 'hafs',
-    dataSource: DataSource.downloaded(),
-  ),
+  // hafsMushaf(
+  //   recitationIndex: 1,
+  //   arabicName: 'خط المصحف (حفص)',
+  //   englishName: 'Hafs Mushaf',
+  //   fontFamily: 'hafs',
+  //   dataSource: DataSource.downloaded(),
+  // ),
 
   /// حفص - خط التجويد (requires download)
   hafsMushafTajweed(
-    recitationIndex: 2,
-    arabicName: 'خط التجويد (حفص)',
-    englishName: 'Hafs Mushaf Tajweed',
+    recitationIndex: 1,
+    arabicName: 'خط المصحف (حفص)',
+    englishName: 'Hafs Mushaf',
     fontFamily: 'p',
     dataSource: DataSource.downloaded(),
   );

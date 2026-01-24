@@ -90,8 +90,95 @@ class FontsDownloadWidget extends StatelessWidget {
               ),
             ),
           ),
+          TajweedButtonWidget(
+              background: background,
+              outlineColor: outlineColor,
+              downloadFontsDialogStyle: downloadFontsDialogStyle,
+              textColor: textColor,
+              accent: accent),
         ],
       ),
+    );
+  }
+}
+
+class TajweedButtonWidget extends StatelessWidget {
+  const TajweedButtonWidget({
+    super.key,
+    required this.background,
+    required this.outlineColor,
+    required this.downloadFontsDialogStyle,
+    required this.textColor,
+    required this.accent,
+  });
+
+  final Color background;
+  final Color outlineColor;
+  final DownloadFontsDialogStyle? downloadFontsDialogStyle;
+  final Color textColor;
+  final Color accent;
+
+  @override
+  Widget build(BuildContext context) {
+    final fontsSelected = QuranCtrl.instance.state.fontsSelected.value == 1;
+    final isTajweed = QuranCtrl.instance.state.isTajweedEnabled.value == true;
+    String tajweedNames =
+        downloadFontsDialogStyle?.tajweedOptionNames ?? 'مع التجويد';
+    return AnimatedSize(
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+      child: !fontsSelected
+          ? const SizedBox.shrink()
+          : Padding(
+              padding: const EdgeInsetsDirectional.symmetric(horizontal: 12.0),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(12.0),
+                child: InkWell(
+                  onTap: () {
+                    QuranCtrl.instance.state.isTajweedEnabled.toggle();
+                    Get.forceAppUpdate();
+                  },
+                  borderRadius: BorderRadius.circular(12.0),
+                  child: AnimatedContainer(
+                    height: isTajweed ? 55 : 45,
+                    alignment: Alignment.center,
+                    duration: const Duration(milliseconds: 200),
+                    curve: Curves.easeInOut,
+                    margin: const EdgeInsets.symmetric(vertical: 2.0),
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    decoration: BoxDecoration(
+                      color: isTajweed
+                          ? outlineColor.withValues(alpha: .05)
+                          : Colors.transparent,
+                      border: Border.all(color: outlineColor, width: 1),
+                      borderRadius: BorderRadius.circular(12.0),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          tajweedNames,
+                          style: downloadFontsDialogStyle?.fontNameStyle ??
+                              TextStyle(
+                                height: 1.3,
+                                fontSize: 16,
+                                fontFamily: 'cairo',
+                                color: textColor,
+                                package: 'quran_library',
+                              ),
+                        ),
+                        Icon(
+                          isTajweed
+                              ? Icons.check_box
+                              : Icons.check_box_outline_blank,
+                          color: accent,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
     );
   }
 }

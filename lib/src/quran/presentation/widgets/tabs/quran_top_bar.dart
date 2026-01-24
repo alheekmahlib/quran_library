@@ -223,7 +223,8 @@ class QuranOrTenRecitationsTabBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return QuranCtrl.instance.state.fontsSelected.value == 1
+    return !QuranCtrl.instance.state.isTajweedEnabled.value &&
+            (QuranCtrl.instance.state.fontsSelected.value == 1)
         ? DefaultTabController(
             length: 2,
             child: Container(
@@ -233,6 +234,15 @@ class QuranOrTenRecitationsTabBar extends StatelessWidget {
                 color: bgColor,
                 borderRadius:
                     BorderRadius.circular(defaults.borderRadius ?? 12),
+                boxShadow: [
+                  BoxShadow(
+                    color: (defaults.shadowColor ??
+                        Colors.black.withValues(alpha: .1)),
+                    spreadRadius: 1,
+                    blurRadius: 5,
+                    offset: const Offset(0, 5),
+                  ),
+                ],
               ),
               child: TabBar(
                 controller: WordInfoCtrl.instance.tabController,
@@ -279,6 +289,7 @@ class QuranOrTenRecitationsTabBar extends StatelessWidget {
                   borderRadius: BorderRadius.circular(10),
                 ),
                 indicatorPadding: const EdgeInsets.all(4),
+                labelStyle: defaults.tabLabelStyle,
                 tabs: [
                   Tab(text: defaults.quranTabText),
                   Tab(text: defaults.tenRecitationsTabText),

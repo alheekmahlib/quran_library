@@ -58,7 +58,7 @@ class _QuranFontsPage extends StatelessWidget {
     return GetBuilder<QuranCtrl>(
       builder: (quranCtrl) {
         if ((quranCtrl.isQpcV4Enabled && !quranCtrl.isQpcV4AllPagesPrebuilt) ||
-            isFontsLocal!) {
+            !isFontsLocal!) {
           Future(() => quranCtrl.ensureQpcV4AllPagesPrebuilt());
           return Center(
             child: SizedBox(

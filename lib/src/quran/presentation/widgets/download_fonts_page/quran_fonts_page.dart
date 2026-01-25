@@ -57,7 +57,8 @@ class _QuranFontsPage extends StatelessWidget {
         MediaQuery.of(context).orientation == Orientation.landscape;
     return GetBuilder<QuranCtrl>(
       builder: (quranCtrl) {
-        if (quranCtrl.isQpcV4Enabled && !quranCtrl.isQpcV4AllPagesPrebuilt) {
+        if ((quranCtrl.isQpcV4Enabled && !quranCtrl.isQpcV4AllPagesPrebuilt) ||
+            isFontsLocal!) {
           Future(() => quranCtrl.ensureQpcV4AllPagesPrebuilt());
           return Center(
             child: SizedBox(

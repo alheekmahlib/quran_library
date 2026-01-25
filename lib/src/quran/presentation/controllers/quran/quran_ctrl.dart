@@ -287,12 +287,16 @@ class QuranCtrl extends GetxController {
       basePage + 2,
     }.where((p) => p >= 1 && p <= 604);
 
+    var didBuildAny = false;
     for (final p in candidates) {
       if (_qpcV4BlocksByPage.containsKey(p)) continue;
       _qpcV4BlocksByPage[p] = _qpcV4PageRenderer!.buildPage(pageNumber: p);
+      didBuildAny = true;
     }
 
-    update();
+    if (didBuildAny) {
+      update();
+    }
   }
 
   void junpTolastPage() {

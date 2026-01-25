@@ -6,6 +6,8 @@ part of '/quran.dart';
 
 /// Extension to handle font-related operations for the QuranCtrl class.
 extension FontsExtension on QuranCtrl {
+  // حارس لمنع تكرار استدعاء prepareFonts لنفس الصفحة بشكل متتابع
+  static final Set<int> _inFlightPreparePages = <int>{};
   bool get isPhones =>
       !kIsWeb && (Platform.isAndroid || Platform.isIOS || Platform.isFuchsia);
 
@@ -149,42 +151,50 @@ extension FontsExtension on QuranCtrl {
 
   /// **الدالة المعدلة:** تحضير الخطوط للصفحة الحالية والصفحات المجاورة
   Future<void> prepareFonts(int pageIndex, {bool isFontsLocal = false}) async {
-    log('Preparing fonts for page ${pageIndex + 1}...', name: 'FontsLoad');
     if (_requiresDownloadedFonts) {
+      // لا تطبع/تعمل أي شيء إذا كانت الصفحة محمّلة بالفعل أو الخطوط محلية.
+      if (state.loadedFontPages.contains(pageIndex) || isFontsLocal) return;
+
+      // حارس ضد التكرار المتقارب لنفس الصفحة (خصوصاً مع withPageView:false)
+      if (_inFlightPreparePages.contains(pageIndex)) return;
+      _inFlightPreparePages.add(pageIndex);
+      log('Preparing fonts for page ${pageIndex + 1}...', name: 'FontsLoad');
+
       // تحضير كامل صفحات QPC v4 لتفادي التقطيع أثناء تقليب الصفحات.
       if (isQpcV4Enabled) {
         Future(() => ensureQpcV4AllPagesPrebuilt());
       }
 
-      // إذا كان محمّلًا بالفعل محليًا لا نعيد الإرسال
-      if (state.loadedFontPages.contains(pageIndex) || isFontsLocal) return;
-
-      final currentGeneration = ++state._fontPreloadGeneration;
-      if (!kIsWeb) {
-        _sendFontLoadRequest(pageIndex, isFontsLocal, currentGeneration);
-      } else {
-        await loadFont(state.currentPageNumber.value - 1);
-      }
-
-      // جدولة الصفحات المجاورة بعد تأخير بسيط
-      state._debounceTimer?.cancel();
-      state._debounceTimer = Timer(const Duration(milliseconds: 300), () {
-        final gen = ++state._fontPreloadGeneration;
-        final neighbors = [-2, -1, 1, 2, 3, 4];
-        final candidates = neighbors
-            .map((o) => pageIndex + o)
-            .where((i) => i >= 0 && i < 604)
-            .toList();
-        if (!kIsWeb && state._fontPreloadGeneration != gen) return;
-        for (final i in candidates) {
-          if (state.loadedFontPages.contains(i)) continue;
-          if (kIsWeb) {
-            loadFont(i);
-          } else {
-            _sendFontLoadRequest(i, isFontsLocal, gen);
-          }
+      try {
+        final currentGeneration = ++state._fontPreloadGeneration;
+        if (!kIsWeb) {
+          _sendFontLoadRequest(pageIndex, isFontsLocal, currentGeneration);
+        } else {
+          await loadFont(state.currentPageNumber.value - 1);
         }
-      });
+
+        // جدولة الصفحات المجاورة بعد تأخير بسيط
+        state._debounceTimer?.cancel();
+        state._debounceTimer = Timer(const Duration(milliseconds: 300), () {
+          final gen = ++state._fontPreloadGeneration;
+          final neighbors = [-2, -1, 1, 2, 3, 4];
+          final candidates = neighbors
+              .map((o) => pageIndex + o)
+              .where((i) => i >= 0 && i < 604)
+              .toList();
+          if (!kIsWeb && state._fontPreloadGeneration != gen) return;
+          for (final i in candidates) {
+            if (state.loadedFontPages.contains(i)) continue;
+            if (kIsWeb) {
+              loadFont(i);
+            } else {
+              _sendFontLoadRequest(i, isFontsLocal, gen);
+            }
+          }
+        });
+      } finally {
+        _inFlightPreparePages.remove(pageIndex);
+      }
     }
   }
 

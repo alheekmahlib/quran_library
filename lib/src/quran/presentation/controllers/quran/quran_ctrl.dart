@@ -9,6 +9,9 @@ class QuranCtrl extends GetxController {
 
   final QuranRepository _quranRepository;
 
+  // تحميل بيانات المصحف (V1/V3) مرة واحدة عند الحاجة (خصوصاً بعد hot restart)
+  Future<void>? _coreDataLoadFuture;
+
   // --- QPC v4 (الخط المحمّل) ---
   QpcV4AssetsStore? _qpcV4Store;
   Future<void>? _qpcV4LoadFuture;
@@ -86,8 +89,36 @@ class QuranCtrl extends GetxController {
       }
     }
     await prepareFonts(state.currentPageNumber.value - 1);
+
+    // ضمان تحميل بيانات المصحف حتى لو لم يتم استدعاء QuranLibrary.init() في التطبيق المضيف.
+    // نطلقها بشكل غير متزامن لتجنب إبطاء onInit.
+    Future(() => ensureCoreDataLoaded());
+
     searchFocusNode = FocusNode();
     searchTextController = TextEditingController();
+  }
+
+  Future<void> ensureCoreDataLoaded() async {
+    if (state.pages.isNotEmpty && state.allAyahs.isNotEmpty) return;
+
+    _coreDataLoadFuture ??= () async {
+      try {
+        await Future.wait<void>([
+          loadQuranDataV1(),
+          loadQuranDataV3(),
+          fetchSurahs(),
+        ]);
+      } catch (e, st) {
+        log('Failed to load core Quran data: $e',
+            name: 'QuranCtrl', stackTrace: st);
+      } finally {
+        // تحديث عام + تحديث خاص بالـ PageViewBuild
+        update();
+        update(['_pageViewBuild']);
+      }
+    }();
+
+    await _coreDataLoadFuture;
   }
 
   @override

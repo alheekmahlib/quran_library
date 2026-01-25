@@ -58,7 +58,7 @@ class PageBuild extends StatelessWidget {
     }
 
     final blocks = quranCtrl.getQpcV4BlocksForPageSync(pageIndex + 1);
-    if (blocks.isEmpty || !isFontsLocal!) {
+    if (blocks.isEmpty) {
       // ابدأ التحضير الكامل مرة واحدة؛ أثناء ذلك نعرض مؤشر تحميل بدل بناء متزامن.
       Future(() => quranCtrl.ensureQpcV4AllPagesPrebuilt());
       return const Center(child: CircularProgressIndicator.adaptive());

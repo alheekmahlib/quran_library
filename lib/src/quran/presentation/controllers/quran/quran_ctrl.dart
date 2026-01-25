@@ -30,8 +30,7 @@ class QuranCtrl extends GetxController {
   final Map<int, int> _ayahUqBySurahAyahKey = {};
   final Map<int, AyahModel> _ayahByUqCache = {};
 
-  bool get isQpcV4Enabled =>
-      state.fontsSelected.value == 1 || state.fontsSelected.value == 2;
+  bool get isQpcV4Enabled => state.fontsSelected.value == 1;
 
   RxList<QuranPageModel> staticPages = <QuranPageModel>[].obs;
   RxList<int> quranStops = <int>[].obs;

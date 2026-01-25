@@ -34,125 +34,114 @@ class _QuranTopBar extends StatelessWidget {
 
     return Align(
       alignment: Alignment.topCenter,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            height: defaults.height ?? 55,
-            padding:
-                defaults.padding ?? const EdgeInsets.symmetric(horizontal: 8.0),
-            decoration: BoxDecoration(
-              color: bgColor,
-              borderRadius: BorderRadius.circular(defaults.borderRadius ?? 12),
-              boxShadow: [
-                BoxShadow(
-                  color: (defaults.shadowColor ??
-                      Colors.black.withValues(alpha: .2)),
-                  spreadRadius: 1,
-                  blurRadius: 5,
-                  offset: const Offset(0, 5), // changes position of shadow
-                ),
-              ],
+      child: Container(
+        height: defaults.height ?? 55,
+        padding:
+            defaults.padding ?? const EdgeInsets.symmetric(horizontal: 8.0),
+        decoration: BoxDecoration(
+          color: bgColor,
+          borderRadius: BorderRadius.circular(defaults.borderRadius ?? 12),
+          boxShadow: [
+            BoxShadow(
+              color:
+                  (defaults.shadowColor ?? Colors.black.withValues(alpha: .2)),
+              spreadRadius: 1,
+              blurRadius: 5,
+              offset: const Offset(0, 5), // changes position of shadow
             ),
-            child: Row(
+          ],
+        ),
+        child: Row(
+          children: [
+            if (defaults.showBackButton ?? false)
+              IconButton(
+                icon: SvgPicture.asset(
+                    defaults.backIconPath ?? AssetsPath.assets.backArrow,
+                    height: defaults.iconSize,
+                    colorFilter: ColorFilter.mode(
+                        defaults.iconColor ??
+                            Theme.of(context).colorScheme.primary,
+                        BlendMode.srcIn)),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+            if (defaults.showMenuButton ?? true)
+              IconButton(
+                icon: SvgPicture.asset(
+                    defaults.menuIconPath ?? AssetsPath.assets.buttomSheet,
+                    height: defaults.iconSize,
+                    colorFilter: ColorFilter.mode(
+                        defaults.iconColor ??
+                            Theme.of(context).colorScheme.primary,
+                        BlendMode.srcIn)),
+                onPressed: () {
+                  QuranCtrl.instance.searchFocusNode.requestFocus();
+                  _showMenuBottomSheet(context, defaults);
+                },
+              ),
+            if ((defaults.showMenuButton ?? true) &&
+                (QuranCtrl.instance.state.fontsSelected.value == 2))
+              IconButton(
+                icon: SvgPicture.asset(
+                    defaults.tajweedIconPath ?? AssetsPath.assets.exclamation,
+                    height: defaults.iconSize,
+                    colorFilter: ColorFilter.mode(
+                        defaults.iconColor ??
+                            Theme.of(context).colorScheme.primary,
+                        BlendMode.srcIn)),
+                onPressed: () {
+                  _showDialog(context, tajweedStyle);
+                },
+              ),
+            const Spacer(),
+            if (defaults.customTopBarWidgets != null)
+              ...defaults.customTopBarWidgets!,
+            const Spacer(),
+            Row(
               children: [
-                if (defaults.showBackButton ?? false)
+                if (defaults.showAudioButton ?? true)
                   IconButton(
                     icon: SvgPicture.asset(
-                        defaults.backIconPath ?? AssetsPath.assets.backArrow,
+                        defaults.audioIconPath ?? AssetsPath.assets.surahsAudio,
                         height: defaults.iconSize,
                         colorFilter: ColorFilter.mode(
                             defaults.iconColor ??
                                 Theme.of(context).colorScheme.primary,
                             BlendMode.srcIn)),
-                    onPressed: () {
-                      Navigator.pop(context);
+                    onPressed: () async {
+                      await AudioCtrl.instance.state.audioPlayer.stop();
+                      QuranCtrl.instance.state.isShowMenu.value = false;
+                      // await AudioCtrl.instance.lastAudioSource();
+                      if (context.mounted) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => SurahAudioScreen(
+                              isDark: isDark,
+                              style: style ??
+                                  SurahAudioStyle.defaults(
+                                      isDark: isDark, context: context),
+                              languageCode: languageCode,
+                            ),
+                          ),
+                        );
+                      }
                     },
                   ),
-                if (defaults.showMenuButton ?? true)
-                  IconButton(
-                    icon: SvgPicture.asset(
-                        defaults.menuIconPath ?? AssetsPath.assets.buttomSheet,
-                        height: defaults.iconSize,
-                        colorFilter: ColorFilter.mode(
-                            defaults.iconColor ??
-                                Theme.of(context).colorScheme.primary,
-                            BlendMode.srcIn)),
-                    onPressed: () {
-                      QuranCtrl.instance.searchFocusNode.requestFocus();
-                      _showMenuBottomSheet(context, defaults);
-                    },
-                  ),
-                if ((defaults.showMenuButton ?? true) &&
-                    (QuranCtrl.instance.state.fontsSelected.value == 2))
-                  IconButton(
-                    icon: SvgPicture.asset(
-                        defaults.tajweedIconPath ??
-                            AssetsPath.assets.exclamation,
-                        height: defaults.iconSize,
-                        colorFilter: ColorFilter.mode(
-                            defaults.iconColor ??
-                                Theme.of(context).colorScheme.primary,
-                            BlendMode.srcIn)),
-                    onPressed: () {
-                      _showDialog(context, tajweedStyle);
-                    },
-                  ),
-                const Spacer(),
-                if (defaults.customTopBarWidgets != null)
-                  ...defaults.customTopBarWidgets!,
-                const Spacer(),
-                Row(
-                  children: [
-                    if (defaults.showAudioButton ?? true)
-                      IconButton(
-                        icon: SvgPicture.asset(
-                            defaults.audioIconPath ??
-                                AssetsPath.assets.surahsAudio,
-                            height: defaults.iconSize,
-                            colorFilter: ColorFilter.mode(
-                                defaults.iconColor ??
-                                    Theme.of(context).colorScheme.primary,
-                                BlendMode.srcIn)),
-                        onPressed: () async {
-                          await AudioCtrl.instance.state.audioPlayer.stop();
-                          QuranCtrl.instance.state.isShowMenu.value = false;
-                          // await AudioCtrl.instance.lastAudioSource();
-                          if (context.mounted) {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => SurahAudioScreen(
-                                  isDark: isDark,
-                                  style: style ??
-                                      SurahAudioStyle.defaults(
-                                          isDark: isDark, context: context),
-                                  languageCode: languageCode,
-                                ),
-                              ),
-                            );
-                          }
-                        },
-                      ),
-                    if ((defaults.showFontsButton ?? true) &&
-                            (!isSingleSurah!) ||
-                        (isPagesView!))
-                      FontsDownloadDialog(
-                        downloadFontsDialogStyle: downloadFontsDialogStyle ??
-                            DownloadFontsDialogStyle.defaults(isDark, context),
-                        languageCode: languageCode,
-                        isFontsLocal: isFontsLocal,
-                        isDark: isDark,
-                      )
-                  ],
-                )
+                if ((defaults.showFontsButton ?? true) && (!isSingleSurah!) ||
+                    (isPagesView!))
+                  FontsDownloadDialog(
+                    downloadFontsDialogStyle: downloadFontsDialogStyle ??
+                        DownloadFontsDialogStyle.defaults(isDark, context),
+                    languageCode: languageCode,
+                    isFontsLocal: isFontsLocal,
+                    isDark: isDark,
+                  )
               ],
-            ),
-          ),
-          const SizedBox(height: 12),
-          QuranOrTenRecitationsTabBar(
-              bgColor: bgColor, defaults: defaults, isDark: isDark),
-        ],
+            )
+          ],
+        ),
       ),
     );
   }
@@ -206,98 +195,6 @@ class _QuranTopBar extends StatelessWidget {
         isSingleSurah: isSingleSurah!,
       ),
     );
-  }
-}
-
-class QuranOrTenRecitationsTabBar extends StatelessWidget {
-  const QuranOrTenRecitationsTabBar({
-    super.key,
-    required this.bgColor,
-    required this.defaults,
-    required this.isDark,
-  });
-
-  final Color bgColor;
-  final QuranTopBarStyle defaults;
-  final bool isDark;
-
-  @override
-  Widget build(BuildContext context) {
-    return !QuranCtrl.instance.state.isTajweedEnabled.value &&
-            (QuranCtrl.instance.state.fontsSelected.value == 1)
-        ? DefaultTabController(
-            length: 2,
-            child: Container(
-              height: 45,
-              width: 250,
-              decoration: BoxDecoration(
-                color: bgColor,
-                borderRadius:
-                    BorderRadius.circular(defaults.borderRadius ?? 12),
-                boxShadow: [
-                  BoxShadow(
-                    color: (defaults.shadowColor ??
-                        Colors.black.withValues(alpha: .1)),
-                    spreadRadius: 1,
-                    blurRadius: 5,
-                    offset: const Offset(0, 5),
-                  ),
-                ],
-              ),
-              child: TabBar(
-                controller: WordInfoCtrl.instance.tabController,
-                onTap: (index) async {
-                  // عند اختيار "القراءات العشر" تأكد من أن البيانات محمّلة.
-                  if (index == 1 &&
-                      !WordInfoCtrl.instance
-                          .isKindAvailable(WordInfoKind.recitations)) {
-                    // امنع الانتقال للتبويب قبل التحميل.
-                    Future.microtask(() {
-                      if (WordInfoCtrl.instance.tabController.index != 0) {
-                        WordInfoCtrl.instance.tabController.index = 0;
-                      }
-                    });
-
-                    final fallbackRef =
-                        WordInfoCtrl.instance.selectedWordRef.value ??
-                            const WordRef(
-                              surahNumber: 1,
-                              ayahNumber: 1,
-                              wordNumber: 1,
-                            );
-
-                    await showWordInfoBottomSheet(
-                      context: context,
-                      ref: fallbackRef,
-                      initialKind: WordInfoKind.recitations,
-                      isDark: isDark,
-                    );
-
-                    if (WordInfoCtrl.instance
-                        .isKindAvailable(WordInfoKind.recitations)) {
-                      WordInfoCtrl.instance.tabController.index = 1;
-                    }
-                  }
-
-                  WordInfoCtrl.instance.update(['word_info_data']);
-                  log('تم اختيار التبويب: $index');
-                },
-                indicator: BoxDecoration(
-                  color: (defaults.accentColor ??
-                          Theme.of(context).colorScheme.primary)
-                      .withValues(alpha: 0.2),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                indicatorPadding: const EdgeInsets.all(4),
-                labelStyle: defaults.tabLabelStyle,
-                tabs: [
-                  Tab(text: defaults.quranTabText),
-                  Tab(text: defaults.tenRecitationsTabText),
-                ],
-              ),
-            ),
-          )
-        : const SizedBox.shrink();
   }
 }
 

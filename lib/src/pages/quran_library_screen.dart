@@ -63,6 +63,7 @@ class QuranLibraryScreen extends StatelessWidget {
     this.ayahDownloadManagerStyle,
     required this.parentContext,
     this.topBottomQuranStyle,
+    this.isShowTabBar = true,
   });
 
   /// إذا قمت بإضافة شريط التطبيقات هنا فإنه سيحل محل شريط التطبيقات الافتراضية [appBar]
@@ -301,6 +302,10 @@ class QuranLibraryScreen extends StatelessWidget {
   // تخصيص نمط الجزء العلوي والسفلي للمصحف
   /// [topBottomQuranStyle] top/bottom style customization for the Quran
   final TopBottomQuranStyle? topBottomQuranStyle;
+
+  /// لتحديد ما إذا كان يجب عرض شريط التبويب أم لا
+  /// [isShowTabBar] To specify whether to show the tab bar or not
+  final bool? isShowTabBar;
 
   @override
   Widget build(BuildContext context) {
@@ -618,6 +623,21 @@ class QuranLibraryScreen extends StatelessWidget {
                                               downloadFontsDialogStyle:
                                                   downloadFontsDialogStyle,
                                               isFontsLocal: isFontsLocal,
+                                            )
+                                          : const SizedBox.shrink(),
+                                      isShowTabBar!
+                                          ? Positioned(
+                                              top: 70,
+                                              child: QuranOrTenRecitationsTabBar(
+                                                  bgColor: backgroundColor ??
+                                                      AppColors
+                                                          .getBackgroundColor(
+                                                              isDark),
+                                                  defaults: topBarStyle ??
+                                                      QuranTopBarStyle.defaults(
+                                                          context: context,
+                                                          isDark: isDark),
+                                                  isDark: isDark),
                                             )
                                           : const SizedBox.shrink(),
                                     ],

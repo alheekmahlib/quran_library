@@ -88,7 +88,7 @@ class PageViewBuild extends StatelessWidget {
       builder: (quranCtrl) => quranCtrl.textScale(
         (((quranCtrl.isDownloadFonts &&
                     quranCtrl.state.loadedFontPages.contains(pageIndex)) ||
-                isFontsLocal)
+                !isFontsLocal)
             ? quranCtrl.state.allAyahs.isEmpty ||
                     quranCtrl.state.surahs.isEmpty ||
                     quranCtrl.state.pages.isEmpty

@@ -57,25 +57,10 @@ class _QuranFontsPage extends StatelessWidget {
         MediaQuery.of(context).orientation == Orientation.landscape;
     return GetBuilder<QuranCtrl>(
       builder: (quranCtrl) {
-        if ((quranCtrl.isQpcV4Enabled && !quranCtrl.isQpcV4AllPagesPrebuilt) ||
-            !isFontsLocal!) {
+        // QPC v4: التحضير الكامل هدفه تقليل التقطيع، وليس شرطاً لعرض الصفحة.
+        // إذا علّقنا العرض حتى اكتمال 604 صفحة سنبقى على شاشة التحميل طويلاً.
+        if (quranCtrl.isQpcV4Enabled && !quranCtrl.isQpcV4AllPagesPrebuilt) {
           Future(() => quranCtrl.ensureQpcV4AllPagesPrebuilt());
-          return Center(
-            child: SizedBox(
-              width: 220,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const CircularProgressIndicator.adaptive(),
-                  const SizedBox(height: 16),
-                  LinearProgressIndicator(
-                    value: quranCtrl.qpcV4PrebuildProgress,
-                    minHeight: 6,
-                  ),
-                ],
-              ),
-            ),
-          );
         }
 
         return Container(

@@ -14,6 +14,8 @@ class QpcV4PageRenderer {
   final QpcV4AssetsStore store;
   final QpcV4AyahUqResolver ayahUqResolver;
 
+  static const int _ornamentHizbMark = 0x06DE; // ۞
+
   List<QpcV4RenderBlock> buildPage({required int pageNumber}) {
     final lines = store.linesByPage[pageNumber];
     if (lines == null || lines.isEmpty) return const <QpcV4RenderBlock>[];
@@ -163,7 +165,7 @@ class QpcV4PageRenderer {
       // وباقي النص، ونعتبر أننا عالجنا فاصل بداية الصفحة.
       if (addSingleSpaceBetweenFirstTwoWords && realWordsWritten == 0) {
         final runes = w.text.runes.toList(growable: false);
-        if (runes.length > 1) {
+        if (runes.length > 1 && runes.first == _ornamentHizbMark) {
           final glyphs =
               '${String.fromCharCode(runes.first)}\u202F${String.fromCharCodes(runes.skip(1))}';
           didInsertSingleSpaceBetweenFirstTwoWords = true;

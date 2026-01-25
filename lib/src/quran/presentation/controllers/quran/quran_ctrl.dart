@@ -30,7 +30,8 @@ class QuranCtrl extends GetxController {
   final Map<int, int> _ayahUqBySurahAyahKey = {};
   final Map<int, AyahModel> _ayahByUqCache = {};
 
-  bool get isQpcV4Enabled => state.fontsSelected.value == 1;
+  bool get isQpcV4Enabled =>
+      state.fontsSelected.value == 1 || state.fontsSelected.value == 2;
 
   RxList<QuranPageModel> staticPages = <QuranPageModel>[].obs;
   RxList<int> quranStops = <int>[].obs;
@@ -256,21 +257,17 @@ class QuranCtrl extends GetxController {
     if (cached != null) return cached;
 
     // تجنّب البناء المتزامن داخل build للصفحة (يسبب jank).
-    // إذا لم تكن الصفحة جاهزة، نطلق التحضير الكامل أو تحضير هذه الصفحة بشكل غير متزامن.
+    // إذا لم تكن الصفحة جاهزة، نعطي أولوية لبناء هذه الصفحة (والمجاورة) أولاً،
+    // ثم نطلق التحضير الكامل في الخلفية.
     if (isQpcV4Enabled) {
-      if (!_qpcV4PrebuildStarted) {
-        Future(() => ensureQpcV4AllPagesPrebuilt());
-      } else {
-        final renderer = _qpcV4PageRenderer;
-        if (renderer != null) {
-          Future(() {
-            if (_qpcV4BlocksByPage.containsKey(pageNumber)) return;
-            _qpcV4BlocksByPage[pageNumber] =
-                renderer.buildPage(pageNumber: pageNumber);
-            update();
-          });
+      Future(() async {
+        // يبني الصفحة المطلوبة + صفحات مجاورة بسرعة لتحسين تجربة الفتح على صفحة بعيدة.
+        await prewarmQpcV4Pages(pageNumber - 1);
+        // وبعدها نُطلق التحضير الكامل لتفادي التقطيع أثناء التقليب.
+        if (!_qpcV4PrebuildStarted) {
+          Future(() => ensureQpcV4AllPagesPrebuilt());
         }
-      }
+      });
     }
 
     return const <QpcV4RenderBlock>[];

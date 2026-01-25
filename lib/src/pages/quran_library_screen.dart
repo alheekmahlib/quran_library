@@ -375,6 +375,19 @@ class QuranLibraryScreen extends StatelessWidget {
                           .requestFocus(quranCtrl.state.quranPageRLFocusNode);
                     }
                   }
+
+                  // عند تعطيل PageView، لن يتم استدعاء onPageChanged، وبالتالي لن يتم
+                  // تحضير الخطوط/بيانات QPC v4 تلقائياً. نُطلق التحضير هنا مرة واحدة
+                  // بعد أول إطار لضمان عدم بقاء الصفحة على مؤشر التحميل.
+                  if (!withPageView) {
+                    Future(() async {
+                      await quranCtrl.prewarmQpcV4Pages(pageIndex);
+                      await quranCtrl.prepareFonts(
+                        pageIndex,
+                        isFontsLocal: isFontsLocal ?? false,
+                      );
+                    });
+                  }
                   // } else {
                   //   // على المنصات الأخرى أبقِ السلوك كما هو
                   //   FocusScope.of(context)

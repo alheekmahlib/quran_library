@@ -48,15 +48,11 @@ class QpcV4RichTextLine extends StatelessWidget {
     final bookmarksSet = bookmarksAyahs.toSet();
     final wordInfoCtrl = WordInfoCtrl.instance;
 
-    // بعد تحميل بيانات القراءات، نحاول تهيئة سور هذه السطر بالخلفية
-    // لكي يظهر تلوين has_khilaf بأسرع وقت.
+    // بعد تحميل بيانات القراءات، نحاول تهيئة سور هذه السطر بالخلفية.
+    // ملاحظة: استخدمنا prewarm مجمّع + حارس لتجنب تكرار الاستدعاءات أثناء build.
     if (wordInfoCtrl.isKindAvailable(WordInfoKind.recitations)) {
-      final surahs = segments.map((s) => s.surahNumber).toSet();
-      Future(() async {
-        for (final s in surahs) {
-          await wordInfoCtrl.prewarmRecitationsSurah(s);
-        }
-      });
+      final surahs = segments.map((s) => s.surahNumber);
+      Future(() => wordInfoCtrl.prewarmRecitationsSurahs(surahs));
     }
 
     return GetBuilder<QuranCtrl>(
@@ -118,7 +114,8 @@ class QpcV4RichTextLine extends StatelessWidget {
                         }
 
                         int? bookmarkId;
-                        for (final b in bookmarks.values.expand((list) => list)) {
+                        for (final b
+                            in bookmarks.values.expand((list) => list)) {
                           if (b.ayahId == uq) {
                             bookmarkId = b.id;
                             break;
@@ -137,7 +134,8 @@ class QpcV4RichTextLine extends StatelessWidget {
                         }
                         quranCtrl.state.isShowMenu.value = false;
 
-                        final themedTafsirStyle = TafsirTheme.of(context)?.style;
+                        final themedTafsirStyle =
+                            TafsirTheme.of(context)?.style;
                         showAyahMenuDialog(
                           context: context,
                           isDark: isDark,

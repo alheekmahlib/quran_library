@@ -57,10 +57,9 @@ class _QuranFontsPage extends StatelessWidget {
         MediaQuery.of(context).orientation == Orientation.landscape;
     return GetBuilder<QuranCtrl>(
       builder: (quranCtrl) {
-        // QPC v4: التحضير الكامل هدفه تقليل التقطيع، وليس شرطاً لعرض الصفحة.
-        // إذا علّقنا العرض حتى اكتمال 604 صفحة سنبقى على شاشة التحميل طويلاً.
+        // QPC v4: التحضير الكامل يتم بعد خمول لتفادي التقطيع أثناء التقليب.
         if (quranCtrl.isQpcV4Enabled && !quranCtrl.isQpcV4AllPagesPrebuilt) {
-          Future(() => quranCtrl.ensureQpcV4AllPagesPrebuilt());
+          quranCtrl.scheduleQpcV4AllPagesPrebuild();
         }
 
         return Container(

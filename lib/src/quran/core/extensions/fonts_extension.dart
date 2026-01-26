@@ -162,7 +162,7 @@ extension FontsExtension on QuranCtrl {
 
       // تحضير كامل صفحات QPC v4 لتفادي التقطيع أثناء تقليب الصفحات.
       if (isQpcV4Enabled) {
-        Future(() => ensureQpcV4AllPagesPrebuilt());
+        scheduleQpcV4AllPagesPrebuild();
       }
 
       try {

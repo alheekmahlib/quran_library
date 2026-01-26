@@ -10,6 +10,9 @@ class WordInfoCtrl extends GetxController
 
   final WordInfoRepository _repository;
 
+  // حارس لمنع إعادة prewarm لنفس السورة مراراً أثناء بناء صفحات المصحف.
+  final Set<int> _prewarmedRecitationsSurahs = <int>{};
+
   final RxBool isPreparingDownload = false.obs;
   final RxBool isDownloading = false.obs;
   final RxDouble downloadProgress = 0.0.obs;
@@ -99,7 +102,22 @@ class WordInfoCtrl extends GetxController
   }
 
   Future<void> prewarmRecitationsSurah(int surahNumber) async {
+    if (!_prewarmedRecitationsSurahs.add(surahNumber)) return;
     await _repository.prewarmRecitationsSurah(surahNumber);
+    // إعادة بناء واحدة بعد تحميل بيانات السورة الجديدة
     update(['word_info_data']);
+  }
+
+  Future<void> prewarmRecitationsSurahs(Iterable<int> surahNumbers) async {
+    final unique = surahNumbers.toSet();
+    var didPrewarmAny = false;
+    for (final s in unique) {
+      if (!_prewarmedRecitationsSurahs.add(s)) continue;
+      didPrewarmAny = true;
+      await _repository.prewarmRecitationsSurah(s);
+    }
+    if (didPrewarmAny) {
+      update(['word_info_data']);
+    }
   }
 }

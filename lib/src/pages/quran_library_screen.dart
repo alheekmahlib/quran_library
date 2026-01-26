@@ -448,7 +448,8 @@ class QuranLibraryScreen extends StatelessWidget {
                                           : const ClampingScrollPhysics(),
                                       // شرح: إضافة allowImplicitScrolling لتحسين الأداء
                                       // Explanation: Adding allowImplicitScrolling for better performance
-                                      allowImplicitScrolling: true,
+                                      allowImplicitScrolling:
+                                          !quranCtrl.isQpcV4Enabled,
                                       scrollBehavior:
                                           const MaterialScrollBehavior()
                                               .copyWith(
@@ -482,6 +483,10 @@ class QuranLibraryScreen extends StatelessWidget {
 
                                           await quranCtrl
                                               .prepareFonts(pageIndex);
+
+                                          // جدولة تحضير QPC v4 بعد خمول حتى لا ينافس أثناء التقليب.
+                                          quranCtrl
+                                              .scheduleQpcV4AllPagesPrebuild();
                                         });
                                       },
                                       pageSnapping: true,

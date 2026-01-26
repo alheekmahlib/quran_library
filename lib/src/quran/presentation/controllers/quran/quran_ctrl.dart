@@ -19,6 +19,7 @@ class QuranCtrl extends GetxController {
   final Map<int, List<QpcV4RenderBlock>> _qpcV4BlocksByPage = {};
   Future<void>? _qpcV4PrebuildAllFuture;
   bool _qpcV4PrebuildStarted = false;
+  Timer? _qpcV4IdlePrebuildTimer;
 
   bool get isQpcV4AllPagesPrebuilt => _qpcV4BlocksByPage.length >= 604;
 
@@ -147,6 +148,7 @@ class QuranCtrl extends GetxController {
     _qpcV4PageRenderer = null;
     _qpcV4Store = null;
     _qpcV4LoadFuture = null;
+    _qpcV4IdlePrebuildTimer?.cancel();
   }
 
   /// -------- [Methods] ----------
@@ -256,9 +258,9 @@ class QuranCtrl extends GetxController {
       if (_qpcV4BlocksByPage.length >= 604) return;
       _qpcV4PrebuildStarted = true;
 
-      // نبني بزمن-ميزانية (تقريباً إطار واحد) لتقليل الـ jank أثناء التنفيذ.
+      // نبني بزمن-ميزانية صغيرة مع تأخير بسيط لتقليل منافسة الـ UI أثناء الاستخدام.
       const totalPages = 604;
-      const timeBudgetMs = 8;
+      const timeBudgetMs = 3;
       final sw = Stopwatch()..start();
 
       for (var page = 1; page <= totalPages; page++) {
@@ -267,9 +269,8 @@ class QuranCtrl extends GetxController {
         _qpcV4BlocksByPage[page] = renderer.buildPage(pageNumber: page);
 
         if (sw.elapsedMilliseconds >= timeBudgetMs) {
-          // yield إلى event loop حتى لا ننافس الرسم/الـ gestures.
-          update();
-          await Future<void>.delayed(Duration.zero);
+          // yield إلى event loop (مع تأخير بسيط) حتى لا ننافس الرسم/الـ gestures.
+          await Future<void>.delayed(const Duration(milliseconds: 4));
           sw
             ..reset()
             ..start();
@@ -283,6 +284,22 @@ class QuranCtrl extends GetxController {
     await _qpcV4PrebuildAllFuture;
   }
 
+  /// جدولة تحضير كل صفحات QPC v4 بعد فترة خمول.
+  /// الهدف: منع منافسة CPU أثناء تقليب الصفحات.
+  void scheduleQpcV4AllPagesPrebuild(
+      {Duration delay = const Duration(seconds: 2)}) {
+    if (!isQpcV4Enabled) return;
+    if (_qpcV4BlocksByPage.length >= 604) return;
+    if (_qpcV4PrebuildStarted) return;
+
+    _qpcV4IdlePrebuildTimer?.cancel();
+    _qpcV4IdlePrebuildTimer = Timer(delay, () {
+      if (!isQpcV4Enabled) return;
+      if (_qpcV4PrebuildStarted) return;
+      Future(() => ensureQpcV4AllPagesPrebuilt());
+    });
+  }
+
   List<QpcV4RenderBlock> getQpcV4BlocksForPageSync(int pageNumber) {
     final cached = _qpcV4BlocksByPage[pageNumber];
     if (cached != null) return cached;
@@ -294,10 +311,7 @@ class QuranCtrl extends GetxController {
       Future(() async {
         // يبني الصفحة المطلوبة + صفحات مجاورة بسرعة لتحسين تجربة الفتح على صفحة بعيدة.
         await prewarmQpcV4Pages(pageNumber - 1);
-        // وبعدها نُطلق التحضير الكامل لتفادي التقطيع أثناء التقليب.
-        if (!_qpcV4PrebuildStarted) {
-          Future(() => ensureQpcV4AllPagesPrebuilt());
-        }
+        // التحضير الكامل يتم فقط بعد خمول، لتقليل التقطيع أثناء السحب.
       });
     }
 

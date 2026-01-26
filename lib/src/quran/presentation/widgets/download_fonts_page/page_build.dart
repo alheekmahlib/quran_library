@@ -59,8 +59,8 @@ class PageBuild extends StatelessWidget {
 
     final blocks = quranCtrl.getQpcV4BlocksForPageSync(pageIndex + 1);
     if (blocks.isEmpty) {
-      // ابدأ التحضير الكامل مرة واحدة؛ أثناء ذلك نعرض مؤشر تحميل بدل بناء متزامن.
-      Future(() => quranCtrl.ensureQpcV4AllPagesPrebuilt());
+      // أثناء غياب بيانات هذه الصفحة نعرض مؤشر تحميل بدل بناء متزامن.
+      // تحضير الصفحة/المجاورة يتم عبر getQpcV4BlocksForPageSync.
       return const Center(child: CircularProgressIndicator.adaptive());
     }
 

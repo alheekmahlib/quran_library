@@ -65,8 +65,8 @@ TextSpan _qpcV4SpanSegment({
   );
 
   final withTajweed = QuranCtrl.instance.state.isTajweedEnabled.value;
-  final bool forceRed =
-      isWordKhilaf && !withTajweed && WordInfoCtrl.instance.isTenRecitations;
+  final isTenRecitations = WordInfoCtrl.instance.isTenRecitations;
+  final bool forceRed = isWordKhilaf && !withTajweed && isTenRecitations;
   final bool isWordSelected = wordInfoCtrl.selectedWordRef.value == wordRef;
   final Color selectedWordBg = isDark
       ? Colors.white.withValues(alpha: 0.18)
@@ -76,28 +76,11 @@ TextSpan _qpcV4SpanSegment({
     fontFamily: isFontsLocal ? fontsName : quranCtrl.getFontPath(pageIndex),
     fontSize: fontSize,
     height: 2.0,
-    // color: forceRed
-    //     ? Colors.red
-    //     : (isDark && withTajweed
-    //         ? null
-    //         : textColor ?? AppColors.getTextColor(isDark)),
     backgroundColor: bg ?? (isWordSelected ? selectedWordBg : null),
-    foreground: !withTajweed
-        ? (Paint()
-          ..colorFilter = ColorFilter.mode(
-              forceRed ? Colors.red : AppColors.getTextColor(isDark),
-              BlendMode.srcIn))
-        : isDark
-            ? (Paint()
-              ..color = forceRed ? Colors.red : Colors.white
-              ..style = PaintingStyle.fill
-              ..invertColors = isDark ? true : false
-              ..blendMode = BlendMode.plus)
-            : null,
-    decoration: isWordSelected ? TextDecoration.underline : null,
-    decorationColor:
-        forceRed ? Colors.red : (textColor ?? AppColors.getTextColor(isDark)),
-    decorationThickness: isWordSelected ? 2.0 : null,
+    // decoration: isWordSelected ? TextDecoration.underline : null,
+    // decorationColor:
+    //     forceRed ? Colors.red : (textColor ?? AppColors.getTextColor(isDark)),
+    // decorationThickness: isWordSelected ? 2.0 : null,
     // shadows: [
     //   Shadow(
     //     blurRadius: 0.5,
@@ -108,6 +91,17 @@ TextSpan _qpcV4SpanSegment({
     //     offset: const Offset(0.5, 0.5),
     //   ),
     // ],
+    foreground: withTajweed
+        ? (Paint()
+          // ..color = AppColors.getTextColor(isDark)
+          ..invertColors = isDark ? true : false
+          //exclusion or difference
+          ..blendMode = BlendMode.srcATop)
+        : (Paint()
+          // ..color = AppColors.getTextColor(isDark)
+          ..colorFilter = ColorFilter.mode(
+              forceRed ? Colors.red : AppColors.getTextColor(isDark),
+              BlendMode.srcATop)),
   );
 
   InlineSpan? tail;

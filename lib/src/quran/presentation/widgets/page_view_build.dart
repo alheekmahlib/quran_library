@@ -74,8 +74,7 @@ class PageViewBuild extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final deviceSize = MediaQuery.of(userContext)
-        .size; // استخدام سياق المستخدم / Using user context
+    // استخدام سياق المستخدم / Using user context
     // تحضير مجموعات وبيانات ثابتة لتقليل الحسابات داخل البناء الداخلي
     final bookmarksCtrl = BookmarksCtrl.instance;
     final Map<int, List<BookmarkModel>> bookmarksMap = bookmarksCtrl.bookmarks;
@@ -145,7 +144,7 @@ class PageViewBuild extends StatelessWidget {
                     surahNumber: surahNumber,
                     newSurahs: newSurahs,
                     ayahSelectedBackgroundColor: ayahSelectedBackgroundColor,
-                    deviceSize: deviceSize,
+                    // deviceSize: MediaQuery.sizeOf(userContext),
                     isDark: isDark,
                     ayahBookmarked: ayahBookmarked!,
                     ayahIconColor:

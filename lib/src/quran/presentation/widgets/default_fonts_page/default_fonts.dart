@@ -54,13 +54,16 @@ class DefaultFontsBuild extends StatelessWidget {
                 final reversedAyahs = line.ayahs.reversed.toList();
                 return List.generate(reversedAyahs.length, (i) {
                   final ayah = reversedAyahs[i];
-                  final isUserSelected = quranCtrl.selectedAyahsByUnequeNumber
-                      .contains(ayah.ayahUQNumber);
-                  final isExternallyHighlighted = quranCtrl
-                      .externallyHighlightedAyahs
-                      .contains(ayah.ayahUQNumber);
-                  quranCtrl.isAyahSelected =
-                      isUserSelected || isExternallyHighlighted;
+
+                  /// TODO: تحقق من سبب الحاجة إلى هذا التحديث هنا
+                  // final isUserSelected = quranCtrl.selectedAyahsByUnequeNumber
+                  //     .contains(ayah.ayahUQNumber);
+                  // final isExternallyHighlighted = quranCtrl
+                  //     .externallyHighlightedAyahs
+                  //     .contains(ayah.ayahUQNumber);
+                  // quranCtrl.isAyahSelected =
+                  //     isUserSelected || isExternallyHighlighted;
+
                   final allBookmarks =
                       bookmarks.values.expand((list) => list).toList();
                   ayahBookmarked.isEmpty
@@ -138,6 +141,7 @@ class DefaultFontsBuild extends StatelessWidget {
                                   : null,
                               fontFamily: quranCtrl.currentFontFamily,
                               height: 1.4,
+                              wordSpacing: -2,
                               package: 'quran_library',
                             ),
                             children: [

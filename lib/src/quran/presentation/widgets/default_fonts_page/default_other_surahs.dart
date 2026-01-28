@@ -13,7 +13,7 @@ class DefaultOtherSurahs extends StatelessWidget {
     required this.surahNameStyle,
     required this.onSurahBannerPress,
     required this.basmalaStyle,
-    required this.deviceSize,
+    // required this.deviceSize,
     required this.onAyahLongPress,
     required this.bookmarksColor,
     required this.textColor,
@@ -35,7 +35,7 @@ class DefaultOtherSurahs extends StatelessWidget {
   final SurahNameStyle? surahNameStyle;
   final Function(SurahNamesModel surah)? onSurahBannerPress;
   final BasmalaStyle? basmalaStyle;
-  final Size deviceSize;
+  // final Size deviceSize;
   final Function(LongPressStartDetails details, AyahModel ayah)?
       onAyahLongPress;
   final Color? bookmarksColor;
@@ -71,7 +71,7 @@ class DefaultOtherSurahs extends StatelessWidget {
                     surahNameStyle: surahNameStyle,
                     onSurahBannerPress: onSurahBannerPress,
                     basmalaStyle: basmalaStyle,
-                    deviceSize: deviceSize,
+                    // deviceSize: deviceSize,
                     onAyahLongPress: onAyahLongPress,
                     bookmarksColor: bookmarksColor,
                     textColor: textColor,
@@ -94,7 +94,7 @@ class DefaultOtherSurahs extends StatelessWidget {
                   surahNameStyle: surahNameStyle,
                   onSurahBannerPress: onSurahBannerPress,
                   basmalaStyle: basmalaStyle,
-                  deviceSize: deviceSize,
+                  // deviceSize: deviceSize,
                   onAyahLongPress: onAyahLongPress,
                   bookmarksColor: bookmarksColor,
                   textColor: textColor,

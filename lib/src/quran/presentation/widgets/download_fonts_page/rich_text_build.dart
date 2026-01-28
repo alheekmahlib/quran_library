@@ -68,101 +68,104 @@ class QpcV4RichTextLine extends StatelessWidget {
           return GetBuilder<WordInfoCtrl>(
             id: 'word_info_data',
             builder: (_) {
-              return RichText(
-                textDirection: TextDirection.rtl,
-                textAlign: isCentered ? TextAlign.center : TextAlign.justify,
-                softWrap: true,
-                overflow: TextOverflow.visible,
-                maxLines: null,
-                text: TextSpan(
-                  children: List.generate(segments.length, (segmentIndex) {
-                    final seg = segments[segmentIndex];
-                    final uq = seg.ayahUq;
-                    final isSelectedCombined =
-                        quranCtrl.selectedAyahsByUnequeNumber.contains(uq) ||
-                            quranCtrl.externallyHighlightedAyahs.contains(uq);
-
-                    final ref = WordRef(
-                      surahNumber: seg.surahNumber,
-                      ayahNumber: seg.ayahNumber,
-                      wordNumber: seg.wordNumber,
-                    );
-
-                    final info = wordInfoCtrl.getRecitationsInfoSync(ref);
-                    final hasKhilaf = info?.hasKhilaf ?? false;
-
-                    return _qpcV4SpanSegment(
-                      context: context,
-                      pageIndex: pageIndex,
-                      isSelected: isSelectedCombined,
-                      showAyahBookmarkedIcon: showAyahBookmarkedIcon,
-                      fontSize: fs,
-                      ayahUQNum: uq,
-                      ayahNumber: seg.ayahNumber,
-                      glyphs: seg.glyphs,
-                      showAyahNumber: seg.isAyahEnd,
-                      wordRef: ref,
-                      isWordKhilaf: hasKhilaf,
-                      onLongPressStart: (details) {
-                        final ayahModel = quranCtrl.getAyahByUq(uq);
-
-                        if (onAyahLongPress != null) {
-                          onAyahLongPress!(details, ayahModel);
-                          quranCtrl.toggleAyahSelection(uq);
-                          quranCtrl.state.isShowMenu.value = false;
-                          return;
-                        }
-
-                        int? bookmarkId;
-                        for (final b
-                            in bookmarks.values.expand((list) => list)) {
-                          if (b.ayahId == uq) {
-                            bookmarkId = b.id;
-                            break;
-                          }
-                        }
-
-                        if (bookmarkId != null) {
-                          BookmarksCtrl.instance.removeBookmark(bookmarkId);
-                          return;
-                        }
-
-                        if (quranCtrl.isMultiSelectMode.value) {
-                          quranCtrl.toggleAyahSelectionMulti(uq);
-                        } else {
-                          quranCtrl.toggleAyahSelection(uq);
-                        }
-                        quranCtrl.state.isShowMenu.value = false;
-
-                        final themedTafsirStyle =
-                            TafsirTheme.of(context)?.style;
-                        showAyahMenuDialog(
-                          context: context,
-                          isDark: isDark,
-                          ayah: ayahModel,
-                          position: details.globalPosition,
-                          index: segmentIndex,
-                          pageIndex: pageIndex,
-                          externalTafsirStyle: themedTafsirStyle,
-                        );
-                      },
-                      textColor: textColor ?? (AppColors.getTextColor(isDark)),
-                      ayahIconColor: ayahIconColor,
-                      bookmarks: bookmarks,
-                      bookmarksAyahs: bookmarksSet.toList(),
-                      bookmarksColor: bookmarksColor,
-                      ayahSelectedBackgroundColor: ayahSelectedBackgroundColor,
-                      isFontsLocal: isFontsLocal,
-                      fontsName: fontsName,
-                      ayahBookmarked: ayahBookmarked,
-                      isDark: isDark,
-                    );
-                  }),
-                ),
-              );
+              return _richTextBuild(wordInfoCtrl, context, fs, bookmarksSet);
             },
           );
         },
+      ),
+    );
+  }
+
+  RichText _richTextBuild(WordInfoCtrl wordInfoCtrl, BuildContext context,
+      double fs, Set<int> bookmarksSet) {
+    return RichText(
+      textDirection: TextDirection.rtl,
+      textAlign: isCentered ? TextAlign.center : TextAlign.justify,
+      softWrap: true,
+      overflow: TextOverflow.visible,
+      maxLines: null,
+      text: TextSpan(
+        children: List.generate(segments.length, (segmentIndex) {
+          final seg = segments[segmentIndex];
+          final uq = seg.ayahUq;
+          final isSelectedCombined =
+              quranCtrl.selectedAyahsByUnequeNumber.contains(uq) ||
+                  quranCtrl.externallyHighlightedAyahs.contains(uq);
+
+          final ref = WordRef(
+            surahNumber: seg.surahNumber,
+            ayahNumber: seg.ayahNumber,
+            wordNumber: seg.wordNumber,
+          );
+
+          final info = wordInfoCtrl.getRecitationsInfoSync(ref);
+          final hasKhilaf = info?.hasKhilaf ?? false;
+
+          return _qpcV4SpanSegment(
+            context: context,
+            pageIndex: pageIndex,
+            isSelected: isSelectedCombined,
+            showAyahBookmarkedIcon: showAyahBookmarkedIcon,
+            fontSize: fs,
+            ayahUQNum: uq,
+            ayahNumber: seg.ayahNumber,
+            glyphs: seg.glyphs,
+            showAyahNumber: seg.isAyahEnd,
+            wordRef: ref,
+            isWordKhilaf: hasKhilaf,
+            onLongPressStart: (details) {
+              final ayahModel = quranCtrl.getAyahByUq(uq);
+
+              if (onAyahLongPress != null) {
+                onAyahLongPress!(details, ayahModel);
+                quranCtrl.toggleAyahSelection(uq);
+                quranCtrl.state.isShowMenu.value = false;
+                return;
+              }
+
+              int? bookmarkId;
+              for (final b in bookmarks.values.expand((list) => list)) {
+                if (b.ayahId == uq) {
+                  bookmarkId = b.id;
+                  break;
+                }
+              }
+
+              if (bookmarkId != null) {
+                BookmarksCtrl.instance.removeBookmark(bookmarkId);
+                return;
+              }
+
+              if (quranCtrl.isMultiSelectMode.value) {
+                quranCtrl.toggleAyahSelectionMulti(uq);
+              } else {
+                quranCtrl.toggleAyahSelection(uq);
+              }
+              quranCtrl.state.isShowMenu.value = false;
+
+              final themedTafsirStyle = TafsirTheme.of(context)?.style;
+              showAyahMenuDialog(
+                context: context,
+                isDark: isDark,
+                ayah: ayahModel,
+                position: details.globalPosition,
+                index: segmentIndex,
+                pageIndex: pageIndex,
+                externalTafsirStyle: themedTafsirStyle,
+              );
+            },
+            textColor: textColor ?? (AppColors.getTextColor(isDark)),
+            ayahIconColor: ayahIconColor,
+            bookmarks: bookmarks,
+            bookmarksAyahs: bookmarksSet.toList(),
+            bookmarksColor: bookmarksColor,
+            ayahSelectedBackgroundColor: ayahSelectedBackgroundColor,
+            isFontsLocal: isFontsLocal,
+            fontsName: fontsName,
+            ayahBookmarked: ayahBookmarked,
+            isDark: isDark,
+          );
+        }),
       ),
     );
   }

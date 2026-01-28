@@ -123,6 +123,14 @@ extension QuranGetters on QuranCtrl {
       state.pages[pageIndex]
           .splitBetween((f, s) => f.ayahNumber > s.ayahNumber)
           .toList();
+  List<List<LineModel>> getCurrentPageAyahsSeparatedForBasmalahQcfV1AsLines(
+      int pageIndex) {
+    final allLines = staticPages[pageIndex].lines.splitBetween((f, s) {
+      return f.ayahs.first.ayahNumber > s.ayahs.first.ayahNumber;
+    }).toList();
+    log('All lines length: ${allLines.length}');
+    return allLines;
+  }
 
   /// Retrieves a list of AyahModel for a specific page index.
   ///

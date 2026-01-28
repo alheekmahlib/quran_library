@@ -11,7 +11,7 @@ class DefaultFirstTwoSurahs extends StatelessWidget {
     required this.surahNameStyle,
     required this.onSurahBannerPress,
     required this.basmalaStyle,
-    required this.deviceSize,
+    // required this.deviceSize,
     required this.onAyahLongPress,
     required this.bookmarksColor,
     required this.textColor,
@@ -31,7 +31,7 @@ class DefaultFirstTwoSurahs extends StatelessWidget {
   final SurahNameStyle? surahNameStyle;
   final Function(SurahNamesModel surah)? onSurahBannerPress;
   final BasmalaStyle? basmalaStyle;
-  final Size deviceSize;
+  // final Size deviceSize;
   final Function(LongPressStartDetails details, AyahModel ayah)?
       onAyahLongPress;
   final Color? bookmarksColor;
@@ -94,7 +94,7 @@ class DefaultFirstTwoSurahs extends StatelessWidget {
                             // Responsive.isDesktop(context)
                             //     ? deviceSize.width - 800
                             //     :
-                            deviceSize.width,
+                            MediaQuery.sizeOf(context).width,
                         // width: deviceSize.width - 32,
                         child: DefaultFontsBuild(
                           context,

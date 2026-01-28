@@ -8,7 +8,7 @@ class _DefaultFontsPage extends StatelessWidget {
   final SurahNameStyle? surahNameStyle;
   final Function(SurahNamesModel surah)? onSurahBannerPress;
   final BasmalaStyle? basmalaStyle;
-  final Size deviceSize;
+  // final Size deviceSize;
   final Function(LongPressStartDetails details, AyahModel ayah)?
       onAyahLongPress;
   final Color? bookmarksColor;
@@ -30,7 +30,7 @@ class _DefaultFontsPage extends StatelessWidget {
     this.surahNameStyle,
     this.onSurahBannerPress,
     this.basmalaStyle,
-    required this.deviceSize,
+    // required this.deviceSize,
     this.onAyahLongPress,
     this.bookmarksColor,
     this.textColor,
@@ -73,7 +73,7 @@ class _DefaultFontsPage extends StatelessWidget {
                             surahNameStyle: surahNameStyle,
                             onSurahBannerPress: onSurahBannerPress,
                             basmalaStyle: basmalaStyle,
-                            deviceSize: deviceSize,
+                            // deviceSize: deviceSize,
                             onAyahLongPress: onAyahLongPress,
                             bookmarksColor: bookmarksColor,
                             textColor: textColor,
@@ -95,7 +95,7 @@ class _DefaultFontsPage extends StatelessWidget {
                           surahNameStyle: surahNameStyle,
                           onSurahBannerPress: onSurahBannerPress,
                           basmalaStyle: basmalaStyle,
-                          deviceSize: deviceSize,
+                          // deviceSize: deviceSize,
                           onAyahLongPress: onAyahLongPress,
                           bookmarksColor: bookmarksColor,
                           textColor: textColor,
@@ -116,7 +116,7 @@ class _DefaultFontsPage extends StatelessWidget {
                       surahNameStyle: surahNameStyle,
                       onSurahBannerPress: onSurahBannerPress,
                       basmalaStyle: basmalaStyle,
-                      deviceSize: deviceSize,
+                      // deviceSize: deviceSize,
                       onAyahLongPress: onAyahLongPress,
                       bookmarksColor: bookmarksColor,
                       textColor: textColor,
@@ -139,7 +139,7 @@ class _DefaultFontsPage extends StatelessWidget {
               surahNameStyle: surahNameStyle,
               onSurahBannerPress: onSurahBannerPress,
               basmalaStyle: basmalaStyle,
-              deviceSize: deviceSize,
+              // deviceSize: deviceSize,
               onAyahLongPress: onAyahLongPress,
               bookmarksColor: bookmarksColor,
               textColor: textColor,

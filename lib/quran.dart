@@ -107,6 +107,7 @@ part 'src/quran/presentation/widgets/surah_header_widget.dart';
 part 'src/quran/presentation/widgets/surah_page/surah_page_view_build.dart';
 part 'src/quran/presentation/widgets/tabs/bookmark_tab_widget.dart';
 part 'src/quran/presentation/widgets/tabs/index_tab_widget.dart';
+part 'src/quran/presentation/widgets/tabs/quran_or_ten_recitations_tab_bar.dart';
 part 'src/quran/presentation/widgets/tabs/quran_top_bar.dart';
 part 'src/quran/presentation/widgets/tabs/search_tab_widget.dart';
 part 'src/quran/presentation/widgets/tajweed_menu_widget.dart';
@@ -118,7 +119,6 @@ part 'src/quran/presentation/widgets/top_bottom_widget/top_and_bottom_widget.dar
 part 'src/quran/presentation/widgets/word_info/marked_content_span.dart';
 part 'src/quran/presentation/widgets/word_info/tap_long_press_recognizer.dart';
 part 'src/quran/presentation/widgets/word_info/word_info_bottom_sheet.dart';
-part 'src/quran/presentation/widgets/tabs/quran_or_ten_recitations_tab_bar.dart';
 
 /// A comprehensive library for displaying the Holy Quran in Flutter applications.
 ///

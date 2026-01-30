@@ -79,62 +79,31 @@ class PageViewBuild extends StatelessWidget {
     final bookmarksCtrl = BookmarksCtrl.instance;
     final Map<int, List<BookmarkModel>> bookmarksMap = bookmarksCtrl.bookmarks;
     final Set<int> bookmarksAyahSet = bookmarksCtrl.bookmarksAyahs.toSet();
-    List<String> newSurahs = [];
     // final bookmarkCtrl = BookmarksCtrl.instance;
     return GetBuilder<QuranCtrl>(
       id: '_pageViewBuild',
       init: QuranCtrl.instance,
       builder: (quranCtrl) => quranCtrl.textScale(
-        (((quranCtrl.isDownloadFonts &&
-                    quranCtrl.state.loadedFontPages.contains(pageIndex)) ||
-                isFontsLocal)
-            ? quranCtrl.state.allAyahs.isEmpty ||
-                    quranCtrl.state.surahs.isEmpty ||
-                    quranCtrl.state.pages.isEmpty
-                ? Center(
-                    child: circularProgressWidget ??
-                        const CircularProgressIndicator())
-                : Align(
-                    alignment: Alignment.topCenter,
-                    child: TopAndBottomWidget(
-                      pageIndex: pageIndex,
-                      languageCode: languageCode,
-                      isRight: pageIndex.isEven ? true : false,
-                      child: _QuranFontsPage(
-                        context: userContext,
-                        pageIndex: pageIndex,
-                        bookmarkList: bookmarkList,
-                        textColor: ayahSelectedFontColor ?? textColor,
-                        ayahIconColor: ayahIconColor,
-                        showAyahBookmarkedIcon: showAyahBookmarkedIcon,
-                        bookmarks: bookmarksMap,
-                        onAyahLongPress: onAyahLongPress,
-                        bookmarksColor: bookmarksColor,
-                        surahNameStyle: surahNameStyle,
-                        bannerStyle: bannerStyle,
-                        basmalaStyle: basmalaStyle,
-                        onSurahBannerPress: onSurahBannerPress,
-                        surahNumber: surahNumber,
-                        bookmarksAyahs: bookmarksAyahSet.toList(),
-                        ayahSelectedBackgroundColor:
-                            ayahSelectedBackgroundColor,
-                        isDark: isDark,
-                        circularProgressWidget: circularProgressWidget,
-                        isFontsLocal: isFontsLocal,
-                        fontsName: fontsName,
-                        ayahBookmarked: ayahBookmarked!,
-                      ),
-                    ))
-            : quranCtrl.staticPages.isEmpty || quranCtrl.isLoading.value
-                ? Center(
-                    child: circularProgressWidget ??
-                        const CircularProgressIndicator())
-                : _DefaultFontsPage(
+        (quranCtrl.state.allAyahs.isEmpty ||
+                quranCtrl.state.surahs.isEmpty ||
+                quranCtrl.state.pages.isEmpty)
+            ? Center(
+                child:
+                    circularProgressWidget ?? const CircularProgressIndicator())
+            : Align(
+                alignment: Alignment.topCenter,
+                child: TopAndBottomWidget(
+                  pageIndex: pageIndex,
+                  languageCode: languageCode,
+                  isRight: pageIndex.isEven ? true : false,
+                  child: _QuranFontsPage(
                     context: userContext,
                     pageIndex: pageIndex,
                     bookmarkList: bookmarkList,
-                    textColor: textColor,
-                    languageCode: languageCode,
+                    textColor: ayahSelectedFontColor ?? textColor,
+                    ayahIconColor: ayahIconColor,
+                    showAyahBookmarkedIcon: showAyahBookmarkedIcon,
+                    bookmarks: bookmarksMap,
                     onAyahLongPress: onAyahLongPress,
                     bookmarksColor: bookmarksColor,
                     surahNameStyle: surahNameStyle,
@@ -142,15 +111,15 @@ class PageViewBuild extends StatelessWidget {
                     basmalaStyle: basmalaStyle,
                     onSurahBannerPress: onSurahBannerPress,
                     surahNumber: surahNumber,
-                    newSurahs: newSurahs,
+                    bookmarksAyahs: bookmarksAyahSet.toList(),
                     ayahSelectedBackgroundColor: ayahSelectedBackgroundColor,
-                    // deviceSize: MediaQuery.sizeOf(userContext),
                     isDark: isDark,
+                    circularProgressWidget: circularProgressWidget,
+                    isFontsLocal: isFontsLocal,
+                    fontsName: fontsName,
                     ayahBookmarked: ayahBookmarked!,
-                    ayahIconColor:
-                        ayahIconColor ?? Theme.of(context).colorScheme.primary,
-                    showAyahBookmarkedIcon: showAyahBookmarkedIcon,
-                  )),
+                  ),
+                )),
         quranCtrl.staticPages.isEmpty || quranCtrl.isLoading.value
             ? Center(
                 child:

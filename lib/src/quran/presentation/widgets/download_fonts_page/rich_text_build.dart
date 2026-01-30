@@ -19,6 +19,10 @@ class QpcV4RichTextLine extends StatelessWidget {
     required this.segments,
     required this.isFontsLocal,
     required this.fontsName,
+    this.fontFamilyOverride,
+    this.fontPackageOverride,
+    this.usePaintColoring = true,
+    this.useHafsSizing = false,
     required this.ayahBookmarked,
     required this.isCentered,
   });
@@ -40,6 +44,10 @@ class QpcV4RichTextLine extends StatelessWidget {
   final List<QpcV4WordSegment> segments;
   final bool isFontsLocal;
   final String fontsName;
+  final String? fontFamilyOverride;
+  final String? fontPackageOverride;
+  final bool usePaintColoring;
+  final bool useHafsSizing;
   final List<int> ayahBookmarked;
   final bool isCentered;
 
@@ -59,11 +67,27 @@ class QpcV4RichTextLine extends StatelessWidget {
       id: 'selection_page_',
       builder: (_) => LayoutBuilder(
         builder: (ctx, constraints) {
-          final fs = PageFontSizeHelper.qcfFontSize(
-            context: ctx,
-            pageIndex: pageIndex,
-            maxWidth: constraints.maxWidth,
-          );
+          /// TODO: هنا يتم ضبط حجم الخط.
+          final fs =
+              // useHafsSizing
+              //     ?
+              useHafsSizing
+                  ? PageFontSizeHelper.getFontSize(
+                        pageIndex,
+                        ctx,
+                      ) -
+                      4
+                  : PageFontSizeHelper.getFontSize(
+                      pageIndex,
+                      ctx,
+                    )
+              //     :
+              //     PageFontSizeHelper.qcfFontSize(
+              //   context: ctx,
+              //   pageIndex: pageIndex,
+              //   maxWidth: constraints.maxWidth,
+              // )
+              ;
 
           return GetBuilder<WordInfoCtrl>(
             id: 'word_info_data',
@@ -76,8 +100,9 @@ class QpcV4RichTextLine extends StatelessWidget {
     );
   }
 
-  RichText _richTextBuild(WordInfoCtrl wordInfoCtrl, BuildContext context,
+  Widget _richTextBuild(WordInfoCtrl wordInfoCtrl, BuildContext context,
       double fs, Set<int> bookmarksSet) {
+    /// TODO: وهنا يتم وضع الـ FittedBox لوضع النص على حسب حجم الشاشة.
     return RichText(
       textDirection: TextDirection.rtl,
       textAlign: isCentered ? TextAlign.center : TextAlign.justify,
@@ -162,6 +187,9 @@ class QpcV4RichTextLine extends StatelessWidget {
             ayahSelectedBackgroundColor: ayahSelectedBackgroundColor,
             isFontsLocal: isFontsLocal,
             fontsName: fontsName,
+            fontFamilyOverride: fontFamilyOverride,
+            fontPackageOverride: fontPackageOverride,
+            usePaintColoring: usePaintColoring,
             ayahBookmarked: ayahBookmarked,
             isDark: isDark,
           );

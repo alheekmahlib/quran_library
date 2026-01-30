@@ -14,8 +14,7 @@ class QuranOrTenRecitationsTabBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return !QuranCtrl.instance.state.isTajweedEnabled.value &&
-            (QuranCtrl.instance.state.fontsSelected.value == 1)
+    return !QuranCtrl.instance.state.isTajweedEnabled.value
         ? DefaultTabController(
             length: 2,
             child: Container(

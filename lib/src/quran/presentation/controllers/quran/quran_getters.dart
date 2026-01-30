@@ -88,6 +88,16 @@ extension QuranGetters on QuranCtrl {
       // حضّر الخطوط للصفحة الحالية والصفحات المجاورة
       await prepareFonts((_quranRepository.getLastPage() ?? 1),
           isFontsLocal: isFontsLocal);
+    } else if (idx == 0) {
+      // الخط الأساسي: حضّر البيانات مبكرًا لتفادي أي تقطيع أثناء التقليب.
+      // لا ننتظر التحضير الكامل هنا حتى لا نؤخر تبديل الواجهة.
+      final pageIndex = (_quranRepository.getLastPage() ?? 1) - 1;
+      Future(() async {
+        await ensureCoreDataLoaded();
+        await prewarmHafsPages(pageIndex);
+        // ابدأ التحضير الكامل بعد خمول بسيط.
+        scheduleHafsAllPagesPrebuild(delay: const Duration(milliseconds: 300));
+      });
     }
   }
 

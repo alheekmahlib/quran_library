@@ -5,14 +5,20 @@ typedef QpcV4AyahUqResolver = int Function({
   required int ayahNumber,
 });
 
+typedef QpcV4WordTextResolver = String? Function(QpcV4Word word);
+
 class QpcV4PageRenderer {
   const QpcV4PageRenderer({
     required this.store,
     required this.ayahUqResolver,
+    this.wordTextResolver,
+    this.insertWordSeparatorBetweenWords = false,
   });
 
   final QpcV4AssetsStore store;
   final QpcV4AyahUqResolver ayahUqResolver;
+  final QpcV4WordTextResolver? wordTextResolver;
+  final bool insertWordSeparatorBetweenWords;
 
   static const int _ornamentHizbMark = 0x06DE; // ۞
 
@@ -156,6 +162,12 @@ class QpcV4PageRenderer {
       final endWordId = endWordIdByAyahKey[key];
       final isAyahEnd = endWordId != null && wordId == endWordId;
 
+      final resolvedText =
+          (wordTextResolver != null) ? wordTextResolver!(w) : w.text;
+      if (resolvedText == null || resolvedText.isEmpty) {
+        continue;
+      }
+
       // حل مستهدف: المشكلة عندك فقط بين أول وثاني كلمة في الصفحة.
       // لذلك نضيف فاصلًا مرة واحدة فقط قبل الكلمة الثانية الفعلية في أول سطر آيات.
       // استخدمنا No‑Break Space لتجنب التفاف/كسر السطر.
@@ -164,7 +176,7 @@ class QpcV4PageRenderer {
       // (مثال: text="ﱁﱂ"). في هذه الحالة نُدخل الفاصل داخل النص بين أول محرف
       // وباقي النص، ونعتبر أننا عالجنا فاصل بداية الصفحة.
       if (addSingleSpaceBetweenFirstTwoWords && realWordsWritten == 0) {
-        final runes = w.text.runes.toList(growable: false);
+        final runes = resolvedText.runes.toList(growable: false);
         if (runes.length > 1 && runes.first == _ornamentHizbMark) {
           final glyphs =
               '${String.fromCharCode(runes.first)}\u202F${String.fromCharCodes(runes.skip(1))}';
@@ -185,10 +197,14 @@ class QpcV4PageRenderer {
         }
       }
 
-      var glyphs = w.text;
+      var glyphs = resolvedText;
+      final shouldPrefixWordSep =
+          insertWordSeparatorBetweenWords && realWordsWritten > 0;
       if (addSingleSpaceBetweenFirstTwoWords && realWordsWritten == 1) {
         glyphs = '\u202F$glyphs';
         didInsertSingleSpaceBetweenFirstTwoWords = true;
+      } else if (shouldPrefixWordSep) {
+        glyphs = '\u202F$glyphs';
       }
 
       segments.add(

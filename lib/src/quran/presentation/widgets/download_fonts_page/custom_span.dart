@@ -50,6 +50,9 @@ TextSpan _qpcV4SpanSegment({
   Color? ayahSelectedBackgroundColor,
   required bool isFontsLocal,
   required String fontsName,
+  String? fontFamilyOverride,
+  String? fontPackageOverride,
+  bool usePaintColoring = true,
   required bool isDark,
 }) {
   final quranCtrl = QuranCtrl.instance;
@@ -72,10 +75,15 @@ TextSpan _qpcV4SpanSegment({
       ? Colors.white.withValues(alpha: 0.18)
       : const Color(0xFFFFF59D).withValues(alpha: 0.65);
 
+  final fontFamily = fontFamilyOverride ??
+      (isFontsLocal ? fontsName : quranCtrl.getFontPath(pageIndex));
+
   final baseTextStyle = TextStyle(
-    fontFamily: isFontsLocal ? fontsName : quranCtrl.getFontPath(pageIndex),
+    fontFamily: fontFamily,
+    package: fontPackageOverride,
     fontSize: fontSize,
     height: 2.0,
+    wordSpacing: usePaintColoring ? -2 : 0,
     backgroundColor: bg ?? (isWordSelected ? selectedWordBg : null),
     // decoration: isWordSelected ? TextDecoration.underline : null,
     // decorationColor:
@@ -91,17 +99,31 @@ TextSpan _qpcV4SpanSegment({
     //     offset: const Offset(0.5, 0.5),
     //   ),
     // ],
-    foreground: withTajweed
-        ? (Paint()
-          // ..color = AppColors.getTextColor(isDark)
-          ..invertColors = isDark ? true : false
-          //exclusion or difference
-          ..blendMode = BlendMode.srcATop)
-        : (Paint()
-          // ..color = AppColors.getTextColor(isDark)
-          ..colorFilter = ColorFilter.mode(
-              forceRed ? Colors.red : AppColors.getTextColor(isDark),
-              BlendMode.srcATop)),
+    color: (!usePaintColoring)
+        ? (forceRed
+            ? Colors.red
+            : (textColor ?? AppColors.getTextColor(isDark)))
+        : null,
+    foreground: (usePaintColoring)
+        ? (withTajweed
+            ? isDark
+                ? (Paint()
+                  ..color = Colors.white
+                  //exclusion or difference
+                  ..blendMode = BlendMode.exclusion)
+                : (Paint()
+                  ..color = Colors.black
+                  ..blendMode = BlendMode.srcATop)
+            : isDark
+                ? (Paint()
+                  ..color = Colors.white
+                  ..colorFilter = ColorFilter.mode(
+                      forceRed ? Colors.red : Colors.white, BlendMode.srcATop))
+                : (Paint()
+                  ..color = Colors.black
+                  ..colorFilter = ColorFilter.mode(
+                      forceRed ? Colors.red : Colors.black, BlendMode.srcATop)))
+        : null,
   );
 
   InlineSpan? tail;
@@ -121,11 +143,12 @@ TextSpan _qpcV4SpanSegment({
             ),
           )
         : TextSpan(
-            text:
-                '${'$ayahNumber'.convertEnglishNumbersToArabic(ayahNumber.toString())}\u202F\u202F',
+            text: usePaintColoring
+                ? '${'$ayahNumber'.convertEnglishNumbersToArabic(ayahNumber.toString())}\u202F\u202F'
+                : '\u202F${'$ayahNumber'.convertEnglishNumbersToArabic(ayahNumber.toString())}\u202F',
             style: TextStyle(
               fontFamily: 'ayahNumber',
-              fontSize: fontSize + 25,
+              fontSize: usePaintColoring ? (fontSize + 5) : (fontSize + 5),
               height: 1.5,
               package: 'quran_library',
               color: ayahIconColor ?? Theme.of(context).colorScheme.primary,

@@ -21,6 +21,17 @@ class QuranCtrl extends GetxController {
   bool _qpcV4PrebuildStarted = false;
   Timer? _qpcV4IdlePrebuildTimer;
 
+  // --- Hafs (font 0) using QPC v4 layout + Hafs WBW ---
+  QpcHafsWordByWordStore? _hafsWbwStore;
+  Future<void>? _hafsWbwLoadFuture;
+  QpcV4PageRenderer? _hafsPageRenderer;
+  final Map<int, List<QpcV4RenderBlock>> _hafsBlocksByPage = {};
+  Future<void>? _hafsPrebuildAllFuture;
+  bool _hafsPrebuildStarted = false;
+  Timer? _hafsIdlePrebuildTimer;
+
+  bool get isHafsAllPagesPrebuilt => _hafsBlocksByPage.length >= 604;
+
   bool get isQpcV4AllPagesPrebuilt => _qpcV4BlocksByPage.length >= 604;
 
   double get qpcV4PrebuildProgress {
@@ -36,6 +47,10 @@ class QuranCtrl extends GetxController {
 
   bool get isQpcV4Enabled =>
       state.fontsSelected.value == 1 || state.fontsSelected.value == 2;
+
+  /// تفعيل مسار layout الموحد (QPC layout) للخطوط 0/1/2
+  bool get isQpcLayoutEnabled =>
+      state.fontsSelected.value == 0 || isQpcV4Enabled;
 
   RxList<QuranPageModel> staticPages = <QuranPageModel>[].obs;
   RxList<int> quranStops = <int>[].obs;
@@ -143,11 +158,18 @@ class QuranCtrl extends GetxController {
     }
 
     _qpcV4BlocksByPage.clear();
+    _hafsBlocksByPage.clear();
     _ayahUqBySurahAyahKey.clear();
     _ayahByUqCache.clear();
     _qpcV4PageRenderer = null;
+    _hafsPageRenderer = null;
     _qpcV4Store = null;
     _qpcV4LoadFuture = null;
+    _hafsWbwStore = null;
+    _hafsWbwLoadFuture = null;
+    _hafsPrebuildAllFuture = null;
+    _hafsPrebuildStarted = false;
+    _hafsIdlePrebuildTimer?.cancel();
     _qpcV4IdlePrebuildTimer?.cancel();
   }
 
@@ -217,7 +239,7 @@ class QuranCtrl extends GetxController {
   }
 
   Future<void> _ensureQpcV4AssetsLoaded() async {
-    if (!isQpcV4Enabled) return;
+    if (!isQpcLayoutEnabled) return;
     if (_qpcV4Store != null) return;
 
     _qpcV4LoadFuture ??= () async {
@@ -237,6 +259,97 @@ class QuranCtrl extends GetxController {
     }();
 
     await _qpcV4LoadFuture;
+  }
+
+  Future<void> _ensureHafsWbwLoaded() async {
+    if (state.fontsSelected.value != 0) return;
+    if (_hafsWbwStore != null) return;
+
+    _hafsWbwLoadFuture ??= () async {
+      try {
+        _hafsWbwStore = await QpcHafsWordByWordAssetsLoader.load();
+      } catch (e, st) {
+        log('Failed to load Hafs WBW assets: $e',
+            name: 'HafsWBW', stackTrace: st);
+      }
+    }();
+
+    await _hafsWbwLoadFuture;
+  }
+
+  Future<void> _ensureHafsRendererReady() async {
+    if (state.fontsSelected.value != 0) return;
+    await _ensureQpcV4AssetsLoaded();
+    await _ensureHafsWbwLoaded();
+    final store = _qpcV4Store;
+    final wbw = _hafsWbwStore;
+    if (store == null || wbw == null) return;
+    _hafsPageRenderer ??= QpcV4PageRenderer(
+      store: store,
+      ayahUqResolver: ({required surahNumber, required ayahNumber}) =>
+          resolveAyahUq(surahNumber: surahNumber, ayahNumber: ayahNumber),
+      wordTextResolver: (word) => wbw.textFor(
+        surah: word.surah,
+        ayah: word.ayah,
+        word: word.wordIndex,
+      ),
+      insertWordSeparatorBetweenWords: true,
+    );
+  }
+
+  /// جدولة تحضير كل صفحات الخط الأساسي بعد فترة خمول.
+  /// الهدف: عدم بناء صفحات أثناء السحب (يُسبب تقطيع).
+  void scheduleHafsAllPagesPrebuild(
+      {Duration delay = const Duration(milliseconds: 700)}) {
+    if (state.fontsSelected.value != 0) return;
+    if (isHafsAllPagesPrebuilt) return;
+    if (_hafsPrebuildStarted) return;
+
+    _hafsIdlePrebuildTimer?.cancel();
+    _hafsIdlePrebuildTimer = Timer(delay, () {
+      if (state.fontsSelected.value != 0) return;
+      if (_hafsPrebuildStarted) return;
+      Future(() => ensureHafsAllPagesPrebuilt());
+    });
+  }
+
+  /// يبني كل صفحات الخط الأساسي (font 0) على دفعات مع yield لتفادي تجميد UI.
+  Future<void> ensureHafsAllPagesPrebuilt() async {
+    if (state.fontsSelected.value != 0) return;
+    await _ensureHafsRendererReady();
+    final renderer = _hafsPageRenderer;
+    if (renderer == null) return;
+
+    if (_hafsPrebuildAllFuture != null) {
+      await _hafsPrebuildAllFuture;
+      return;
+    }
+
+    _hafsPrebuildAllFuture = () async {
+      if (_hafsBlocksByPage.length >= 604) return;
+      _hafsPrebuildStarted = true;
+
+      const totalPages = 604;
+      const timeBudgetMs = 4;
+      final sw = Stopwatch()..start();
+
+      for (var page = 1; page <= totalPages; page++) {
+        if (state.fontsSelected.value != 0) break;
+        if (_hafsBlocksByPage.containsKey(page)) continue;
+        _hafsBlocksByPage[page] = renderer.buildPage(pageNumber: page);
+
+        if (sw.elapsedMilliseconds >= timeBudgetMs) {
+          await Future<void>.delayed(const Duration(milliseconds: 3));
+          sw
+            ..reset()
+            ..start();
+        }
+      }
+
+      update();
+    }();
+
+    await _hafsPrebuildAllFuture;
   }
 
   /// يبني كل صفحات QPC v4 مرة واحدة لتجنّب التقطيع أثناء التقليب.
@@ -316,6 +429,60 @@ class QuranCtrl extends GetxController {
     }
 
     return const <QpcV4RenderBlock>[];
+  }
+
+  List<QpcV4RenderBlock> getQpcLayoutBlocksForPageSync(int pageNumber) {
+    if (state.fontsSelected.value == 0) {
+      return getHafsBlocksForPageSync(pageNumber);
+    }
+    return getQpcV4BlocksForPageSync(pageNumber);
+  }
+
+  List<QpcV4RenderBlock> getHafsBlocksForPageSync(int pageNumber) {
+    final cached = _hafsBlocksByPage[pageNumber];
+    if (cached != null) return cached;
+
+    if (state.fontsSelected.value == 0) {
+      Future(() async {
+        await prewarmHafsPages(pageNumber - 1);
+      });
+    }
+
+    return const <QpcV4RenderBlock>[];
+  }
+
+  Future<void> prewarmHafsPages(int pageIndex) async {
+    if (state.fontsSelected.value != 0) return;
+    await _ensureHafsRendererReady();
+    final renderer = _hafsPageRenderer;
+    if (renderer == null) return;
+
+    final basePage = pageIndex + 1;
+    // نُعطي أولوية للصفحات القادمة لأن المستخدم غالبًا يقلب للأمام.
+    // هذا يقلّل احتمال الوصول لصفحة غير مبنية (خصوصًا عند الصفحة الثالثة).
+    final candidates = <int>{
+      basePage,
+      basePage - 1,
+      basePage - 2,
+      basePage - 3,
+      basePage + 1,
+      basePage + 2,
+      basePage + 3,
+      basePage + 4,
+      basePage + 5,
+      basePage + 6,
+      basePage + 7,
+      basePage + 8,
+    }.where((p) => p >= 1 && p <= 604);
+
+    var didBuildAny = false;
+    for (final p in candidates) {
+      if (_hafsBlocksByPage.containsKey(p)) continue;
+      _hafsBlocksByPage[p] = renderer.buildPage(pageNumber: p);
+      didBuildAny = true;
+    }
+
+    if (didBuildAny) update();
   }
 
   Future<void> prewarmQpcV4Pages(int pageIndex) async {

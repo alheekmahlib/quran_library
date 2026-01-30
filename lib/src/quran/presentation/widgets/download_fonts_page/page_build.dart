@@ -5,6 +5,7 @@ class PageBuild extends StatelessWidget {
     super.key,
     required this.pageIndex,
     required this.surahNumber,
+    this.surahFilterNumber,
     required this.bannerStyle,
     required this.isDark,
     required this.surahNameStyle,
@@ -28,6 +29,7 @@ class PageBuild extends StatelessWidget {
 
   final int pageIndex;
   final int? surahNumber;
+  final int? surahFilterNumber;
   final BannerStyle? bannerStyle;
   final bool isDark;
   final SurahNameStyle? surahNameStyle;
@@ -51,32 +53,41 @@ class PageBuild extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (!quranCtrl.isQpcV4Enabled) {
-      // الخطوط المُحمّلة أصبحت تعتمد على QPC v4 فقط.
-      // الخط الأساسي (0) سيتم التعامل معه في المرحلة القادمة.
+    if (!quranCtrl.isQpcLayoutEnabled) {
       return const SizedBox.shrink();
     }
 
-    final blocks = quranCtrl.getQpcV4BlocksForPageSync(pageIndex + 1);
+    final blocks = quranCtrl.getQpcLayoutBlocksForPageSync(pageIndex + 1);
     if (blocks.isEmpty) {
       // أثناء غياب بيانات هذه الصفحة نعرض مؤشر تحميل بدل بناء متزامن.
       // تحضير الصفحة/المجاورة يتم عبر getQpcV4BlocksForPageSync.
       return const Center(child: CircularProgressIndicator.adaptive());
     }
 
+    final isHafs = quranCtrl.state.fontsSelected.value == 0;
+
     return RepaintBoundary(
-      child: FittedBox(
-        fit: BoxFit.scaleDown,
+      child: Padding(
+        padding: isHafs ? const EdgeInsets.all(8.0) : EdgeInsets.zero,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: blocks.map((b) {
+            // عند عرض سورة واحدة: نتجاهل الهيدر/البسملة من الـ layout ونتركها للـ SurahPage.
+            if (surahFilterNumber != null &&
+                (b is QpcV4SurahHeaderBlock || b is QpcV4BasmallahBlock)) {
+              return const SizedBox.shrink();
+            }
+
             if (b is QpcV4SurahHeaderBlock) {
               return SurahHeaderWidget(
                 b.surahNumber,
-                bannerStyle: bannerStyle ?? BannerStyle(),
+                bannerStyle: bannerStyle ??
+                    BannerStyle().copyWith(
+                      bannerSvgHeight: 45,
+                    ),
                 surahNameStyle: surahNameStyle ??
                     SurahNameStyle(
-                      surahNameSize: 120,
+                      surahNameSize: 35,
                       surahNameColor: AppColors.getTextColor(isDark),
                     ),
                 onSurahBannerPress: onSurahBannerPress,
@@ -85,20 +96,28 @@ class PageBuild extends StatelessWidget {
             }
 
             if (b is QpcV4BasmallahBlock) {
-              return Padding(
-                padding: const EdgeInsets.only(bottom: 8.0),
-                child: BasmallahWidget(
-                  surahNumber: b.surahNumber,
-                  basmalaStyle: basmalaStyle ??
-                      BasmalaStyle(
-                        basmalaColor: isDark ? Colors.white : Colors.black,
-                        basmalaFontSize: 100.0,
-                      ),
-                ),
+              return BasmallahWidget(
+                surahNumber: b.surahNumber,
+                basmalaStyle: basmalaStyle ??
+                    BasmalaStyle(
+                      basmalaColor: AppColors.getTextColor(isDark),
+                      basmalaFontSize: 25.0,
+                      verticalPadding: 0.0,
+                    ),
               );
             }
 
             if (b is QpcV4AyahLineBlock) {
+              final filteredSegments = (surahFilterNumber == null)
+                  ? b.segments
+                  : b.segments
+                      .where((s) => s.surahNumber == surahFilterNumber)
+                      .toList(growable: false);
+
+              if (filteredSegments.isEmpty) {
+                return const SizedBox.shrink();
+              }
+
               return RepaintBoundary(
                 child: QpcV4RichTextLine(
                   pageIndex: pageIndex,
@@ -114,9 +133,14 @@ class PageBuild extends StatelessWidget {
                   ayahSelectedBackgroundColor: ayahSelectedBackgroundColor,
                   context: context,
                   quranCtrl: quranCtrl,
-                  segments: b.segments,
-                  isFontsLocal: isFontsLocal!,
-                  fontsName: fontsName!,
+                  segments: filteredSegments,
+                  isFontsLocal: isFontsLocal ?? false,
+                  fontsName: fontsName ?? '',
+                  fontFamilyOverride:
+                      isHafs ? quranCtrl.currentFontFamily : null,
+                  fontPackageOverride: isHafs ? 'quran_library' : null,
+                  usePaintColoring: !isHafs,
+                  useHafsSizing: isHafs,
                   ayahBookmarked: ayahBookmarked,
                   isCentered: b.isCentered,
                 ),

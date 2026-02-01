@@ -20,7 +20,6 @@ class PackageSliderWidget extends StatefulWidget {
   final Color? textColor;
   final bool? timeShow;
   final double? padding;
-  final double sliderHeight;
   final int min;
   final int max;
   final bool fullWidth;
@@ -28,6 +27,8 @@ class PackageSliderWidget extends StatefulWidget {
   final double? currentPosition;
   final double? filesCount;
   final Color? thumbColor;
+  final Color? timeContainerColor;
+  final String? languageCode;
 
   factory PackageSliderWidget.downloading({
     required int currentPosition,
@@ -36,12 +37,16 @@ class PackageSliderWidget extends StatefulWidget {
     Color? thumbColor,
     Color? activeTrackColor,
     Color? inactiveTrackColor,
+    Color? timeContainerColor,
   }) {
     return PackageSliderWidget(
       currentPosition: currentPosition.toDouble(),
       filesCount: filesCount.toDouble(),
       horizontalPadding: horizontalPadding,
       thumbColor: thumbColor,
+      activeTrackColor: activeTrackColor,
+      inactiveTrackColor: inactiveTrackColor,
+      timeContainerColor: timeContainerColor,
     );
   }
   factory PackageSliderWidget.player({
@@ -61,6 +66,8 @@ class PackageSliderWidget extends StatefulWidget {
     int min = 0,
     bool fullWidth = false,
     Color? thumbColor,
+    String? languageCode,
+    Color? timeContainerColor,
   }) {
     return PackageSliderWidget(
       position: position,
@@ -74,11 +81,12 @@ class PackageSliderWidget extends StatefulWidget {
       textColor: textColor,
       timeShow: timeShow,
       padding: padding,
-      sliderHeight: sliderHeight,
       max: max,
       min: min,
       fullWidth: fullWidth,
       thumbColor: thumbColor,
+      languageCode: languageCode,
+      timeContainerColor: timeContainerColor,
     );
   }
 
@@ -96,13 +104,14 @@ class PackageSliderWidget extends StatefulWidget {
     this.textColor,
     this.timeShow,
     this.padding,
-    this.sliderHeight = 48,
     this.max = 10,
     this.min = 0,
     this.fullWidth = false,
     required this.horizontalPadding,
     super.key,
     this.thumbColor,
+    this.languageCode,
+    this.timeContainerColor,
   });
 
   @override
@@ -133,13 +142,18 @@ class _PackageSliderWidgetState extends State<PackageSliderWidget> {
             padding: EdgeInsets.symmetric(horizontal: widget.horizontalPadding),
             child: SliderTheme(
               data: SliderTheme.of(context).copyWith(
-                activeTrackColor: widget.activeTrackColor ?? Colors.blue,
+                activeTrackColor: widget.activeTrackColor ??
+                    Theme.of(context).colorScheme.primary,
                 inactiveTrackColor: widget.inactiveTrackColor ?? Colors.grey,
-                thumbColor: widget.thumbColor ?? Colors.blue,
+                thumbColor:
+                    widget.thumbColor ?? Theme.of(context).colorScheme.primary,
                 thumbShape: CustomSliderThumbRect(
+                  childContext: context,
                   thumbRadius: 20,
                   min: widget.min,
                   max: widget.max,
+                  thumbColor: widget.thumbColor ??
+                      Theme.of(context).colorScheme.primary,
                 ),
                 overlayShape:
                     const RoundSliderOverlayShape(overlayRadius: 10.0),
@@ -172,15 +186,18 @@ class _PackageSliderWidgetState extends State<PackageSliderWidget> {
                     padding: const EdgeInsets.symmetric(
                         horizontal: 8.0, vertical: 2.0),
                     decoration: BoxDecoration(
-                      color: Colors.blue,
+                      color: widget.timeContainerColor ??
+                          Theme.of(context).colorScheme.primary,
                       borderRadius: const BorderRadius.all(
                         Radius.circular(4),
                       ),
                     ),
                     child: Text(
-                      'downloading'.tr,
-                      style: QuranLibrary().naskhStyle.copyWith(
+                      'جارِ التحميل',
+                      style: QuranLibrary().cairoStyle.copyWith(
                             color: widget.textColor ?? Colors.white,
+                            height: 1.3,
+                            fontWeight: FontWeight.w600,
                             fontSize: 16,
                           ),
                     ),
@@ -192,7 +209,8 @@ class _PackageSliderWidgetState extends State<PackageSliderWidget> {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 8.0, vertical: 2.0),
                         decoration: BoxDecoration(
-                          color: Colors.blue,
+                          color: widget.timeContainerColor ??
+                              Theme.of(context).colorScheme.primary,
                           borderRadius: const BorderRadius.only(
                             topLeft: Radius.circular(4),
                             bottomLeft: Radius.circular(4),
@@ -203,9 +221,12 @@ class _PackageSliderWidgetState extends State<PackageSliderWidget> {
                                       .firstMatch("$remaining")
                                       ?.group(1) ??
                                   '$remaining')
-                              .convertArabicToEnglishNumbers,
-                          style: QuranLibrary().naskhStyle.copyWith(
+                              .convertNumbersAccordingToLang(
+                                  languageCode: widget.languageCode ?? 'ar'),
+                          style: QuranLibrary().cairoStyle.copyWith(
                                 color: widget.textColor ?? Colors.white,
+                                height: 1.3,
+                                fontWeight: FontWeight.w600,
                                 fontSize: 16,
                               ),
                         ),
@@ -214,7 +235,8 @@ class _PackageSliderWidgetState extends State<PackageSliderWidget> {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 8.0, vertical: 2.0),
                         decoration: BoxDecoration(
-                          color: Colors.blue,
+                          color: widget.timeContainerColor ??
+                              Theme.of(context).colorScheme.primary,
                           borderRadius: const BorderRadius.only(
                             topRight: Radius.circular(4),
                             bottomRight: Radius.circular(4),
@@ -225,9 +247,12 @@ class _PackageSliderWidgetState extends State<PackageSliderWidget> {
                                       .firstMatch("$total")
                                       ?.group(1) ??
                                   '$total')
-                              .convertArabicToEnglishNumbers,
-                          style: QuranLibrary().naskhStyle.copyWith(
+                              .convertNumbersAccordingToLang(
+                                  languageCode: widget.languageCode ?? 'ar'),
+                          style: QuranLibrary().cairoStyle.copyWith(
                                 color: widget.textColor ?? Colors.white,
+                                height: 1.3,
+                                fontWeight: FontWeight.w600,
                                 fontSize: 16,
                               ),
                         ),

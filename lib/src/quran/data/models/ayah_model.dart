@@ -12,7 +12,6 @@ class AyahModel {
   final int ayahNumber;
   String text;
   final String ayaTextEmlaey;
-  final String? codeV2;
   final int juz;
   final int page;
   final int? surahNumber;
@@ -36,7 +35,6 @@ class AyahModel {
     required this.ayahNumber,
     required this.text,
     required this.ayaTextEmlaey,
-    this.codeV2,
     required this.juz,
     required this.page,
     this.surahNumber,
@@ -61,7 +59,6 @@ class AyahModel {
       ayahNumber: json['numberInSurah'],
       text: json['text'] ?? '',
       ayaTextEmlaey: json['aya_text_emlaey'] ?? '',
-      codeV2: json['code_v2'],
       juz: json['juz'],
       page: json['page'],
       hizb: json['hizbQuarter'],
@@ -94,7 +91,6 @@ class AyahModel {
       ayahNumber: json['aya_no'],
       text: ayahText,
       ayaTextEmlaey: json['aya_text_emlaey'] ?? '',
-      codeV2: null,
       juz: json['jozz'],
       page: json['page'],
       surahNumber: json['sura_no'] ?? json['sora'] ?? 0,
@@ -118,7 +114,6 @@ class AyahModel {
       ayahNumber: 0,
       text: '',
       ayaTextEmlaey: '',
-      codeV2: null,
       juz: 0,
       page: 0,
       surahNumber: 0,
@@ -149,7 +144,6 @@ class AyahModel {
       ayahNumber: ayah.ayahNumber,
       text: aya,
       ayaTextEmlaey: ayaText,
-      codeV2: ayah.codeV2,
       juz: ayah.juz,
       page: ayah.page,
       surahNumber: ayah.surahNumber,

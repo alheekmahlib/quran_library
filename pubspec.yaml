@@ -1,7 +1,7 @@
 name: quran_library
 description: "An integrated package for displaying the Holy Qur’an identical to
   the Medina Quran with the narration of Hafs on the authority of Asim."
-version: 2.0.7
+version: 3.0.0
 homepage: https://github.com/alheekmahlib/quran_library
 documentation: https://alheekmahlib.github.io/quran_library_web/
 
@@ -10,43 +10,41 @@ environment:
   flutter: ">=1.20.0"
 
 dependencies:
-  another_xlider: ^3.0.2
   archive: ^4.0.7
   audio_service: ^0.18.18
-  toastification: ^3.0.3
-  connectivity_plus: ^6.1.4
-  dio: ^5.8.0+1
-  drift: ^2.27.0
+  connectivity_plus: ^7.0.0
+  dio: ^5.9.0
   flutter:
     sdk: flutter
-  flutter_cache_manager: ^3.4.1
-  flutter_screenutil: ^5.9.3
-  flutter_svg: ^2.1.0
-  get: ^4.7.2
+  flutter_scale_kit: ^1.5.2
+  flutter_svg: ^2.2.3
+  get: ^4.7.3
   get_storage: ^2.1.1
-  just_audio: ^0.10.4
-  lottie: ^3.3.1
-  path: ^1.9.0
+  html: ^0.15.6
+  just_audio: ^0.10.5
+  just_audio_media_kit: ^2.1.0
+  media_kit_libs_windows_audio: ^1.0.9
+  path: ^1.9.1
   path_provider: ^2.1.5
   rxdart: ^0.28.0
-  scrollable_positioned_list: ^0.3.8
-  flutter_sliding_panel: ^0.0.5
+  arabic_justified_text: ^1.0.2
+    # git:
+    #   ref: main
+    #   url: https://github.com/AhmedAlboishe/arabic_justified_text.git
 
 # This package supports all platforms listed below.
 # But note that it works and fits on mobile size devices
 # Additional Screen Sizes will be supported later
 platforms:
-  #  web:
+  # linux
+  ? windows
+  ? web
   ? android
   ? ios
-  ? linux
   ? macos
-  ? windows
 
 dev_dependencies:
-  build_runner: ^2.4.15
-  drift_dev: ^2.26.0
-  flutter_lints: ^5.0.0
+  flutter_lints: ^6.0.0
   flutter_test:
     sdk: flutter
 
@@ -72,7 +70,6 @@ flutter:
         pluginClass: QuranLibraryPlugin
       # ios:
       #   pluginClass: QuranLibraryPlugin
-
   assets:
     - assets/
     - assets/fonts/
@@ -80,10 +77,10 @@ flutter:
     - assets/fonts/NotoNaskhArabic-VariableFont_wght.ttf
     - assets/fonts/UthmanicHafs_V20.ttf
     - assets/jsons/
-    - assets/lottie/
     - assets/svg/
-    - assets/saadiV4.db
-    - assets/en.json
+    - assets/images/
+    - assets/saadi.json.gz
+    - assets/en.json.gz
 
   fonts:
     - family: kufi
@@ -98,3 +95,21 @@ flutter:
     - family: surahName
       fonts:
         - asset: assets/fonts/surah_name_naskh.ttf
+    - family: cairo
+      fonts:
+        - asset: assets/fonts/Cairo-Bold.ttf
+          weight: 900
+        - asset: assets/fonts/Cairo-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/Cairo-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Cairo-Regular.ttf
+    - family: bismillah
+      fonts:
+        - asset: assets/fonts/vertopal.com_QCF_Bismillah-Regular.ttf
+    - family: ayahNumber
+      fonts:
+        - asset: assets/fonts/Uthmanic_NeoCOLORD-Regular.ttf
+    - family: surah-name-v4
+      fonts:
+        - asset: assets/fonts/surah-name-v4.ttf

@@ -2,61 +2,94 @@ part of '../../audio.dart';
 
 class SurahDownloadPlayButton extends StatelessWidget {
   final SurahAudioStyle? style;
-  const SurahDownloadPlayButton({super.key, this.style});
+  final int surahNumber;
+  const SurahDownloadPlayButton(
+      {super.key, this.style, required this.surahNumber});
 
   @override
   Widget build(BuildContext context) {
-    final surahAudioCtrl = AudioCtrl.instance;
-    return SizedBox(
-      width: 40,
-      child: Obx(
-        () => surahAudioCtrl.state.isDownloading.value
-            ? IconButton(
-                icon: Icon(
-                  Icons.close,
-                  color: style?.iconColor ?? Colors.black,
-                  size: 28,
-                ),
-                onPressed: () => surahAudioCtrl.cancelDownload(),
-              )
-            : StreamBuilder<PlayerState>(
-                stream: surahAudioCtrl.state.audioPlayer.playerStateStream,
-                builder: (context, snapshot) {
-                  final playerState = snapshot.data;
-                  final processingState = playerState?.processingState;
-                  if (processingState == ProcessingState.loading ||
-                      processingState == ProcessingState.buffering) {
-                    return CustomWidgets.customLottie(
-                        LottieConstants.get(
-                            LottieConstants.assetsLottiePlayButton),
-                        width: 20.0,
-                        height: 20.0);
-                  } else {
-                    return IconButton(
-                      icon: Semantics(
-                          button: true,
-                          enabled: true,
-                          label: 'download'.tr,
-                          child: const Icon(Icons.cloud_download_outlined)),
-                      iconSize: 24.0,
-                      color: style?.iconColor ?? Colors.blue,
-                      onPressed: () async {
-                        surahAudioCtrl.state.isPlayingSurahsMode = true;
-                        if (surahAudioCtrl.state.isDownloading.value) {
-                          surahAudioCtrl.cancelDownload();
-                        } else if (surahAudioCtrl.state
-                            .isSurahDownloadedByNumber(surahAudioCtrl
-                                .state.currentAudioListSurahNum.value)
-                            .value) {
-                          surahAudioCtrl.state.isPlaying.value = true;
-                        } else {
-                          await surahAudioCtrl.startDownload();
-                        }
-                      },
-                    );
-                  }
-                },
-              ),
+    final isSelected =
+        AudioCtrl.instance.state.selectedSurahIndex.value == surahNumber - 1;
+    return Container(
+      width: 36.0,
+      height: 36.0,
+      decoration: BoxDecoration(
+        color: isSelected
+            ? (style?.primaryColor ?? Theme.of(context).colorScheme.primary)
+            : (style?.primaryColor ?? Theme.of(context).colorScheme.primary)
+                .withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(18.0),
+      ),
+      child: GetBuilder<AudioCtrl>(
+        id: 'surahDownloadManager_id',
+        builder: (surahAudioCtrl) {
+          final isDownloaded =
+              surahAudioCtrl.state.isSurahDownloadedByNumber(surahNumber).value;
+          return (isSelected &&
+                  surahAudioCtrl.state.isDownloading.value &&
+                  !isDownloaded)
+              ? isDownloaded
+                  ? const SizedBox.shrink()
+                  : Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        SizedBox(
+                          height: 35.0,
+                          width: 35.0,
+                          child: CircularProgressIndicator(
+                            value: surahAudioCtrl.state.progress.value,
+                            strokeWidth: 4.0,
+                            color: context.theme.colorScheme.inversePrimary,
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              style?.downloadProgressColor ??
+                                  context.theme.colorScheme.inversePrimary,
+                            ),
+                          ),
+                        ),
+                        GestureDetector(
+                          child: Icon(
+                            Icons.close,
+                            color: style?.iconColor ?? Colors.black,
+                            size: 28,
+                          ),
+                          onTap: () => surahAudioCtrl.cancelDownload(),
+                        ),
+                      ],
+                    )
+              : StreamBuilder<PlayerState>(
+                  stream: surahAudioCtrl.state.audioPlayer.playerStateStream,
+                  builder: (context, snapshot) {
+                    final playerState = snapshot.data;
+                    final processingState = playerState?.processingState;
+                    if ((processingState == ProcessingState.loading ||
+                            processingState == ProcessingState.buffering) &&
+                        isSelected) {
+                      return SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: style?.downloadProgressColor ?? Colors.white,
+                          ));
+                    } else {
+                      return GestureDetector(
+                        onTap: () =>
+                            surahAudioCtrl.downloadSurah(surahNum: surahNumber),
+                        child: Icon(
+                          isDownloaded
+                              ? Icons.download_done
+                              : Icons.cloud_download_outlined,
+                          color: isSelected
+                              ? Colors.white
+                              : (style?.primaryColor ??
+                                  Theme.of(context).colorScheme.primary),
+                          size: 20.0,
+                        ),
+                      );
+                    }
+                  },
+                );
+        },
       ),
     );
   }

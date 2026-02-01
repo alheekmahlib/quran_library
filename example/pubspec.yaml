@@ -2,7 +2,7 @@ name: example
 description: "A new Flutter project."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
-publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev 
 
 version: 1.0.0+1
 
@@ -12,12 +12,12 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_localizations:
+      sdk: flutter
 
   quran_library:
     path: ../
-  get: ^4.6.6
-  drift_flutter: ^0.2.4
-  device_preview: ^1.2.0
+  # device_preview: ^1.2.0
 
 dev_dependencies:
   flutter_test:

@@ -8,11 +8,7 @@ class TopAndBottomWidget extends StatelessWidget {
   final bool? isSurah;
   final int? surahNumber;
   final String? languageCode;
-  final String? juzName;
-  final String? sajdaName;
-  final String? surahName;
   final Widget child;
-  final Widget? topTitleChild;
 
   TopAndBottomWidget({
     super.key,
@@ -20,10 +16,6 @@ class TopAndBottomWidget extends StatelessWidget {
     required this.isRight,
     required this.child,
     this.languageCode,
-    this.juzName,
-    this.sajdaName,
-    this.topTitleChild,
-    this.surahName,
     this.isSurah = false,
     this.surahNumber,
   });
@@ -45,9 +37,9 @@ class TopAndBottomWidget extends StatelessWidget {
             child: BuildTopSection(
               isRight: isRight,
               languageCode: languageCode,
-              juzName: juzName,
-              surahName: surahName,
               pageIndex: pageIndex,
+              isSurah: isSurah!,
+              surahNumber: surahNumber,
             ),
           ),
 
@@ -67,7 +59,6 @@ class TopAndBottomWidget extends StatelessWidget {
             alignment: Alignment.bottomCenter,
             child: BuildBottomSection(
                 pageIndex: pageIndex,
-                sajdaName: sajdaName,
                 isRight: isRight,
                 languageCode: languageCode!),
           ),
@@ -84,16 +75,15 @@ class TopAndBottomWidget extends StatelessWidget {
                 BuildTopSection(
                   isRight: isRight,
                   languageCode: languageCode,
-                  juzName: juzName,
-                  surahName: surahName,
                   pageIndex: pageIndex,
+                  isSurah: isSurah!,
+                  surahNumber: surahNumber,
                 ),
                 Flexible(
                   child: child,
                 ),
                 BuildBottomSection(
                     pageIndex: pageIndex,
-                    sajdaName: sajdaName,
                     isRight: isRight,
                     languageCode: languageCode!),
               ],
@@ -104,9 +94,9 @@ class TopAndBottomWidget extends StatelessWidget {
                   BuildTopSection(
                     isRight: isRight,
                     languageCode: languageCode,
-                    juzName: juzName,
-                    surahName: surahName,
                     pageIndex: pageIndex,
+                    isSurah: isSurah!,
+                    surahNumber: surahNumber,
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 40.0),
@@ -114,7 +104,6 @@ class TopAndBottomWidget extends StatelessWidget {
                   ),
                   BuildBottomSection(
                       pageIndex: pageIndex,
-                      sajdaName: sajdaName,
                       isRight: isRight,
                       languageCode: languageCode!),
                 ],

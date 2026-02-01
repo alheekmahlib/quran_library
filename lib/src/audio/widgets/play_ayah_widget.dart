@@ -7,6 +7,10 @@ class PlayAyahWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final audioCtrl = AudioCtrl.instance;
+    final bool dark = Theme.of(context).brightness == Brightness.dark;
+    final AyahAudioStyle effectiveStyle =
+        style ?? AyahAudioStyle.defaults(isDark: dark, context: context);
+
     return SizedBox(
       width: 28,
       height: 28,
@@ -19,40 +23,49 @@ class PlayAyahWidget extends StatelessWidget {
               processingState == ProcessingState.buffering ||
               (audioCtrl.state.isDownloading.value &&
                   audioCtrl.state.progress.value == 0)) {
-            return CustomWidgets.customLottie(
-                LottieConstants.get(LottieConstants.assetsLottiePlayButton),
-                width: 20.0,
-                height: 20.0);
+            return const SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                ));
           } else if (playerState != null && !playerState.playing) {
             return GestureDetector(
               child: CustomWidgets.customSvgWithColor(
-                style?.playIconPath ?? AssetsPath.assets.playArrow,
-                height: style?.playIconHeight ?? 25,
+                effectiveStyle.playIconPath ?? AssetsPath.assets.playArrow,
+                height: effectiveStyle.playIconHeight!,
                 ctx: context,
-                color: style?.playIconColor ?? (Colors.blue),
+                color: effectiveStyle.playIconColor!,
               ),
               onTap: () async {
-                QuranCtrl.instance.selectedAyahsByUnequeNumber.isNotEmpty
-                    ? audioCtrl.state.isDirectPlaying.value = false
-                    : audioCtrl.state.isDirectPlaying.value = true;
-                QuranCtrl.instance.state.isPlayExpanded.value = true;
+                // اضبط وضع التشغيل للآيات فقط
                 audioCtrl.state.isPlayingSurahsMode = false;
-                audioCtrl.playAyah(
-                    context, audioCtrl.state.currentAyahUniqueNumber,
-                    playSingleAyah: audioCtrl.state.playSingleAyahOnly);
+                // عطّل مستمع وضع السور لتجنّب التداخل مع تشغيل الآيات
+                audioCtrl.disableSurahAutoNextListener();
+                // تعطيل حفظ موضع السورة عند تشغيل الآيات
+                audioCtrl.disableSurahPositionSaving();
+                // تجنّب استدعاءات مزدوجة
+                if (!audioCtrl.state.audioPlayer.playing) {
+                  await audioCtrl.playAyah(
+                    context,
+                    isDarkMode: dark,
+                    audioCtrl.state.currentAyahUniqueNumber.value,
+                    playSingleAyah: audioCtrl.state.playSingleAyahOnly,
+                  );
+                }
               },
             );
           }
           return GestureDetector(
             child: CustomWidgets.customSvgWithColor(
-              style?.pauseIconPath ?? AssetsPath.assets.pauseArrow,
-              height: style?.pauseIconHeight ?? 25,
+              effectiveStyle.pauseIconPath ?? AssetsPath.assets.pauseArrow,
+              height: effectiveStyle.pauseIconHeight!,
               ctx: context,
-              color: style?.playIconColor ?? (Colors.blue),
+              color: effectiveStyle.playIconColor!,
             ),
             onTap: () async {
+              // Pause only, don't auto-toggle play again
               await audioCtrl.pausePlayer();
-              QuranCtrl.instance.state.isPlayExpanded.value = true;
             },
           );
         },

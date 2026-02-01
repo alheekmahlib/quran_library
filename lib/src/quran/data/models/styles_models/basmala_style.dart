@@ -8,11 +8,11 @@ class BasmalaStyle {
   ///[basmalaColor] If you wanna change the color for the basmalah.
   final Color? basmalaColor;
 
-  ///[basmalaWidth] If you wanna change the width for the basmalah.
-  final double? basmalaWidth;
+  ///[basmalaFontSize] If you wanna change the font size for the basmalah.
+  final double? basmalaFontSize;
 
-  ///[basmalaHeight] If you wanna change the height for the basmalah.
-  final double? basmalaHeight;
+  ///[verticalPadding] If you wanna change the padding for the basmalah.
+  final double? verticalPadding;
 
   /// A class that defines the style for the Basmala.
   ///
@@ -34,7 +34,7 @@ class BasmalaStyle {
   /// - `basmalaHeight`: The height of the Basmala.
   BasmalaStyle({
     this.basmalaColor,
-    this.basmalaWidth,
-    this.basmalaHeight,
+    this.basmalaFontSize,
+    this.verticalPadding,
   });
 }

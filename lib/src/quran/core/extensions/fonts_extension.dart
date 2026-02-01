@@ -1,194 +1,217 @@
 part of '/quran.dart';
 
+/// مُعرّف جيل لتحميل الخطوط يُستخدم لإلغاء دفعات قديمة عند تغيّر الصفحة بسرعة
+/// Generation token to cancel outdated preloading batches when page changes quickly
+// int _fontPreloadGeneration = 0;
+
 /// Extension to handle font-related operations for the QuranCtrl class.
 extension FontsExtension on QuranCtrl {
-  /// يتحقق من إمكانية الوصول للإنترنت وإعدادات الشبكة
-  /// Checks internet accessibility and network settings
-  Future<bool> _checkNetworkConnectivity() async {
+  // حارس لمنع تكرار استدعاء prepareFonts لنفس الصفحة بشكل متتابع
+  static final Set<int> _inFlightPreparePages = <int>{};
+  bool get isPhones =>
+      !kIsWeb && (Platform.isAndroid || Platform.isIOS || Platform.isFuchsia);
+
+  QuranRecitation get _activeRecitation => currentRecitation;
+
+  // bool get _isTajweed => _activeRecitation == QuranRecitation.hafsMushafTajweed;
+
+  bool get _requiresDownloadedFonts => _activeRecitation.requiresDownload;
+
+  /// جذر مجلد الخطوط بعد فك الضغط (غير الويب)
+  Directory _fontsRootDirForIndex(int fontIndex) {
+    // 1: qcf4 (مصحف) | 2: tajweed
+    if (isPhones) {
+      return Directory('${_dir.path}/woff');
+    }
+    return Directory('${_dir.path}/ttf');
+  }
+
+  String getFontFullPath(Directory appDir, int pageIndex) {
+    // ملاحظة: ملفات التجويد داخل zip تأتي بشكل مسطح: p1.woff / p1.ttf ...
+    final fontsRoot =
+        Directory(isPhones ? '${appDir.path}/woff' : '${appDir.path}/ttf');
+    return isPhones
+        ? '${fontsRoot.path}/p${pageIndex + 1}.woff'
+        : '${fontsRoot.path}/p${pageIndex + 1}.ttf';
+  }
+
+  String getFontPath(int pageIndex) {
+    return 'p${pageIndex + 1}';
+  }
+
+  /// URL مباشر لملف الخط على الويب (GitHub Raw)
+  /// ملاحظة: بعض المستودعات/الفروع قد تختلف في المسار؛ جهّز بدائل متعددة وتحقّق بالتسلسل
+  String getWebFontUrl(int pageIndex) {
+    final id = (pageIndex + 1);
+    // التجويد غير متاح كملفات منفصلة على الويب حالياً (متوفر فقط كـ zip).
+    return 'https://raw.githubusercontent.com/alheekmahlib/Islamic_database/main/quran_database/Quran%20Font/tajweed_woff/p$id.woff';
+  }
+
+  /// جميع المسارات المرشّحة لتحميل الخط على الويب (WOFF أولاً ثم TTF كاحتياط)
+  List<String> _webFontCandidateUrls(int pageIndex) {
+    final id = (pageIndex + 1);
+    return <String>[
+      'https://raw.githubusercontent.com/alheekmahlib/Islamic_database/main/quran_database/Quran%20Font/tajweed_woff/p$id.woff'
+    ];
+  }
+
+  /// يحاول تحميل الخط من عدة روابط مرشّحة حتى ينجح
+  Future<ByteData> _getWebFontBytes(int pageIndex) async {
+    final dio = Dio();
+    dio.options.connectTimeout = const Duration(seconds: 15);
+    dio.options.receiveTimeout = const Duration(seconds: 30);
+    final candidates = _webFontCandidateUrls(pageIndex);
+    DioException? lastError;
+    for (final url in candidates) {
+      try {
+        // ملاحظة: لا نمرّر رؤوسًا محظورة على الويب (مثل User-Agent/Connection) لتجنّب فشل CORS/Preflight
+        final resp = await dio.get<List<int>>(
+          url,
+          options: Options(
+            responseType: ResponseType.bytes,
+            followRedirects: true,
+            // ملاحظة: على الويب، sendTimeout غير مدعوم لطلبات GET بدون جسم، لذا نستخدم receiveTimeout فقط
+            receiveTimeout: const Duration(seconds: 30),
+            validateStatus: (s) => s != null && s >= 200 && s < 400,
+          ),
+        );
+        if (resp.statusCode == 200 &&
+            resp.data != null &&
+            resp.data!.isNotEmpty) {
+          final buffer = Uint8List.fromList(List<int>.from(resp.data!)).buffer;
+          return ByteData.view(buffer);
+        }
+      } on DioException catch (e) {
+        lastError = e;
+        // جرّب المرشح التالي
+        continue;
+      } catch (_) {
+        // أي خطأ آخر، واصل المحاولة في الرابط التالي
+        continue;
+      }
+    }
+    // إذا فشلت كل الروابط
+    throw Exception(
+        'Failed to fetch web font for page ${(pageIndex + 1).toString().padLeft(3, '0')}. Last error: ${lastError?.message ?? 'unknown'}');
+  }
+
+  /// إرسال طلب تحميل خط إلى Isolate
+  void _sendFontLoadRequest(
+      int pageIndex, bool isFontsLocal, int generation) async {
+    final fontName = getFontPath(pageIndex);
+    final url = getWebFontUrl(pageIndex);
+    // يجب أن يكون _dir متاحًا في QuranCtrl
+    final fontsDir = Directory(_dir.path);
+    final fontPath = getFontFullPath(fontsDir, pageIndex);
+    // final localExists = await File(fontPath).exists();
+    final candidateUrls = _webFontCandidateUrls(pageIndex);
+    final message = FontLoadMessage(
+        pageIndex: pageIndex,
+        fontPath: fontPath,
+        fontName: fontName,
+        url: url,
+        // لا نحاول الشبكة إذا الملف موجود محليًا (للعمل أوفلاين)
+        isWeb: false, // (kIsWeb || !isFontsLocal) && !localExists,
+        candidateUrls: candidateUrls,
+        generation: generation);
+    FontLoaderIsolateManager.sendRequest(message);
+  }
+
+  /// تسجيل الخط في واجهة المستخدم
+  Future<void> _registerFontInUI(int pageIndex, String fontName,
+      ByteData fontBytes, int generation) async {
     try {
-      // اختبار اتصال بسيط مع Google DNS
-      // Simple connectivity test with Google DNS
-      final result = await InternetAddress.lookup('google.com')
-          .timeout(const Duration(seconds: 5));
-      return result.isNotEmpty && result[0].rawAddress.isNotEmpty;
+      final loader = FontLoader(fontName);
+      loader.addFont(Future.value(fontBytes));
+      await loader.load();
+      state.loadedFontPages.add(pageIndex);
+      log('Font registered successfully for page ${pageIndex + 1} (Gen $generation)',
+          name: 'FontsLoad');
+
+      // تجميع تحديثات الواجهة (Batch Update)
+      state._needsUpdate = true;
+      _scheduleUpdate();
     } catch (e) {
-      log('Network connectivity check failed: $e', name: 'FontsDownload');
-      return false;
+      log('Failed to register font for page ${pageIndex + 1} in UI: $e',
+          name: 'FontsLoad');
     }
   }
 
-  /// يقترح حلول لمشاكل الشبكة في macOS
-  /// Suggests solutions for network issues on macOS
-  void _showMacOSNetworkTroubleshooting() {
-    Get.dialog(
-      AlertDialog(
-        title: const Text('مشكلة في الاتصال - Connection Issue'),
-        content: const Text(
-          'يبدو أن هناك مشكلة في الاتصال بالإنترنت أو إعدادات الشبكة في macOS.\n\n'
-          'الحلول المقترحة:\n'
-          '1. تحقق من اتصال الإنترنت\n'
-          '2. أعد تشغيل التطبيق\n'
-          '3. تحقق من إعدادات جدار الحماية\n'
-          '4. جرب استخدام VPN\n\n'
-          'It seems there\'s an internet connection or network settings issue on macOS.\n\n'
-          'Suggested solutions:\n'
-          '1. Check internet connection\n'
-          '2. Restart the application\n'
-          '3. Check firewall settings\n'
-          '4. Try using a VPN',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Get.back(),
-            child: const Text('موافق - OK'),
-          ),
-          TextButton(
-            onPressed: () {
-              Get.back();
-              _tryAlternativeDownload();
-            },
-            child: const Text('جرب طريقة بديلة - Try Alternative'),
-          ),
-        ],
-      ),
+  /// جدولة تحديث واحد للواجهة بعد اكتمال دورة الإطار
+  void _scheduleUpdate() {
+    if (!state._needsUpdate || isClosed) return;
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      if (state._needsUpdate && !isClosed) {
+        state._needsUpdate = false;
+        update(['_pageViewBuild']);
+        log('UI updated after batch font registration.', name: 'FontsLoad');
+      }
+    });
+  }
+
+  /// **الدالة المعدلة:** تحضير الخطوط للصفحة الحالية والصفحات المجاورة
+  Future<void> prepareFonts(int pageIndex, {bool isFontsLocal = false}) async {
+    if (_requiresDownloadedFonts) {
+      // لا تطبع/تعمل أي شيء إذا كانت الصفحة محمّلة بالفعل أو الخطوط محلية.
+      if (state.loadedFontPages.contains(pageIndex) || isFontsLocal) return;
+
+      // حارس ضد التكرار المتقارب لنفس الصفحة (خصوصاً مع withPageView:false)
+      if (_inFlightPreparePages.contains(pageIndex)) return;
+      _inFlightPreparePages.add(pageIndex);
+      log('Preparing fonts for page ${pageIndex + 1}...', name: 'FontsLoad');
+
+      // تحضير كامل صفحات QPC v4 لتفادي التقطيع أثناء تقليب الصفحات.
+      if (isQpcV4Enabled) {
+        scheduleQpcV4AllPagesPrebuild();
+      }
+
+      try {
+        final currentGeneration = ++state._fontPreloadGeneration;
+        if (!kIsWeb) {
+          _sendFontLoadRequest(pageIndex, isFontsLocal, currentGeneration);
+        } else {
+          await loadFont(state.currentPageNumber.value - 1);
+        }
+
+        // جدولة الصفحات المجاورة بعد تأخير بسيط
+        state._debounceTimer?.cancel();
+        state._debounceTimer = Timer(const Duration(milliseconds: 300), () {
+          final gen = ++state._fontPreloadGeneration;
+          final neighbors = [-2, -1, 1, 2, 3, 4];
+          final candidates = neighbors
+              .map((o) => pageIndex + o)
+              .where((i) => i >= 0 && i < 604)
+              .toList();
+          if (!kIsWeb && state._fontPreloadGeneration != gen) return;
+          for (final i in candidates) {
+            if (state.loadedFontPages.contains(i)) continue;
+            if (kIsWeb) {
+              loadFont(i);
+            } else {
+              _sendFontLoadRequest(i, isFontsLocal, gen);
+            }
+          }
+        });
+      } finally {
+        _inFlightPreparePages.remove(pageIndex);
+      }
+    }
+  }
+
+  /// يجب استدعاء هذه الدالة في onInit() لـ QuranCtrl
+  Future<void> initFontLoader() async {
+    await FontLoaderIsolateManager.init(
+      _registerFontInUI,
+      (pageIndex, error, generation) => log(
+          'Font load failed for page ${pageIndex + 1} (Gen $generation) in Isolate: $error',
+          name: 'FontsLoad'),
     );
   }
 
-  /// طريقة بديلة للتحميل باستخدام Dio (للماك)
-  /// Alternative download method using Dio (for macOS)
-  Future<void> _downloadWithDio(String url, String savePath) async {
-    try {
-      final dio = Dio();
-
-      // إعدادات خاصة لـ macOS
-      // Special settings for macOS
-      dio.options.headers = {
-        'User-Agent': 'Flutter/Quran-Library-Dio',
-        'Accept': '*/*',
-        'Connection': 'keep-alive',
-      };
-
-      await dio.download(
-        url,
-        savePath,
-        onReceiveProgress: (received, total) {
-          if (total != -1) {
-            double progress = received / total * 100;
-            state.fontsDownloadProgress.value = progress;
-            update(['fontsDownloadingProgress']);
-          }
-        },
-        options: Options(
-          receiveTimeout: const Duration(minutes: 5),
-          sendTimeout: const Duration(seconds: 30),
-        ),
-      );
-    } catch (e) {
-      throw Exception('Dio download failed: $e');
-    }
-  }
-
-  /// يجرب طريقة تحميل بديلة باستخدام Dio
-  /// Tries alternative download method using Dio
-  Future<void> _tryAlternativeDownload() async {
-    try {
-      log('Trying alternative download with Dio', name: 'FontsDownload');
-
-      final zipPath = '${_dir.path}/quran_fonts.zip';
-
-      await _downloadWithDio(
-        'https://raw.githubusercontent.com/alheekmahlib/Islamic_database/main/quran_database/Quran%20Font/quran_fonts.zip',
-        zipPath,
-      );
-
-      // إذا نجح التحميل، تابع مع استخراج الملفات
-      // If download succeeds, continue with file extraction
-      final zipFile = File(zipPath);
-      await _extractAndProcessZip(zipFile);
-    } catch (e) {
-      log('Alternative download also failed: $e', name: 'FontsDownload');
-      Get.snackbar(
-        'خطأ - Error',
-        'فشل في جميع طرق التحميل - All download methods failed',
-        snackPosition: SnackPosition.BOTTOM,
-      );
-    }
-  }
-
-  /// استخراج ومعالجة ملف ZIP
-  /// Extract and process ZIP file
-  Future<void> _extractAndProcessZip(File zipFile) async {
-    try {
-      final fontsDir = Directory('${_dir.path}/quran_fonts');
-
-      final bytes = zipFile.readAsBytesSync();
-      final archive = ZipDecoder().decodeBytes(bytes);
-
-      if (archive.isEmpty) {
-        throw FormatException('Failed to extract ZIP file: Archive is empty');
-      }
-
-      // استخراج الملفات إلى مجلد الخطوط
-      // Extract files to fonts directory
-      for (final file in archive) {
-        final filename = '${fontsDir.path}/${file.name}';
-        if (file.isFile) {
-          final outFile = File(filename);
-          await outFile.create(recursive: true);
-          await outFile.writeAsBytes(file.content as List<int>);
-        }
-      }
-
-      await QuranCtrl.instance.loadFontsQuran();
-
-      // حفظ حالة التحميل في التخزين المحلي
-      // Save download status in local storage
-      GetStorage().write(_StorageConstants().isDownloadedCodeV2Fonts, true);
-      state.fontsDownloadedList.add(0); // Font index 0 as default
-      GetStorage().write(
-          _StorageConstants().fontsDownloadedList, state.fontsDownloadedList);
-
-      // تحديث حالة التحميل وإكمال شريط التقدم
-      // Update download status and complete progress bar
-      state.isDownloadedV2Fonts.value = true;
-      state.isDownloadingFonts.value = false;
-      state.isPreparingDownload.value = false;
-      state.fontsDownloadProgress.value = 100.0;
-
-      update(['fontsDownloadingProgress']);
-      Get.forceAppUpdate();
-
-      log('Fonts downloaded and extracted successfully', name: 'FontsDownload');
-    } catch (e) {
-      throw Exception('Failed to extract ZIP file: $e');
-    }
-  }
-
-  /// Prepares fonts for the specified page index and adjacent pages.
-  ///
-  /// This method asynchronously loads the font for the given [pageIndex] and
-  /// additionally preloads fonts for the next four pages if the [pageIndex] is
-  /// less than 600, and the previous four pages if the [pageIndex] is greater
-  /// than or equal to 4. This ensures smoother font loading experience as the
-  /// user navigates through pages.
-  ///
-  /// [pageIndex] - The index of the page for which the font and its adjacent
-  /// pages' fonts should be prepared.
-  ///
-  /// Returns a [Future] that completes when all specified fonts have been
-  /// successfully loaded.
-  Future<void> prepareFonts(int pageIndex, {bool isFontsLocal = false}) async {
-    await loadFont(pageIndex, isFontsLocal: isFontsLocal);
-    if (pageIndex < 600) {
-      for (int i = pageIndex + 1; i < pageIndex + 1; i++) {
-        await loadFont(i, isFontsLocal: isFontsLocal);
-      }
-    }
-    if (pageIndex >= 4) {
-      for (int i = pageIndex - 1; i > pageIndex - 1; i--) {
-        await loadFont(i, isFontsLocal: isFontsLocal);
-      }
-    }
+  /// يجب استدعاء هذه الدالة في onClose() لـ QuranCtrl
+  void disposeFontLoader() {
+    state._debounceTimer?.cancel();
+    FontLoaderIsolateManager.dispose();
   }
 
   /// Loads a font from a ZIP file for the specified page index.
@@ -199,25 +222,44 @@ extension FontsExtension on QuranCtrl {
   /// [pageIndex] - The index of the page for which the font should be loaded.
   ///
   /// Returns a [Future] that completes when the font has been successfully loaded.
-  Future<void> loadFontFromZip(int pageIndex) async {
+  Future<void> loadFontFromZip([int? pageIndex]) async {
     try {
-      final fontsDir = Directory('${_dir.path}/quran_fonts');
+      // مسار مجلد الخطوط بعد فك الضغط
+      final fontsDir =
+          Directory(isPhones ? '${_dir.path}/woff' : '${_dir.path}/ttf');
 
-      // تحقق من الملفات داخل المجلد
-      final files = await fontsDir.list().toList();
-      log('Files in fontsDir: ${files.map((file) => file.path).join(', ')}');
+      final loadedSet = state.loadedFontPages; // في الذاكرة
 
-      final fontFile =
-          File('${fontsDir.path}/quran_fonts/p${(pageIndex + 2001)}.ttf');
-      if (!await fontFile.exists()) {
-        throw Exception("Font file not found for page: ${pageIndex + 1}");
+      // حمّل جميع الخطوط المتاحة 001..604
+      for (int i = 0; i < 604; i++) {
+        try {
+          // إذا كان محمّلًا في هذه الجلسة، تخطّه
+          if (loadedSet.contains(i)) continue;
+
+          final fontPath = getFontFullPath(fontsDir, i);
+          final fontFile = File(fontPath);
+          if (!await fontFile.exists()) {
+            // قد تكون بعض الملفات غير موجودة في مجموعة معينة
+            continue;
+          }
+
+          final loader = FontLoader(getFontPath(i));
+          loader.addFont(_getFontLoaderBytes(fontFile));
+          await loader.load();
+          loadedSet.add(i);
+        } catch (e) {
+          // تجاهل فشل صفحة واحدة واستمر
+          log('Failed to register font for page ${i + 1}: $e',
+              name: 'FontsLoad');
+          continue;
+        }
       }
 
-      final fontLoader = FontLoader('p${(pageIndex + 2001)}');
-      fontLoader.addFont(_getFontLoaderBytes(fontFile));
-      await fontLoader.load();
+      // حفظ الصفحات التي تم تحميل خطوطها
+      GetStorage()
+          .write(_StorageConstants().loadedFontPages, loadedSet.toList());
     } catch (e) {
-      throw Exception("Failed to load font: $e");
+      throw Exception("Failed to load fonts from disk: $e");
     }
   }
 
@@ -230,210 +272,96 @@ extension FontsExtension on QuranCtrl {
   /// [fontIndex] - The index of the font set to be downloaded.
   ///
   /// Returns a [Future] that completes when the download is finished.
-
   Future<void> downloadAllFontsZipFile(int fontIndex) async {
+    // على الويب لا نحتاج التنزيل، سنحمّل مباشرة عند الحاجة
+    if (kIsWeb) {
+      if (!state.fontsDownloadedList.contains(fontIndex)) {
+        state.fontsDownloadedList.add(fontIndex);
+      }
+      GetStorage().write(_StorageConstants().fontsDownloadedList,
+          state.fontsDownloadedList.toList());
+
+      GetStorage().write(_StorageConstants().isDownloadedCodeV4Fonts, true);
+
+      state.isFontDownloaded.value = true;
+      state.isDownloadingFonts.value = false;
+      state.isPreparingDownload.value = false;
+      state.downloadingFontIndex.value = -1;
+      update(['fontsDownloadingProgress']);
+      return;
+    }
     // if (GetStorage().read(StorageConstants().isDownloadedCodeV2Fonts) ??
     //     false || state.isDownloadingFonts.value) {
     //   return Future.value();
     // }
 
-    // فحص الاتصال بالإنترنت أولاً (خاص بـ macOS)
-    // Check internet connectivity first (specific for macOS)
-    if (Platform.isMacOS) {
-      final hasConnection = await _checkNetworkConnectivity();
-      if (!hasConnection) {
-        _showMacOSNetworkTroubleshooting();
-        return;
-      }
-    }
-
     try {
+      state.downloadingFontIndex.value = fontIndex;
       state.isPreparingDownload.value = true;
       state.isDownloadingFonts.value = true;
       update(['fontsDownloadingProgress']);
 
       // قائمة بالروابط البديلة للتحميل
-      // List of alternative download URLs
-      final urls = [
-        'https://github.com/alheekmahlib/Islamic_database/raw/refs/heads/main/quran_database/Quran%20Font/quran_fonts.zip',
-        'https://raw.githubusercontent.com/alheekmahlib/Islamic_database/main/quran_database/Quran%20Font/quran_fonts.zip',
-      ];
-      // تحميل الملف باستخدام Dio
+      final urls = isPhones
+          ? [
+              'https://github.com/alheekmahlib/Islamic_database/releases/download/tajweed_fonts/woff.zip'
+            ]
+          : [
+              'https://github.com/alheekmahlib/Islamic_database/releases/download/tajweed_fonts/ttf.zip'
+            ];
 
-      // تحميل الملف باستخدام http.Client مع إعدادات محسنة للماك
-      // Download file using http.Client with improved settings for macOS
-      // final response = dio.get(
-      //   'https://github.com/alheekmahlib/Islamic_database/raw/refs/heads/main/quran_database/Quran%20Font/quran_fonts.zip',
-      //   options: Options(responseType: ResponseType.stream),
-      // );
-      final dio = Dio();
-      String? successUrl;
-      late Response response;
-
-      // جرب كل رابط حتى ينجح واحد منها
-      // Try each URL until one succeeds
-      for (String url in urls) {
-        try {
-          log('Attempting to download from: $url', name: 'FontsDownload');
-
-          response = await dio.get(url,
-              options: Options(
-                responseType: ResponseType.stream,
-                sendTimeout: Duration(seconds: 30),
-                headers: {
-                  'User-Agent': 'Flutter/Quran-Library',
-                  'Accept': '*/*',
-                  'Connection': 'keep-alive',
-                  'Accept-Encoding': 'identity',
-                },
-              ));
-
-// التحقق من نجاح الاتصال بأحد الروابط
-          // Check if connection to any URL succeeded
-          if (response.statusCode != 200) {
-            log('Failed to connect to $url: ${response.statusCode}',
-                name: 'FontsDownload');
-            break;
-          }
-
-          log('Download started successfully from: $successUrl',
-              name: 'FontsDownload');
-          if (response.statusCode == 200) {
-            successUrl = url;
-            log('Successfully connected to: $url', name: 'FontsDownload');
-            break;
-          }
-        } catch (e) {
-          log('Failed to connect to $url: $e', name: 'FontsDownload');
-          continue;
-        }
-      }
-
-      // تحديد المسار الذي سيتم حفظ الملف فيه
-      final fontsDir = Directory('${_dir.path}/quran_fonts');
+      // حدد مسار الحفظ
+      final fontsDir = _fontsRootDirForIndex(fontIndex);
       if (!await fontsDir.exists()) {
         await fontsDir.create(recursive: true);
       }
 
-      // حفظ ملف ZIP إلى التطبيق
-      final zipFile = File('${_dir.path}/quran_fonts.zip');
-      final fileSink = zipFile.openWrite();
+      final zipFile =
+          File(isPhones ? '${_dir.path}/woff.zip' : '${_dir.path}/ttf.zip');
 
-      // حجم الملف الإجمالي
-      final contentLength = int.tryParse(
-              response.headers.value(Headers.contentLengthHeader) ?? '0') ??
-          0;
-      int totalBytesDownloaded = 0;
+      // حد أدنى للحجم لمنع ملفات HTML/أخطاء CDN المقنّعة
+      const int minZipSizeBytes = 1024 * 1024; // ~1MB
 
-      // متابعة التدفق وكتابة البيانات في الملف مع حساب نسبة التحميل
-      (response.data as ResponseBody).stream.listen(
-        (List<int> chunk) {
-          totalBytesDownloaded += chunk.length;
-          fileSink.add(chunk);
+      await ZipDownloadService.downloadAndExtract(
+        urls: urls,
+        zipFile: zipFile,
+        destinationDir: fontsDir,
+        minZipSizeBytes: minZipSizeBytes,
+        logName: 'FontsDownload',
+        onProgress: (p) {
           state.isDownloadingFonts.value = true;
           state.isPreparingDownload.value = false;
-          // حساب نسبة التحميل
-          if (contentLength > 0) {
-            double progress = totalBytesDownloaded / contentLength * 100;
-            state.fontsDownloadProgress.value = progress;
-            log('Download progress: ${progress.toStringAsFixed(2)}%',
-                name: 'FontsDownload');
-            update(['fontsDownloadingProgress']);
-          }
+          state.fontsDownloadProgress.value = p;
+          update(['fontsDownloadingProgress']);
         },
-        onDone: () async {
-          await fileSink.flush();
-          await fileSink.close();
-
-          // فك ضغط الـ ZIP بعد إغلاق الملف بنجاح
-          try {
-            // التحقق من أن الملف تم تنزيله بالكامل
-            final zipFileSize = await zipFile.length();
-            log('Downloaded ZIP file size: $zipFileSize bytes');
-
-            if (zipFileSize == 0) {
-              throw Exception('Downloaded ZIP file is empty');
-            }
-
-            // فك ضغط الـ ZIP
-            final bytes = zipFile.readAsBytesSync();
-            final archive = ZipDecoder().decodeBytes(bytes);
-
-            if (archive.isEmpty) {
-              throw FormatException(
-                  'Failed to extract ZIP file: Archive is empty');
-            }
-
-            // استخراج الملفات إلى مجلد الخطوط
-            for (final file in archive) {
-              final filename = '${fontsDir.path}/${file.name}';
-              if (file.isFile) {
-                final outFile = File(filename);
-                await outFile.create(recursive: true);
-                await outFile.writeAsBytes(file.content as List<int>);
-                // log('Extracted file: $filename'); // سجل لاستخراج الملف
-              } else {
-                log('Skipped directory: ${file.name}');
-              }
-            }
-
-            // تحقق من وجود الملفات في المجلد
-            final files = await fontsDir.list().toList();
-            if (files.isEmpty) {
-              log('No files found in fontsDir after extraction');
-            } else {
-              log('Files in fontsDir after extraction: ${files.map((file) => file.path).join(', ')}');
-            }
-            await QuranCtrl.instance.loadFontsQuran();
-            // حفظ حالة التحميل في التخزين المحلي
-            // Save download status in local storage
-            GetStorage()
-                .write(_StorageConstants().isDownloadedCodeV2Fonts, true);
-            state.fontsDownloadedList.add(fontIndex);
-            GetStorage().write(_StorageConstants().fontsDownloadedList,
-                state.fontsDownloadedList);
-
-            // تحديث حالة التحميل وإكمال شريط التقدم
-            // Update download status and complete progress bar
-            state.isDownloadedV2Fonts.value = true;
-            state.isDownloadingFonts.value = false;
-            state.isPreparingDownload.value = false;
-            state.fontsDownloadProgress.value = 100.0;
-
-            update(['fontsDownloadingProgress']);
-            Get.forceAppUpdate();
-
-            log('Fonts unzipped successfully', name: 'FontsDownload');
-            // Get.back();
-          } catch (e) {
-            log('Failed to extract ZIP file: $e');
-          }
-        },
-        onError: (error) {
-          log('Error during download: $error');
-          dio.close();
-        },
-        cancelOnError: true,
       );
-    } catch (e) {
-      log('Failed to Download Code_v2 fonts: $e', name: 'FontsDownload');
 
-      // معالجة خاصة لأخطاء macOS
-      // Special handling for macOS errors
-      if (Platform.isMacOS &&
-          e.toString().contains('Operation not permitted')) {
-        _showMacOSNetworkTroubleshooting();
+      // حفظ حالة التحميل
+      if (!state.fontsDownloadedList.contains(fontIndex)) {
+        state.fontsDownloadedList.add(fontIndex);
       }
+      GetStorage().write(_StorageConstants().fontsDownloadedList,
+          state.fontsDownloadedList.toList());
 
-      // تحديث حالة التحميل في حالة فشل العملية
-      // Update download status if operation fails
+      final bool anyDownloaded = state.fontsDownloadedList.isNotEmpty;
+      GetStorage()
+          .write(_StorageConstants().isDownloadedCodeV4Fonts, anyDownloaded);
+      state.isFontDownloaded.value = anyDownloaded;
+
       state.isDownloadingFonts.value = false;
       state.isPreparingDownload.value = false;
+      state.downloadingFontIndex.value = -1;
+      state.fontsDownloadProgress.value = 100.0;
+      update(['fontsDownloadingProgress']);
+      Get.forceAppUpdate();
+      log('Fonts unzipped successfully', name: 'FontsDownload');
+    } catch (e) {
+      log('Failed to Download Code_v4 fonts: $e', name: 'FontsDownload');
+      state.isDownloadingFonts.value = false;
+      state.isPreparingDownload.value = false;
+      state.downloadingFontIndex.value = -1;
       state.fontsDownloadProgress.value = 0.0;
       update(['fontsDownloadingProgress']);
-
-      // رمي استثناء ليتم التعامل معه في الدالة الأم
-      // Throw exception to be handled in parent function
       throw Exception('Download failed: $e');
     }
   }
@@ -456,22 +384,33 @@ extension FontsExtension on QuranCtrl {
   ///
   /// Returns a [Future] that completes when the font has been successfully loaded.
   Future<void> loadFont(int pageIndex, {bool isFontsLocal = false}) async {
-    if (isFontsLocal) {
-      return;
-    } else {
-      try {
-        // تعديل المسار ليشمل المجلد الإضافي
-        final fontFile = File(
-            '${_dir.path}/quran_fonts/quran_fonts/p${(pageIndex + 2001)}.ttf');
-        if (!await fontFile.exists()) {
-          throw Exception("Font file not found for page: ${pageIndex + 2001}");
-        }
-        final fontLoader = FontLoader('p${(pageIndex + 2001)}');
-        fontLoader.addFont(_getFontLoaderBytes(fontFile));
-        await fontLoader.load();
-      } catch (e) {
-        throw Exception("Failed to load font: $e");
+    try {
+      // إذا كان الخط لهذه الصفحة محملًا، لا تعِد التحميل
+      // If font for this page is already loaded, skip
+      if (state.loadedFontPages.contains(pageIndex)) {
+        return;
       }
+      final fontLoader = FontLoader(getFontPath(pageIndex));
+      if (kIsWeb) {
+        log('Loading font for page ${pageIndex + 1} from web...',
+            name: 'FontsLoad');
+        fontLoader.addFont(_getWebFontBytes(pageIndex));
+      }
+      await fontLoader.load();
+      state.loadedFontPages.add(pageIndex);
+      update();
+      // حفظ القائمة لتسريع الجلسات اللاحقة
+      GetStorage().write(
+          _StorageConstants().loadedFontPages, state.loadedFontPages.toList());
+      // على الويب بشكل خاص: أعد بناء الواجهة لتفعيل الخط فورًا دون قلب الصفحة
+      if (kIsWeb && !isClosed) {
+        try {
+          update();
+        } catch (_) {}
+      }
+    } catch (e) {
+      throw Exception(
+          "Failed to load font for page ${(pageIndex + 1).toString().padLeft(3, '0')}: $e");
     }
   }
 
@@ -483,10 +422,56 @@ extension FontsExtension on QuranCtrl {
   /// [fontIndex]: The index of the font to be deleted.
   ///
   /// Returns a [Future] that completes when the font has been deleted.
+  Future<void> deleteFontsForIndex(int fontIndex) async {
+    if (kIsWeb) return;
+
+    try {
+      final fontsDir = _fontsRootDirForIndex(fontIndex);
+      if (await fontsDir.exists()) {
+        await fontsDir.delete(recursive: true);
+        log('Fonts directory deleted: ${fontsDir.path}', name: 'FontsDelete');
+      }
+
+      state.fontsDownloadedList.remove(fontIndex);
+      GetStorage().write(_StorageConstants().fontsDownloadedList,
+          state.fontsDownloadedList.toList());
+
+      final bool anyDownloaded = state.fontsDownloadedList.isNotEmpty;
+      GetStorage()
+          .write(_StorageConstants().isDownloadedCodeV4Fonts, anyDownloaded);
+      state.isFontDownloaded.value = anyDownloaded;
+
+      if (state.fontsSelected.value == fontIndex) {
+        state.fontsSelected.value = 0;
+        GetStorage().write(_StorageConstants().fontsSelected, 0);
+      }
+
+      state.isDownloadingFonts.value = false;
+      state.isPreparingDownload.value = false;
+      state.downloadingFontIndex.value = -1;
+      state.fontsDownloadProgress.value = 0;
+
+      update(['fontsDownloadingProgress', 'fontsSelected']);
+      Get.forceAppUpdate();
+    } catch (e) {
+      log('Failed to delete fonts for index $fontIndex: $e',
+          name: 'FontsDelete');
+    }
+  }
+
   Future<void> deleteFonts() async {
     try {
+      await deleteFontsForIndex(1);
+    } catch (e) {
+      log('Failed to delete fonts: $e');
+    }
+  }
+
+  Future<void> deleteOldFonts() async {
+    try {
       state.fontsDownloadedList.value = [];
-      final fontsDir = Directory('${_dir.path}/quran_fonts');
+      final fontsDir = Directory(
+          isPhones ? '${_dir.path}/qcf4_woff' : '${_dir.path}/qcf4_ttf');
 
       // التحقق من وجود مجلد الخطوط
       if (await fontsDir.exists()) {
@@ -495,12 +480,12 @@ extension FontsExtension on QuranCtrl {
         log('Fonts directory deleted successfully.');
 
         // تحديث حالة التخزين المحلي
-        GetStorage().write(_StorageConstants().isDownloadedCodeV2Fonts, false);
+        // GetStorage().write('isDownloadedCodeV2Fonts', false);
         GetStorage().write(_StorageConstants().fontsSelected, 0);
         // state.fontsDownloadedList.elementAt(fontIndex);
         GetStorage().write(
             _StorageConstants().fontsDownloadedList, state.fontsDownloadedList);
-        state.isDownloadedV2Fonts.value = false;
+        state.isFontDownloaded.value = false;
         state.fontsSelected.value = 0;
         state.fontsDownloadProgress.value = 0;
         Get.forceAppUpdate();
@@ -510,5 +495,191 @@ extension FontsExtension on QuranCtrl {
     } catch (e) {
       log('Failed to delete fonts: $e');
     }
+  }
+}
+
+/// رسالة تُرسل إلى Isolate لتحميل خط
+class FontLoadMessage {
+  final int pageIndex;
+  final String fontPath;
+  final String fontName;
+  final String url;
+  final bool isWeb;
+  final int generation; // إضافة رقم الجيل
+
+  FontLoadMessage({
+    required this.pageIndex,
+    required this.fontPath,
+    required this.fontName,
+    required this.url,
+    required this.isWeb,
+    this.candidateUrls,
+    required this.generation,
+  });
+
+  final List<String>? candidateUrls; // روابط مرشّحة للتحميل الشبكي
+}
+
+/// نقطة دخول Isolate لتحميل الخطوط
+void fontLoaderIsolate(SendPort sendPort) {
+  // استقبال رسالة من Isolate الرئيسي
+  final receivePort = ReceivePort();
+  sendPort.send(receivePort.sendPort);
+
+  receivePort.listen((dynamic message) async {
+    if (message is FontLoadMessage) {
+      try {
+        ByteData fontBytes;
+        if (message.isWeb) {
+          // تحميل من الويب مع تجريب عدة مرايا عند الحاجة
+          final urls = (message.candidateUrls != null &&
+                  message.candidateUrls!.isNotEmpty)
+              ? message.candidateUrls!
+              : [message.url];
+          fontBytes = await _getWebFontBytesFromCandidatesIsolate(urls);
+        } else {
+          // تحميل من الملف المحلي أولاً، وفي حال عدم توفره جرّب الشبكي كملاذ أخير
+          final fontFile = File(message.fontPath);
+          if (await fontFile.exists()) {
+            final bytes = await fontFile.readAsBytes();
+            fontBytes = ByteData.view(Uint8List.fromList(bytes).buffer);
+          } else if (message.candidateUrls != null &&
+              message.candidateUrls!.isNotEmpty) {
+            // fallback إلى الشبكة فقط إذا تم تزويد مرايا فعلية
+            fontBytes = await _getWebFontBytesFromCandidatesIsolate(
+                message.candidateUrls!);
+          } else {
+            throw Exception('Font file not found at: ${message.fontPath}');
+          }
+        }
+
+        // إرسال البيانات مرة أخرى إلى Isolate الرئيسي
+        sendPort.send({
+          'pageIndex': message.pageIndex,
+          'fontName': message.fontName,
+          'fontBytes': fontBytes,
+          'generation': message.generation, // إرجاع رقم الجيل
+        });
+      } catch (e) {
+        // إرسال خطأ إلى Isolate الرئيسي
+        sendPort.send({
+          'pageIndex': message.pageIndex,
+          'error': e.toString(),
+          'generation': message.generation, // إرجاع رقم الجيل
+        });
+      }
+    }
+  });
+}
+
+/// دالة مساعدة لتحميل الخطوط من الويب داخل Isolate
+Future<ByteData> _getWebFontBytesIsolate(String url) async {
+  final dio = Dio();
+  dio.options.connectTimeout = const Duration(seconds: 15);
+  dio.options.receiveTimeout = const Duration(seconds: 30);
+  final resp = await dio.get<List<int>>(
+    url,
+    options: Options(
+      responseType: ResponseType.bytes,
+      followRedirects: true,
+      receiveTimeout: const Duration(seconds: 30),
+      validateStatus: (s) => s != null && s >= 200 && s < 400,
+    ),
+  );
+  if (resp.statusCode == 200 && resp.data != null && resp.data!.isNotEmpty) {
+    final buffer = Uint8List.fromList(List<int>.from(resp.data!)).buffer;
+    return ByteData.view(buffer);
+  }
+  throw Exception('Failed to fetch web font from $url');
+}
+
+/// يحاول تنزيل الخط من قائمة مرايا ويُرجع أول نجاح
+Future<ByteData> _getWebFontBytesFromCandidatesIsolate(
+    List<String> urls) async {
+  DioException? lastError;
+  for (final url in urls) {
+    try {
+      return await _getWebFontBytesIsolate(url);
+    } on DioException catch (e) {
+      lastError = e;
+      continue;
+    } catch (_) {
+      continue;
+    }
+  }
+  throw Exception(
+      'All mirrors failed. Last error: ${lastError?.message ?? 'unknown'}');
+}
+
+// *****************************************************************************
+// *                                 Isolate Manager (v6)                      *
+// *****************************************************************************
+
+/// كلاس مساعد ساكن لإدارة حالة Isolate تحميل الخطوط
+class FontLoaderIsolateManager {
+  static Isolate? _fontLoaderIsolate;
+  static SendPort? _fontLoaderSendPort;
+  static final ReceivePort _fontLoaderReceivePort = ReceivePort();
+  static Completer<void>? _readyCompleter;
+
+  /// تهيئة Isolate لتحميل الخطوط
+  static Future<void> init(Function(int, String, ByteData, int) onFontLoaded,
+      Function(int, String, int) onError) async {
+    if (_fontLoaderIsolate != null) {
+      return _readyCompleter?.future;
+    }
+
+    _readyCompleter = Completer<void>();
+
+    _fontLoaderIsolate = await Isolate.spawn(
+      fontLoaderIsolate,
+      _fontLoaderReceivePort.sendPort,
+      debugName: 'FontLoaderIsolate',
+    );
+
+    _fontLoaderReceivePort.listen((dynamic message) {
+      if (message is SendPort) {
+        _fontLoaderSendPort = message;
+        if (!_readyCompleter!.isCompleted) {
+          _readyCompleter!.complete();
+        }
+      } else if (message is Map) {
+        final pageIndex = message['pageIndex'] as int;
+        final fontName = message.containsKey('fontName')
+            ? message['fontName'] as String
+            : '';
+        final fontBytes = message['fontBytes'] as ByteData?;
+        final error = message['error'] as String?;
+        final generation = message['generation'] as int;
+
+        if (error != null) {
+          onError(pageIndex, error, generation);
+        } else if (fontBytes != null) {
+          onFontLoaded(pageIndex, fontName, fontBytes, generation);
+        }
+      }
+    });
+
+    return _readyCompleter!.future;
+  }
+
+  /// إرسال طلب تحميل خط إلى Isolate
+  static void sendRequest(FontLoadMessage message) {
+    if (_fontLoaderSendPort == null) {
+      log('FontLoader Isolate not ready. Request for page ${message.pageIndex + 1} dropped.',
+          name: 'FontsLoad');
+      return;
+    }
+    _fontLoaderSendPort!.send(message);
+  }
+
+  /// تنظيف Isolate
+  static void dispose() {
+    _fontLoaderReceivePort.close();
+    _fontLoaderIsolate?.kill();
+    _fontLoaderIsolate = null;
+    _fontLoaderSendPort = null;
+    _readyCompleter = null;
+    log('FontLoader Isolate disposed.', name: 'FontsLoad');
   }
 }

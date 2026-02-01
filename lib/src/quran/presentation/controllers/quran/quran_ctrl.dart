@@ -9,6 +9,49 @@ class QuranCtrl extends GetxController {
 
   final QuranRepository _quranRepository;
 
+  // تحميل بيانات المصحف (V1/V3) مرة واحدة عند الحاجة (خصوصاً بعد hot restart)
+  Future<void>? _coreDataLoadFuture;
+
+  // --- QPC v4 (الخط المحمّل) ---
+  QpcV4AssetsStore? _qpcV4Store;
+  Future<void>? _qpcV4LoadFuture;
+  QpcV4PageRenderer? _qpcV4PageRenderer;
+  final Map<int, List<QpcV4RenderBlock>> _qpcV4BlocksByPage = {};
+  Future<void>? _qpcV4PrebuildAllFuture;
+  bool _qpcV4PrebuildStarted = false;
+  Timer? _qpcV4IdlePrebuildTimer;
+
+  // --- Hafs (font 0) using QPC v4 layout + Hafs WBW ---
+  QpcHafsWordByWordStore? _hafsWbwStore;
+  Future<void>? _hafsWbwLoadFuture;
+  QpcV4PageRenderer? _hafsPageRenderer;
+  final Map<int, List<QpcV4RenderBlock>> _hafsBlocksByPage = {};
+  Future<void>? _hafsPrebuildAllFuture;
+  bool _hafsPrebuildStarted = false;
+  Timer? _hafsIdlePrebuildTimer;
+
+  bool get isHafsAllPagesPrebuilt => _hafsBlocksByPage.length >= 604;
+
+  bool get isQpcV4AllPagesPrebuilt => _qpcV4BlocksByPage.length >= 604;
+
+  double get qpcV4PrebuildProgress {
+    const totalPages = 604;
+    final p = _qpcV4BlocksByPage.length / totalPages;
+    if (p.isNaN || p.isInfinite) return 0.0;
+    return p.clamp(0.0, 1.0);
+  }
+
+  // uq index: (surah,ayah) -> ayahUQNumber
+  final Map<int, int> _ayahUqBySurahAyahKey = {};
+  final Map<int, AyahModel> _ayahByUqCache = {};
+
+  bool get isQpcV4Enabled =>
+      state.fontsSelected.value == 1 || state.fontsSelected.value == 2;
+
+  /// تفعيل مسار layout الموحد (QPC layout) للخطوط 0/1/2
+  bool get isQpcLayoutEnabled =>
+      state.fontsSelected.value == 0 || isQpcV4Enabled;
+
   RxList<QuranPageModel> staticPages = <QuranPageModel>[].obs;
   RxList<int> quranStops = <int>[].obs;
   RxList<int> surahsStart = <int>[].obs;
@@ -27,23 +70,71 @@ class QuranCtrl extends GetxController {
   final isLoading = true.obs;
   RxList<SurahNamesModel> surahsList = <SurahNamesModel>[].obs;
   RxBool isShowControl = false.obs;
+  // وضع تحديد متعدد للآيات
+  final RxBool isMultiSelectMode = false.obs;
+  // آيات مظللة برمجياً (لا تعتمد على اختيار المستخدم)
+  final RxList<int> externallyHighlightedAyahs = <int>[].obs;
+  late FocusNode searchFocusNode;
+  late TextEditingController searchTextController;
+
+  // PageController الداخلي
+  PageController? _pageController;
 
   late Directory _dir;
   // late QuranSearch quranSearch;
 
-  // شرح: تحسين PageController للحصول على أداء أفضل
-  // Explanation: Optimized PageController for better performance
-  PageController quranPagesController = PageController(
-    keepPage: true,
-    viewportFraction: 1.0,
-  );
+  // final bool _scrollListenerAttached = false;
+  // final int _lastPrefetchedForPage = -1;
 
   QuranState state = QuranState();
 
   @override
   void onInit() async {
-    _dir = await getApplicationDocumentsDirectory();
     super.onInit();
+    state.currentPageNumber.value = _quranRepository.getLastPage() ?? 1;
+    junpTolastPage();
+    if (!kIsWeb) {
+      _dir = await getApplicationDocumentsDirectory();
+      final storedSelected =
+          GetStorage().read(_StorageConstants().fontsSelected);
+      if (storedSelected == 1 ||
+          storedSelected == 2 ||
+          state.fontsSelected.value == 1 ||
+          state.fontsSelected.value == 2) {
+        await initFontLoader();
+      }
+    }
+    await prepareFonts(state.currentPageNumber.value - 1);
+
+    // ضمان تحميل بيانات المصحف حتى لو لم يتم استدعاء QuranLibrary.init() في التطبيق المضيف.
+    // نطلقها بشكل غير متزامن لتجنب إبطاء onInit.
+    Future(() => ensureCoreDataLoaded());
+
+    searchFocusNode = FocusNode();
+    searchTextController = TextEditingController();
+  }
+
+  Future<void> ensureCoreDataLoaded() async {
+    if (state.pages.isNotEmpty && state.allAyahs.isNotEmpty) return;
+
+    _coreDataLoadFuture ??= () async {
+      try {
+        await Future.wait<void>([
+          loadQuranDataV1(),
+          loadQuranDataV3(),
+          fetchSurahs(),
+        ]);
+      } catch (e, st) {
+        log('Failed to load core Quran data: $e',
+            name: 'QuranCtrl', stackTrace: st);
+      } finally {
+        // تحديث عام + تحديث خاص بالـ PageViewBuild
+        update();
+        update(['_pageViewBuild']);
+      }
+    }();
+
+    await _coreDataLoadFuture;
   }
 
   @override
@@ -60,6 +151,26 @@ class QuranCtrl extends GetxController {
     state.dispose();
     quranPagesController.dispose();
     super.onClose();
+    searchFocusNode.dispose();
+    searchTextController.dispose();
+    if (!kIsWeb) {
+      disposeFontLoader();
+    }
+
+    _qpcV4BlocksByPage.clear();
+    _hafsBlocksByPage.clear();
+    _ayahUqBySurahAyahKey.clear();
+    _ayahByUqCache.clear();
+    _qpcV4PageRenderer = null;
+    _hafsPageRenderer = null;
+    _qpcV4Store = null;
+    _qpcV4LoadFuture = null;
+    _hafsWbwStore = null;
+    _hafsWbwLoadFuture = null;
+    _hafsPrebuildAllFuture = null;
+    _hafsPrebuildStarted = false;
+    _hafsIdlePrebuildTimer?.cancel();
+    _qpcV4IdlePrebuildTimer?.cancel();
   }
 
   /// -------- [Methods] ----------
@@ -69,20 +180,16 @@ class QuranCtrl extends GetxController {
   //   await quranSearch.loadModel(); // تحميل نموذج BERT
   // }
 
-  Future<void> loadFontsQuran() async {
-    lastPage = _quranRepository.getLastPage() ?? 1;
-    if (lastPage != 0) {
-      jumpToPage(lastPage - 1);
-    }
+  Future<void> loadQuranDataV3() async {
     if (state.surahs.isEmpty) {
-      List<dynamic> surahsJson = await _quranRepository.getFontsQuran();
+      List<dynamic> surahsJson = await _quranRepository.getQuranDataV3();
       state.surahs =
           surahsJson.map((s) => SurahModel.fromDownloadedFontsJson(s)).toList();
 
       for (final surah in state.surahs) {
         state.allAyahs.addAll(surah.ayahs);
         // log('Added ${surah.arabicName} ayahs');
-        update();
+        // update();
       }
       List.generate(604, (pageIndex) {
         state.pages.add(state.allAyahs
@@ -90,7 +197,325 @@ class QuranCtrl extends GetxController {
             .toList());
       });
       state.isQuranLoaded = true;
+      _buildAyahUqIndexIfNeeded();
+
+      // تحميل كسول لملفات QPC v4 فقط عند تفعيل الخط المحمّل (code v4)
+      if (isQpcV4Enabled) {
+        // لا ننتظر هنا لتجنب إبطاء init في الحالات الأخرى.
+        Future(() => _ensureQpcV4AssetsLoaded());
+      }
       // log('Pages Length: ${state.pages.length}', name: 'Quran Controller');
+    }
+  }
+
+  int _surahAyahKey(int surahNumber, int ayahNumber) =>
+      surahNumber * 1000 + ayahNumber;
+
+  void _buildAyahUqIndexIfNeeded() {
+    if (_ayahUqBySurahAyahKey.isNotEmpty) return;
+    for (final surah in state.surahs) {
+      for (final ayah in surah.ayahs) {
+        _ayahUqBySurahAyahKey[
+                _surahAyahKey(surah.surahNumber, ayah.ayahNumber)] =
+            ayah.ayahUQNumber;
+        _ayahByUqCache[ayah.ayahUQNumber] = ayah;
+      }
+    }
+  }
+
+  int resolveAyahUq({required int surahNumber, required int ayahNumber}) {
+    _buildAyahUqIndexIfNeeded();
+    return _ayahUqBySurahAyahKey[_surahAyahKey(surahNumber, ayahNumber)] ?? 0;
+  }
+
+  AyahModel getAyahByUq(int ayahUqNumber) {
+    _buildAyahUqIndexIfNeeded();
+    final cached = _ayahByUqCache[ayahUqNumber];
+    if (cached != null) return cached;
+    final found = state.allAyahs.firstWhereOrNull(
+      (a) => a.ayahUQNumber == ayahUqNumber,
+    );
+    return found ?? AyahModel.empty();
+  }
+
+  Future<void> _ensureQpcV4AssetsLoaded() async {
+    if (!isQpcLayoutEnabled) return;
+    if (_qpcV4Store != null) return;
+
+    _qpcV4LoadFuture ??= () async {
+      try {
+        _qpcV4Store = await QpcV4AssetsLoader.load();
+        _qpcV4PageRenderer = QpcV4PageRenderer(
+          store: _qpcV4Store!,
+          ayahUqResolver: ({required surahNumber, required ayahNumber}) =>
+              resolveAyahUq(surahNumber: surahNumber, ayahNumber: ayahNumber),
+        );
+      } catch (e, st) {
+        log('Failed to load QPC v4 assets: $e', name: 'QPCv4', stackTrace: st);
+      } finally {
+        // إعادة بناء الواجهة إن كانت الصفحة الحالية تعتمد على QPC
+        update();
+      }
+    }();
+
+    await _qpcV4LoadFuture;
+  }
+
+  Future<void> _ensureHafsWbwLoaded() async {
+    if (state.fontsSelected.value != 0) return;
+    if (_hafsWbwStore != null) return;
+
+    _hafsWbwLoadFuture ??= () async {
+      try {
+        _hafsWbwStore = await QpcHafsWordByWordAssetsLoader.load();
+      } catch (e, st) {
+        log('Failed to load Hafs WBW assets: $e',
+            name: 'HafsWBW', stackTrace: st);
+      }
+    }();
+
+    await _hafsWbwLoadFuture;
+  }
+
+  Future<void> _ensureHafsRendererReady() async {
+    if (state.fontsSelected.value != 0) return;
+    await _ensureQpcV4AssetsLoaded();
+    await _ensureHafsWbwLoaded();
+    final store = _qpcV4Store;
+    final wbw = _hafsWbwStore;
+    if (store == null || wbw == null) return;
+    _hafsPageRenderer ??= QpcV4PageRenderer(
+      store: store,
+      ayahUqResolver: ({required surahNumber, required ayahNumber}) =>
+          resolveAyahUq(surahNumber: surahNumber, ayahNumber: ayahNumber),
+      wordTextResolver: (word) => wbw.textFor(
+        surah: word.surah,
+        ayah: word.ayah,
+        word: word.wordIndex,
+      ),
+      insertWordSeparatorBetweenWords: true,
+    );
+  }
+
+  /// جدولة تحضير كل صفحات الخط الأساسي بعد فترة خمول.
+  /// الهدف: عدم بناء صفحات أثناء السحب (يُسبب تقطيع).
+  void scheduleHafsAllPagesPrebuild(
+      {Duration delay = const Duration(milliseconds: 700)}) {
+    if (state.fontsSelected.value != 0) return;
+    if (isHafsAllPagesPrebuilt) return;
+    if (_hafsPrebuildStarted) return;
+
+    _hafsIdlePrebuildTimer?.cancel();
+    _hafsIdlePrebuildTimer = Timer(delay, () {
+      if (state.fontsSelected.value != 0) return;
+      if (_hafsPrebuildStarted) return;
+      Future(() => ensureHafsAllPagesPrebuilt());
+    });
+  }
+
+  /// يبني كل صفحات الخط الأساسي (font 0) على دفعات مع yield لتفادي تجميد UI.
+  Future<void> ensureHafsAllPagesPrebuilt() async {
+    if (state.fontsSelected.value != 0) return;
+    await _ensureHafsRendererReady();
+    final renderer = _hafsPageRenderer;
+    if (renderer == null) return;
+
+    if (_hafsPrebuildAllFuture != null) {
+      await _hafsPrebuildAllFuture;
+      return;
+    }
+
+    _hafsPrebuildAllFuture = () async {
+      if (_hafsBlocksByPage.length >= 604) return;
+      _hafsPrebuildStarted = true;
+
+      const totalPages = 604;
+      const timeBudgetMs = 4;
+      final sw = Stopwatch()..start();
+
+      for (var page = 1; page <= totalPages; page++) {
+        if (state.fontsSelected.value != 0) break;
+        if (_hafsBlocksByPage.containsKey(page)) continue;
+        _hafsBlocksByPage[page] = renderer.buildPage(pageNumber: page);
+
+        if (sw.elapsedMilliseconds >= timeBudgetMs) {
+          await Future<void>.delayed(const Duration(milliseconds: 3));
+          sw
+            ..reset()
+            ..start();
+        }
+      }
+
+      update();
+    }();
+
+    await _hafsPrebuildAllFuture;
+  }
+
+  /// يبني كل صفحات QPC v4 مرة واحدة لتجنّب التقطيع أثناء التقليب.
+  ///
+  /// ملاحظة: التنفيذ يتم على دفعات مع yield لتفادي تجميد واجهة المستخدم.
+  Future<void> ensureQpcV4AllPagesPrebuilt() async {
+    if (!isQpcV4Enabled) return;
+    await _ensureQpcV4AssetsLoaded();
+    final renderer = _qpcV4PageRenderer;
+    if (renderer == null) return;
+
+    // لا تعِد البناء إن تم البدء/الاكتمال.
+    if (_qpcV4PrebuildAllFuture != null) {
+      await _qpcV4PrebuildAllFuture;
+      return;
+    }
+
+    _qpcV4PrebuildAllFuture = () async {
+      if (_qpcV4BlocksByPage.length >= 604) return;
+      _qpcV4PrebuildStarted = true;
+
+      // نبني بزمن-ميزانية صغيرة مع تأخير بسيط لتقليل منافسة الـ UI أثناء الاستخدام.
+      const totalPages = 604;
+      const timeBudgetMs = 3;
+      final sw = Stopwatch()..start();
+
+      for (var page = 1; page <= totalPages; page++) {
+        if (!isQpcV4Enabled) break;
+        if (_qpcV4BlocksByPage.containsKey(page)) continue;
+        _qpcV4BlocksByPage[page] = renderer.buildPage(pageNumber: page);
+
+        if (sw.elapsedMilliseconds >= timeBudgetMs) {
+          // yield إلى event loop (مع تأخير بسيط) حتى لا ننافس الرسم/الـ gestures.
+          await Future<void>.delayed(const Duration(milliseconds: 4));
+          sw
+            ..reset()
+            ..start();
+        }
+      }
+
+      // إعادة رسم بعد اكتمال التحضير.
+      update();
+    }();
+
+    await _qpcV4PrebuildAllFuture;
+  }
+
+  /// جدولة تحضير كل صفحات QPC v4 بعد فترة خمول.
+  /// الهدف: منع منافسة CPU أثناء تقليب الصفحات.
+  void scheduleQpcV4AllPagesPrebuild(
+      {Duration delay = const Duration(seconds: 2)}) {
+    if (!isQpcV4Enabled) return;
+    if (_qpcV4BlocksByPage.length >= 604) return;
+    if (_qpcV4PrebuildStarted) return;
+
+    _qpcV4IdlePrebuildTimer?.cancel();
+    _qpcV4IdlePrebuildTimer = Timer(delay, () {
+      if (!isQpcV4Enabled) return;
+      if (_qpcV4PrebuildStarted) return;
+      Future(() => ensureQpcV4AllPagesPrebuilt());
+    });
+  }
+
+  List<QpcV4RenderBlock> getQpcV4BlocksForPageSync(int pageNumber) {
+    final cached = _qpcV4BlocksByPage[pageNumber];
+    if (cached != null) return cached;
+
+    // تجنّب البناء المتزامن داخل build للصفحة (يسبب jank).
+    // إذا لم تكن الصفحة جاهزة، نعطي أولوية لبناء هذه الصفحة (والمجاورة) أولاً،
+    // ثم نطلق التحضير الكامل في الخلفية.
+    if (isQpcV4Enabled) {
+      Future(() async {
+        // يبني الصفحة المطلوبة + صفحات مجاورة بسرعة لتحسين تجربة الفتح على صفحة بعيدة.
+        await prewarmQpcV4Pages(pageNumber - 1);
+        // التحضير الكامل يتم فقط بعد خمول، لتقليل التقطيع أثناء السحب.
+      });
+    }
+
+    return const <QpcV4RenderBlock>[];
+  }
+
+  List<QpcV4RenderBlock> getQpcLayoutBlocksForPageSync(int pageNumber) {
+    if (state.fontsSelected.value == 0) {
+      return getHafsBlocksForPageSync(pageNumber);
+    }
+    return getQpcV4BlocksForPageSync(pageNumber);
+  }
+
+  List<QpcV4RenderBlock> getHafsBlocksForPageSync(int pageNumber) {
+    final cached = _hafsBlocksByPage[pageNumber];
+    if (cached != null) return cached;
+
+    if (state.fontsSelected.value == 0) {
+      Future(() async {
+        await prewarmHafsPages(pageNumber - 1);
+      });
+    }
+
+    return const <QpcV4RenderBlock>[];
+  }
+
+  Future<void> prewarmHafsPages(int pageIndex) async {
+    if (state.fontsSelected.value != 0) return;
+    await _ensureHafsRendererReady();
+    final renderer = _hafsPageRenderer;
+    if (renderer == null) return;
+
+    final basePage = pageIndex + 1;
+    // نُعطي أولوية للصفحات القادمة لأن المستخدم غالبًا يقلب للأمام.
+    // هذا يقلّل احتمال الوصول لصفحة غير مبنية (خصوصًا عند الصفحة الثالثة).
+    final candidates = <int>{
+      basePage,
+      basePage - 1,
+      basePage - 2,
+      basePage - 3,
+      basePage + 1,
+      basePage + 2,
+      basePage + 3,
+      basePage + 4,
+      basePage + 5,
+      basePage + 6,
+      basePage + 7,
+      basePage + 8,
+    }.where((p) => p >= 1 && p <= 604);
+
+    var didBuildAny = false;
+    for (final p in candidates) {
+      if (_hafsBlocksByPage.containsKey(p)) continue;
+      _hafsBlocksByPage[p] = renderer.buildPage(pageNumber: p);
+      didBuildAny = true;
+    }
+
+    if (didBuildAny) update();
+  }
+
+  Future<void> prewarmQpcV4Pages(int pageIndex) async {
+    if (!isQpcV4Enabled) return;
+    await _ensureQpcV4AssetsLoaded();
+    if (_qpcV4PageRenderer == null) return;
+
+    final basePage = pageIndex + 1;
+    final candidates = <int>{
+      basePage,
+      basePage - 1,
+      basePage + 1,
+      basePage - 2,
+      basePage + 2,
+    }.where((p) => p >= 1 && p <= 604);
+
+    var didBuildAny = false;
+    for (final p in candidates) {
+      if (_qpcV4BlocksByPage.containsKey(p)) continue;
+      _qpcV4BlocksByPage[p] = _qpcV4PageRenderer!.buildPage(pageNumber: p);
+      didBuildAny = true;
+    }
+
+    if (didBuildAny) {
+      update();
+    }
+  }
+
+  void junpTolastPage() {
+    lastPage = state.currentPageNumber.value;
+    if (lastPage != 0) {
+      log('Jumping to last page: $lastPage', name: 'QuranCtrl');
+      jumpToPage(lastPage - 1);
     }
   }
 
@@ -104,9 +529,11 @@ class QuranCtrl extends GetxController {
     return filteredAyahs;
   }
 
-  Future<void> loadQuran({quranPages = QuranRepository.hafsPagesNumber}) async {
+  Future<void> loadQuranDataV1(
+      {int quranPages = QuranRepository.hafsPagesNumber}) async {
     // حفظ آخر صفحة
     lastPage = _quranRepository.getLastPage() ?? 1;
+    state.currentPageNumber.value = lastPage;
     if (lastPage != 0) {
       jumpToPage(lastPage - 1);
     }
@@ -312,21 +739,21 @@ class QuranCtrl extends GetxController {
 
   void saveLastPage(int lastPage) {
     this.lastPage = lastPage;
-    _quranRepository.saveLastPage(lastPage);
+    SchedulerBinding.instance.scheduleTask(() async {
+      _quranRepository.saveLastPage(lastPage);
+    }, Priority.idle);
   }
 
   // شرح: تحسين التنقل للحصول على سكرول أكثر سلاسة
   // Explanation: Improved navigation for smoother scrolling
   void jumpToPage(int page) {
     if (quranPagesController.hasClients) {
-      // استخدام animateToPage بدلاً من jumpToPage للحصول على انتقال أكثر سلاسة
-      // Use animateToPage instead of jumpToPage for smoother transition
-      quranPagesController.animateToPage(
+      log('Jumping to page: $page', name: 'QuranCtrl');
+      quranPagesController.jumpToPage(
         page,
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
       );
     } else {
+      log('Creating new PageController for page: $page', name: 'QuranCtrl');
       quranPagesController = PageController(
         initialPage: page,
         keepPage: true,
@@ -335,12 +762,83 @@ class QuranCtrl extends GetxController {
     }
   }
 
-  PageController getPageController(BuildContext context) =>
-      quranPagesController = PageController(
-        keepPage: true,
-        viewportFraction:
-            (Responsive.isDesktop(context) && context.isLandscape) ? 1 / 2 : 1,
+  // شرح: تحسين التنقل للحصول على سكرول أكثر سلاسة
+  // Explanation: Improved navigation for smoother scrolling
+  void animateToPage(int page) {
+    if (quranPagesController.hasClients) {
+      log('Animating to page: $page', name: 'QuranCtrl');
+      // استخدام animateToPage بدلاً من jumpToPage للحصول على انتقال أكثر سلاسة
+      // Use animateToPage instead of jumpToPage for smoother transition
+      quranPagesController.animateToPage(
+        page,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
       );
+    } else {
+      log('Creating new PageController for page: $page', name: 'QuranCtrl');
+      quranPagesController = PageController(
+        initialPage: page,
+        keepPage: true,
+        viewportFraction: 1.0,
+      );
+    }
+  }
+
+  PageController getPageController(BuildContext context) {
+    final Orientation orientation = MediaQuery.of(context).orientation;
+
+    // احسب قيمة الـ viewportFraction الهدف بناءً على حجم/اتجاه الشاشة
+    // استخدم GetPlatform.isDesktop للتحقق من المنصة (macOS, Windows, Linux)
+    // مع التأكد من أن الشاشة عريضة بما يكفي لعرض صفحتين
+    final bool isWideDesktop =
+        Responsive.isDesktop(context) && orientation == Orientation.landscape;
+    double targetFraction = isWideDesktop ? 0.5 : 1.0;
+
+    log(
+        'getPageController: isDesktop=${GetPlatform.isDesktop}, isWideDesktop=$isWideDesktop, '
+        'targetFraction=$targetFraction',
+        name: 'QuranCtrl');
+
+    // إذا لم يكن لدينا عملاء (أول إنشاء) أو تغيّرت القيمة، أعد إنشاء المتحكم
+    final bool needsNewController = !quranPagesController.hasClients ||
+        (quranPagesController.viewportFraction != targetFraction);
+
+    if (needsNewController) {
+      // حافظ على الفهرس الحالي للصفحة
+      // استخدم الصفحة من الـ controller إذا كان له clients،
+      // وإلا استخدم state.currentPageNumber أو القيمة المحفوظة في التخزين
+      int currentIndex;
+      if (quranPagesController.hasClients) {
+        final double? p = quranPagesController.page;
+        currentIndex =
+            (p != null) ? p.round() : state.currentPageNumber.value - 1;
+      } else {
+        // إذا لم يكن هناك clients، استخدم القيمة المحفوظة مباشرة
+        final savedPage = _quranRepository.getLastPage() ?? 1;
+        currentIndex = savedPage - 1;
+      }
+      currentIndex = currentIndex.clamp(0, 603);
+
+      final oldController = quranPagesController;
+      quranPagesController = PageController(
+        initialPage: currentIndex,
+        keepPage: kIsWeb || GetPlatform.isDesktop,
+        viewportFraction: targetFraction,
+      );
+
+      // تخلّص من المتحكم القديم بعد الإطار لتجنّب تعارضات التثبيت
+      if (oldController != quranPagesController) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          try {
+            oldController.dispose();
+          } catch (_) {
+            // تجاهل أي أخطاء تصريف إن كان قد صُرّف سابقًا
+          }
+        });
+      }
+    }
+    return quranPagesController;
+  }
 
   /// Toggle the selection of an ayah by its unique number
   void toggleAyahSelection(int ayahUnequeNumber, {bool forceAddition = false}) {
@@ -355,12 +853,144 @@ class QuranCtrl extends GetxController {
       selectedAyahsByUnequeNumber.add(ayahUnequeNumber);
     }
     selectedAyahsByUnequeNumber.refresh();
-
+    // إعادة بناء محدودة للصفحة الحالية فقط
+    update(['selection_page_']);
     log('selectedAyahs: ${selectedAyahsByUnequeNumber.join(', ')}');
+  }
+
+  /// إضافة/إزالة آية من التحديد بدون مسح بقية التحديد (للوضع المتعدد)
+  void toggleAyahSelectionMulti(int ayahUniqueNumber) {
+    if (selectedAyahsByUnequeNumber.contains(ayahUniqueNumber)) {
+      selectedAyahsByUnequeNumber.remove(ayahUniqueNumber);
+    } else {
+      selectedAyahsByUnequeNumber.add(ayahUniqueNumber);
+    }
+    selectedAyahsByUnequeNumber.refresh();
+    update(['selection_page_']);
+  }
+
+  void setMultiSelectMode(bool enabled) {
+    isMultiSelectMode.value = enabled;
+  }
+
+  // إدارة التظليل البرمجي
+  void setExternalHighlights(List<int> ayahUQNumbers) {
+    externallyHighlightedAyahs
+        .assignAll(ayahUQNumbers.toSet().toList()..sort());
+  }
+
+  void addExternalHighlight(int ayahUQNumber) {
+    if (!externallyHighlightedAyahs.contains(ayahUQNumber)) {
+      externallyHighlightedAyahs.add(ayahUQNumber);
+    }
+  }
+
+  void removeExternalHighlight(int ayahUQNumber) {
+    externallyHighlightedAyahs.remove(ayahUQNumber);
+  }
+
+  void clearExternalHighlights() {
+    externallyHighlightedAyahs.clear();
+  }
+
+  /// تحويل (رقم السورة، رقم الآية) إلى الرقم الفريد للآية
+  int? getAyahUQBySurahAndAyah(int surahNumber, int ayahNumber) {
+    try {
+      final surah = surahs.firstWhere((s) => s.surahNumber == surahNumber);
+      final ayah = surah.ayahs.firstWhere((a) => a.ayahNumber == ayahNumber);
+      return ayah.ayahUQNumber;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  /// إرجاع أرقام UQ لكل الآيات ذات أرقام ayahNumber المحددة داخل نطاق صفحات
+  List<int> getAyahUQsForPagesByAyahNumbers(
+      {required int startPage,
+      required int endPage,
+      required List<int> ayahNumbers}) {
+    final result = <int>{};
+    final sp = startPage.clamp(1, 604);
+    final ep = endPage.clamp(1, 604);
+    for (int p = sp; p <= ep; p++) {
+      final pageAyahs = staticPages.isNotEmpty
+          ? staticPages[p - 1].ayahs
+          : ayahs.where((a) => a.page == p).toList();
+      for (final a in pageAyahs) {
+        if (ayahNumbers.contains(a.ayahNumber)) {
+          result.add(a.ayahUQNumber);
+        }
+      }
+    }
+    return result.toList();
+  }
+
+  /// إرجاع أرقام UQ لكل الآيات ضمن نطاق عبر السور، مثل 2:15-3:25 (شامل)
+  List<int> getAyahUQsForSurahAyahRange({
+    required int startSurah,
+    required int startAyah,
+    required int endSurah,
+    required int endAyah,
+  }) {
+    // تصحيح الترتيب إذا كان البداية بعد النهاية
+    bool swapNeeded = (startSurah > endSurah) ||
+        (startSurah == endSurah && startAyah > endAyah);
+    int sSurah = swapNeeded ? endSurah : startSurah;
+    int sAyah = swapNeeded ? endAyah : startAyah;
+    int eSurah = swapNeeded ? startSurah : endSurah;
+    int eAyah = swapNeeded ? startAyah : endAyah;
+
+    // ضبط الحدود ضمن المدى الصحيح للسور
+    sSurah = sSurah.clamp(1, surahs.isEmpty ? 114 : surahs.length);
+    eSurah = eSurah.clamp(1, surahs.isEmpty ? 114 : surahs.length);
+
+    final result = <int>{};
+    for (int s = sSurah; s <= eSurah; s++) {
+      SurahModel? surah;
+      try {
+        surah = surahs.firstWhere((x) => x.surahNumber == s);
+      } catch (_) {
+        surah = null;
+      }
+      if (surah == null || surah.ayahs.isEmpty) continue;
+      final int firstAyah = (s == sSurah) ? sAyah : 1;
+      final int lastAyah = (s == eSurah)
+          ? eAyah
+          : surah.ayahs.last.ayahNumber; // آخر آية في السورة
+
+      final int from = firstAyah.clamp(1, surah.ayahs.last.ayahNumber);
+      final int to = lastAyah.clamp(1, surah.ayahs.last.ayahNumber);
+      for (final a in surah.ayahs) {
+        if (a.ayahNumber >= from && a.ayahNumber <= to) {
+          result.add(a.ayahUQNumber);
+        }
+      }
+    }
+    return result.toList();
+  }
+
+  /// يحلل نص نطاق على شكل "2:15-3:25" إلى (startSurah,startAyah,endSurah,endAyah)
+  /// يدعم الأرقام العربية والإنجليزية والمسافات.
+  (int startSurah, int startAyah, int endSurah, int endAyah)?
+      parseSurahAyahRangeString(String input) {
+    final normalized = input.convertArabicNumbersToEnglish(input).trim();
+    final reg = RegExp(r"^\s*(\d+)\s*:\s*(\d+)\s*-\s*(\d+)\s*:\s*(\d+)\s*$");
+    final m = reg.firstMatch(normalized);
+    if (m == null) return null;
+    try {
+      final ss = int.parse(m.group(1)!);
+      final sa = int.parse(m.group(2)!);
+      final es = int.parse(m.group(3)!);
+      final ea = int.parse(m.group(4)!);
+      return (ss, sa, es, ea);
+    } catch (_) {
+      return null;
+    }
   }
 
   void clearSelection() {
     selectedAyahsByUnequeNumber.clear();
+    update(['selection_page_']);
   }
 
   Widget textScale(dynamic widget1, dynamic widget2) {
@@ -461,4 +1091,29 @@ class QuranCtrl extends GetxController {
   //   }
   //   return tajweedRulesListAr;
   // }
+
+  KeyEventResult controlRLByKeyboard(FocusNode node, KeyEvent event) {
+    // على الويب، التقط فقط KeyDown لتجنب التكرارات أو التعارض مع KeyUp
+    if (event is! KeyDownEvent) return KeyEventResult.ignored;
+
+    // تأكد من جاهزية المتحكم قبل التحريك
+    if (!quranPagesController.hasClients) return KeyEventResult.ignored;
+
+    if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
+      log('Left Arrow Pressed');
+      quranPagesController.nextPage(
+        duration: const Duration(milliseconds: 600),
+        curve: Curves.easeInOut,
+      );
+      return KeyEventResult.handled;
+    } else if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
+      log('Right Arrow Pressed');
+      quranPagesController.previousPage(
+        duration: const Duration(milliseconds: 600),
+        curve: Curves.easeInOut,
+      );
+      return KeyEventResult.handled;
+    }
+    return KeyEventResult.ignored;
+  }
 }

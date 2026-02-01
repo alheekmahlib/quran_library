@@ -1,12 +1,12 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 33
+    compileSdkVersion 36
+    namespace "com.alheekmah.quranPackage"
 
     defaultConfig {
-        namespace "com.alheekmah.quranPackage"
-        minSdkVersion 21
-        targetSdkVersion 33
+        minSdkVersion 24
+        targetSdkVersion 36
         versionCode 1
         versionName "1.0"
     }

@@ -30,6 +30,16 @@ class QuranLibrary {
     if (_isInitialized) return;
 
     await GetStorage.init();
+    Get.put(InternetConnectionService(), permanent: true);
+    Get.put(InternetConnectionController(), permanent: true);
+
+    // تهيئة backend الصوت للويندوز قبل إنشاء أي AudioPlayer
+    // Initialize Windows audio backend before constructing any AudioPlayer
+    if (!kIsWeb) {
+      if (Platform.isWindows) {
+        JustAudioMediaKit.ensureInitialized(windows: true);
+      }
+    }
 
     // Initialize state values
     final storage = GetStorage();
@@ -39,9 +49,10 @@ class QuranLibrary {
     QuranCtrl.instance;
     await _initTafsir();
 
-    quranCtrl.state.isDownloadedV2Fonts.value =
-        storage.read(storageConstants.isDownloadedCodeV2Fonts) ?? false;
-    quranCtrl.state.isBold.value = storage.read(storageConstants.isBold) ?? 0;
+    quranCtrl.state.isFontDownloaded.value =
+        storage.read(storageConstants.isDownloadedCodeV4Fonts) ?? false;
+    quranCtrl.state.isBold.value =
+        storage.read(storageConstants.isBold) ?? false;
     quranCtrl.state.fontsSelected.value =
         storage.read(storageConstants.fontsSelected) ?? 0;
     quranCtrl.state.fontsDownloadedList.value = (storage
@@ -49,23 +60,37 @@ class QuranLibrary {
             ?.cast<int>() ??
         []);
 
+    if (!kIsWeb) {
+      QuranCtrl.instance.deleteOldFonts();
+    }
+
     // Load data in parallel
     final futures = <Future<void>>[
-      QuranCtrl.instance.loadQuran(),
-      QuranCtrl.instance.loadFontsQuran(),
+      QuranCtrl.instance.loadQuranDataV1(),
+      QuranCtrl.instance.loadQuranDataV3(),
       QuranCtrl.instance.fetchSurahs(),
-      Future(() async {
-        final lastPage = QuranRepository().getLastPage();
-        if (lastPage != null) {
-          // Handle last page if needed
-        }
-      }),
     ];
 
     await Future.wait<void>(futures);
 
     /// must be initilized after QuranCtrl, because it uses it
     AudioCtrl.instance;
+
+    // تسجيل الخطوط المحفوظة دفعة واحدة في الخلفية إن كانت متاحة
+    // if (kIsWeb) {
+    //   // على الويب: لا تنزيلات مسبقة. سجّل فقط الصفحات التي تم تحميلها سابقًا (إن وُجدت)
+    //   final stored = storage
+    //           .read<List<dynamic>>(storageConstants.loadedFontPages)
+    //           ?.cast<int>() ??
+    //       const <int>[];
+    //   if (stored.isNotEmpty) {
+    //     Future(() => QuranCtrl.instance
+    //         .loadPersistedFontsBulk(pages: stored, batchSize: 16));
+    //   }
+    // } else if (quranCtrl.state.isFontDownloaded.value) {
+    //   // على المنصات الأخرى: سجّل الصفحات المحفوظة فقط (دع الدالة تقرأ من التخزين)
+    //   QuranCtrl.instance.loadPersistedFontsBulk();
+    // }
 
     // Initialize bookmarks
     BookmarksCtrl.instance.initBookmarks(
@@ -177,8 +202,10 @@ class QuranLibrary {
   ///
   /// [jumpToSurah] let's you navigate to any quran surah with surah number
   /// Note it receives surah number not surah index
-  void jumpToSurah(int surah) =>
-      jumpToPage(quranCtrl.surahsStart[surah - 1] + 1);
+  void jumpToSurah(int surah) {
+    jumpToPage(quranCtrl.surahsStart[surah - 1] + 1);
+    log('Jumped to Surah $surah at page ${quranCtrl.surahsStart[surah - 1] + 1}');
+  }
 
   /// [allJoz] returns list of all Quran joz' names
   static List<String> get allJoz {
@@ -226,18 +253,21 @@ class QuranLibrary {
   /// [getAllSurahsArtPath] يعيد قائمة ويدجيت المخطوطات الخاصة بإسماء السور.
   ///
   /// [getAllSurahsArtPath] returns list of widgets for all Quran surahs' name artistic manuscript path
-  List<Widget> getAllSurahsArtPath({Color? color}) {
+  List<Widget> getAllSurahsArtPath(
+      {Color? color, double? fontSize, bool? withSurahWord = false}) {
     if (_cache.containsKey('allSurahsArtPath')) {
       return _cache['allSurahsArtPath'] as List<Widget>;
     }
     final paths = List.generate(
         quranCtrl.surahs.length,
         (i) => Text(
-              (i + 1).toString(),
+              withSurahWord!
+                  ? 'surah${(i + 1).toString().padLeft(3, '0')}surah-icon'
+                  : 'surah${(i + 1).toString().padLeft(3, '0')}',
               style: TextStyle(
                 color: color ?? Colors.black,
-                fontFamily: "surahName",
-                fontSize: 38,
+                fontFamily: "surah-name-v4",
+                fontSize: fontSize ?? 38,
                 package: "quran_library",
               ),
             ));
@@ -248,16 +278,22 @@ class QuranLibrary {
   /// [getSurahArtPath] يعيد ويدجيت المخطوطة الخاصة بإسم السور.
   ///
   /// [getSurahArtPath] returns widget for Quran surah name artistic manuscript path
-  Widget getSurahArtPath({required int index, Color? color}) {
+  Widget getSurahArtPath(
+      {required int index,
+      Color? color,
+      double? fontSize,
+      bool? withSurahWord = false}) {
     if (_cache.containsKey('allSurahsArtPath')) {
       return _cache['allSurahsArtPath'] as Widget;
     }
     final paths = Text(
-      (index + 1).toString(),
+      withSurahWord!
+          ? 'surah${(index + 1).toString().padLeft(3, '0')}surah-icon'
+          : 'surah${(index + 1).toString().padLeft(3, '0')}',
       style: TextStyle(
         color: color ?? Colors.black,
-        fontFamily: "surahName",
-        fontSize: 38,
+        fontFamily: "surah-name-v4",
+        fontSize: fontSize ?? 38,
         package: "quran_library",
       ),
     );
@@ -309,10 +345,13 @@ class QuranLibrary {
           SurahInfoStyle? surahInfoStyle,
           String? languageCode,
           bool isDark = false}) =>
-      surahInfoBottomSheetWidget(context, surahNumber - 1,
-          surahStyle: surahInfoStyle,
-          languageCode: languageCode,
-          isDark: isDark);
+      surahInfoBottomSheetWidget(
+        context,
+        surahNumber - 1,
+        surahStyle: surahInfoStyle,
+        languageCode: languageCode,
+        isDark: isDark,
+      );
 
   /// [getSurahInfo] تتيح لك الحصول على سورة مع جميع بياناتها.
   /// ملاحظة: تستقبل هذه الطريقة رقم السورة وليس فهرس السورة.
@@ -351,34 +390,34 @@ class QuranLibrary {
           String? languageCode,
           bool isDark = false,
           bool isFontsLocal = false}) =>
-      quranCtrl.fontsDownloadWidget(
-        context,
+      FontsDownloadWidget(
         downloadFontsDialogStyle: downloadFontsDialogStyle,
         languageCode: languageCode,
         isDark: isDark,
         isFontsLocal: isFontsLocal,
+        ctrl: quranCtrl,
       );
 
-  /// للحصول على طريقة تنزيل الخطوط فقط قم بإستدعاء [fontsDownloadMethod]
+  /// للحصول على طريقة تنزيل الخطوط فقط قم بإستدعاء [getFontsDownloadMethod]
   ///
-  /// to get the fonts download method just call [fontsDownloadMethod]
+  /// to get the fonts download method just call [getFontsDownloadMethod]
   Future<void> getFontsDownloadMethod({required int fontIndex}) async {
     await quranCtrl.downloadAllFontsZipFile(fontIndex);
   }
 
-  /// للحصول على طريقة تنزيل الخطوط فقط قم بإستدعاء [getFontsPrepareMethod]
-  /// مطلوب تمرير رقم الصفحة [pageIndex]
+  /// للحصول على طريقة إعداد الخطوط فقط قم بإستدعاء [getFontsPrepareMethod]
+  /// يمكنك تمرير ارقام الصفحات [pages]
   ///
   /// to prepare the fonts was downloaded before just call [getFontsPrepareMethod]
-  /// required to pass [pageIndex]
-  Future<void> getFontsPrepareMethod(
-      {required int pageIndex, bool isFontsLocal = false}) async {
-    await quranCtrl.prepareFonts(pageIndex, isFontsLocal: isFontsLocal);
-  }
+  /// you can pass pages numbers [pages]
+  // Future<void> getFontsPrepareMethod(
+  //     {List<int>? pages, int batchSize = 24}) async {
+  //   await quranCtrl.loadPersistedFontsBulk(pages: pages, batchSize: batchSize);
+  // }
 
-  /// لحذف الخطوط فقط قم بإستدعاء [deleteFontsMethod]
+  /// لحذف الخطوط فقط قم بإستدعاء [getDeleteFontsMethod]
   ///
-  /// to delete the fonts just call [deleteFontsMethod]
+  /// to delete the fonts just call [getDeleteFontsMethod]
   Future<void> getDeleteFontsMethod() async {
     await quranCtrl.deleteFonts();
   }
@@ -402,13 +441,13 @@ class QuranLibrary {
     // التحقق من قيمة isDownloadedV2Fonts في GetStorage
     // Check the value of isDownloadedV2Fonts in GetStorage
     final storageValue =
-        GetStorage().read<bool>(_StorageConstants().isDownloadedCodeV2Fonts);
+        GetStorage().read<bool>(_StorageConstants().isDownloadedCodeV4Fonts);
     // تحديث قيمة المتغير في state ليتوافق مع قيمة التخزين
     // Update the state variable to match storage value
-    quranCtrl.state.isDownloadedV2Fonts.value = storageValue ?? false;
+    quranCtrl.state.isFontDownloaded.value = storageValue ?? false;
     // إرجاع القيمة المحدثة
     // Return the updated value
-    return quranCtrl.state.isDownloadedV2Fonts.value;
+    return quranCtrl.state.isFontDownloaded.value;
   }
 
   /// لمعرفة الخط الذي تم تحديده، ما عليك سوى إستدعاء [currentFontsSelected]
@@ -419,7 +458,9 @@ class QuranLibrary {
   /// لمعرفة ما إذا كانت الخطوط قيد التحميل، ما عليك سوى إستدعاء [isPreparingDownloadFonts]
   ///
   /// To find out whether fonts are being downloaded, just call [isPreparingDownloadFonts]
-  bool get isPreparingDownloadFonts => quranCtrl.isPreparingDownloadFonts;
+  bool get isPreparingDownloadFonts =>
+      quranCtrl.state.isPreparingDownload.value ||
+      quranCtrl.state.isDownloadingFonts.value;
 
   /// لتبديل نوع الخط مع تحميله إذا لم يكن محملاً من قبل
   /// هذه الدالة تلقائيًا ستقوم بتحميل الخط إذا كان غير متوفر ثم تعيينه
@@ -537,14 +578,15 @@ class QuranLibrary {
   /// تهيئة بيانات التفسير عند بدء التطبيق.
   /// Initialize tafsir data when the app starts.
   static Future<void> _initTafsir() async {
-    drift.driftRuntimeOptions.dontWarnAboutMultipleDatabases = true;
     return TafsirCtrl.instance.onInit();
   }
 
   /// إظهار قائمة منبثقة لتغيير نوع التفسير.
   /// Show a popup menu to change the tafsir style.
-  Widget changeTafsirPopupMenu(TafsirStyle tafsirStyle, {int? pageNumber}) =>
-      ChangeTafsirPopUp(tafsirStyle: tafsirStyle, pageNumber: pageNumber);
+  Widget changeTafsirPopupMenu(TafsirStyle tafsirStyle,
+          {int? pageNumber, bool? isDark}) =>
+      ChangeTafsirDialog(
+          tafsirStyle: tafsirStyle, pageNumber: pageNumber, isDark: isDark!);
 
   /// التحقق إذا كان التفسير تم تحميله مسبقاً.
   /// Check if the tafsir is already downloaded.
@@ -572,7 +614,13 @@ class QuranLibrary {
 
   /// التحقق إذا كان الوضع الحالي هو التفسير أو الترجمة.
   /// Check if the current mode is tafsir or translation.
-  bool get isTafsir => TafsirCtrl.instance.isTafsir.value;
+  bool get isTafsir => TafsirCtrl.instance.selectedTafsir.isTafsir;
+  bool get isTtranslation => TafsirCtrl.instance.selectedTafsir.isTranslation;
+
+  /// التحقق إذا كان التفسير قيد التحميل حالياً.
+  /// Check if the tafsir is currently being downloaded.
+  bool get isPreparingDownloadTafsir =>
+      TafsirCtrl.instance.isPreparingDownload.value;
 
   /// الحصول على رقم التفسير المختار حالياً.
   /// Get the currently selected tafsir index.
@@ -586,7 +634,7 @@ class QuranLibrary {
   /// تحميل التفسير المحدد حسب الفهرس.
   /// Download the tafsir by the given index.
   Future<void> tafsirDownload(int i) async =>
-      await TafsirCtrl.instance.tafsirDownload(i);
+      await TafsirCtrl.instance.tafsirAndTranslationDownload(i);
 
   // Future<void> initializeDatabase() async =>
   //     await TafsirCtrl.instance.initializeDatabase();
@@ -601,28 +649,24 @@ class QuranLibrary {
   /// To show the tafsir, you can use [showTafsir].
   Future<void> showTafsir({
     required BuildContext context,
-    required int surahNum,
     required int ayahNum,
-    required String ayahText,
     required int pageIndex,
     required String ayahTextN,
     required int ayahUQNum,
     required int ayahNumber,
+    bool? isDark,
+    TafsirStyle? tafsirStyle,
   }) async =>
       await TafsirCtrl.instance.showTafsirOnTap(
-          context: context,
-          ayahNum: ayahNum,
-          ayahText: ayahText,
-          pageIndex: pageIndex,
-          ayahTextN: ayahTextN,
-          ayahUQNum: ayahUQNum,
-          ayahNumber: ayahNumber,
-          surahNum: surahNum);
-
-  /// إغلاق قاعدة البيانات وإعادة تهيئتها (عادة عند تغيير التفسير).
-  /// Close and re-initialize the database (usually when changing the tafsir).
-  Future<void> closeAndInitializeDatabase() async =>
-      await TafsirCtrl.instance.closeAndReinitializeDatabase();
+        context: context,
+        ayahNum: ayahNum,
+        pageIndex: pageIndex,
+        ayahUQNum: ayahUQNum,
+        ayahNumber: ayahNumber,
+        isDark: isDark!,
+        externalTafsirStyle: tafsirStyle ??
+            TafsirStyle.defaults(isDark: isDark, context: context),
+      );
 
   /// للحصول على التفسير الخاص بالآية،
   ///  فقط قم بتمرير رقم الآية لـ [getTafsirOfAyah].
@@ -649,6 +693,130 @@ class QuranLibrary {
       await TafsirCtrl.instance
           .fetchTafsirPage(pageNumber, databaseName: databaseName!);
 
+  //////////// [Word Info] ////////////
+
+  /// فتح نافذة معلومات الكلمة (Word Info) وتحميل البيانات عند الحاجة.
+  ///
+  /// [ref] مرجع الكلمة (سورة/آية/رقم كلمة).
+  /// [initialKind] التبويب الذي تريد فتحه أولاً (القراءات/التصريف/الإعراب).
+  ///
+  /// Opens the Word Info bottom sheet and allows downloading data on demand.
+  ///
+  /// [ref] The word reference (surah/ayah/word).
+  /// [initialKind] The initial tab to open (recitations/tasreef/eerab).
+  ///
+  /// مثال للاستخدام / Example usage:
+  /// ```dart
+  /// await QuranLibrary().showWordInfo(
+  ///   context: context,
+  ///   ref: const WordRef(surahNumber: 1, ayahNumber: 1, wordNumber: 1),
+  ///   initialKind: WordInfoKind.recitations,
+  ///   isDark: true,
+  /// );
+  /// ```
+  Future<void> showWordInfo({
+    required BuildContext context,
+    required WordRef ref,
+    WordInfoKind initialKind = WordInfoKind.recitations,
+    bool isDark = false,
+  }) async {
+    await showWordInfoBottomSheet(
+      context: context,
+      ref: ref,
+      initialKind: initialKind,
+      isDark: isDark,
+    );
+  }
+
+  /// فتح نافذة معلومات الكلمة عبر أرقام (سورة/آية/كلمة).
+  ///
+  /// Opens Word Info by passing (surah/ayah/word) numbers.
+  Future<void> showWordInfoByNumbers({
+    required BuildContext context,
+    required int surahNumber,
+    required int ayahNumber,
+    required int wordNumber,
+    WordInfoKind initialKind = WordInfoKind.recitations,
+    bool isDark = false,
+  }) async {
+    await showWordInfo(
+      context: context,
+      ref: WordRef(
+        surahNumber: surahNumber,
+        ayahNumber: ayahNumber,
+        wordNumber: wordNumber,
+      ),
+      initialKind: initialKind,
+      isDark: isDark,
+    );
+  }
+
+  /// التحقق مما إذا كانت بيانات نوع معيّن من Word Info محمّلة.
+  ///
+  /// Checks whether a Word Info kind is downloaded/enabled.
+  bool isWordInfoKindDownloaded(WordInfoKind kind) =>
+      WordInfoCtrl.instance.isKindAvailable(kind);
+
+  /// بدء تحميل بيانات Word Info لنوع معيّن (تحميل اختياري).
+  ///
+  /// Starts downloading Word Info data for a specific kind (on-demand download).
+  Future<void> downloadWordInfoKind({required WordInfoKind kind}) async =>
+      await WordInfoCtrl.instance.downloadKind(kind);
+
+  /// لمعرفة ما إذا كانت بيانات Word Info قيد التحضير/التحميل.
+  ///
+  /// Whether Word Info data is preparing/downloading.
+  bool get isPreparingDownloadWordInfo =>
+      WordInfoCtrl.instance.isPreparingDownload.value;
+
+  /// لمعرفة ما إذا كان Word Info يتم تحميله الآن.
+  ///
+  /// Whether Word Info is currently downloading.
+  bool get isDownloadingWordInfo => WordInfoCtrl.instance.isDownloading.value;
+
+  /// نوع Word Info الذي يتم تحميله حاليًا (إن وجد).
+  ///
+  /// The Word Info kind currently being downloaded (if any).
+  WordInfoKind? get downloadingWordInfoKind =>
+      WordInfoCtrl.instance.downloadingKind.value;
+
+  /// نسبة تقدم تحميل Word Info (قيمة بين 0 و 1).
+  ///
+  /// Word Info download progress as a value between 0 and 1.
+  double get wordInfoDownloadProgress =>
+      WordInfoCtrl.instance.downloadProgress.value / 100;
+
+  //////////// [Tajweed (Ayah)] ////////////
+
+  /// التحقق مما إذا كانت بيانات أحكام التجويد (على مستوى الآية) مفعّلة/محمّلة.
+  ///
+  /// Checks whether Tajweed (ayah-level) data is enabled/downloaded.
+  bool get isTajweedAyahDownloaded => TajweedAyaCtrl.instance.isAvailable;
+
+  /// بدء تحميل بيانات أحكام التجويد (على مستوى الآية).
+  ///
+  /// Starts downloading Tajweed (ayah-level) data.
+  Future<void> downloadTajweedAyah() async =>
+      await TajweedAyaCtrl.instance.download();
+
+  /// لمعرفة ما إذا كانت بيانات التجويد قيد التحضير/التحميل.
+  ///
+  /// Whether Tajweed data is preparing/downloading.
+  bool get isPreparingDownloadTajweedAyah =>
+      TajweedAyaCtrl.instance.isPreparingDownload.value;
+
+  /// لمعرفة ما إذا كان التجويد يتم تحميله الآن.
+  ///
+  /// Whether Tajweed is currently downloading.
+  bool get isDownloadingTajweedAyah =>
+      TajweedAyaCtrl.instance.isDownloading.value;
+
+  /// نسبة تقدم تحميل التجويد (قيمة بين 0 و 1).
+  ///
+  /// Tajweed download progress as a value between 0 and 1.
+  double get tajweedAyahDownloadProgress =>
+      TajweedAyaCtrl.instance.downloadProgress.value / 100;
+
   /// يقوم بتشغيل آية أو مجموعة من الآيات الصوتية بدءًا من الآية المحددة.
   /// يمكن تشغيل آية واحدة فقط أو الاستمرار في تشغيل الآيات التالية.
   ///
@@ -673,12 +841,22 @@ class QuranLibrary {
   ///   playSingleAyah: true,
   /// );
   /// ```
-  Future<void> playAyah(
-          {required BuildContext context,
-          required int currentAyahUniqueNumber,
-          required bool playSingleAyah}) async =>
-      await AudioCtrl.instance.playAyah(context, currentAyahUniqueNumber,
-          playSingleAyah: playSingleAyah);
+  Future<void> playAyah({
+    required BuildContext context,
+    required int currentAyahUniqueNumber,
+    required bool playSingleAyah,
+    AyahAudioStyle? ayahAudioStyle,
+    AyahDownloadManagerStyle? ayahDownloadManagerStyle,
+    bool? isDarkMode,
+  }) async =>
+      await AudioCtrl.instance.playAyah(
+        context,
+        currentAyahUniqueNumber,
+        playSingleAyah: playSingleAyah,
+        ayahAudioStyle: ayahAudioStyle,
+        ayahDownloadManagerStyle: ayahDownloadManagerStyle,
+        isDarkMode: isDarkMode,
+      );
 
   /// ينتقل إلى الآية التالية وبدء تشغيلها صوتياً.
   /// يتم استخدام هذه الدالة للتنقل السريع للآية التالية أثناء التشغيل الصوتي.
@@ -751,8 +929,12 @@ class QuranLibrary {
   /// // Play Surah Al-Baqarah (Surah number 2)
   /// await quranLibrary().playSurah(surahNumber: 2);
   /// ```
-  Future<void> playSurah({required int surahNumber}) async =>
-      await AudioCtrl.instance.playSurah(surahNumber: surahNumber);
+  Future<void> playSurah(
+          {required BuildContext context,
+          required int surahNumber,
+          SurahAudioStyle? style}) async =>
+      await AudioCtrl.instance
+          .playSurah(context: context, surahNumber: surahNumber, style: style);
 
   /// ينتقل إلى السورة التالية وبدء تشغيلها صوتياً بالكامل.
   /// يتم استخدام هذه الدالة للانتقال السريع للسورة التالية أثناء التشغيل الصوتي.
@@ -821,7 +1003,8 @@ class QuranLibrary {
   /// await quranLibrary().startDownloadSurah(surahNumber: 2);
   /// ```
   Future<void> startDownloadSurah({required int surahNumber}) async =>
-      await AudioCtrl.instance.startDownload(surahNumber: surahNumber);
+      await AudioCtrl.instance
+          .startDownloadOrPlayExistsSurah(surahNumber: surahNumber);
 
   /// يلغي عملية تحميل الملفات الصوتية الجارية حالياً.
   /// هذه الدالة مفيدة عندما يريد المستخدم إيقاف التحميل لتوفير البيانات أو تحرير مساحة التخزين.
@@ -960,7 +1143,7 @@ class QuranLibrary {
   /// [hafsStyle] is the default style for Quran so all special characters will be rendered correctly
   final hafsStyle = const TextStyle(
     color: Colors.black,
-    fontSize: 23.55,
+    // fontSize: 23.55,
     fontFamily: "hafs",
     package: "quran_library",
   );
@@ -972,6 +1155,16 @@ class QuranLibrary {
     color: Colors.black,
     fontSize: 23.55,
     fontFamily: "naskh",
+    package: "quran_library",
+  );
+
+  /// [cairoStyle] هو النمط الافتراضي للنصوص الآخرى.
+  ///
+  /// [cairoStyle] is the default style for other text.
+  final cairoStyle = const TextStyle(
+    color: Colors.black,
+    fontSize: 18,
+    fontFamily: "cairo",
     package: "quran_library",
   );
 

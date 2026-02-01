@@ -8,18 +8,14 @@ class SurahNameStyle {
   /// The color of the Surah name.
   final Color? surahNameColor;
 
-  /// The width of the Surah name.
-  final double? surahNameWidth;
-
-  /// The height of the Surah name.
-  final double? surahNameHeight;
+  ///[surahNameSize] if you wanna add the size for the surah name
+  final double? surahNameSize;
 
   /// Creates a new instance of [SurahNameStyle].
   ///
   /// All parameters are optional and can be null.
   SurahNameStyle({
     this.surahNameColor,
-    this.surahNameWidth,
-    this.surahNameHeight,
+    this.surahNameSize,
   });
 }

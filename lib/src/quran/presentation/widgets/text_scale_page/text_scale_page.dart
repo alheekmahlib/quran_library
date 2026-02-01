@@ -7,7 +7,6 @@ class _QuranTextScale extends StatelessWidget {
     this.bookmarkList,
     this.basmalaStyle,
     this.surahNumber,
-    this.surahInfoStyle,
     this.surahNameStyle,
     this.bannerStyle,
     this.onSurahBannerPress,
@@ -24,10 +23,6 @@ class _QuranTextScale extends StatelessWidget {
     this.circularProgressWidget,
     required this.isDark,
     required this.ayahBookmarked,
-    this.anotherMenuChild,
-    this.anotherMenuChildOnTap,
-    this.secondMenuChild,
-    this.secondMenuChildOnTap,
   });
 
   final quranCtrl = QuranCtrl.instance;
@@ -36,7 +31,6 @@ class _QuranTextScale extends StatelessWidget {
   final List? bookmarkList;
   final BasmalaStyle? basmalaStyle;
   final int? surahNumber;
-  final SurahInfoStyle? surahInfoStyle;
   final SurahNameStyle? surahNameStyle;
   final BannerStyle? bannerStyle;
   final List<int> ayahBookmarked;
@@ -54,10 +48,6 @@ class _QuranTextScale extends StatelessWidget {
   final Widget? circularProgressWidget;
   final bool isDark;
   final bool showAyahBookmarkedIcon;
-  final Widget? anotherMenuChild;
-  final void Function(AyahModel ayah)? anotherMenuChildOnTap;
-  final Widget? secondMenuChild;
-  final void Function(AyahModel ayah)? secondMenuChildOnTap;
 
   @override
   Widget build(BuildContext context) {
@@ -67,120 +57,79 @@ class _QuranTextScale extends StatelessWidget {
           if (onPagePress != null) {
             onPagePress!();
           }
-          quranCtrl.isShowControl.toggle();
+
+          quranCtrl.showControlToggle();
           quranCtrl.clearSelection();
-          quranCtrl.state.overlayEntry?.remove();
-          quranCtrl.state.overlayEntry = null;
+          quranCtrl.state.isShowMenu.value = false;
         },
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 8.0),
           child: quranCtrl.state.pages.isEmpty
-              ? circularProgressWidget ?? CircularProgressIndicator.adaptive()
-              : SingleChildScrollView(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: List.generate(
-                      quranCtrl
-                          .getCurrentPageAyahsSeparatedForBasmalah(pageIndex)
-                          .length,
-                      (i) {
-                        final ayahs =
-                            quranCtrl.getCurrentPageAyahsSeparatedForBasmalah(
-                                pageIndex)[i];
-                        return Column(
-                          children: [
-                            ayahs.first.ayahNumber == 1 &&
-                                    (!quranCtrl._topOfThePageIndex
-                                            .contains(pageIndex) ||
-                                        quranCtrl.state.fontsSelected.value ==
-                                            0)
-                                ? SurahHeaderWidget(
-                                    surahNumber ??
-                                        quranCtrl
-                                            .getSurahDataByAyah(ayahs.first)
-                                            .surahNumber,
-                                    bannerStyle: bannerStyle ??
-                                        BannerStyle(
-                                          isImage: false,
-                                          bannerSvgPath: isDark
-                                              ? AssetsPath
-                                                  .assets.surahSvgBannerDark
-                                              : AssetsPath
-                                                  .assets.surahSvgBanner,
-                                          bannerSvgHeight: 40.0,
-                                          bannerSvgWidth: 150.0,
-                                          bannerImagePath: '',
-                                          bannerImageHeight: 50,
-                                          bannerImageWidth: double.infinity,
-                                        ),
-                                    surahNameStyle: surahNameStyle ??
-                                        SurahNameStyle(
-                                          surahNameWidth: 70,
-                                          surahNameHeight: 37,
-                                          surahNameColor: isDark
-                                              ? Colors.white
-                                              : Colors.black,
-                                        ),
-                                    surahInfoStyle: surahInfoStyle ??
-                                        SurahInfoStyle(
-                                          ayahCount: 'عدد الآيات',
-                                          secondTabText: 'عن السورة',
-                                          firstTabText: 'أسماء السورة',
-                                          backgroundColor: isDark
-                                              ? const Color(0xff1E1E1E)
-                                              : const Color(0xfffaf7f3),
-                                          closeIconColor: isDark
-                                              ? Colors.white
-                                              : Colors.black,
-                                          indicatorColor: Colors.amber
-                                              .withValues(alpha: .2),
-                                          primaryColor: Colors.amber
-                                              .withValues(alpha: .2),
-                                          surahNameColor: isDark
-                                              ? Colors.white
-                                              : Colors.black,
-                                          surahNumberColor: isDark
-                                              ? Colors.white
-                                              : Colors.black,
-                                          textColor: isDark
-                                              ? Colors.white
-                                              : Colors.black,
-                                          titleColor: isDark
-                                              ? Colors.white
-                                              : Colors.black,
-                                        ),
-                                    onSurahBannerPress: onSurahBannerPress,
-                                    isDark: isDark,
-                                  )
-                                : const SizedBox.shrink(),
-                            quranCtrl
-                                            .getSurahDataByAyah(ayahs.first)
-                                            .surahNumber ==
-                                        9 ||
-                                    quranCtrl
-                                            .getSurahDataByAyah(ayahs.first)
-                                            .surahNumber ==
-                                        1
-                                ? const SizedBox.shrink()
-                                : Padding(
-                                    padding: const EdgeInsets.only(bottom: 8.0),
-                                    child: ayahs.first.ayahNumber == 1
-                                        ? BasmallahWidget(
-                                            surahNumber: quranCtrl
-                                                .getSurahDataByAyah(ayahs.first)
-                                                .surahNumber,
-                                            basmalaStyle: basmalaStyle ??
-                                                BasmalaStyle(
-                                                  basmalaColor: isDark
-                                                      ? Colors.white
-                                                      : Colors.black,
-                                                  basmalaWidth: 160.0,
-                                                  basmalaHeight: 45.0,
-                                                ),
-                                          )
-                                        : const SizedBox.shrink(),
-                                  ),
-                            TextScaleRichTextBuild(
+              ? circularProgressWidget ??
+                  const CircularProgressIndicator.adaptive()
+              : ScrollConfiguration(
+                  behavior: ScrollConfiguration.of(context).copyWith(
+                    scrollbars: false,
+                    dragDevices: {
+                      PointerDeviceKind.touch,
+                      PointerDeviceKind.mouse,
+                      PointerDeviceKind.trackpad,
+                      PointerDeviceKind.stylus,
+                      PointerDeviceKind.unknown
+                    },
+                  ),
+                  child: SingleChildScrollView(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: () {
+                        final separated = quranCtrl
+                            .getCurrentPageAyahsSeparatedForBasmalah(pageIndex);
+                        return List.generate(separated.length, (i) {
+                          final ayahs = separated[i];
+                          final surahNum = quranCtrl
+                              .getSurahDataByAyah(ayahs.first)
+                              .surahNumber;
+                          return Column(
+                            children: [
+                              ayahs.first.ayahNumber == 1 &&
+                                      (!quranCtrl._topOfThePageIndex
+                                              .contains(pageIndex) ||
+                                          quranCtrl.state.fontsSelected.value ==
+                                              0)
+                                  ? SurahHeaderWidget(
+                                      surahNumber ?? surahNum,
+                                      bannerStyle: bannerStyle ??
+                                          BannerStyle.textScale(isDark: isDark),
+                                      surahNameStyle: surahNameStyle ??
+                                          SurahNameStyle(
+                                            surahNameSize: 24.sp,
+                                            surahNameColor: isDark
+                                                ? Colors.white
+                                                : Colors.black,
+                                          ),
+                                      onSurahBannerPress: onSurahBannerPress,
+                                      isDark: isDark,
+                                    )
+                                  : const SizedBox.shrink(),
+                              surahNum == 9 || surahNum == 1
+                                  ? const SizedBox.shrink()
+                                  : Padding(
+                                      padding:
+                                          const EdgeInsets.only(bottom: 8.0),
+                                      child: ayahs.first.ayahNumber == 1
+                                          ? BasmallahWidget(
+                                              surahNumber: surahNum,
+                                              basmalaStyle: basmalaStyle ??
+                                                  BasmalaStyle(
+                                                    basmalaColor: isDark
+                                                        ? Colors.white
+                                                        : Colors.black,
+                                                    basmalaFontSize: 50.0,
+                                                  ),
+                                            )
+                                          : const SizedBox.shrink(),
+                                    ),
+                              TextScaleRichTextBuild(
                                 textColor: textColor,
                                 isDark: isDark,
                                 ayahs: ayahs,
@@ -188,10 +137,6 @@ class _QuranTextScale extends StatelessWidget {
                                 pageIndex: pageIndex,
                                 ayahBookmarked: ayahBookmarked,
                                 onAyahLongPress: onAyahLongPress,
-                                anotherMenuChild: anotherMenuChild,
-                                anotherMenuChildOnTap: anotherMenuChildOnTap,
-                                secondMenuChild: secondMenuChild,
-                                secondMenuChildOnTap: secondMenuChildOnTap,
                                 bookmarkList: bookmarkList,
                                 ayahIconColor: ayahIconColor,
                                 showAyahBookmarkedIcon: showAyahBookmarkedIcon,
@@ -199,73 +144,16 @@ class _QuranTextScale extends StatelessWidget {
                                 bookmarksColor: bookmarksColor,
                                 ayahSelectedBackgroundColor:
                                     ayahSelectedBackgroundColor,
-                                languageCode: languageCode),
-                            quranCtrl._downThePageIndex.contains(pageIndex) &&
-                                    quranCtrl.state.fontsSelected.value == 1
-                                ? SurahHeaderWidget(
-                                    surahNumber ??
-                                        quranCtrl
-                                                .getSurahDataByAyah(ayahs.first)
-                                                .surahNumber +
-                                            1,
-                                    bannerStyle: bannerStyle ??
-                                        BannerStyle(
-                                          isImage: false,
-                                          bannerSvgPath: isDark
-                                              ? AssetsPath
-                                                  .assets.surahSvgBannerDark
-                                              : AssetsPath
-                                                  .assets.surahSvgBanner,
-                                          bannerSvgHeight: 40.0,
-                                          bannerSvgWidth: 150.0,
-                                          bannerImagePath: '',
-                                          bannerImageHeight: 50,
-                                          bannerImageWidth: double.infinity,
-                                        ),
-                                    surahNameStyle: surahNameStyle ??
-                                        SurahNameStyle(
-                                          surahNameWidth: 70,
-                                          surahNameHeight: 37,
-                                          surahNameColor: isDark
-                                              ? Colors.white
-                                              : Colors.black,
-                                        ),
-                                    surahInfoStyle: surahInfoStyle ??
-                                        SurahInfoStyle(
-                                          ayahCount: 'عدد الآيات',
-                                          secondTabText: 'عن السورة',
-                                          firstTabText: 'أسماء السورة',
-                                          backgroundColor: isDark
-                                              ? const Color(0xff1E1E1E)
-                                              : const Color(0xfffaf7f3),
-                                          closeIconColor: isDark
-                                              ? Colors.white
-                                              : Colors.black,
-                                          indicatorColor: Colors.amber
-                                              .withValues(alpha: .2),
-                                          primaryColor: Colors.amber
-                                              .withValues(alpha: .2),
-                                          surahNameColor: isDark
-                                              ? Colors.white
-                                              : Colors.black,
-                                          surahNumberColor: isDark
-                                              ? Colors.white
-                                              : Colors.black,
-                                          textColor: isDark
-                                              ? Colors.white
-                                              : Colors.black,
-                                          titleColor: isDark
-                                              ? Colors.white
-                                              : Colors.black,
-                                        ),
-                                    onSurahBannerPress: onSurahBannerPress,
-                                    isDark: isDark,
-                                  )
-                                : const SizedBox.shrink(),
-                            // context.surahBannerLastPlace(pageIndex, i),
-                          ],
-                        );
-                      },
+                                languageCode: languageCode,
+                                // ayahLongClickStyle: ayahLongClickStyle,
+                                // tafsirStyle: tafsirStyle,
+                              ),
+
+                              // context.surahBannerLastPlace(pageIndex, i),
+                            ],
+                          );
+                        });
+                      }(),
                     ),
                   ),
                 ),

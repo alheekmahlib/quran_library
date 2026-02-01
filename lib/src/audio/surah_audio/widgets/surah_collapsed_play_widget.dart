@@ -2,74 +2,81 @@ part of '../../audio.dart';
 
 class SurahCollapsedPlayWidget extends StatelessWidget {
   final SurahAudioStyle? style;
-  const SurahCollapsedPlayWidget({super.key, this.style});
+  final bool isDark;
+  final String? languageCode;
+
+  const SurahCollapsedPlayWidget(
+      {super.key, this.style, this.isDark = false, this.languageCode});
 
   @override
   Widget build(BuildContext context) {
+    final handleColor = Colors.grey.withValues(alpha: .6);
+    final textColor = style?.surahNameColor ?? AppColors.getTextColor(isDark);
     return Align(
-      alignment: Alignment.centerLeft,
-      child: Container(
-        height: MediaQuery.sizeOf(context).height,
-        width: UiHelper.currentOrientation(MediaQuery.sizeOf(context).width,
-            MediaQuery.sizeOf(context).width * .5, context),
-        margin: const EdgeInsets.symmetric(horizontal: 16),
-        decoration: BoxDecoration(
-          color: style?.audioSliderBackgroundColor ?? const Color(0xfffaf7f3),
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withValues(alpha: .3),
-              blurRadius: 5,
-              spreadRadius: 0,
-              offset: const Offset(0, -10),
-            ),
-          ],
-        ),
-        child: Column(
-          children: [
-            SizedBox(height: 8.0),
-            Container(
-              width: 70,
-              height: 10,
-              decoration: BoxDecoration(
-                color: Colors.grey,
-                borderRadius: BorderRadius.circular(8),
-              ),
-            ),
-            Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 32.0, vertical: 16),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      SurahSkipToPrevious(style: style),
-                      SurahOnlinePlayButton(style: style),
-                      SurahSkipToNext(style: style),
-                    ].reversed.toList(),
+      alignment: AlignmentDirectional.centerEnd,
+      child: Column(
+        children: [
+          const SizedBox(height: 8.0),
+          _PanelHandle(color: handleColor),
+          const SizedBox(height: 8.0),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 32.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Expanded(
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      // textDirection: TextDirection.rtl,
+                      children: [
+                        SurahSkipToNext(
+                            style: style, languageCode: languageCode ?? 'ar'),
+                        SurahOnlinePlayButton(style: style),
+                        SurahSkipToPrevious(
+                            style: style, languageCode: languageCode ?? 'ar'),
+                      ],
+                    ),
                   ),
-                  Obx(
+                ),
+                Expanded(
+                  child: Obx(
                     () => Text(
                       AudioCtrl.instance.state.currentAudioListSurahNum.value
                           .toString(),
                       style: TextStyle(
-                        color: style?.surahNameColor ?? Colors.black,
+                        color: textColor,
                         fontFamily: "surahName",
-                        fontSize: 42,
+                        fontSize: 42.sp.clamp(32, 42),
                         package: "quran_library",
                       ),
                       textAlign: TextAlign.center,
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _PanelHandle extends StatelessWidget {
+  final Color color;
+  const _PanelHandle({required this.color});
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 72,
+      height: 8,
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: BorderRadius.circular(8),
       ),
     );
   }

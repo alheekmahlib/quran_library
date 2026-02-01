@@ -2,22 +2,18 @@ part of '/quran.dart';
 
 class BuildTopSection extends StatelessWidget {
   final bool isRight;
-  final Widget? topTitleChild;
-  final String? surahName;
-  final String? juzName;
   final String? languageCode;
   final bool isSurah;
   final int pageIndex;
+  final int? surahNumber;
 
   BuildTopSection({
     super.key,
     required this.isRight,
-    this.topTitleChild,
-    this.surahName,
-    this.juzName,
     this.languageCode,
     this.isSurah = false,
     required this.pageIndex,
+    this.surahNumber = 0,
   });
 
   final surahCtrl = SurahCtrl.instance;
@@ -25,77 +21,111 @@ class BuildTopSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
+    final topBottomStyle = TopBottomTheme.of(context)?.style ??
+        TopBottomQuranStyle.defaults(isDark: isDark, context: context);
+    final Color juzColor =
+        topBottomStyle.juzTextColor ?? const Color(0xff77554B);
+    final Color surahColor =
+        topBottomStyle.surahNameColor ?? const Color(0xff77554B);
+    final List<SurahModel> surah =
+        quranCtrl.getSurahsByPageNumber(pageIndex + 1);
+    final juz = quranCtrl.getJuzByPage(pageIndex);
+
+    final Widget? effectiveTopTitleChild = topBottomStyle.customChild;
+    final String effectiveJuzName = (topBottomStyle.juzName) ?? 'الجزء';
+    // final String? effectiveSurahName = topBottomStyle.surahName;
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: isRight
           ? Row(
               children: [
-                topTitleChild ?? const SizedBox.shrink(),
-                const SizedBox(width: 16),
+                effectiveTopTitleChild ?? const SizedBox.shrink(),
+                effectiveTopTitleChild != null
+                    ? const SizedBox(width: 16)
+                    : const SizedBox.shrink(),
                 Text(
-                  '${juzName ?? 'الجزء'}: ${quranCtrl.getJuzByPage(pageIndex).juz}'
-                      .convertNumbersAccordingToLang(
-                          languageCode: languageCode),
-                  style: _getTextStyle(context),
+                  '$effectiveJuzName: ${juz.juz}'.convertNumbersAccordingToLang(
+                      languageCode: languageCode),
+                  style: _getTextStyle(context, juzColor),
                 ),
                 const Spacer(),
-                surahName != null
+                isSurah
                     ? Text(
-                        surahName!,
-                        style: _getTextStyle(context),
+                        ' surah${(surahNumber).toString().padLeft(3, '0')} ',
+                        style: TextStyle(
+                          color: surahColor,
+                          letterSpacing: 5,
+                          fontFamily: "surah-name-v4",
+                          fontSize:
+                              UiHelper.currentOrientation(26.0, 32.0, context),
+                          package: "quran_library",
+                        ),
                       )
-                    : quranCtrl.getSurahsByPageNumber(pageIndex + 1).isNotEmpty
+                    : surah.isNotEmpty
                         ? Row(
                             children: List.generate(
-                                quranCtrl
-                                    .getSurahsByPageNumber(pageIndex + 1)
-                                    .length,
-                                (i) => Text(
-                                      ' ${quranCtrl.getSurahsByPageNumber(pageIndex + 1)[i].arabicName.replaceAll('سُورَةُ ', '')} ',
-                                      style: TextStyle(
-                                          fontSize: UiHelper.currentOrientation(
-                                              18.0, 22.0, context),
-                                          // fontWeight: FontWeight.bold,
-                                          fontFamily: 'naskh',
-                                          color: const Color(0xff77554B)),
-                                    )),
+                              surah.length,
+                              (i) => Text(
+                                ' surah${(surah[i].surahNumber).toString().padLeft(3, '0')} ',
+                                style: TextStyle(
+                                  color: surahColor,
+                                  letterSpacing: 5,
+                                  fontFamily: "surah-name-v4",
+                                  fontSize: UiHelper.currentOrientation(
+                                      26.0, 32.0, context),
+                                  package: "quran_library",
+                                ),
+                              ),
+                            ),
                           )
                         : const SizedBox.shrink(),
               ],
             )
           : Row(
               children: [
-                surahName != null
+                isSurah
                     ? Text(
-                        surahName!,
-                        style: _getTextStyle(context),
+                        ' surah${(surahNumber).toString().padLeft(3, '0')} ',
+                        style: TextStyle(
+                          color: surahColor,
+                          letterSpacing: 5,
+                          fontFamily: "surah-name-v4",
+                          fontSize:
+                              UiHelper.currentOrientation(26.0, 32.0, context),
+                          package: "quran_library",
+                        ),
                       )
-                    : quranCtrl.getSurahsByPageNumber(pageIndex + 1).isNotEmpty
+                    : surah.isNotEmpty
                         ? Row(
                             children: List.generate(
-                                quranCtrl
-                                    .getSurahsByPageNumber(pageIndex + 1)
-                                    .length,
-                                (i) => Text(
-                                      ' ${quranCtrl.getSurahsByPageNumber(pageIndex + 1)[i].arabicName.replaceAll('سُورَةُ ', '')} ',
-                                      style: TextStyle(
-                                          fontSize: UiHelper.currentOrientation(
-                                              18.0, 22.0, context),
-                                          // fontWeight: FontWeight.bold,
-                                          fontFamily: 'naskh',
-                                          color: const Color(0xff77554B)),
-                                    )),
+                              surah.length,
+                              (i) => Text(
+                                ' surah${(surah[i].surahNumber).toString().padLeft(3, '0')} ',
+                                style: TextStyle(
+                                  color: surahColor,
+                                  letterSpacing: 5,
+                                  fontFamily: "surah-name-v4",
+                                  fontSize: UiHelper.currentOrientation(
+                                      26.0, 32.0, context),
+                                  package: "quran_library",
+                                ),
+                              ),
+                            ),
                           )
                         : const SizedBox.shrink(),
                 const Spacer(),
                 Text(
-                  '${juzName ?? 'الجزء'}: ${quranCtrl.getJuzByPage(pageIndex).juz}'
+                  '$effectiveJuzName: ${quranCtrl.getJuzByPage(pageIndex).juz}'
                       .convertNumbersAccordingToLang(
                           languageCode: languageCode),
-                  style: _getTextStyle(context),
+                  style: _getTextStyle(context, juzColor),
                 ),
-                const SizedBox(width: 16),
-                topTitleChild ?? const SizedBox.shrink(),
+                effectiveTopTitleChild != null
+                    ? const SizedBox(width: 16)
+                    : const SizedBox.shrink(),
+                effectiveTopTitleChild ?? const SizedBox.shrink(),
               ],
             ),
     );
@@ -103,11 +133,11 @@ class BuildTopSection extends StatelessWidget {
 
   /// الحصول على نمط النص
   /// Get text style
-  TextStyle _getTextStyle(BuildContext context) {
+  TextStyle _getTextStyle(BuildContext context, Color color) {
     return TextStyle(
       fontSize: UiHelper.currentOrientation(18.0, 22.0, context),
       fontFamily: 'naskh',
-      color: const Color(0xff77554B),
+      color: color,
       package: 'quran_library',
     );
   }

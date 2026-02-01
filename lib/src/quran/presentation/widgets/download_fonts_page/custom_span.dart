@@ -1,229 +1,198 @@
 part of '/quran.dart';
 
-TextSpan _span({
-  required String text,
+Color? _ayahBackgroundColor({
+  required int ayahUQNum,
+  required bool isSelected,
+  required List<int> bookmarksAyahs,
+  required List<int> ayahBookmarked,
+  required Map<int, List<BookmarkModel>> bookmarks,
+  Color? bookmarksColor,
+  Color? ayahSelectedBackgroundColor,
+}) {
+  final allBookmarks = bookmarks.values.expand((list) => list).toList();
+  if (ayahBookmarked.contains(ayahUQNum)) return bookmarksColor;
+  if (bookmarksAyahs.contains(ayahUQNum)) {
+    return bookmarksColor ??
+        Color(
+          allBookmarks
+              .firstWhere(
+                (b) => b.ayahId == ayahUQNum,
+              )
+              .colorCode,
+        ).withValues(alpha: 0.3);
+  }
+  if (isSelected) {
+    return ayahSelectedBackgroundColor ??
+        const Color(0xffCDAD80).withValues(alpha: 0.25);
+  }
+  return null;
+}
+
+TextSpan _qpcV4SpanSegment({
+  required BuildContext context,
   required int pageIndex,
   required bool isSelected,
-  double? fontSize,
-  required int surahNum,
-  required int ayahNum,
-  required int ayahUQNum,
-  _LongPressStartDetailsFunction? onLongPressStart,
-  required bool isFirstAyah,
   required bool showAyahBookmarkedIcon,
-  required List? bookmarkList,
+  required double fontSize,
+  required int ayahUQNum,
+  required int ayahNumber,
+  required WordRef wordRef,
+  required bool isWordKhilaf,
+  required String glyphs,
+  required bool showAyahNumber,
+  _LongPressStartDetailsFunction? onLongPressStart,
   required Color? textColor,
   required Color? ayahIconColor,
   required Map<int, List<BookmarkModel>> bookmarks,
   required List<int> bookmarksAyahs,
+  required List<int> ayahBookmarked,
   Color? bookmarksColor,
   Color? ayahSelectedBackgroundColor,
   required bool isFontsLocal,
   required String fontsName,
-  required List<int> ayahBookmarked,
+  String? fontFamilyOverride,
+  String? fontPackageOverride,
+  bool usePaintColoring = true,
   required bool isDark,
 }) {
-  // if (bookmarkList!.isEmpty) {
-  //   bookmarkList = bookmarks as List<BookmarkModel>;
-  // }
-  // bool pageSpacing = pageIndex == 45 ||
-  //         pageIndex == 54 ||
-  //         pageIndex == 56 ||
-  //         pageIndex == 75 ||
-  //         pageIndex == 76 ||
-  //         pageIndex == 150 ||
-  //         pageIndex == 539
-  //     ? true
-  //     : false;
-  if (text.isNotEmpty) {
-    final String partOne =
-        text.length < 3 ? "${text[0]}\u200A" : "${text[0]}\u200A${text[1]}";
-    // final String partOne = pageSpacing
-    //     ? text.length < 3
-    //         ? ' ${text[0]}'
-    //         : ' ${text[0]} ${text[1]}'
-    //     : text.length < 3
-    //         ? text[0]
-    //         : '${text[0]}${text[1]}';
-    // final String partOne = pageIndex == 250
-    //     ? text.length < 3
-    //         ? text[0]
-    //         : text[0] + text[1]
-    //     : text.length < 3
-    //         ? text[0]
-    //         : text[0] + text[1];
-    final String? partTwo =
-        text.length > 2 ? text.substring(2, text.length - 1) : null;
-    final String initialPart = text.substring(0, text.length - 1);
-    final String lastCharacter = text.substring(text.length - 1);
-    final allBookmarks = bookmarks.values.expand((list) => list).toList();
-    final quranCtrl = QuranCtrl.instance;
-    ayahBookmarked.isEmpty
-        ? (bookmarksAyahs.contains(ayahUQNum) ? true : false)
-        : ayahBookmarked;
-    TextSpan? first;
-    TextSpan? second;
-    if (isFirstAyah) {
-      first = TextSpan(
-        text: partOne,
-        style: TextStyle(
-          fontFamily: isFontsLocal ? fontsName : 'p${(pageIndex + 2001)}',
-          fontSize: fontSize,
-          height: 2.1,
-          // letterSpacing: pageSpacing ? -5 : 30,
-          color: quranCtrl.state.fontsSelected.value == 1
-              ? textColor ?? Colors.transparent
-              : isDark
-                  ? Colors.white
-                  : Colors.black,
-          backgroundColor: ayahBookmarked.contains(ayahUQNum)
-              ? bookmarksColor
-              : (bookmarksAyahs.contains(ayahUQNum)
-                  ? bookmarksColor ??
-                      Color(allBookmarks
-                              .firstWhere(
-                                (b) => b.ayahId == ayahUQNum,
-                              )
-                              .colorCode)
-                          .withValues(alpha: 0.3)
-                  : isSelected
-                      ? ayahSelectedBackgroundColor ??
-                          const Color(0xffCDAD80).withValues(alpha: 0.25)
-                      : null),
-        ),
-        recognizer: LongPressGestureRecognizer(
-            duration: const Duration(milliseconds: 500))
-          ..onLongPressStart = onLongPressStart,
-      );
-      second = TextSpan(
-        text: partTwo,
-        style: TextStyle(
-          fontFamily: isFontsLocal ? fontsName : 'p${(pageIndex + 2001)}',
-          fontSize: fontSize,
-          height: 2.1,
-          // letterSpacing: 0,
-          // wordSpacing: wordSpacing + 10,
-          color: quranCtrl.state.fontsSelected.value == 1
-              ? textColor ?? Colors.transparent
-              : isDark
-                  ? Colors.white
-                  : Colors.black,
-          backgroundColor: ayahBookmarked.contains(ayahUQNum)
-              ? bookmarksColor
-              : (bookmarksAyahs.contains(ayahUQNum)
-                  ? bookmarksColor ??
-                      Color(allBookmarks
-                              .firstWhere(
-                                (b) => b.ayahId == ayahUQNum,
-                              )
-                              .colorCode)
-                          .withValues(alpha: 0.3)
-                  : isSelected
-                      ? ayahSelectedBackgroundColor ??
-                          const Color(0xffCDAD80).withValues(alpha: 0.25)
-                      : null),
-        ),
-        recognizer: LongPressGestureRecognizer(
-            duration: const Duration(milliseconds: 500))
-          ..onLongPressStart = onLongPressStart,
-      );
-    }
+  final quranCtrl = QuranCtrl.instance;
+  final wordInfoCtrl = WordInfoCtrl.instance;
+  final bg = _ayahBackgroundColor(
+    ayahUQNum: ayahUQNum,
+    isSelected: isSelected,
+    bookmarksAyahs: bookmarksAyahs,
+    ayahBookmarked: ayahBookmarked,
+    bookmarks: bookmarks,
+    bookmarksColor: bookmarksColor,
+    ayahSelectedBackgroundColor: ayahSelectedBackgroundColor,
+  );
 
-    final TextSpan initialTextSpan = TextSpan(
-      text: initialPart,
-      style: TextStyle(
-        fontFamily: isFontsLocal ? fontsName : 'p${(pageIndex + 2001)}',
-        fontSize: fontSize,
-        height: 2.1,
-        // letterSpacing: 0,
-        color: quranCtrl.state.fontsSelected.value == 1
-            ? textColor ?? Colors.transparent
+  final withTajweed = QuranCtrl.instance.state.isTajweedEnabled.value;
+  final isTenRecitations = WordInfoCtrl.instance.isTenRecitations;
+  final bool forceRed = isWordKhilaf && !withTajweed && isTenRecitations;
+  final bool isWordSelected = wordInfoCtrl.selectedWordRef.value == wordRef;
+  final Color selectedWordBg = isDark
+      ? Colors.white.withValues(alpha: 0.18)
+      : const Color(0xFFFFF59D).withValues(alpha: 0.65);
+
+  final fontFamily = fontFamilyOverride ??
+      (isFontsLocal ? fontsName : quranCtrl.getFontPath(pageIndex));
+
+  final baseTextStyle = TextStyle(
+    fontFamily: fontFamily,
+    package: fontPackageOverride,
+    fontSize: fontSize,
+    height: !usePaintColoring ? 1.7.h : 2.0,
+    wordSpacing: usePaintColoring ? -2 : 0,
+    backgroundColor: bg ?? (isWordSelected ? selectedWordBg : null),
+    // decoration: isWordSelected ? TextDecoration.underline : null,
+    // decorationColor:
+    //     forceRed ? Colors.red : (textColor ?? AppColors.getTextColor(isDark)),
+    // decorationThickness: isWordSelected ? 2.0 : null,
+    // shadows: [
+    //   Shadow(
+    //     blurRadius: 0.5,
+    //     color: quranCtrl.state.isBold.value == false
+    //         ? (textColor ?? (isDark ? Colors.white : Colors.black))
+    //             .withValues(alpha: 0.5)
+    //         : Colors.transparent,
+    //     offset: const Offset(0.5, 0.5),
+    //   ),
+    // ],
+    color: (!usePaintColoring)
+        ? (forceRed
+            ? Colors.red
+            : (textColor ?? AppColors.getTextColor(isDark)))
+        : null,
+    foreground: (usePaintColoring)
+        ? (withTajweed
+            ? isDark
+                ? (Paint()
+                  ..color = Colors.white
+                  //exclusion or difference
+                  ..blendMode = BlendMode.exclusion)
+                : (Paint()
+                  ..color = Colors.black
+                  ..blendMode = BlendMode.srcATop)
             : isDark
-                ? Colors.white
-                : Colors.black,
-        backgroundColor: ayahBookmarked.contains(ayahUQNum)
-            ? bookmarksColor
-            : (bookmarksAyahs.contains(ayahUQNum)
-                ? bookmarksColor ??
-                    Color(allBookmarks
-                            .firstWhere(
-                              (b) => b.ayahId == ayahUQNum,
-                            )
-                            .colorCode)
-                        .withValues(alpha: 0.3)
-                : isSelected
-                    ? ayahSelectedBackgroundColor ??
-                        const Color(0xffCDAD80).withValues(alpha: 0.25)
-                    : null),
-      ),
-      recognizer: LongPressGestureRecognizer(
-          duration: const Duration(milliseconds: 500))
-        ..onLongPressStart = onLongPressStart,
-    );
+                ? (Paint()
+                  ..color = Colors.white
+                  ..colorFilter = ColorFilter.mode(
+                      forceRed ? Colors.red : Colors.white, BlendMode.srcATop))
+                : (Paint()
+                  ..color = Colors.black
+                  ..colorFilter = ColorFilter.mode(
+                      forceRed ? Colors.red : Colors.black, BlendMode.srcATop)))
+        : null,
+  );
 
-    var lastCharacterSpan = (ayahBookmarked.contains(ayahUQNum) ||
-                bookmarksAyahs.contains(ayahUQNum)) &&
-            showAyahBookmarkedIcon
+  InlineSpan? tail;
+  final hasBookmark =
+      ayahBookmarked.contains(ayahUQNum) || bookmarksAyahs.contains(ayahUQNum);
+  if (showAyahNumber) {
+    tail = hasBookmark && showAyahBookmarkedIcon && !kIsWeb
         ? WidgetSpan(
             alignment: PlaceholderAlignment.middle,
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: SvgPicture.asset(
                 AssetsPath.assets.ayahBookmarked,
-                height: 100,
-                width: 100,
+                height: 140,
+                width: 140,
               ),
-            ))
+            ),
+          )
         : TextSpan(
-            text: lastCharacter,
+            text: usePaintColoring
+                ? '${'$ayahNumber'.convertEnglishNumbersToArabic(ayahNumber.toString())}\u202F\u202F'
+                : '\u202F${'$ayahNumber'.convertEnglishNumbersToArabic(ayahNumber.toString())}\u202F',
             style: TextStyle(
-              fontFamily: isFontsLocal ? fontsName : 'p${(pageIndex + 2001)}',
-              fontSize: fontSize,
-              height: 2.1,
-              // letterSpacing: isFirstAyah &&
-              //     (pageIndex == 1 ||
-              //         pageIndex == 49 ||
-              //         pageIndex == 476 ||
-              //         pageIndex == 482 ||
-              //         pageIndex == 495 ||
-              //         pageIndex == 498)
-              // ? 20
-              // : null,
-              color: ayahIconColor ?? (isDark ? Colors.white : Colors.black),
-              backgroundColor: ayahBookmarked.contains(ayahUQNum)
-                  ? bookmarksColor
-                  : (bookmarksAyahs.contains(ayahUQNum)
-                      ? bookmarksColor ??
-                          Color(allBookmarks
-                                  .firstWhere(
-                                    (b) => b.ayahId == ayahUQNum,
-                                  )
-                                  .colorCode)
-                              .withValues(alpha: 0.3)
-                      : isSelected
-                          ? ayahSelectedBackgroundColor ??
-                              const Color(0xffCDAD80).withValues(alpha: 0.25)
-                          : null),
+              fontFamily: 'ayahNumber',
+              fontSize: usePaintColoring ? (fontSize + 5) : (fontSize + 5),
+              height: 1.5,
+              package: 'quran_library',
+              color: ayahIconColor ?? Theme.of(context).colorScheme.primary,
+              backgroundColor: bg,
             ),
             recognizer: LongPressGestureRecognizer(
                 duration: const Duration(milliseconds: 500))
               ..onLongPressStart = onLongPressStart,
           );
-
-    return TextSpan(
-      children: isFirstAyah
-          ? [first!, second!, lastCharacterSpan]
-          : [initialTextSpan, lastCharacterSpan],
-      recognizer: LongPressGestureRecognizer(
-          duration: const Duration(milliseconds: 500))
-        ..onLongPressStart = onLongPressStart,
-    );
-  } else {
-    return const TextSpan(text: '');
   }
+
+  final recognizer = TapLongPressRecognizer(
+    shortHoldDuration: const Duration(milliseconds: 250),
+    longHoldDuration: const Duration(milliseconds: 500),
+  )
+    ..onShortHoldStartCallback = () {
+      wordInfoCtrl.setSelectedWord(wordRef);
+    }
+    ..onShortHoldCompleteCallback = () {
+      () async {
+        await showWordInfoBottomSheet(
+            context: context, ref: wordRef, isDark: isDark);
+        wordInfoCtrl.clearSelectedWord();
+      }();
+    }
+    ..onLongHoldStartCallback = (details) {
+      wordInfoCtrl.clearSelectedWord();
+      onLongPressStart?.call(details);
+    };
+
+  return TextSpan(
+    children: <InlineSpan>[
+      TextSpan(
+        text: glyphs,
+        style: baseTextStyle,
+        recognizer: recognizer,
+      ),
+      if (tail != null) tail,
+    ],
+  );
 }
 
 TextSpan _customSpan({
+  required BuildContext context,
   required String text,
   required int pageIndex,
   required bool isSelected,
@@ -257,7 +226,7 @@ TextSpan _customSpan({
             fontFamily: 'hafs',
             fontSize: fontSize,
             height: 2.1,
-            color: textColor ?? (isDark ? Colors.white : Colors.black),
+            color: textColor ?? (AppColors.getTextColor(isDark)),
             backgroundColor: hasBookmark
                 ? bookmarksColor
                 : (bookmarksAyahs.contains(ayahUQNum)
@@ -286,19 +255,17 @@ TextSpan _customSpan({
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
                   child: SvgPicture.asset(
                     AssetsPath.assets.ayahBookmarked,
-                    height: 35,
+                    height: fontSize,
                   ),
                 ))
             : TextSpan(
-                text: ayahNumber
-                    .toString()
+                text: ' $ayahNumber '
                     .convertNumbersAccordingToLang(languageCode: languageCode),
                 style: TextStyle(
-                  fontFamily: 'hafs',
+                  fontFamily: 'ayahNumber',
                   fontSize: fontSize,
                   height: 2.1,
-                  color:
-                      ayahIconColor ?? (isDark ? Colors.white : Colors.black),
+                  color: ayahIconColor ?? Theme.of(context).colorScheme.primary,
                   backgroundColor: hasBookmark
                       ? bookmarksColor
                       : (bookmarksAyahs.contains(ayahUQNum)

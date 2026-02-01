@@ -4,19 +4,29 @@ class BuildBottomSection extends StatelessWidget {
   BuildBottomSection({
     super.key,
     required this.pageIndex,
-    required this.sajdaName,
     required this.isRight,
     required this.languageCode,
   });
 
   final bool isRight;
   final int pageIndex;
-  final String? sajdaName;
   final String languageCode;
   final quranCtrl = QuranCtrl.instance;
 
   @override
   Widget build(BuildContext context) {
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
+    final topBottomStyle = TopBottomTheme.of(context)?.style ??
+        TopBottomQuranStyle.defaults(isDark: isDark, context: context);
+    final String effectiveSajdaName = (topBottomStyle.sajdaName) ?? 'سجدة';
+    final String effectiveHizbName = topBottomStyle.hizbName ?? 'الحزب';
+    final Color hizbColor =
+        topBottomStyle.hizbTextColor ?? const Color(0xff77554B);
+    final Color pageNumberColor =
+        topBottomStyle.pageNumberColor ?? const Color(0xff77554B);
+    final Color sajdaNameColor =
+        topBottomStyle.sajdaNameColor ?? const Color(0xff77554B);
+
     return isRight
         ? Stack(
             alignment: Alignment.center,
@@ -30,9 +40,10 @@ class BuildBottomSection extends StatelessWidget {
                   child: Text(
                     quranCtrl
                         .getHizbQuarterDisplayByPage(pageIndex + 1)
+                        .replaceAll('الحزب', effectiveHizbName)
                         .convertNumbersAccordingToLang(
                             languageCode: languageCode),
-                    style: _getTextStyle(context),
+                    style: _getTextStyle(context, hizbColor),
                   ),
                 ),
               ),
@@ -44,7 +55,7 @@ class BuildBottomSection extends StatelessWidget {
                 child: Text(
                   '${pageIndex + 1}'.convertNumbersAccordingToLang(
                       languageCode: languageCode),
-                  style: _getPageNumberStyle(context),
+                  style: _getPageNumberStyle(context, pageNumberColor),
                 ),
               ),
 
@@ -54,7 +65,8 @@ class BuildBottomSection extends StatelessWidget {
                 alignment: Alignment.bottomLeft,
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: showSajda(context, pageIndex, sajdaName ?? 'سجدة'),
+                  child: showSajda(
+                      context, pageIndex, effectiveSajdaName, sajdaNameColor),
                 ),
               ),
             ],
@@ -66,7 +78,8 @@ class BuildBottomSection extends StatelessWidget {
                 alignment: Alignment.bottomRight,
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: showSajda(context, pageIndex, sajdaName ?? 'سجدة'),
+                  child: showSajda(
+                      context, pageIndex, effectiveSajdaName, sajdaNameColor),
                 ),
               ),
 
@@ -77,7 +90,7 @@ class BuildBottomSection extends StatelessWidget {
                 child: Text(
                   '${pageIndex + 1}'.convertNumbersAccordingToLang(
                       languageCode: languageCode),
-                  style: _getPageNumberStyle(context),
+                  style: _getPageNumberStyle(context, pageNumberColor),
                 ),
               ),
 
@@ -90,9 +103,10 @@ class BuildBottomSection extends StatelessWidget {
                   child: Text(
                     quranCtrl
                         .getHizbQuarterDisplayByPage(pageIndex + 1)
+                        .replaceAll('الحزب', effectiveHizbName)
                         .convertNumbersAccordingToLang(
                             languageCode: languageCode),
-                    style: _getTextStyle(context),
+                    style: _getTextStyle(context, hizbColor),
                   ),
                 ),
               ),
@@ -102,22 +116,22 @@ class BuildBottomSection extends StatelessWidget {
 
   /// الحصول على نمط رقم الصفحة
   /// Get page number style
-  TextStyle _getPageNumberStyle(BuildContext context) {
+  TextStyle _getPageNumberStyle(BuildContext context, Color color) {
     return TextStyle(
       fontSize: UiHelper.currentOrientation(20.0, 22.0, context),
       fontFamily: 'naskh',
-      color: const Color(0xff77554B),
+      color: color,
       package: 'quran_library',
     );
   }
 
   /// الحصول على نمط النص
   /// Get text style
-  TextStyle _getTextStyle(BuildContext context) {
+  TextStyle _getTextStyle(BuildContext context, Color color) {
     return TextStyle(
       fontSize: UiHelper.currentOrientation(18.0, 22.0, context),
       fontFamily: 'naskh',
-      color: const Color(0xff77554B),
+      color: color,
       package: 'quran_library',
     );
   }

@@ -1,15 +1,13 @@
 part of '/quran.dart';
 
-class RichTextBuild extends StatelessWidget {
-  const RichTextBuild({
+class QpcV4RichTextLine extends StatelessWidget {
+  const QpcV4RichTextLine({
     super.key,
     required this.pageIndex,
     required this.textColor,
     required this.isDark,
     required this.bookmarks,
     required this.onAyahLongPress,
-    required this.secondMenuChild,
-    required this.secondMenuChildOnTap,
     required this.bookmarkList,
     required this.ayahIconColor,
     required this.showAyahBookmarkedIcon,
@@ -18,12 +16,15 @@ class RichTextBuild extends StatelessWidget {
     required this.ayahSelectedBackgroundColor,
     required this.context,
     required this.quranCtrl,
-    required this.ayahs,
+    required this.segments,
     required this.isFontsLocal,
     required this.fontsName,
+    this.fontFamilyOverride,
+    this.fontPackageOverride,
+    this.usePaintColoring = true,
+    this.useHafsSizing = false,
     required this.ayahBookmarked,
-    required this.anotherMenuChild,
-    required this.anotherMenuChildOnTap,
+    required this.isCentered,
   });
 
   final int pageIndex;
@@ -32,8 +33,6 @@ class RichTextBuild extends StatelessWidget {
   final Map<int, List<BookmarkModel>> bookmarks;
   final Function(LongPressStartDetails details, AyahModel ayah)?
       onAyahLongPress;
-  final Widget? secondMenuChild;
-  final void Function(AyahModel ayah)? secondMenuChildOnTap;
   final List? bookmarkList;
   final Color? ayahIconColor;
   final bool showAyahBookmarkedIcon;
@@ -42,126 +41,157 @@ class RichTextBuild extends StatelessWidget {
   final Color? ayahSelectedBackgroundColor;
   final BuildContext context;
   final QuranCtrl quranCtrl;
-  final List<AyahModel> ayahs;
+  final List<QpcV4WordSegment> segments;
   final bool isFontsLocal;
   final String fontsName;
+  final String? fontFamilyOverride;
+  final String? fontPackageOverride;
+  final bool usePaintColoring;
+  final bool useHafsSizing;
   final List<int> ayahBookmarked;
-  final Widget? anotherMenuChild;
-  final Function(AyahModel ayah)? anotherMenuChildOnTap;
+  final bool isCentered;
 
   @override
   Widget build(BuildContext context) {
-    // شرح: تحسين RichText بإضافة خصائص الأداء
-    // Explanation: Optimize RichText by adding performance properties
-    return Obx(
-      () => RichText(
+    final bookmarksSet = bookmarksAyahs.toSet();
+    final wordInfoCtrl = WordInfoCtrl.instance;
+
+    // بعد تحميل بيانات القراءات، نحاول تهيئة سور هذه السطر بالخلفية.
+    // ملاحظة: استخدمنا prewarm مجمّع + حارس لتجنب تكرار الاستدعاءات أثناء build.
+    if (wordInfoCtrl.isKindAvailable(WordInfoKind.recitations)) {
+      final surahs = segments.map((s) => s.surahNumber);
+      Future(() => wordInfoCtrl.prewarmRecitationsSurahs(surahs));
+    }
+
+    return GetBuilder<QuranCtrl>(
+      id: 'selection_page_',
+      builder: (_) => LayoutBuilder(
+        builder: (ctx, constraints) {
+          /// TODO: هنا يتم ضبط حجم الخط.
+          final fs = useHafsSizing
+                  ? 100.0
+                  //  PageFontSizeHelper.getFontSize(
+                  //       pageIndex,
+                  //       ctx,
+                  //     ) -
+                  //     4
+                  : PageFontSizeHelper.getFontSize(
+                      pageIndex,
+                      ctx,
+                    )
+              //     :
+              //     PageFontSizeHelper.qcfFontSize(
+              //   context: ctx,
+              //   pageIndex: pageIndex,
+              //   maxWidth: constraints.maxWidth,
+              // )
+              ;
+
+          return GetBuilder<WordInfoCtrl>(
+            id: 'word_info_data',
+            builder: (_) {
+              return _richTextBuild(wordInfoCtrl, context, fs, bookmarksSet);
+            },
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _richTextBuild(WordInfoCtrl wordInfoCtrl, BuildContext context,
+      double fs, Set<int> bookmarksSet) {
+    /// TODO: وهنا يتم وضع الـ FittedBox لوضع النص على حسب حجم الشاشة.
+    return FittedBox(
+      fit: BoxFit.fitWidth,
+      child: RichText(
         textDirection: TextDirection.rtl,
-        textAlign: TextAlign.center,
-        // شرح: تحسين أداء النص للنصوص الطويلة
-        // Explanation: Optimize text performance for long texts
+        textAlign: isCentered ? TextAlign.center : TextAlign.justify,
         softWrap: true,
         overflow: TextOverflow.visible,
         maxLines: null,
         text: TextSpan(
-          style: TextStyle(
-            fontFamily: isFontsLocal ? fontsName : 'p${(pageIndex + 2001)}',
-            fontSize: 100,
-            height: 1.7,
-            letterSpacing: 2,
-            shadows: [
-              Shadow(
-                blurRadius: 0.5,
-                color: quranCtrl.state.isBold.value == 0
-                    ? textColor ?? (isDark ? Colors.white : Colors.black)
-                    : Colors.transparent,
-                offset: const Offset(0.5, 0.5),
-              ),
-            ],
-          ),
-          children: List.generate(ayahs.length, (ayahIndex) {
-            quranCtrl.selectedAyahsByUnequeNumber
-                .contains(ayahs[ayahIndex].ayahUQNumber);
-            final allBookmarks =
-                bookmarks.values.expand((list) => list).toList();
-            bool isFirstAyah = ayahIndex == 0 &&
-                (ayahs[ayahIndex].ayahNumber != 1 ||
-                    quranCtrl._startSurahsNumbers.contains(quranCtrl
-                        .getSurahDataByAyah(ayahs[ayahIndex])
-                        .surahNumber));
-            String text = isFirstAyah
-                ? '${ayahs[ayahIndex].codeV2![0]}${ayahs[ayahIndex].codeV2!.substring(1)}'
-                : ayahs[ayahIndex].codeV2!;
-            return _span(
-              isFirstAyah: isFirstAyah,
-              text: text,
-              isDark: isDark,
+          children: List.generate(segments.length, (segmentIndex) {
+            final seg = segments[segmentIndex];
+            final uq = seg.ayahUq;
+            final isSelectedCombined =
+                quranCtrl.selectedAyahsByUnequeNumber.contains(uq) ||
+                    quranCtrl.externallyHighlightedAyahs.contains(uq);
+
+            final ref = WordRef(
+              surahNumber: seg.surahNumber,
+              ayahNumber: seg.ayahNumber,
+              wordNumber: seg.wordNumber,
+            );
+
+            final info = wordInfoCtrl.getRecitationsInfoSync(ref);
+            final hasKhilaf = info?.hasKhilaf ?? false;
+
+            return _qpcV4SpanSegment(
+              context: context,
               pageIndex: pageIndex,
-              isSelected: quranCtrl.selectedAyahsByUnequeNumber
-                  .contains(ayahs[ayahIndex].ayahUQNumber),
-              fontSize: 100,
-              surahNum: quranCtrl
-                  .getCurrentSurahByPageNumber(pageIndex + 1)
-                  .surahNumber,
-              ayahUQNum: ayahs[ayahIndex].ayahUQNumber,
-              ayahNum: ayahs[ayahIndex].ayahNumber,
-              ayahBookmarked: ayahBookmarked,
+              isSelected: isSelectedCombined,
+              showAyahBookmarkedIcon: showAyahBookmarkedIcon,
+              fontSize: fs,
+              ayahUQNum: uq,
+              ayahNumber: seg.ayahNumber,
+              glyphs: seg.glyphs,
+              showAyahNumber: seg.isAyahEnd,
+              wordRef: ref,
+              isWordKhilaf: hasKhilaf,
               onLongPressStart: (details) {
+                final ayahModel = quranCtrl.getAyahByUq(uq);
+
                 if (onAyahLongPress != null) {
-                  onAyahLongPress!(details, ayahs[ayahIndex]);
-                  quranCtrl.toggleAyahSelection(ayahs[ayahIndex].ayahUQNumber);
-                  quranCtrl.state.overlayEntry?.remove();
-                  quranCtrl.state.overlayEntry = null;
-                } else {
-                  final bookmarkId = allBookmarks.any((bookmark) =>
-                          bookmark.ayahId == ayahs[ayahIndex].ayahUQNumber)
-                      ? allBookmarks
-                          .firstWhere((bookmark) =>
-                              bookmark.ayahId == ayahs[ayahIndex].ayahUQNumber)
-                          .id
-                      : null;
-                  if (bookmarkId != null) {
-                    BookmarksCtrl.instance.removeBookmark(bookmarkId);
-                  } else {
-                    quranCtrl
-                        .toggleAyahSelection(ayahs[ayahIndex].ayahUQNumber);
-                    quranCtrl.state.overlayEntry?.remove();
-                    quranCtrl.state.overlayEntry = null;
+                  onAyahLongPress!(details, ayahModel);
+                  quranCtrl.toggleAyahSelection(uq);
+                  quranCtrl.state.isShowMenu.value = false;
+                  return;
+                }
 
-                    // إنشاء OverlayEntry جديد
-                    final overlay = Overlay.of(context);
-                    final newOverlayEntry = OverlayEntry(
-                      builder: (context) => AyahLongClickDialog(
-                        context: context,
-                        isDark: isDark,
-                        ayah: ayahs[ayahIndex],
-                        position: details.globalPosition,
-                        index: ayahIndex,
-                        pageIndex: pageIndex,
-                        anotherMenuChild: anotherMenuChild,
-                        anotherMenuChildOnTap: anotherMenuChildOnTap,
-                        secondMenuChild: secondMenuChild,
-                        secondMenuChildOnTap: secondMenuChildOnTap,
-                      ),
-                    );
-
-                    quranCtrl.state.overlayEntry = newOverlayEntry;
-
-                    // إدخال OverlayEntry في Overlay
-                    overlay.insert(newOverlayEntry);
+                int? bookmarkId;
+                for (final b in bookmarks.values.expand((list) => list)) {
+                  if (b.ayahId == uq) {
+                    bookmarkId = b.id;
+                    break;
                   }
                 }
+
+                if (bookmarkId != null) {
+                  BookmarksCtrl.instance.removeBookmark(bookmarkId);
+                  return;
+                }
+
+                if (quranCtrl.isMultiSelectMode.value) {
+                  quranCtrl.toggleAyahSelectionMulti(uq);
+                } else {
+                  quranCtrl.toggleAyahSelection(uq);
+                }
+                quranCtrl.state.isShowMenu.value = false;
+
+                final themedTafsirStyle = TafsirTheme.of(context)?.style;
+                showAyahMenuDialog(
+                  context: context,
+                  isDark: isDark,
+                  ayah: ayahModel,
+                  position: details.globalPosition,
+                  index: segmentIndex,
+                  pageIndex: pageIndex,
+                  externalTafsirStyle: themedTafsirStyle,
+                );
               },
-              bookmarkList: bookmarkList,
-              textColor: textColor ?? (isDark ? Colors.white : Colors.black),
-              ayahIconColor:
-                  ayahIconColor ?? (isDark ? Colors.white : Colors.black),
-              showAyahBookmarkedIcon: showAyahBookmarkedIcon,
+              textColor: textColor ?? (AppColors.getTextColor(isDark)),
+              ayahIconColor: ayahIconColor,
               bookmarks: bookmarks,
-              bookmarksAyahs: bookmarksAyahs,
+              bookmarksAyahs: bookmarksSet.toList(),
               bookmarksColor: bookmarksColor,
               ayahSelectedBackgroundColor: ayahSelectedBackgroundColor,
               isFontsLocal: isFontsLocal,
               fontsName: fontsName,
+              fontFamilyOverride: fontFamilyOverride,
+              fontPackageOverride: fontPackageOverride,
+              usePaintColoring: usePaintColoring,
+              ayahBookmarked: ayahBookmarked,
+              isDark: isDark,
             );
           }),
         ),

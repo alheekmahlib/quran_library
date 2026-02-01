@@ -82,7 +82,7 @@ TextSpan _qpcV4SpanSegment({
     fontFamily: fontFamily,
     package: fontPackageOverride,
     fontSize: fontSize,
-    height: 2.0,
+    height: !usePaintColoring ? 1.7.h : 2.0,
     wordSpacing: usePaintColoring ? -2 : 0,
     backgroundColor: bg ?? (isWordSelected ? selectedWordBg : null),
     // decoration: isWordSelected ? TextDecoration.underline : null,

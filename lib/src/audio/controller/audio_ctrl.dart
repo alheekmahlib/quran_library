@@ -30,11 +30,11 @@ class AudioCtrl extends GetxController {
       _addDownloadedSurahToPlaylist(),
       _updateDownloadedAyahsMap(),
     ]);
-    getAyahUQNumber(QuranCtrl.instance.state.currentPageNumber.value - 1);
+    // getAyahUQNumber(QuranCtrl.instance.state.currentPageNumber.value - 1);
 
-    ever(QuranCtrl.instance.state.currentPageNumber, (pageNumber) {
-      getAyahUQNumber(pageNumber - 1);
-    });
+    // ever(QuranCtrl.instance.state.currentPageNumber, (pageNumber) {
+    //   getAyahUQNumber(pageNumber - 1);
+    // });
 
     state.surahsPlayList = List.generate(114, (i) {
       state.selectedSurahIndex.value = i;

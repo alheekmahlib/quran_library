@@ -83,7 +83,7 @@ class PageBuild extends StatelessWidget {
                 b.surahNumber,
                 bannerStyle: bannerStyle ??
                     BannerStyle().copyWith(
-                      bannerSvgHeight: 45,
+                      bannerSvgHeight: 40,
                     ),
                 surahNameStyle: surahNameStyle ??
                     SurahNameStyle(

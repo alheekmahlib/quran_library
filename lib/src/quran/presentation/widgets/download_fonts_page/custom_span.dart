@@ -85,45 +85,39 @@ TextSpan _qpcV4SpanSegment({
     height: !usePaintColoring ? 1.7.h : 2.0,
     wordSpacing: usePaintColoring ? -2 : 0,
     backgroundColor: bg ?? (isWordSelected ? selectedWordBg : null),
-    // decoration: isWordSelected ? TextDecoration.underline : null,
-    // decorationColor:
-    //     forceRed ? Colors.red : (textColor ?? AppColors.getTextColor(isDark)),
-    // decorationThickness: isWordSelected ? 2.0 : null,
-    // shadows: [
-    //   Shadow(
-    //     blurRadius: 0.5,
-    //     color: quranCtrl.state.isBold.value == false
-    //         ? (textColor ?? (isDark ? Colors.white : Colors.black))
-    //             .withValues(alpha: 0.5)
-    //         : Colors.transparent,
-    //     offset: const Offset(0.5, 0.5),
-    //   ),
-    // ],
+    fontVariations: const [
+      FontVariation('CPAL', 1), // تغيير palette index
+    ],
     color: (!usePaintColoring)
         ? (forceRed
             ? Colors.red
             : (textColor ?? AppColors.getTextColor(isDark)))
         : null,
-    foreground: (usePaintColoring)
-        ? (withTajweed
-            ? isDark
-                ? (Paint()
-                  ..color = Colors.white
-                  //exclusion or difference
-                  ..blendMode = BlendMode.exclusion)
-                : (Paint()
-                  ..color = Colors.black
-                  ..blendMode = BlendMode.srcATop)
-            : isDark
-                ? (Paint()
-                  ..color = Colors.white
-                  ..colorFilter = ColorFilter.mode(
-                      forceRed ? Colors.red : Colors.white, BlendMode.srcATop))
-                : (Paint()
-                  ..color = Colors.black
-                  ..colorFilter = ColorFilter.mode(
-                      forceRed ? Colors.red : Colors.black, BlendMode.srcATop)))
-        : null,
+    // foreground: withTajweed && !forceRed
+    //     ? null
+    //     : (Paint()
+    //       ..colorFilter = ColorFilter.mode(
+    //           forceRed ? Colors.red : AppColors.getTextColor(isDark),
+    //           BlendMode.srcATop))
+    // (usePaintColoring)
+    //     ? (withTajweed
+    //         ? isDark
+    //             ? (Paint()
+    //               ..blendMode = BlendMode.srcATop
+    //               ..invertColors = true)
+    //             : (Paint()
+    //               ..color = Colors.black
+    //               ..blendMode = BlendMode.srcATop)
+    //         : isDark
+    //             ? (Paint()
+    //               ..colorFilter = ColorFilter.mode(
+    //                   forceRed ? Colors.red : Colors.white, BlendMode.srcATop))
+    //             : (Paint()
+    //               // ..color = Colors.black
+    //               // ..blendMode = BlendMode.srcATop
+    //               ..colorFilter = ColorFilter.mode(
+    //                   forceRed ? Colors.red : Colors.black, BlendMode.srcATop)))
+    //     : null,
   );
 
   InlineSpan? tail;

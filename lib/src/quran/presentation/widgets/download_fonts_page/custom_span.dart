@@ -79,46 +79,41 @@ TextSpan _qpcV4SpanSegment({
       (isFontsLocal ? fontsName : quranCtrl.getFontPath(pageIndex));
 
   final baseTextStyle = TextStyle(
-    fontFamily: fontFamily,
-    package: fontPackageOverride,
-    fontSize: fontSize,
-    height: !usePaintColoring ? 1.7.h : 2.0,
-    wordSpacing: usePaintColoring ? -2 : 0,
-    backgroundColor: bg ?? (isWordSelected ? selectedWordBg : null),
-    fontVariations: const [
-      FontVariation('CPAL', 1), // تغيير palette index
-    ],
-    color: (!usePaintColoring)
-        ? (forceRed
-            ? Colors.red
-            : (textColor ?? AppColors.getTextColor(isDark)))
-        : null,
-    // foreground: withTajweed && !forceRed
-    //     ? null
-    //     : (Paint()
-    //       ..colorFilter = ColorFilter.mode(
-    //           forceRed ? Colors.red : AppColors.getTextColor(isDark),
-    //           BlendMode.srcATop))
-    // (usePaintColoring)
-    //     ? (withTajweed
-    //         ? isDark
-    //             ? (Paint()
-    //               ..blendMode = BlendMode.srcATop
-    //               ..invertColors = true)
-    //             : (Paint()
-    //               ..color = Colors.black
-    //               ..blendMode = BlendMode.srcATop)
-    //         : isDark
-    //             ? (Paint()
-    //               ..colorFilter = ColorFilter.mode(
-    //                   forceRed ? Colors.red : Colors.white, BlendMode.srcATop))
-    //             : (Paint()
-    //               // ..color = Colors.black
-    //               // ..blendMode = BlendMode.srcATop
-    //               ..colorFilter = ColorFilter.mode(
-    //                   forceRed ? Colors.red : Colors.black, BlendMode.srcATop)))
-    //     : null,
-  );
+      fontFamily: fontFamily,
+      package: fontPackageOverride,
+      fontSize: fontSize,
+      height: !usePaintColoring ? 1.7.h : 2.0,
+      wordSpacing: usePaintColoring ? -2 : 0,
+      backgroundColor: bg ?? (isWordSelected ? selectedWordBg : null),
+      color: (forceRed
+          ? Colors.red
+          : (textColor ?? AppColors.getTextColor(isDark)))
+      // foreground: withTajweed && !forceRed
+      //     ? null
+      //     : (Paint()
+      //       ..colorFilter = ColorFilter.mode(
+      //           forceRed ? Colors.red : AppColors.getTextColor(isDark),
+      //           BlendMode.srcATop))
+      // (usePaintColoring)
+      //     ? (withTajweed
+      //         ? isDark
+      //             ? (Paint()
+      //               ..blendMode = BlendMode.srcATop
+      //               ..invertColors = true)
+      //             : (Paint()
+      //               ..color = Colors.black
+      //               ..blendMode = BlendMode.srcATop)
+      //         : isDark
+      //             ? (Paint()
+      //               ..colorFilter = ColorFilter.mode(
+      //                   forceRed ? Colors.red : Colors.white, BlendMode.srcATop))
+      //             : (Paint()
+      //               // ..color = Colors.black
+      //               // ..blendMode = BlendMode.srcATop
+      //               ..colorFilter = ColorFilter.mode(
+      //                   forceRed ? Colors.red : Colors.black, BlendMode.srcATop)))
+      //     : null,
+      );
 
   InlineSpan? tail;
   final hasBookmark =

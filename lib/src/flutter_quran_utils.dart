@@ -60,9 +60,9 @@ class QuranLibrary {
             ?.cast<int>() ??
         []);
 
-    if (!kIsWeb) {
-      QuranCtrl.instance.deleteOldFonts();
-    }
+    // if (!kIsWeb) {
+    //   QuranCtrl.instance.deleteOldFonts();
+    // }
 
     // Load data in parallel
     final futures = <Future<void>>[

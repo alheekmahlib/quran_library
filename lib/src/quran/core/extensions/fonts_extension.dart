@@ -15,43 +15,51 @@ extension FontsExtension on QuranCtrl {
 
   // bool get _isTajweed => _activeRecitation == QuranRecitation.hafsMushafTajweed;
 
+  static const _fontsZipUrlWOFF =
+      'https://github.com/alheekmahlib/Islamic_database/releases/download/tajweed_fonts/woff.zip';
+  static const _fontsZipUrlTTF =
+      'https://github.com/alheekmahlib/Islamic_database/releases/download/tajweed_fonts/ttf.zip';
+  static const _fontsFolderPathWOFF = '/qcf4_woff/qcf4_woff';
+  static const _fontsFolderPathTTF = '/qcf4_ttf/qcf4_ttf';
+
   bool get _requiresDownloadedFonts => _activeRecitation.requiresDownload;
 
   /// جذر مجلد الخطوط بعد فك الضغط (غير الويب)
   Directory _fontsRootDirForIndex(int fontIndex) {
     // 1: qcf4 (مصحف) | 2: tajweed
     if (isPhones) {
-      return Directory('${_dir.path}/woff');
+      return Directory('${_dir.path}$_fontsFolderPathWOFF');
     }
-    return Directory('${_dir.path}/ttf');
+    return Directory('${_dir.path}$_fontsFolderPathTTF');
   }
 
   String getFontFullPath(Directory appDir, int pageIndex) {
     // ملاحظة: ملفات التجويد داخل zip تأتي بشكل مسطح: p1.woff / p1.ttf ...
-    final fontsRoot =
-        Directory(isPhones ? '${appDir.path}/woff' : '${appDir.path}/ttf');
+    final fontsRoot = Directory(isPhones
+        ? '${appDir.path}$_fontsFolderPathWOFF'
+        : '${appDir.path}$_fontsFolderPathTTF');
     return isPhones
-        ? '${fontsRoot.path}/p${pageIndex + 1}.woff'
-        : '${fontsRoot.path}/p${pageIndex + 1}.ttf';
+        ? '${fontsRoot.path}/QCF4${((pageIndex + 1).toString().padLeft(3, '0'))}_X-Regular.woff'
+        : '${fontsRoot.path}/QCF4${((pageIndex + 1).toString().padLeft(3, '0'))}_X-Regular.ttf';
   }
 
   String getFontPath(int pageIndex) {
-    return 'p${pageIndex + 1}';
+    return 'QCF4${((pageIndex + 1).toString().padLeft(3, '0'))}_X-Regular';
   }
 
   /// URL مباشر لملف الخط على الويب (GitHub Raw)
   /// ملاحظة: بعض المستودعات/الفروع قد تختلف في المسار؛ جهّز بدائل متعددة وتحقّق بالتسلسل
   String getWebFontUrl(int pageIndex) {
-    final id = (pageIndex + 1);
+    final id = (pageIndex + 1).toString().padLeft(3, '0');
     // التجويد غير متاح كملفات منفصلة على الويب حالياً (متوفر فقط كـ zip).
-    return 'https://raw.githubusercontent.com/alheekmahlib/Islamic_database/main/quran_database/Quran%20Font/tajweed_woff/p$id.woff';
+    return 'https://raw.githubusercontent.com/alheekmahlib/Islamic_database/main/quran_database/Quran%20Font/qcf4_woff/QCF4${id}_X-Regular.woff';
   }
 
   /// جميع المسارات المرشّحة لتحميل الخط على الويب (WOFF أولاً ثم TTF كاحتياط)
   List<String> _webFontCandidateUrls(int pageIndex) {
-    final id = (pageIndex + 1);
+    final id = (pageIndex + 1).toString().padLeft(3, '0');
     return <String>[
-      'https://raw.githubusercontent.com/alheekmahlib/Islamic_database/main/quran_database/Quran%20Font/tajweed_woff/p$id.woff'
+      'https://raw.githubusercontent.com/alheekmahlib/Islamic_database/main/quran_database/Quran%20Font/qcf4_woff/QCF4${id}_X-Regular.woff'
     ];
   }
 
@@ -225,8 +233,9 @@ extension FontsExtension on QuranCtrl {
   Future<void> loadFontFromZip([int? pageIndex]) async {
     try {
       // مسار مجلد الخطوط بعد فك الضغط
-      final fontsDir =
-          Directory(isPhones ? '${_dir.path}/woff' : '${_dir.path}/ttf');
+      final fontsDir = Directory(isPhones
+          ? '${_dir.path}$_fontsFolderPathWOFF'
+          : '${_dir.path}$_fontsFolderPathTTF');
 
       final loadedSet = state.loadedFontPages; // في الذاكرة
 
@@ -302,13 +311,7 @@ extension FontsExtension on QuranCtrl {
       update(['fontsDownloadingProgress']);
 
       // قائمة بالروابط البديلة للتحميل
-      final urls = isPhones
-          ? [
-              'https://github.com/alheekmahlib/Islamic_database/releases/download/tajweed_fonts/woff.zip'
-            ]
-          : [
-              'https://github.com/alheekmahlib/Islamic_database/releases/download/tajweed_fonts/ttf.zip'
-            ];
+      final urls = isPhones ? [_fontsZipUrlWOFF] : [_fontsZipUrlTTF];
 
       // حدد مسار الحفظ
       final fontsDir = _fontsRootDirForIndex(fontIndex);
@@ -316,8 +319,9 @@ extension FontsExtension on QuranCtrl {
         await fontsDir.create(recursive: true);
       }
 
-      final zipFile =
-          File(isPhones ? '${_dir.path}/woff.zip' : '${_dir.path}/ttf.zip');
+      final zipFile = File(isPhones
+          ? '${_dir.path}/qcf4_woff.zip'
+          : '${_dir.path}/qcf4_ttf.zip');
 
       // حد أدنى للحجم لمنع ملفات HTML/أخطاء CDN المقنّعة
       const int minZipSizeBytes = 1024 * 1024; // ~1MB

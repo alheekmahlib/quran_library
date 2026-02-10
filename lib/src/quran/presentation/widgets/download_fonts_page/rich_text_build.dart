@@ -88,45 +88,45 @@ class QpcV4RichTextLine extends StatelessWidget {
               //   maxWidth: constraints.maxWidth,
               // )
               ;
-          // return _richTextBuild(wordInfoCtrl, context, fs, bookmarksSet);
-          return (usePaintColoring || !isTenRecitations)
-              ? withTajweed
-                  ? isDark
-                      ? ColorFiltered(
-                          colorFilter: const ColorFilter.matrix([
-                            -1,
-                            0,
-                            0,
-                            0,
-                            255,
-                            0,
-                            -1,
-                            0,
-                            0,
-                            255,
-                            0,
-                            0,
-                            -1,
-                            0,
-                            255,
-                            0,
-                            0,
-                            0,
-                            1,
-                            0,
-                          ]),
-                          child: _richTextBuild(
-                              wordInfoCtrl, context, fs, bookmarksSet))
-                      : _richTextBuild(wordInfoCtrl, context, fs, bookmarksSet)
-                  : ColorFiltered(
-                      colorFilter: ColorFilter.mode(
-                        AppColors.getTextColor(isDark),
-                        BlendMode.srcATop,
-                      ),
-                      child: _richTextBuild(
-                          wordInfoCtrl, context, fs, bookmarksSet),
-                    )
-              : _richTextBuild(wordInfoCtrl, context, fs, bookmarksSet);
+          return _richTextBuild(wordInfoCtrl, context, fs, bookmarksSet);
+          // return (usePaintColoring || !isTenRecitations)
+          //     ? withTajweed
+          //         ? isDark
+          //             ? ColorFiltered(
+          //                 colorFilter: const ColorFilter.matrix([
+          //                   -1,
+          //                   0,
+          //                   0,
+          //                   0,
+          //                   255,
+          //                   0,
+          //                   -1,
+          //                   0,
+          //                   0,
+          //                   255,
+          //                   0,
+          //                   0,
+          //                   -1,
+          //                   0,
+          //                   255,
+          //                   0,
+          //                   0,
+          //                   0,
+          //                   1,
+          //                   0,
+          //                 ]),
+          //                 child: _richTextBuild(
+          //                     wordInfoCtrl, context, fs, bookmarksSet))
+          //             : _richTextBuild(wordInfoCtrl, context, fs, bookmarksSet)
+          //         : ColorFiltered(
+          //             colorFilter: ColorFilter.mode(
+          //               AppColors.getTextColor(isDark),
+          //               BlendMode.srcATop,
+          //             ),
+          //             child: _richTextBuild(
+          //                 wordInfoCtrl, context, fs, bookmarksSet),
+          //           )
+          //     : _richTextBuild(wordInfoCtrl, context, fs, bookmarksSet);
         },
       ),
     );

@@ -53,7 +53,7 @@ extension SurahGetters on AudioCtrl {
             .surahs[(state.currentAudioListSurahNum.value - 1)].arabicName,
         artist: ReadersConstants
             .activeSurahReaders[state.surahReaderIndex.value].name.tr,
-        artUri: state.cachedArtUri, // state.cachedArtUri,
+        artUri: state.cachedArtUri ?? Uri.parse(currentAppIconUrl),
       );
 
   Future<void> lastAudioSource() async {

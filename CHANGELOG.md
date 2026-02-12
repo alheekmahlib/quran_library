@@ -6,11 +6,13 @@
 	* Word Info bottom sheet with on-demand download.
 	* New Word Info providers: Recitations, Tasreef, and Eerab.
 	* Optional Tajweed (ayah-level) tab inside Tafsir bottom sheet with on-demand download.
+	* Add indicatorPadding to QuranTopBarStyle #30.
 
 * **FIX:**
 	* Restructuring the code for downloading fonts.
 	* Surah number resolution in Tafsir/Tajweed view when using downloaded fonts.
 	* Auto-open download UI when switching to Recitations tab and data is missing.
+	* Fix adding custom app logo by appIconPathForPlayAudioInBackground.
 
 * **DELETE:**
 	* Unused parameters. 

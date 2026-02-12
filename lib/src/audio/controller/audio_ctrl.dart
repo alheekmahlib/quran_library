@@ -506,35 +506,73 @@ class AudioCtrl extends GetxController {
   }
 
   Future<void> setCachedArtUri() async {
+    final iconRef = state.appIconUrl.value.trim();
+    if (iconRef.isEmpty) {
+      await resetAppIconToDefault();
+      return;
+    }
+
+    final parsed = Uri.tryParse(iconRef);
+    if (parsed != null &&
+        (parsed.scheme == 'http' || parsed.scheme == 'https')) {
+      state.cachedArtUri = parsed;
+      await _refreshCurrentMediaItemArt();
+      return;
+    }
+
+    if (iconRef.startsWith('assets/') || iconRef.startsWith('packages/')) {
+      await _setCachedArtUriFromAssetPath(iconRef);
+      return;
+    }
+
+    if (kIsWeb) {
+      state.cachedArtUri = Uri.base.resolve(iconRef);
+      await _refreshCurrentMediaItemArt();
+      return;
+    }
+
+    final file = File(iconRef);
+    if (await file.exists()) {
+      state.cachedArtUri = Uri.file(file.path);
+      await _refreshCurrentMediaItemArt();
+      return;
+    }
+
     await resetAppIconToDefault();
-    return;
   }
 
   Future<void> setCachedArtUriFromAsset() async {
+    // ضمن نفس الحزمة يُفضّل استخدام مسار الأصل مباشرة كما هو مُعلن في pubspec.yaml
+    const assetPath =
+        'packages/quran_library/assets/images/quran_library_logo.png';
+    await _setCachedArtUriFromAssetPath(assetPath, fallbackToDefault: false);
+  }
+
+  Future<void> _setCachedArtUriFromAssetPath(
+    String assetPath, {
+    bool fallbackToDefault = true,
+  }) async {
     try {
-      log('Setting cached art URI from asset', name: 'AudioCtrl');
+      log('Setting cached art URI from asset: $assetPath', name: 'AudioCtrl');
 
-      // ضمن نفس الحزمة يُفضّل استخدام مسار الأصل مباشرة كما هو مُعلن في pubspec.yaml
-      const assetPath =
-          'packages/quran_library/assets/images/quran_library_logo.png';
-      // 1. تحميل الصورة من مجلد assets
+      if (kIsWeb) {
+        state.cachedArtUri = Uri.base.resolve(assetPath);
+        await _refreshCurrentMediaItemArt();
+        return;
+      }
+
       final byteData = await rootBundle.load(assetPath);
-
-      // 2. إنشاء مسار مؤقت (احرص أن يكون الاسم فريدًا عشان ما يطغى على ملفات أخرى)
       final tempDir = await getTemporaryDirectory();
       final file = File('${tempDir.path}/${assetPath.split('/').last}');
 
-      // 3. كتابة البيانات في الملف المؤقت
       await file.writeAsBytes(byteData.buffer.asUint8List(), flush: true);
-
-      // 4. إرجاع URI صالح للاستخدام في MediaItem
-
       state.cachedArtUri = Uri.file(file.path);
-      log('Cached art URI set from asset successfully', name: 'AudioCtrl');
-      // أعِد بث MediaItem الحالي ليتم تحديث صورة الغلاف فورًا
       await _refreshCurrentMediaItemArt();
     } catch (e) {
       log('Exception in setCachedArtUri: $e', name: 'AudioCtrl');
+      if (fallbackToDefault) {
+        await setCachedArtUriFromAsset();
+      }
     }
   }
 

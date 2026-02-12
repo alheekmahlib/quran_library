@@ -77,6 +77,8 @@ class FullQuran extends StatelessWidget {
       isDark: false,
       showAyahBookmarkedIcon: true,
       appLanguageCode: 'ar',
+      appIconPathForPlayAudioInBackground:
+          'assets/images/quran_library_logo.png',
       // ayahIconColor: Colors.teal,
       // backgroundColor: Colors.white,
       // textColor: Colors.black,

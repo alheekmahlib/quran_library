@@ -261,7 +261,8 @@ class _MenuBottomSheet extends StatelessWidget {
                     color: accentColor,
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  indicatorPadding: const EdgeInsets.all(4),
+                  indicatorPadding:
+                      style.indicatorPadding ?? const EdgeInsets.all(4),
                   padding: EdgeInsets.zero,
                   labelColor: Colors.white,
                   unselectedLabelColor: textColor.withValues(alpha: 0.6),

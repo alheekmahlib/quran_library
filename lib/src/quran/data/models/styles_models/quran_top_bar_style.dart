@@ -53,6 +53,7 @@ class QuranTopBarStyle {
   final String? tenRecitationsTabText;
 
   final TextStyle? tabLabelStyle;
+  final EdgeInsetsGeometry? indicatorPadding;
 
   const QuranTopBarStyle({
     this.showBackButton,
@@ -88,6 +89,7 @@ class QuranTopBarStyle {
     this.quranTabText,
     this.tenRecitationsTabText,
     this.tabLabelStyle,
+    this.indicatorPadding,
   });
 
   QuranTopBarStyle copyWith({
@@ -124,6 +126,7 @@ class QuranTopBarStyle {
     String? quranTabText,
     String? tenRecitationsTabText,
     TextStyle? tabLabelStyle,
+    EdgeInsetsGeometry? indicatorPadding,
   }) =>
       QuranTopBarStyle(
         backIconPath: backIconPath ?? this.backIconPath,
@@ -161,6 +164,7 @@ class QuranTopBarStyle {
         tenRecitationsTabText:
             tenRecitationsTabText ?? this.tenRecitationsTabText,
         tabLabelStyle: tabLabelStyle ?? this.tabLabelStyle,
+        indicatorPadding: indicatorPadding ?? this.indicatorPadding,
       );
 
   /// Provide sensible defaults based on theme (isDark)
@@ -210,6 +214,7 @@ class QuranTopBarStyle {
         fontFamily: 'cairo',
         package: 'quran_library',
       ),
+      indicatorPadding: const EdgeInsets.all(4),
     );
   }
 }

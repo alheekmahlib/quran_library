@@ -747,6 +747,7 @@ class QuranCtrl extends GetxController {
   // شرح: تحسين التنقل للحصول على سكرول أكثر سلاسة
   // Explanation: Improved navigation for smoother scrolling
   void jumpToPage(int page) {
+    state.currentPageNumber.value = page + 1;
     if (quranPagesController.hasClients) {
       log('Jumping to page: $page', name: 'QuranCtrl');
       quranPagesController.jumpToPage(

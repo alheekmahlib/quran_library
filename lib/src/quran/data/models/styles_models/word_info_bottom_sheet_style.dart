@@ -65,6 +65,7 @@ class WordInfoBottomSheetStyle {
   final Offset? innerShadowOffset;
   final Color? innerBorderColor;
   final double? innerBorderWidth;
+  final Widget? handleWidget;
 
   const WordInfoBottomSheetStyle({
     this.backgroundColor,
@@ -108,6 +109,7 @@ class WordInfoBottomSheetStyle {
     this.innerBorderColor,
     this.innerBorderWidth,
     this.textBackgroundColor,
+    this.handleWidget,
   });
 
   WordInfoBottomSheetStyle copyWith({
@@ -152,54 +154,57 @@ class WordInfoBottomSheetStyle {
     Color? innerBorderColor,
     double? innerBorderWidth,
     Color? textBackgroundColor,
+    Widget? handleWidget,
   }) {
     return WordInfoBottomSheetStyle(
-        backgroundColor: backgroundColor ?? this.backgroundColor,
-        borderRadius: borderRadius ?? this.borderRadius,
-        padding: padding ?? this.padding,
-        maxHeightFactor: maxHeightFactor ?? this.maxHeightFactor,
-        maxWidthFactor: maxWidthFactor ?? this.maxWidthFactor,
-        handleWidth: handleWidth ?? this.handleWidth,
-        handleHeight: handleHeight ?? this.handleHeight,
-        handleMargin: handleMargin ?? this.handleMargin,
-        handleBorderRadius: handleBorderRadius ?? this.handleBorderRadius,
-        handleColor: handleColor ?? this.handleColor,
-        titleText: titleText ?? this.titleText,
-        titleTextStyle: titleTextStyle ?? this.titleTextStyle,
-        titlePadding: titlePadding ?? this.titlePadding,
-        tabRecitationsText: tabRecitationsText ?? this.tabRecitationsText,
-        tabTasreefText: tabTasreefText ?? this.tabTasreefText,
-        tabEerabText: tabEerabText ?? this.tabEerabText,
-        unavailableDataTemplate:
-            unavailableDataTemplate ?? this.unavailableDataTemplate,
-        downloadText: downloadText ?? this.downloadText,
-        downloadingText: downloadingText ?? this.downloadingText,
-        loadErrorText: loadErrorText ?? this.loadErrorText,
-        noDataText: noDataText ?? this.noDataText,
-        tabLabelStyle: tabLabelStyle ?? this.tabLabelStyle,
-        tabIndicatorPadding: tabIndicatorPadding ?? this.tabIndicatorPadding,
-        tabIndicatorRadius: tabIndicatorRadius ?? this.tabIndicatorRadius,
-        tabIndicatorColor: tabIndicatorColor ?? this.tabIndicatorColor,
-        dividerHeight: dividerHeight ?? this.dividerHeight,
-        contentPadding: contentPadding ?? this.contentPadding,
-        bodyTextStyle: bodyTextStyle ?? this.bodyTextStyle,
-        buttonTextStyle: buttonTextStyle ?? this.buttonTextStyle,
-        progressTextStyle: progressTextStyle ?? this.progressTextStyle,
-        verticalMargin: verticalMargin ?? this.verticalMargin,
-        horizontalMargin: horizontalMargin ?? this.horizontalMargin,
-        innerContainerPadding:
-            innerContainerPadding ?? this.innerContainerPadding,
-        tafsirBackgroundColor:
-            tafsirBackgroundColor ?? this.tafsirBackgroundColor,
-        innerContainerBorderRadius:
-            innerContainerBorderRadius ?? this.innerContainerBorderRadius,
-        innerShadowColor: innerShadowColor ?? this.innerShadowColor,
-        innerShadowBlurRadius:
-            innerShadowBlurRadius ?? this.innerShadowBlurRadius,
-        innerShadowOffset: innerShadowOffset ?? this.innerShadowOffset,
-        innerBorderColor: innerBorderColor ?? this.innerBorderColor,
-        innerBorderWidth: innerBorderWidth ?? this.innerBorderWidth,
-        textBackgroundColor: textBackgroundColor ?? this.textBackgroundColor);
+      backgroundColor: backgroundColor ?? this.backgroundColor,
+      borderRadius: borderRadius ?? this.borderRadius,
+      padding: padding ?? this.padding,
+      maxHeightFactor: maxHeightFactor ?? this.maxHeightFactor,
+      maxWidthFactor: maxWidthFactor ?? this.maxWidthFactor,
+      handleWidth: handleWidth ?? this.handleWidth,
+      handleHeight: handleHeight ?? this.handleHeight,
+      handleMargin: handleMargin ?? this.handleMargin,
+      handleBorderRadius: handleBorderRadius ?? this.handleBorderRadius,
+      handleColor: handleColor ?? this.handleColor,
+      titleText: titleText ?? this.titleText,
+      titleTextStyle: titleTextStyle ?? this.titleTextStyle,
+      titlePadding: titlePadding ?? this.titlePadding,
+      tabRecitationsText: tabRecitationsText ?? this.tabRecitationsText,
+      tabTasreefText: tabTasreefText ?? this.tabTasreefText,
+      tabEerabText: tabEerabText ?? this.tabEerabText,
+      unavailableDataTemplate:
+          unavailableDataTemplate ?? this.unavailableDataTemplate,
+      downloadText: downloadText ?? this.downloadText,
+      downloadingText: downloadingText ?? this.downloadingText,
+      loadErrorText: loadErrorText ?? this.loadErrorText,
+      noDataText: noDataText ?? this.noDataText,
+      tabLabelStyle: tabLabelStyle ?? this.tabLabelStyle,
+      tabIndicatorPadding: tabIndicatorPadding ?? this.tabIndicatorPadding,
+      tabIndicatorRadius: tabIndicatorRadius ?? this.tabIndicatorRadius,
+      tabIndicatorColor: tabIndicatorColor ?? this.tabIndicatorColor,
+      dividerHeight: dividerHeight ?? this.dividerHeight,
+      contentPadding: contentPadding ?? this.contentPadding,
+      bodyTextStyle: bodyTextStyle ?? this.bodyTextStyle,
+      buttonTextStyle: buttonTextStyle ?? this.buttonTextStyle,
+      progressTextStyle: progressTextStyle ?? this.progressTextStyle,
+      verticalMargin: verticalMargin ?? this.verticalMargin,
+      horizontalMargin: horizontalMargin ?? this.horizontalMargin,
+      innerContainerPadding:
+          innerContainerPadding ?? this.innerContainerPadding,
+      tafsirBackgroundColor:
+          tafsirBackgroundColor ?? this.tafsirBackgroundColor,
+      innerContainerBorderRadius:
+          innerContainerBorderRadius ?? this.innerContainerBorderRadius,
+      innerShadowColor: innerShadowColor ?? this.innerShadowColor,
+      innerShadowBlurRadius:
+          innerShadowBlurRadius ?? this.innerShadowBlurRadius,
+      innerShadowOffset: innerShadowOffset ?? this.innerShadowOffset,
+      innerBorderColor: innerBorderColor ?? this.innerBorderColor,
+      innerBorderWidth: innerBorderWidth ?? this.innerBorderWidth,
+      textBackgroundColor: textBackgroundColor ?? this.textBackgroundColor,
+      handleWidget: handleWidget ?? this.handleWidget,
+    );
   }
 
   factory WordInfoBottomSheetStyle.defaults({
@@ -280,6 +285,7 @@ class WordInfoBottomSheetStyle {
       innerBorderColor: Colors.grey.withValues(alpha: 0.3),
       innerBorderWidth: 1.2,
       textBackgroundColor: isDark ? const Color(0xFF151515) : Colors.white,
+      handleWidget: null,
     );
   }
 }

@@ -69,6 +69,7 @@ extension AyahCtrlExtension on AudioCtrl {
     final sw = Stopwatch()..start();
     log('TIMER: _playAyahsFile start for surah $currentSurahNumber',
         name: 'AudioTimer');
+    getAyahUQNumber(QuranCtrl.instance.state.currentPageNumber.value - 1);
     // فعّل حالة التحضير لعرض مؤشر الانتظار أثناء تجهيز قائمة الآيات
     state.isAudioPreparing.value = true;
     state.tmpDownloadedAyahsCount = 0;

@@ -71,9 +71,7 @@ TextSpan _qpcV4SpanSegment({
   final isTenRecitations = WordInfoCtrl.instance.isTenRecitations;
   final bool forceRed = isWordKhilaf && !withTajweed && isTenRecitations;
   final bool isWordSelected = wordInfoCtrl.selectedWordRef.value == wordRef;
-  final Color selectedWordBg = isDark
-      ? Colors.white.withValues(alpha: 0.18)
-      : const Color(0xFFFFF59D).withValues(alpha: 0.65);
+  final Color selectedWordBg = const Color(0xffCDAD80).withValues(alpha: 0.25);
 
   final fontFamily = fontFamilyOverride ??
       (isFontsLocal ? fontsName : quranCtrl.getFontPath(pageIndex));
@@ -123,11 +121,13 @@ TextSpan _qpcV4SpanSegment({
         ? WidgetSpan(
             alignment: PlaceholderAlignment.middle,
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              padding: quranCtrl.isQpcV4Enabled
+                  ? const EdgeInsets.symmetric(horizontal: 4.0)
+                  : const EdgeInsets.only(right: 4.0, left: 4.0, bottom: 16.0),
               child: SvgPicture.asset(
                 AssetsPath.assets.ayahBookmarked,
-                height: 140,
-                width: 140,
+                height: quranCtrl.isQpcV4Enabled ? 30 : 100,
+                width: quranCtrl.isQpcV4Enabled ? 30 : 100,
               ),
             ),
           )
@@ -150,7 +150,7 @@ TextSpan _qpcV4SpanSegment({
   }
 
   final recognizer = TapLongPressRecognizer(
-    shortHoldDuration: const Duration(milliseconds: 250),
+    shortHoldDuration: const Duration(milliseconds: 150),
     longHoldDuration: const Duration(milliseconds: 500),
   )
     ..onShortHoldStartCallback = () {

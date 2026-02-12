@@ -13,24 +13,24 @@ Future<void> showWordInfoBottomSheet({
       WordInfoDialogTheme.of(context)?.style ??
           WordInfoBottomSheetStyle.defaults(isDark: isDark, context: context);
   final size = MediaQuery.sizeOf(context);
-  final maxHFactor = (defaults.maxHeightFactor ?? 0.9).clamp(0.0, 1.0);
+  // final maxHFactor = (defaults.maxHeightFactor ?? 0.9).clamp(0.0, 1.0);
   final maxWFactor = (defaults.maxWidthFactor ?? 1.0).clamp(0.0, 1.0);
 
   await showModalBottomSheet(
     context: context,
-    isScrollControlled: true,
+    isScrollControlled: false,
     backgroundColor: Colors.transparent,
     enableDrag: true,
     isDismissible: true,
     constraints: BoxConstraints(
-      maxHeight: size.height * maxHFactor,
+      // maxHeight: size.height * maxHFactor,
       maxWidth: size.width * maxWFactor,
     ),
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
     ),
     builder: (BuildContext modalContext) {
-      return WordInfoDialog(
+      return WordInfoWidget(
         ref: ref,
         initialKind: initialKind,
         ctrl: ctrl,
@@ -40,8 +40,8 @@ Future<void> showWordInfoBottomSheet({
   );
 }
 
-class WordInfoDialog extends StatelessWidget {
-  const WordInfoDialog({
+class WordInfoWidget extends StatelessWidget {
+  const WordInfoWidget({
     super.key,
     required this.ref,
     required this.initialKind,
@@ -73,19 +73,21 @@ class WordInfoDialog extends StatelessWidget {
         borderRadius: BorderRadius.circular(defaults.borderRadius ?? 12),
       ),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          const SizedBox(height: 8),
           // خط فاصل جمالي
-          Container(
-            width: defaults.handleWidth ?? 60,
-            height: defaults.handleHeight ?? 5,
-            margin: defaults.handleMargin ?? const EdgeInsets.only(bottom: 8),
-            decoration: BoxDecoration(
-              color: defaults.handleColor ?? Colors.grey.shade500,
-              borderRadius:
-                  BorderRadius.circular(defaults.handleBorderRadius ?? 3),
-            ),
-          ),
+          defaults.handleWidget ??
+              Container(
+                width: defaults.handleWidth ?? 60,
+                height: defaults.handleHeight ?? 5,
+                margin: defaults.handleMargin ??
+                    const EdgeInsets.only(bottom: 8, top: 8),
+                decoration: BoxDecoration(
+                  color: defaults.handleColor ?? Colors.grey.shade500,
+                  borderRadius:
+                      BorderRadius.circular(defaults.handleBorderRadius ?? 3),
+                ),
+              ),
           Text(
             defaults.titleText ?? 'عن الكلمة',
             style: defaults.titleTextStyle ??

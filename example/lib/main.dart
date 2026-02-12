@@ -134,7 +134,7 @@ class SingleAyah extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
+    return Center(
       child: GetSingleAyah(
         surahNumber: 10,
         ayahNumber: 2,

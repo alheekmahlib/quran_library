@@ -90,12 +90,12 @@ class FontsDownloadWidget extends StatelessWidget {
               ),
             ),
           ),
-          TajweedButtonWidget(
-              background: background,
-              outlineColor: outlineColor,
-              downloadFontsDialogStyle: downloadFontsDialogStyle,
-              textColor: textColor,
-              accent: accent),
+          // TajweedButtonWidget(
+          //     background: background,
+          //     outlineColor: outlineColor,
+          //     downloadFontsDialogStyle: downloadFontsDialogStyle,
+          //     textColor: textColor,
+          //     accent: accent),
         ],
       ),
     );

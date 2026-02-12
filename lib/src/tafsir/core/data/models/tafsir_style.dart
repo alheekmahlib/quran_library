@@ -53,6 +53,7 @@ class TafsirStyle {
   final TextStyle? tajweedProgressTextStyle;
   final TextStyle? tajweedContentTextStyle;
   final TextStyle? tabBarLabelStyle;
+  final Widget? handleWidget;
 
   TafsirStyle({
     this.backgroundColor,
@@ -105,6 +106,7 @@ class TafsirStyle {
     this.tajweedProgressTextStyle,
     this.tajweedContentTextStyle,
     this.tabBarLabelStyle,
+    this.handleWidget,
   });
 
   TafsirStyle copyWith({
@@ -158,6 +160,7 @@ class TafsirStyle {
     TextStyle? tajweedProgressTextStyle,
     TextStyle? tajweedContentTextStyle,
     TextStyle? tabBarLabelStyle,
+    Widget? handleWidget,
   }) {
     return TafsirStyle(
       tafsirNameWidget: tafsirNameWidget ?? this.tafsirNameWidget,
@@ -231,6 +234,7 @@ class TafsirStyle {
       tajweedContentTextStyle:
           tajweedContentTextStyle ?? this.tajweedContentTextStyle,
       tabBarLabelStyle: tabBarLabelStyle ?? this.tabBarLabelStyle,
+      handleWidget: handleWidget ?? this.handleWidget,
     );
   }
 
@@ -390,6 +394,7 @@ class TafsirStyle {
         fontSize: 14,
         color: AppColors.getTextColor(isDark),
       ),
+      handleWidget: null,
     );
   }
 }

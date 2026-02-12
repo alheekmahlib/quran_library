@@ -13,8 +13,14 @@ class GetSingleAyah extends StatelessWidget {
   final String? fontsName;
   final int? pageIndex;
   final bool? useDefaultFont;
+  final Function(LongPressStartDetails details, AyahModel ayah)?
+      onAyahLongPress;
+  final Color? ayahIconColor;
+  final bool showAyahBookmarkedIcon;
+  final Color? bookmarksColor;
+  final Color? ayahSelectedBackgroundColor;
 
-  const GetSingleAyah({
+  GetSingleAyah({
     super.key,
     required this.surahNumber,
     required this.ayahNumber,
@@ -28,7 +34,14 @@ class GetSingleAyah extends StatelessWidget {
     this.fontsName,
     this.pageIndex,
     this.useDefaultFont = false,
+    this.onAyahLongPress,
+    this.ayahIconColor,
+    this.showAyahBookmarkedIcon = false,
+    this.bookmarksColor,
+    this.ayahSelectedBackgroundColor,
   });
+
+  final QuranCtrl quranCtrl = QuranCtrl.instance;
 
   @override
   Widget build(BuildContext context) {
@@ -48,8 +61,7 @@ class GetSingleAyah extends StatelessWidget {
         QuranCtrl.instance
             .getPageNumberByAyahAndSurahNumber(ayahNumber, surahNumber);
     log('surahNumber: $surahNumber, ayahNumber: $ayahNumber, pageNumber: $pageNumber');
-    final bool currentFontsSelected =
-        QuranCtrl.instance.currentRecitation.requiresDownload;
+
     if (ayah.text.isEmpty) {
       return Text(
         'الآية غير موجودة',
@@ -59,6 +71,164 @@ class GetSingleAyah extends StatelessWidget {
         ),
       );
     }
+
+    // استخدام نفس طريقة عرض PageBuild إذا كان QPC Layout مفعل
+    if (quranCtrl.isQpcLayoutEnabled) {
+      return _buildQpcLayout(context, pageNumber, ayah);
+    }
+
+    // العرض التقليدي للخطوط الأخرى
+    return _buildTraditionalLayout(context, pageNumber, ayah);
+  }
+
+  /// بناء الآية باستخدام نفس طريقة PageBuild (QPC Layout)
+  Widget _buildQpcLayout(BuildContext context, int pageNumber, AyahModel ayah) {
+    final blocks = quranCtrl.getQpcLayoutBlocksForPageSync(pageNumber);
+    if (blocks.isEmpty) {
+      return const Center(
+        child: CircularProgressIndicator.adaptive(),
+      );
+    }
+
+    final isHafs = quranCtrl.state.fontsSelected.value == 0;
+    final ayahUq = ayah.ayahUQNumber;
+
+    // استخراج segments الخاصة بالآية المطلوبة فقط
+    final List<QpcV4WordSegment> ayahSegments = [];
+    for (final block in blocks) {
+      if (block is QpcV4AyahLineBlock) {
+        for (final seg in block.segments) {
+          if (seg.surahNumber == surahNumber && seg.ayahNumber == ayahNumber) {
+            ayahSegments.add(seg);
+          }
+        }
+      }
+    }
+
+    if (ayahSegments.isEmpty) {
+      // fallback للعرض التقليدي إذا لم يتم العثور على segments
+      return _buildTraditionalLayout(context, pageNumber, ayah);
+    }
+
+    return GetBuilder<QuranCtrl>(
+      id: 'single_ayah_$ayahUq',
+      builder: (_) => LayoutBuilder(
+        builder: (ctx, constraints) {
+          final fs = isHafs
+              ? 100.0
+              : (fontSize ??
+                  PageFontSizeHelper.getFontSize(pageNumber - 1, ctx));
+
+          return _buildRichTextFromSegments(
+            context: context,
+            segments: ayahSegments,
+            fontSize: fs,
+            isHafs: isHafs,
+            ayahUq: ayahUq,
+            pageNumber: pageNumber,
+          );
+        },
+      ),
+    );
+  }
+
+  /// بناء RichText من segments
+  Widget _buildRichTextFromSegments({
+    required BuildContext context,
+    required List<QpcV4WordSegment> segments,
+    required double fontSize,
+    required bool isHafs,
+    required int ayahUq,
+    required int pageNumber,
+  }) {
+    final wordInfoCtrl = WordInfoCtrl.instance;
+    final bookmarksCtrl = BookmarksCtrl.instance;
+    final bookmarks = bookmarksCtrl.bookmarks;
+    final bookmarksAyahs = bookmarksCtrl.bookmarksAyahs;
+    final ayahBookmarked = bookmarksAyahs.toList();
+
+    return FittedBox(
+      fit: BoxFit.fitWidth,
+      child: RichText(
+        textDirection: TextDirection.rtl,
+        textAlign: TextAlign.center,
+        softWrap: true,
+        overflow: TextOverflow.visible,
+        maxLines: null,
+        text: TextSpan(
+          children: List.generate(segments.length, (segmentIndex) {
+            final seg = segments[segmentIndex];
+            final uq = seg.ayahUq;
+            final isSelectedCombined =
+                quranCtrl.selectedAyahsByUnequeNumber.contains(uq) ||
+                    quranCtrl.externallyHighlightedAyahs.contains(uq);
+
+            final ref = WordRef(
+              surahNumber: seg.surahNumber,
+              ayahNumber: seg.ayahNumber,
+              wordNumber: seg.wordNumber,
+            );
+
+            final info = wordInfoCtrl.getRecitationsInfoSync(ref);
+            final hasKhilaf = info?.hasKhilaf ?? false;
+
+            return _qpcV4SpanSegment(
+              context: context,
+              pageIndex: pageNumber - 1,
+              isSelected: isSelectedCombined,
+              showAyahBookmarkedIcon: showAyahBookmarkedIcon,
+              fontSize: fontSize,
+              ayahUQNum: uq,
+              ayahNumber: seg.ayahNumber,
+              glyphs: seg.glyphs,
+              showAyahNumber: seg.isAyahEnd,
+              wordRef: ref,
+              isWordKhilaf: hasKhilaf,
+              onLongPressStart: (details) {
+                final ayahModel = quranCtrl.getAyahByUq(uq);
+                if (onAyahLongPress != null) {
+                  onAyahLongPress!(details, ayahModel);
+                  quranCtrl.toggleAyahSelection(uq);
+                  return;
+                }
+                quranCtrl.toggleAyahSelection(uq);
+                final themedTafsirStyle = TafsirTheme.of(context)?.style;
+                showAyahMenuDialog(
+                  context: context,
+                  isDark: isDark ?? false,
+                  ayah: ayahModel,
+                  position: details.globalPosition,
+                  index: segmentIndex,
+                  pageIndex: pageNumber - 1,
+                  externalTafsirStyle: themedTafsirStyle,
+                );
+              },
+              textColor: textColor ?? AppColors.getTextColor(isDark ?? false),
+              ayahIconColor: ayahIconColor,
+              bookmarks: bookmarks,
+              bookmarksAyahs: bookmarksAyahs,
+              bookmarksColor: bookmarksColor,
+              ayahSelectedBackgroundColor: ayahSelectedBackgroundColor,
+              isFontsLocal: islocalFont ?? false,
+              fontsName: fontsName ?? '',
+              fontFamilyOverride: isHafs ? quranCtrl.currentFontFamily : null,
+              fontPackageOverride: isHafs ? 'quran_library' : null,
+              usePaintColoring: !isHafs,
+              ayahBookmarked: ayahBookmarked,
+              isDark: isDark ?? false,
+            );
+          }),
+        ),
+      ),
+    );
+  }
+
+  /// العرض التقليدي للخطوط غير QPC
+  Widget _buildTraditionalLayout(
+      BuildContext context, int pageNumber, AyahModel ayah) {
+    final bool currentFontsSelected =
+        QuranCtrl.instance.currentRecitation.requiresDownload;
+
     return RichText(
       textDirection: TextDirection.rtl,
       textAlign: TextAlign.justify,
@@ -81,7 +251,6 @@ class GetSingleAyah extends StatelessWidget {
                   : 'quran_library',
           fontSize: fontSize ?? 22,
           height: 2.0,
-          // letterSpacing: currentFontsSelected ? 3 : null,
           fontWeight: isBold! ? FontWeight.bold : FontWeight.normal,
           color: textColor ?? AppColors.getTextColor(isDark!),
         ),
@@ -97,12 +266,24 @@ class GetSingleAyah extends StatelessWidget {
               ? TextSpan(
                   text: '${ayah.ayahNumber}'
                       .convertEnglishNumbersToArabic('${ayah.ayahNumber}'),
+                  style: TextStyle(
+                    fontFamily: 'ayahNumber',
+                    package: 'quran_library',
+                    color:
+                        ayahIconColor ?? Theme.of(context).colorScheme.primary,
+                  ),
                 )
               : currentFontsSelected
                   ? const TextSpan()
                   : TextSpan(
                       text: '${ayah.ayahNumber}'
                           .convertEnglishNumbersToArabic('${ayah.ayahNumber}'),
+                      style: TextStyle(
+                        fontFamily: 'ayahNumber',
+                        package: 'quran_library',
+                        color: ayahIconColor ??
+                            Theme.of(context).colorScheme.primary,
+                      ),
                     ),
         ],
       ),

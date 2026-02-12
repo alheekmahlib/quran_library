@@ -241,44 +241,13 @@ class AyahMenuDialog extends StatelessWidget {
                           GestureDetector(
                             onTap: () {
                               close();
-
                               showTafsirOnTap(
                                 context: rootContext,
                                 isDark: isDark,
-                                ayahNum: (QuranCtrl.instance.state.fontsSelected
-                                                .value ==
-                                            1 ||
-                                        QuranCtrl.instance.state.fontsSelected
-                                                .value ==
-                                            2 ||
-                                        QuranCtrl.instance.state.scaleFactor
-                                                .value >
-                                            1.3)
-                                    ? ayah!.ayahNumber
-                                    : ayah!.ayahNumber,
+                                ayahNum: ayah!.ayahNumber,
                                 pageIndex: pageIndex,
-                                ayahUQNum: (QuranCtrl.instance.state
-                                                .fontsSelected.value ==
-                                            1 ||
-                                        QuranCtrl.instance.state.fontsSelected
-                                                .value ==
-                                            2 ||
-                                        QuranCtrl.instance.state.scaleFactor
-                                                .value >
-                                            1.3)
-                                    ? ayah!.ayahUQNumber
-                                    : ayah!.ayahUQNumber,
-                                ayahNumber: (QuranCtrl.instance.state
-                                                .fontsSelected.value ==
-                                            1 ||
-                                        QuranCtrl.instance.state.fontsSelected
-                                                .value ==
-                                            2 ||
-                                        QuranCtrl.instance.state.scaleFactor
-                                                .value >
-                                            1.3)
-                                    ? ayah!.ayahNumber
-                                    : ayah!.ayahNumber,
+                                ayahUQNum: ayah!.ayahUQNumber,
+                                ayahNumber: ayah!.ayahNumber,
                                 externalTafsirStyle: externalTafsirStyle,
                               );
                             },
@@ -297,20 +266,8 @@ class AyahMenuDialog extends StatelessWidget {
                         widgets.add(
                           GestureDetector(
                             onTap: () {
-                              if (QuranCtrl
-                                      .instance.state.fontsSelected.value ==
-                                  1) {
-                                Clipboard.setData(
-                                    ClipboardData(text: ayah!.text));
-                              } else {
-                                Clipboard.setData(ClipboardData(
-                                    text: QuranCtrl.instance
-                                        .staticPages[ayah!.page - 1].ayahs
-                                        .firstWhere((element) =>
-                                            element.ayahUQNumber ==
-                                            ayah!.ayahUQNumber)
-                                        .text));
-                              }
+                              Clipboard.setData(
+                                  ClipboardData(text: ayah!.text));
                               close();
                             },
                             child: Icon(
@@ -338,31 +295,15 @@ class AyahMenuDialog extends StatelessWidget {
                               ),
                               child: GestureDetector(
                                 onTap: () {
-                                  if (QuranCtrl.instance.state.fontsSelected.value == 1 ||
-                                      QuranCtrl.instance.state.fontsSelected
-                                              .value ==
-                                          2 ||
-                                      QuranCtrl.instance.state.scaleFactor
-                                              .value >
-                                          1.3) {
-                                    BookmarksCtrl.instance.saveBookmark(
-                                      surahName: QuranCtrl.instance
-                                          .getSurahDataByAyah(ayah!)
-                                          .arabicName,
-                                      ayahNumber: ayah!.ayahNumber,
-                                      ayahId: ayah!.ayahUQNumber,
-                                      page: ayah!.page,
-                                      colorCode: colorCode,
-                                    );
-                                  } else {
-                                    BookmarksCtrl.instance.saveBookmark(
-                                      surahName: ayah!.arabicName!,
-                                      ayahNumber: ayah!.ayahNumber,
-                                      ayahId: ayah!.ayahUQNumber,
-                                      page: ayah!.page,
-                                      colorCode: colorCode,
-                                    );
-                                  }
+                                  BookmarksCtrl.instance.saveBookmark(
+                                    surahName: QuranCtrl.instance
+                                        .getSurahDataByAyah(ayah!)
+                                        .arabicName,
+                                    ayahNumber: ayah!.ayahNumber,
+                                    ayahId: ayah!.ayahUQNumber,
+                                    page: ayah!.page,
+                                    colorCode: colorCode,
+                                  );
                                   close();
                                 },
                                 child: Icon(

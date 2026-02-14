@@ -49,7 +49,7 @@ class AudioCtrl extends GetxController {
     if (!kIsWeb && (Platform.isIOS || Platform.isAndroid || Platform.isMacOS)) {
       if (!state.audioServiceInitialized.value) {
         if (!QuranCtrl.instance.state.isQuranLoaded) {
-          await QuranCtrl.instance.loadQuranDataV1().then((_) async {
+          await QuranCtrl.instance.loadQuranDataV3().then((_) async {
             await initAudioService();
             await setCachedArtUri();
             await lastAudioSource();
@@ -60,7 +60,7 @@ class AudioCtrl extends GetxController {
           await lastAudioSource();
         }
       } else {
-        await QuranCtrl.instance.loadQuranDataV1();
+        await QuranCtrl.instance.loadQuranDataV3();
         log("Audio service already initialized",
             name: 'surah_audio_controller');
         // ضمن حالة التهيئة المسبقة، احرص على مزامنة صورة الغلاف وMediaItem

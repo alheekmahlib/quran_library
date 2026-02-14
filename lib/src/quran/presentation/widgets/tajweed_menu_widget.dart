@@ -18,7 +18,7 @@ class TajweedMenuWidget extends StatelessWidget {
         id: 'isShowControl',
         builder: (quranCtrl) {
           final visible = quranCtrl.isShowControl.value;
-          return visible && QuranCtrl.instance.state.fontsSelected.value == 2
+          return visible && QuranCtrl.instance.state.fontsSelected.value == 0
               ? Container(
                   height: defaults.height ?? 350,
                   width: defaults.width ?? 350,

@@ -382,10 +382,6 @@ class QuranLibraryScreen extends StatelessWidget {
                   if (!withPageView) {
                     Future(() async {
                       await quranCtrl.prewarmQpcV4Pages(pageIndex);
-                      await quranCtrl.prepareFonts(
-                        pageIndex,
-                        isFontsLocal: isFontsLocal ?? false,
-                      );
                     });
                   }
                 });
@@ -571,15 +567,9 @@ class QuranLibraryScreen extends StatelessWidget {
       quranCtrl.state.currentPageNumber.value = pageIndex + 1;
       quranCtrl.saveLastPage(pageIndex + 1);
 
-      await quranCtrl.prepareFonts(pageIndex);
-      if (quranCtrl.currentRecitation.requiresDownload) {
+      if (quranCtrl.state.fontsSelected.value == 0) {
         // جدولة تحضير QPC v4 بعد خمول حتى لا ينافس أثناء التقليب.
         quranCtrl.scheduleQpcV4AllPagesPrebuild();
-      } else if (quranCtrl.state.fontsSelected.value == 0) {
-        // الخط الأساسي: حضّر صفحات قادمة + حضّر كامل الصفحات بعد خمول.
-        // الهدف: منع بناء الصفحة أثناء السحب (تقطيع عند التقليب السريع).
-        await quranCtrl.prewarmHafsPages(pageIndex);
-        quranCtrl.scheduleHafsAllPagesPrebuild();
       }
     });
   }

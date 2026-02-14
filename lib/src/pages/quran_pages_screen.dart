@@ -253,11 +253,6 @@ class QuranPagesScreen extends StatelessWidget {
     final int startIndex = sp - 1; // محول إلى 0-based
     final int count = (ep - sp) + 1; // عدد الصفحات
 
-    if (QuranCtrl.instance.isDownloadFonts) {
-      // تنفيذ بعد انتهاء الإطار لتجنّب أي تجميد
-      Future.microtask(() => QuranCtrl.instance
-          .prepareFonts(startIndex, isFontsLocal: isFontsLocal!));
-    }
     final String deviceLocale = Localizations.localeOf(context).languageCode;
     final String languageCode = appLanguageCode ?? deviceLocale;
     return PopScope(
@@ -384,9 +379,6 @@ class QuranPagesScreen extends StatelessWidget {
                           quranCtrl.state.currentPageNumber.value =
                               globalIndex + 1;
                           quranCtrl.saveLastPage(globalIndex + 1);
-                          if (quranCtrl.currentRecitation.requiresDownload) {
-                            await quranCtrl.prepareFonts(globalIndex);
-                          }
                         });
                       },
                       itemBuilder: (ctx, localIndex) {

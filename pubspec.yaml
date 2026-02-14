@@ -78,6 +78,7 @@ flutter:
     - assets/images/
     - assets/saadi.json.gz
     - assets/en.json.gz
+    - assets/fonts/quran_fonts_qfc4/
 
   fonts:
     - family: kufi

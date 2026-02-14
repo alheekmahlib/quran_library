@@ -40,35 +40,19 @@ extension QuranGetters on QuranCtrl {
     QuranCtrl.instance._pageController = controller;
   }
 
-  RxBool get isDownloadedFonts =>
-      currentRecitation.requiresDownload ? true.obs : false.obs;
+  RxBool get isDownloadedFonts => state.fontsReady;
 
-  bool get isPreparingDownloadFonts => state.isPreparingDownload.value;
+  bool get isPreparingDownloadFonts =>
+      state.fontsSelected.value == 0 && !state.fontsReady.value;
 
   /// اختيار قراءة/خط المصحف باستخدام [QuranRecitation] كمصدر الحقيقة.
   ///
-  /// - يحافظ على التوافق مع النظام الحالي المعتمد على `fontsSelected`.
-  /// - يراعي الويب: لا تنزيلات، التحميل يكون عند الحاجة.
-  /// - يراعي حالة الخطوط المحلية [isFontsLocal] عند دمج المكتبة داخل تطبيقات أخرى.
+  /// خطوط التجويد تُحمّل ديناميكيًا عبر [QuranFontsService] عند الاختيار.
   Future<void> selectRecitation(
     QuranRecitation recitation, {
     bool isFontsLocal = false,
   }) async {
-    state.loadedFontPages.clear();
     final int idx = recitation.recitationIndex;
-
-    final bool isAvailable = !recitation.requiresDownload ||
-        kIsWeb ||
-        isFontsLocal ||
-        state.fontsDownloadedList.contains(idx) ||
-        (state.isFontDownloaded.value && state.fontsDownloadedList.isEmpty);
-
-    if (!isAvailable) {
-      // الواجهة هي التي ستعرض خيار التحميل؛ هنا نتجنب تغيير الحالة إلى وضع غير متاح.
-      log('Recitation not available yet (needs download): $idx',
-          name: 'QuranGetters');
-      return;
-    }
 
     if (state.fontsSelected.value == idx) {
       return;
@@ -77,26 +61,16 @@ extension QuranGetters on QuranCtrl {
     state.fontsSelected.value = idx;
     GetStorage().write(_StorageConstants().fontsSelected, idx);
 
-    // للخطوط التي تتطلب تحميل: حضّر الـ Isolate والصفحة الحالية
-    if (!kIsWeb && recitation.requiresDownload) {
-      await initFontLoader();
-    }
-
     Get.forceAppUpdate();
 
-    if (recitation.requiresDownload) {
-      // حضّر الخطوط للصفحة الحالية والصفحات المجاورة
-      await prepareFonts((_quranRepository.getLastPage() ?? 1),
-          isFontsLocal: isFontsLocal);
-    } else if (idx == 0) {
-      // الخط الأساسي: حضّر البيانات مبكرًا لتفادي أي تقطيع أثناء التقليب.
-      // لا ننتظر التحضير الكامل هنا حتى لا نؤخر تبديل الواجهة.
-      final pageIndex = (_quranRepository.getLastPage() ?? 1) - 1;
-      Future(() async {
-        await ensureCoreDataLoaded();
-        await prewarmHafsPages(pageIndex);
-        // ابدأ التحضير الكامل بعد خمول بسيط.
-        scheduleHafsAllPagesPrebuild(delay: const Duration(milliseconds: 300));
+    if (idx == 0 && !state.fontsReady.value) {
+      // خطوط التجويد: فك الضغط وتسجيل الخطوط المضغوطة
+      QuranFontsService.loadAllFonts(
+        progress: state.fontsLoadProgress,
+        ready: state.fontsReady,
+      ).then((_) {
+        update();
+        update(['_pageViewBuild']);
       });
     }
   }
@@ -457,7 +431,9 @@ extension QuranGetters on QuranCtrl {
   ///
   /// Returns:
   ///   `bool`: true if the fonts are downloaded, false otherwise.
-  bool get isDownloadFonts => currentRecitation.requiresDownload;
+  /// الخطوط المضغوطة تُحمّل عبر [QuranFontsService]
+  bool get isDownloadFonts =>
+      state.fontsSelected.value == 0 && !state.fontsReady.value;
 
   void showControlToggle({bool enableMultiSelect = false}) {
     state.isShowMenu.value = false;

@@ -21,10 +21,6 @@ Color? _ayahBackgroundColor({
               .colorCode,
         ).withValues(alpha: 0.3);
   }
-  if (isSelected) {
-    return ayahSelectedBackgroundColor ??
-        const Color(0xffCDAD80).withValues(alpha: 0.25);
-  }
   return null;
 }
 
@@ -53,6 +49,7 @@ TextSpan _qpcV4SpanSegment({
   String? fontFamilyOverride,
   String? fontPackageOverride,
   bool usePaintColoring = true,
+  Paint? quranTextForeground,
   required bool isDark,
 }) {
   final quranCtrl = QuranCtrl.instance;
@@ -77,41 +74,19 @@ TextSpan _qpcV4SpanSegment({
       (isFontsLocal ? fontsName : quranCtrl.getFontPath(pageIndex));
 
   final baseTextStyle = TextStyle(
-      fontFamily: fontFamily,
-      package: fontPackageOverride,
-      fontSize: fontSize,
-      height: !usePaintColoring ? 1.7.h : 1.4.h,
-      wordSpacing: usePaintColoring ? -2 : 0,
-      backgroundColor: bg ?? (isWordSelected ? selectedWordBg : null),
-      color: (forceRed
-          ? Colors.red
-          : (textColor ?? AppColors.getTextColor(isDark)))
-      // foreground: withTajweed && !forceRed
-      //     ? null
-      //     : (Paint()
-      //       ..colorFilter = ColorFilter.mode(
-      //           forceRed ? Colors.red : AppColors.getTextColor(isDark),
-      //           BlendMode.srcATop))
-      // (usePaintColoring)
-      //     ? (withTajweed
-      //         ? isDark
-      //             ? (Paint()
-      //               ..blendMode = BlendMode.srcATop
-      //               ..invertColors = true)
-      //             : (Paint()
-      //               ..color = Colors.black
-      //               ..blendMode = BlendMode.srcATop)
-      //         : isDark
-      //             ? (Paint()
-      //               ..colorFilter = ColorFilter.mode(
-      //                   forceRed ? Colors.red : Colors.white, BlendMode.srcATop))
-      //             : (Paint()
-      //               // ..color = Colors.black
-      //               // ..blendMode = BlendMode.srcATop
-      //               ..colorFilter = ColorFilter.mode(
-      //                   forceRed ? Colors.red : Colors.black, BlendMode.srcATop)))
-      //     : null,
-      );
+    fontFamily: fontFamily,
+    package: fontPackageOverride,
+    fontSize: fontSize,
+    height: !usePaintColoring ? 1.3 : 2,
+    wordSpacing: usePaintColoring ? -2 : 0,
+    backgroundColor: bg ?? (isWordSelected ? selectedWordBg : null),
+    foreground: quranTextForeground,
+    color: quranTextForeground == null
+        ? (forceRed
+            ? Colors.red
+            : (textColor ?? AppColors.getTextColor(isDark)))
+        : null,
+  );
 
   InlineSpan? tail;
   final hasBookmark =

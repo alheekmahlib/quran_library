@@ -226,8 +226,7 @@ class GetSingleAyah extends StatelessWidget {
   /// العرض التقليدي للخطوط غير QPC
   Widget _buildTraditionalLayout(
       BuildContext context, int pageNumber, AyahModel ayah) {
-    final bool currentFontsSelected =
-        QuranCtrl.instance.currentRecitation.requiresDownload;
+    final bool currentFontsSelected = QuranCtrl.instance.isQpcV4Enabled;
 
     return RichText(
       textDirection: TextDirection.rtl,
@@ -244,11 +243,7 @@ class GetSingleAyah extends StatelessWidget {
                   : (currentFontsSelected
                       ? QuranCtrl.instance.getFontPath(pageNumber - 1)
                       : 'hafs'),
-          package: useDefaultFont!
-              ? 'quran_library'
-              : currentFontsSelected
-                  ? null
-                  : 'quran_library',
+          package: currentFontsSelected ? null : 'quran_library',
           fontSize: fontSize ?? 22,
           height: 2.0,
           fontWeight: isBold! ? FontWeight.bold : FontWeight.normal,

@@ -20,32 +20,19 @@ class QuranState {
   double surahItemHeight = 90.0;
 
   bool isQuranLoaded = false;
-  RxBool isDownloadingFonts = false.obs;
-  RxBool isFontDownloaded = false.obs;
+  RxBool isFontDownloaded = true.obs;
   RxList<int> fontsDownloadedList = <int>[].obs;
   RxInt fontsSelected = 0.obs;
-  RxDouble fontsDownloadProgress = 0.0.obs;
-  RxBool isPreparingDownload = false.obs;
-  // رقم خيار الخط الذي يتم تنزيله حاليًا (1/2)، أو -1 إذا لا يوجد تنزيل
-  RxInt downloadingFontIndex = (-1).obs;
+
+  /// هل خطوط التجويد المضغوطة جاهزة للعرض؟
+  RxBool fontsReady = false.obs;
+
+  /// نسبة تقدّم تحميل خطوط التجويد (0.0–1.0).
+  RxDouble fontsLoadProgress = 0.0.obs;
+
   RxBool isShowMenu = false.obs;
 
-  // صفحات الخطوط التي تم تحميلها لتجنب إعادة التحميل
-  // Loaded fonts pages cache to avoid reloading
-  final Set<int> loadedFontPages = <int>{};
-  List<int> get getLoadedFontPages => loadedFontPages.toList();
-
-  // حارس لتحضير الخط للصفحة الأولى مرة واحدة
-  // Guard to prepare initial page fonts once
-  bool didPrepareInitialFonts = false;
-
   final FocusNode quranPageRLFocusNode = FocusNode();
-  // متغير لتتبع رقم الجيل الحالي لطلبات التحميل المسبق
-  int _fontPreloadGeneration = 0;
-  // متغير لتجميع تحديثات الواجهة
-  bool _needsUpdate = false;
-  // المؤقت الخاص بالـ Debouncing
-  Timer? _debounceTimer;
 
   RxBool isTajweedEnabled = false.obs;
 
@@ -59,14 +46,11 @@ class QuranState {
     scaleFactor.close();
     baseScaleFactor.close();
     isScaling.close();
-    isDownloadingFonts.close();
     isFontDownloaded.close();
     fontsDownloadedList.close();
     fontsSelected.close();
-    fontsDownloadProgress.close();
-    isPreparingDownload.close();
-    downloadingFontIndex.close();
+    fontsReady.close();
+    fontsLoadProgress.close();
     quranPageRLFocusNode.dispose();
-    _debounceTimer?.cancel();
   }
 }

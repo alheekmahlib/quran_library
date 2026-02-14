@@ -62,12 +62,6 @@ class _QuranFontsPage extends StatelessWidget {
           quranCtrl.scheduleQpcV4AllPagesPrebuild();
         }
 
-        // الخط الأساسي: جهّز كل الصفحات بالخلفية عند التفعيل.
-        if (quranCtrl.state.fontsSelected.value == 0 &&
-            !quranCtrl.isHafsAllPagesPrebuilt) {
-          quranCtrl.scheduleHafsAllPagesPrebuild();
-        }
-
         return Container(
           padding: pageIndex == 0 || pageIndex == 1
               ? EdgeInsets.symmetric(

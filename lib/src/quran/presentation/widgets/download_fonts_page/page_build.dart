@@ -59,96 +59,125 @@ class PageBuild extends StatelessWidget {
 
     final blocks = quranCtrl.getQpcLayoutBlocksForPageSync(pageIndex + 1);
     if (blocks.isEmpty) {
+      QuranFontsService.loadAllFonts(
+        progress: quranCtrl.state.fontsLoadProgress,
+        ready: quranCtrl.state.fontsReady,
+      ).then((_) {
+        quranCtrl.update();
+        quranCtrl.update(['_pageViewBuild']);
+      });
       // أثناء غياب بيانات هذه الصفحة نعرض مؤشر تحميل بدل بناء متزامن.
       // تحضير الصفحة/المجاورة يتم عبر getQpcV4BlocksForPageSync.
       return const Center(child: CircularProgressIndicator.adaptive());
     }
 
-    final isHafs = quranCtrl.state.fontsSelected.value == 0;
+    // خطوط التجويد لم تُحمّل بعد — عرض مؤشر تقدّم
+    if (!quranCtrl.state.fontsReady.value) {
+      return Center(
+        child: Obx(() => Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const CircularProgressIndicator.adaptive(),
+                const SizedBox(height: 16),
+                Text(
+                  '${(quranCtrl.state.fontsLoadProgress.value * 100).toInt()}%',
+                  style: const TextStyle(
+                    fontFamily: 'cairo',
+                    package: 'quran_library',
+                    fontSize: 14,
+                  ),
+                ),
+              ],
+            )),
+      );
+    }
 
     return RepaintBoundary(
-      child: Padding(
-        padding: isHafs ? const EdgeInsets.all(8.0) : EdgeInsets.zero,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: blocks.map((b) {
-            // عند عرض سورة واحدة: نتجاهل الهيدر/البسملة من الـ layout ونتركها للـ SurahPage.
-            if (surahFilterNumber != null &&
-                (b is QpcV4SurahHeaderBlock || b is QpcV4BasmallahBlock)) {
-              return const SizedBox.shrink();
-            }
-
-            if (b is QpcV4SurahHeaderBlock) {
-              return SurahHeaderWidget(
-                b.surahNumber,
-                bannerStyle: bannerStyle ??
-                    BannerStyle().copyWith(
-                      bannerSvgHeight: 40,
-                    ),
-                surahNameStyle: surahNameStyle ??
-                    SurahNameStyle(
-                      surahNameSize: 35,
-                      surahNameColor: AppColors.getTextColor(isDark),
-                    ),
-                onSurahBannerPress: onSurahBannerPress,
-                isDark: isDark,
-              );
-            }
-
-            if (b is QpcV4BasmallahBlock) {
-              return BasmallahWidget(
-                surahNumber: b.surahNumber,
-                basmalaStyle: basmalaStyle ??
-                    BasmalaStyle(
-                      basmalaColor: AppColors.getTextColor(isDark),
-                      basmalaFontSize: 25.0,
-                      verticalPadding: 0.0,
-                    ),
-              );
-            }
-
-            if (b is QpcV4AyahLineBlock) {
-              final filteredSegments = (surahFilterNumber == null)
-                  ? b.segments
-                  : b.segments
-                      .where((s) => s.surahNumber == surahFilterNumber)
-                      .toList(growable: false);
-
-              if (filteredSegments.isEmpty) {
+      child: SizedBox(
+        height: double.infinity,
+        width: double.infinity,
+        child: FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: blocks.map((b) {
+              // عند عرض سورة واحدة: نتجاهل الهيدر/البسملة من الـ layout ونتركها للـ SurahPage.
+              if (surahFilterNumber != null &&
+                  (b is QpcV4SurahHeaderBlock || b is QpcV4BasmallahBlock)) {
                 return const SizedBox.shrink();
               }
 
-              return RepaintBoundary(
-                child: QpcV4RichTextLine(
-                  pageIndex: pageIndex,
-                  textColor: textColor,
+              if (b is QpcV4SurahHeaderBlock) {
+                return SurahHeaderWidget(
+                  b.surahNumber,
+                  bannerStyle: bannerStyle ??
+                      BannerStyle().copyWith(
+                        bannerSvgHeight: 35,
+                      ),
+                  surahNameStyle: surahNameStyle ??
+                      SurahNameStyle(
+                        surahNameSize: 35,
+                        surahNameColor: AppColors.getTextColor(isDark),
+                      ),
+                  onSurahBannerPress: onSurahBannerPress,
                   isDark: isDark,
-                  bookmarks: bookmarks,
-                  onAyahLongPress: onAyahLongPress,
-                  bookmarkList: bookmarkList,
-                  ayahIconColor: ayahIconColor,
-                  showAyahBookmarkedIcon: showAyahBookmarkedIcon,
-                  bookmarksAyahs: bookmarksAyahs,
-                  bookmarksColor: bookmarksColor,
-                  ayahSelectedBackgroundColor: ayahSelectedBackgroundColor,
-                  context: context,
-                  quranCtrl: quranCtrl,
-                  segments: filteredSegments,
-                  isFontsLocal: isFontsLocal ?? false,
-                  fontsName: fontsName ?? '',
-                  fontFamilyOverride:
-                      isHafs ? quranCtrl.currentFontFamily : null,
-                  fontPackageOverride: isHafs ? 'quran_library' : null,
-                  usePaintColoring: !isHafs,
-                  useHafsSizing: isHafs,
-                  ayahBookmarked: ayahBookmarked,
-                  isCentered: b.isCentered,
-                ),
-              );
-            }
+                );
+              }
 
-            return const SizedBox.shrink();
-          }).toList(),
+              if (b is QpcV4BasmallahBlock) {
+                return BasmallahWidget(
+                  surahNumber: b.surahNumber,
+                  basmalaStyle: basmalaStyle ??
+                      BasmalaStyle(
+                        basmalaColor: AppColors.getTextColor(isDark),
+                        basmalaFontSize: 23.0,
+                        verticalPadding: 0.0,
+                      ),
+                );
+              }
+
+              if (b is QpcV4AyahLineBlock) {
+                final filteredSegments = (surahFilterNumber == null)
+                    ? b.segments
+                    : b.segments
+                        .where((s) => s.surahNumber == surahFilterNumber)
+                        .toList(growable: false);
+
+                if (filteredSegments.isEmpty) {
+                  return const SizedBox.shrink();
+                }
+
+                return RepaintBoundary(
+                  child: QpcV4RichTextLine(
+                    pageIndex: pageIndex,
+                    textColor: textColor,
+                    isDark: isDark,
+                    bookmarks: bookmarks,
+                    onAyahLongPress: onAyahLongPress,
+                    bookmarkList: bookmarkList,
+                    ayahIconColor: ayahIconColor,
+                    showAyahBookmarkedIcon: showAyahBookmarkedIcon,
+                    bookmarksAyahs: bookmarksAyahs,
+                    bookmarksColor: bookmarksColor,
+                    ayahSelectedBackgroundColor: ayahSelectedBackgroundColor,
+                    context: context,
+                    quranCtrl: quranCtrl,
+                    segments: filteredSegments,
+                    isFontsLocal: isFontsLocal ?? false,
+                    fontsName: fontsName ?? '',
+                    fontFamilyOverride: null,
+                    fontPackageOverride: null,
+                    usePaintColoring: true,
+                    useHafsSizing: false,
+                    ayahBookmarked: ayahBookmarked,
+                    isCentered: b.isCentered,
+                  ),
+                );
+              }
+
+              return const SizedBox.shrink();
+            }).toList(),
+          ),
         ),
       ),
     );

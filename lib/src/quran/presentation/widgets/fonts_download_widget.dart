@@ -90,12 +90,12 @@ class FontsDownloadWidget extends StatelessWidget {
               ),
             ),
           ),
-          // TajweedButtonWidget(
-          //     background: background,
-          //     outlineColor: outlineColor,
-          //     downloadFontsDialogStyle: downloadFontsDialogStyle,
-          //     textColor: textColor,
-          //     accent: accent),
+          TajweedButtonWidget(
+              background: background,
+              outlineColor: outlineColor,
+              downloadFontsDialogStyle: downloadFontsDialogStyle,
+              textColor: textColor,
+              accent: accent),
         ],
       ),
     );
@@ -120,7 +120,7 @@ class TajweedButtonWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final fontsSelected = QuranCtrl.instance.state.fontsSelected.value == 1;
+    final fontsSelected = QuranCtrl.instance.state.fontsSelected.value == 0;
     final isTajweed = QuranCtrl.instance.state.isTajweedEnabled.value == true;
     String tajweedNames =
         downloadFontsDialogStyle?.tajweedOptionNames ?? 'مع التجويد';
@@ -211,62 +211,33 @@ class _FontsRecitationTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final int index = recitation.recitationIndex;
-    final bool isDownloadOption = recitation.requiresDownload;
 
     return Obx(() {
       final bool isSelected = ctrl.state.fontsSelected.value == index;
-      final bool isThisDownloading =
-          ctrl.state.downloadingFontIndex.value == index;
 
-      final bool preparing =
-          isThisDownloading ? ctrl.state.isPreparingDownload.value : false;
-      final bool downloading =
-          isThisDownloading ? ctrl.state.isDownloadingFonts.value : false;
-
-      final double progress = ctrl.state.fontsDownloadProgress.value;
-      final bool downloaded = _isDownloaded(
-        ctrl: ctrl,
-        index: index,
-        isFontsLocal: isFontsLocal,
-        isDownloadOption: isDownloadOption,
-      );
-
-      final bool canSelect = !isDownloadOption || downloaded;
-      final bool canTap = isFontsLocal || kIsWeb || canSelect;
+      // Hafs دائمًا جاهزة؛ خطوط التجويد تحتاج تحميل ديناميكي
+      final bool downloaded = index == 0 || ctrl.state.fontsReady.value;
+      final bool loading =
+          index == 1 && isSelected && !ctrl.state.fontsReady.value;
+      final double progress = ctrl.state.fontsLoadProgress.value * 100;
 
       return DownloadButtonWidget(
-        onTap: () => canTap
-            ? ctrl.selectRecitation(
-                recitation,
-                isFontsLocal: isFontsLocal,
-              )
-            : null,
-        preparing: preparing,
-        downloading: downloading,
+        onTap: () => ctrl.selectRecitation(
+          recitation,
+          isFontsLocal: isFontsLocal,
+        ),
+        preparing: false,
+        downloading: loading,
         progress: progress,
         isSelected: isSelected,
         downloaded: downloaded,
         borderColor: outlineColor,
         valueColor: style?.linearProgressColor ?? accent,
-        isVisible: isDownloadOption &&
-            !isFontsLocal &&
-            !kIsWeb &&
-            (preparing || downloading),
+        isVisible: loading,
         background: (style?.linearProgressBackgroundColor ?? background)
             .withValues(alpha: .05),
         children: [
-          (isFontsLocal || kIsWeb || !isDownloadOption)
-              ? const SizedBox.shrink()
-              : _DownloadActionButton(
-                  index: index,
-                  ctrl: ctrl,
-                  isSelected: isSelected,
-                  downloaded: downloaded,
-                  preparing: preparing,
-                  downloading: downloading,
-                  accent: accent,
-                  style: style,
-                ),
+          const SizedBox.shrink(),
           Expanded(
             flex: 9,
             child: Padding(
@@ -282,9 +253,9 @@ class _FontsRecitationTile extends StatelessWidget {
                         child: Text(
                           _titleText(
                             style: style,
-                            isDownloadOption: isDownloadOption,
-                            downloading: downloading,
-                            progress: progress,
+                            isDownloadOption: false,
+                            downloading: false,
+                            progress: 100.0,
                             index: index,
                             recitation: recitation,
                             languageCode: languageCode,
@@ -419,20 +390,6 @@ class _FontsRecitationTile extends StatelessWidget {
   //   );
   // }
 
-  static bool _isDownloaded({
-    required QuranCtrl ctrl,
-    required int index,
-    required bool isFontsLocal,
-    required bool isDownloadOption,
-  }) {
-    return isFontsLocal ||
-        (kIsWeb) ||
-        !isDownloadOption ||
-        ctrl.state.fontsDownloadedList.contains(index) ||
-        (ctrl.state.isFontDownloaded.value &&
-            ctrl.state.fontsDownloadedList.isEmpty);
-  }
-
   static String _titleText({
     required DownloadFontsDialogStyle? style,
     required bool isDownloadOption,
@@ -442,11 +399,6 @@ class _FontsRecitationTile extends StatelessWidget {
     required QuranRecitation recitation,
     required String? languageCode,
   }) {
-    if (downloading && isDownloadOption) {
-      return '${style?.downloadingText ?? 'جاري التحميل'} ${progress.toStringAsFixed(1)}%'
-          .convertNumbersAccordingToLang(languageCode: languageCode ?? 'ar');
-    }
-
     final names = style?.recitationNames;
     if (names != null) {
       final int listIndex = QuranRecitation.values.indexOf(recitation);
@@ -465,71 +417,5 @@ class _FontsRecitationTile extends StatelessWidget {
     }
 
     return recitation.arabicName;
-  }
-}
-
-class _DownloadActionButton extends StatelessWidget {
-  final int index;
-  final QuranCtrl ctrl;
-  final bool isSelected;
-  final bool downloaded;
-  final bool preparing;
-  final bool downloading;
-  final Color accent;
-  final DownloadFontsDialogStyle? style;
-
-  const _DownloadActionButton({
-    required this.index,
-    required this.ctrl,
-    required this.isSelected,
-    required this.downloaded,
-    required this.preparing,
-    required this.downloading,
-    required this.accent,
-    required this.style,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    const double buttonHeight = 55;
-
-    return SizedBox(
-      width: 40,
-      height: isSelected ? 65 : buttonHeight,
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          if (preparing || downloading)
-            SizedBox(
-              width: 22,
-              height: 22,
-              child: CircularProgressIndicator(
-                strokeWidth: 2.2,
-                color: accent,
-              ),
-            )
-          else
-            IconButton(
-              tooltip: downloaded ? 'حذف الخطوط' : 'تحميل الخطوط',
-              onPressed: () async {
-                if (downloaded) {
-                  await ctrl.deleteFontsForIndex(index);
-                  return;
-                }
-
-                if (!ctrl.state.isDownloadingFonts.value &&
-                    !ctrl.state.isPreparingDownload.value) {
-                  await ctrl.downloadAllFontsZipFile(index);
-                }
-              },
-              icon: Icon(
-                downloaded ? Icons.delete_forever : Icons.download_outlined,
-                color: style?.iconColor ?? accent,
-                size: style?.iconSize,
-              ),
-            ),
-        ],
-      ),
-    );
   }
 }

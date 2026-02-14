@@ -60,13 +60,23 @@ class QuranLibrary {
             ?.cast<int>() ??
         []);
 
+    // إذا كان خط التجويد مختارًا، ابدأ تحميل الخطوط المضغوطة في الخلفية
+    if (quranCtrl.state.fontsSelected.value == 1) {
+      QuranFontsService.loadAllFonts(
+        progress: quranCtrl.state.fontsLoadProgress,
+        ready: quranCtrl.state.fontsReady,
+      ).then((_) {
+        quranCtrl.update();
+        quranCtrl.update(['_pageViewBuild']);
+      });
+    }
+
     // if (!kIsWeb) {
     //   QuranCtrl.instance.deleteOldFonts();
     // }
 
     // Load data in parallel
     final futures = <Future<void>>[
-      QuranCtrl.instance.loadQuranDataV1(),
       QuranCtrl.instance.loadQuranDataV3(),
       QuranCtrl.instance.fetchSurahs(),
     ];
@@ -398,11 +408,10 @@ class QuranLibrary {
         ctrl: quranCtrl,
       );
 
-  /// للحصول على طريقة تنزيل الخطوط فقط قم بإستدعاء [getFontsDownloadMethod]
-  ///
-  /// to get the fonts download method just call [getFontsDownloadMethod]
+  /// @deprecated الخطوط مضمّنة الآن في الـ package — لا حاجة للتنزيل.
+  @Deprecated('Fonts are now bundled in the package. No download needed.')
   Future<void> getFontsDownloadMethod({required int fontIndex}) async {
-    await quranCtrl.downloadAllFontsZipFile(fontIndex);
+    // لا شيء — الخطوط مضمّنة
   }
 
   /// للحصول على طريقة إعداد الخطوط فقط قم بإستدعاء [getFontsPrepareMethod]
@@ -415,52 +424,25 @@ class QuranLibrary {
   //   await quranCtrl.loadPersistedFontsBulk(pages: pages, batchSize: batchSize);
   // }
 
-  /// لحذف الخطوط فقط قم بإستدعاء [getDeleteFontsMethod]
-  ///
-  /// to delete the fonts just call [getDeleteFontsMethod]
+  /// @deprecated الخطوط مضمّنة الآن — لا حاجة للحذف.
+  @Deprecated('Fonts are now bundled in the package. Nothing to delete.')
   Future<void> getDeleteFontsMethod() async {
-    await quranCtrl.deleteFonts();
+    // لا شيء
   }
 
-  /// للحصول على تقدم تنزيل الخطوط، ما عليك سوى إستدعاء [fontsDownloadProgress]
-  ///
-  /// to get fonts download progress just call [fontsDownloadProgress]
-  double get fontsDownloadProgress {
-    // قيمة تقدم التحميل كنسبة مئوية من 0 إلى 100
-    // Download progress value as a percentage from 0 to 100
-    double progress = quranCtrl.state.fontsDownloadProgress.value;
-    // التحويل إلى قيمة بين 0 و 1 للاستخدام في LinearProgressIndicator
-    // Convert to a value between 0 and 1 for use in LinearProgressIndicator
-    return progress / 100;
-  }
+  /// نسبة تقدّم تحميل خطوط التجويد (0.0–1.0).
+  double get fontsDownloadProgress => quranCtrl.state.fontsLoadProgress.value;
 
-  /// لمعرفة ما إذا كانت الخطوط محملة او لا، ما عليك سوى إستدعاء [isFontsDownloaded]
-  ///
-  /// To find out whether fonts are downloaded or not, just call [isFontsDownloaded]
-  bool get isFontsDownloaded {
-    // التحقق من قيمة isDownloadedV2Fonts في GetStorage
-    // Check the value of isDownloadedV2Fonts in GetStorage
-    final storageValue =
-        GetStorage().read<bool>(_StorageConstants().isDownloadedCodeV4Fonts);
-    // تحديث قيمة المتغير في state ليتوافق مع قيمة التخزين
-    // Update the state variable to match storage value
-    quranCtrl.state.isFontDownloaded.value = storageValue ?? false;
-    // إرجاع القيمة المحدثة
-    // Return the updated value
-    return quranCtrl.state.isFontDownloaded.value;
-  }
+  /// هل خطوط التجويد المضغوطة جاهزة للعرض؟
+  bool get isFontsDownloaded => quranCtrl.state.fontsReady.value;
 
   /// لمعرفة الخط الذي تم تحديده، ما عليك سوى إستدعاء [currentFontsSelected]
   ///
   /// To find out which font has been selected, just call [currentFontsSelected]
   int get currentFontsSelected => quranCtrl.state.fontsSelected.value;
 
-  /// لمعرفة ما إذا كانت الخطوط قيد التحميل، ما عليك سوى إستدعاء [isPreparingDownloadFonts]
-  ///
-  /// To find out whether fonts are being downloaded, just call [isPreparingDownloadFonts]
-  bool get isPreparingDownloadFonts =>
-      quranCtrl.state.isPreparingDownload.value ||
-      quranCtrl.state.isDownloadingFonts.value;
+  /// هل يجري تحميل خطوط التجويد حاليًا؟
+  bool get isPreparingDownloadFonts => quranCtrl.isPreparingDownloadFonts;
 
   /// لتبديل نوع الخط مع تحميله إذا لم يكن محملاً من قبل
   /// هذه الدالة تلقائيًا ستقوم بتحميل الخط إذا كان غير متوفر ثم تعيينه

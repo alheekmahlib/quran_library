@@ -14,21 +14,17 @@ class AyahModel {
   final String ayaTextEmlaey;
   final int juz;
   final int page;
-  final int? surahNumber;
+  int? surahNumber;
   final int? lineStart;
   final int? lineEnd;
   final int? quarter;
   final int? hizb;
-  final String? englishName;
-  final String? arabicName;
+  String? englishName;
+  String? arabicName;
   final bool? sajdaBool;
   final dynamic sajda;
   final Color? singleAyahTextColor;
   final bool? centered;
-
-  // متغير يحدد إذا كانت البيانات من ملف الخطوط المنزلة
-  // Variable to determine if data is from downloaded fonts JSON
-  final bool isDownloadedFonts;
 
   AyahModel({
     required this.ayahUQNumber,
@@ -48,7 +44,6 @@ class AyahModel {
     this.sajda,
     this.singleAyahTextColor,
     this.centered,
-    required this.isDownloadedFonts,
   });
 
   /// Factory لإنشاء الموديل من json الخاص بالخطوط المنزلة
@@ -64,7 +59,6 @@ class AyahModel {
       hizb: json['hizbQuarter'],
       sajda: json['sajda'],
       singleAyahTextColor: json['singleAyahTextColor'],
-      isDownloadedFonts: true,
       surahNumber: null,
       lineStart: null,
       lineEnd: null,
@@ -104,7 +98,6 @@ class AyahModel {
       sajda: null,
       singleAyahTextColor: null,
       centered: json['centered'] ?? false,
-      isDownloadedFonts: false,
     );
   }
 
@@ -127,7 +120,6 @@ class AyahModel {
       sajda: null,
       singleAyahTextColor: null,
       centered: false,
-      isDownloadedFonts: false,
     );
   }
 
@@ -157,7 +149,6 @@ class AyahModel {
       sajda: ayah.sajda,
       singleAyahTextColor: ayah.singleAyahTextColor,
       centered: centered ?? ayah.centered,
-      isDownloadedFonts: ayah.isDownloadedFonts,
     );
   }
 
@@ -180,9 +171,6 @@ class SurahModel {
   final String englishName;
   final String? revelationType;
   List<AyahModel> ayahs;
-  final bool isDownloadedFonts;
-  final int? startPage;
-  int? endPage;
 
   SurahModel({
     required this.surahNumber,
@@ -190,9 +178,6 @@ class SurahModel {
     required this.englishName,
     this.revelationType,
     required this.ayahs,
-    required this.isDownloadedFonts,
-    this.startPage,
-    this.endPage,
   });
 
   /// Factory لإنشاء السورة من json الخطوط المنزلة
@@ -207,9 +192,6 @@ class SurahModel {
       englishName: json['englishName'],
       revelationType: json['revelationType'],
       ayahs: ayahsList,
-      isDownloadedFonts: true,
-      startPage: json['start_page'],
-      endPage: json['end_page'],
     );
   }
 
@@ -225,9 +207,6 @@ class SurahModel {
       englishName: json['name_en'],
       revelationType: null,
       ayahs: ayahsList,
-      isDownloadedFonts: false,
-      startPage: json['start_page'],
-      endPage: json['end_page'],
     );
   }
 }

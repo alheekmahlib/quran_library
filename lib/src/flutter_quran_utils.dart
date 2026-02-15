@@ -213,8 +213,8 @@ class QuranLibrary {
   /// [jumpToSurah] let's you navigate to any quran surah with surah number
   /// Note it receives surah number not surah index
   void jumpToSurah(int surah) {
-    jumpToPage(quranCtrl.surahsStart[surah - 1] + 1);
-    log('Jumped to Surah $surah at page ${quranCtrl.surahsStart[surah - 1] + 1}');
+    jumpToPage(quranCtrl.state.surahs[surah - 1].ayahs.first.page);
+    log('Jumped to Surah $surah at page ${quranCtrl.state.surahs[surah - 1].ayahs.first.page}');
   }
 
   /// [allJoz] returns list of all Quran joz' names
@@ -251,10 +251,9 @@ class QuranLibrary {
     if (_cache.containsKey(cacheKey)) {
       return _cache[cacheKey] as List<String>;
     }
-    final surahList = quranCtrl.surahs
-        .map((surah) => isArabic
-            ? 'سورة ${surah.arabicName}'
-            : 'Surah ${surah.englishName}')
+    final surahList = quranCtrl.surahsList
+        .map((surah) =>
+            isArabic ? 'سورة ${surah.name}' : 'Surah ${surah.englishName}')
         .toList();
     _cache[cacheKey] = surahList;
     return surahList;

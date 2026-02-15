@@ -12,7 +12,6 @@ class GetSingleAyah extends StatelessWidget {
   final bool? islocalFont;
   final String? fontsName;
   final int? pageIndex;
-  final bool? useDefaultFont;
   final Function(LongPressStartDetails details, AyahModel ayah)?
       onAyahLongPress;
   final Color? ayahIconColor;
@@ -33,7 +32,6 @@ class GetSingleAyah extends StatelessWidget {
     this.islocalFont = false,
     this.fontsName,
     this.pageIndex,
-    this.useDefaultFont = false,
     this.onAyahLongPress,
     this.ayahIconColor,
     this.showAyahBookmarkedIcon = false,
@@ -89,8 +87,6 @@ class GetSingleAyah extends StatelessWidget {
         child: CircularProgressIndicator.adaptive(),
       );
     }
-
-    final isHafs = quranCtrl.state.fontsSelected.value == 0;
     final ayahUq = ayah.ayahUQNumber;
 
     // استخراج segments الخاصة بالآية المطلوبة فقط
@@ -114,16 +110,13 @@ class GetSingleAyah extends StatelessWidget {
       id: 'single_ayah_$ayahUq',
       builder: (_) => LayoutBuilder(
         builder: (ctx, constraints) {
-          final fs = isHafs
-              ? 100.0
-              : (fontSize ??
-                  PageFontSizeHelper.getFontSize(pageNumber - 1, ctx));
+          final fs =
+              (fontSize ?? PageFontSizeHelper.getFontSize(pageNumber - 1, ctx));
 
           return _buildRichTextFromSegments(
             context: context,
             segments: ayahSegments,
             fontSize: fs,
-            isHafs: isHafs,
             ayahUq: ayahUq,
             pageNumber: pageNumber,
           );
@@ -137,7 +130,6 @@ class GetSingleAyah extends StatelessWidget {
     required BuildContext context,
     required List<QpcV4WordSegment> segments,
     required double fontSize,
-    required bool isHafs,
     required int ayahUq,
     required int pageNumber,
   }) {
@@ -148,78 +140,56 @@ class GetSingleAyah extends StatelessWidget {
     final ayahBookmarked = bookmarksAyahs.toList();
     final allBookmarksList = bookmarks.values.expand((list) => list).toList();
 
-    return FittedBox(
-      fit: BoxFit.fitWidth,
-      child: RichText(
-        textDirection: TextDirection.rtl,
-        textAlign: TextAlign.center,
-        softWrap: true,
-        overflow: TextOverflow.visible,
-        maxLines: null,
-        text: TextSpan(
-          children: List.generate(segments.length, (segmentIndex) {
-            final seg = segments[segmentIndex];
-            final uq = seg.ayahUq;
-            final isSelectedCombined =
-                quranCtrl.selectedAyahsByUnequeNumber.contains(uq) ||
-                    quranCtrl.externallyHighlightedAyahs.contains(uq);
+    return RichText(
+      textDirection: TextDirection.rtl,
+      textAlign: TextAlign.right,
+      softWrap: true,
+      overflow: TextOverflow.visible,
+      maxLines: null,
+      text: TextSpan(
+        children: List.generate(segments.length, (segmentIndex) {
+          final seg = segments[segmentIndex];
+          final uq = seg.ayahUq;
+          final isSelectedCombined =
+              quranCtrl.selectedAyahsByUnequeNumber.contains(uq) ||
+                  quranCtrl.externallyHighlightedAyahs.contains(uq);
 
-            final ref = WordRef(
-              surahNumber: seg.surahNumber,
-              ayahNumber: seg.ayahNumber,
-              wordNumber: seg.wordNumber,
-            );
+          final ref = WordRef(
+            surahNumber: seg.surahNumber,
+            ayahNumber: seg.ayahNumber,
+            wordNumber: seg.wordNumber,
+          );
 
-            final info = wordInfoCtrl.getRecitationsInfoSync(ref);
-            final hasKhilaf = info?.hasKhilaf ?? false;
+          final info = wordInfoCtrl.getRecitationsInfoSync(ref);
+          final hasKhilaf = info?.hasKhilaf ?? false;
 
-            return _qpcV4SpanSegment(
-              context: context,
-              pageIndex: pageNumber - 1,
-              isSelected: isSelectedCombined,
-              showAyahBookmarkedIcon: showAyahBookmarkedIcon,
-              fontSize: fontSize,
-              ayahUQNum: uq,
-              ayahNumber: seg.ayahNumber,
-              glyphs: seg.glyphs,
-              showAyahNumber: seg.isAyahEnd,
-              wordRef: ref,
-              isWordKhilaf: hasKhilaf,
-              onLongPressStart: (details) {
-                final ayahModel = quranCtrl.getAyahByUq(uq);
-                if (onAyahLongPress != null) {
-                  onAyahLongPress!(details, ayahModel);
-                  quranCtrl.toggleAyahSelection(uq);
-                  return;
-                }
-                quranCtrl.toggleAyahSelection(uq);
-                final themedTafsirStyle = TafsirTheme.of(context)?.style;
-                showAyahMenuDialog(
-                  context: context,
-                  isDark: isDark ?? false,
-                  ayah: ayahModel,
-                  position: details.globalPosition,
-                  index: segmentIndex,
-                  pageIndex: pageNumber - 1,
-                  externalTafsirStyle: themedTafsirStyle,
-                );
-              },
-              textColor: textColor ?? AppColors.getTextColor(isDark ?? false),
-              ayahIconColor: ayahIconColor,
-              allBookmarksList: allBookmarksList,
-              bookmarksAyahs: bookmarksAyahs,
-              bookmarksColor: bookmarksColor,
-              ayahSelectedBackgroundColor: ayahSelectedBackgroundColor,
-              isFontsLocal: islocalFont ?? false,
-              fontsName: fontsName ?? '',
-              fontFamilyOverride: isHafs ? quranCtrl.currentFontFamily : null,
-              fontPackageOverride: isHafs ? 'quran_library' : null,
-              usePaintColoring: !isHafs,
-              ayahBookmarked: ayahBookmarked,
-              isDark: isDark ?? false,
-            );
-          }),
-        ),
+          return _qpcV4SpanSegment(
+            context: context,
+            pageIndex: pageNumber - 1,
+            isSelected: isSelectedCombined,
+            showAyahBookmarkedIcon: showAyahBookmarkedIcon,
+            fontSize: fontSize,
+            ayahUQNum: uq,
+            ayahNumber: seg.ayahNumber,
+            glyphs: seg.glyphs,
+            showAyahNumber: seg.isAyahEnd,
+            wordRef: ref,
+            isWordKhilaf: hasKhilaf,
+            textColor: textColor ?? AppColors.getTextColor(isDark ?? false),
+            ayahIconColor: ayahIconColor,
+            allBookmarksList: allBookmarksList,
+            bookmarksAyahs: bookmarksAyahs,
+            bookmarksColor: bookmarksColor,
+            ayahSelectedBackgroundColor: ayahSelectedBackgroundColor,
+            isFontsLocal: islocalFont ?? false,
+            fontsName: fontsName ?? '',
+            fontFamilyOverride: null,
+            fontPackageOverride: null,
+            usePaintColoring: true,
+            ayahBookmarked: ayahBookmarked,
+            isDark: isDark ?? false,
+          );
+        }),
       ),
     );
   }
@@ -239,12 +209,10 @@ class GetSingleAyah extends StatelessWidget {
         style: TextStyle(
           fontFamily: islocalFont == true
               ? fontsName
-              : useDefaultFont!
-                  ? 'hafs'
-                  : (currentFontsSelected
-                      ? QuranCtrl.instance
-                          .getFontPath(pageNumber - 1, isDark: isDark ?? false)
-                      : 'hafs'),
+              : (currentFontsSelected
+                  ? QuranCtrl.instance
+                      .getFontPath(pageNumber - 1, isDark: isDark ?? false)
+                  : 'hafs'),
           package: currentFontsSelected ? null : 'quran_library',
           fontSize: fontSize ?? 22,
           height: 2.0,
@@ -253,14 +221,13 @@ class GetSingleAyah extends StatelessWidget {
         ),
         children: [
           TextSpan(
-            text: useDefaultFont!
-                ? '${ayah.text} '
-                : currentFontsSelected || !useDefaultFont!
-                    ? '${ayah.text.replaceAll('\n', '').split(' ').join(' ')} '
-                    : '${ayah.text} ',
+            text: currentFontsSelected
+                ? '${ayah.text.replaceAll('\n', '').split(' ').join(' ')} '
+                : '${ayah.text} ',
           ),
-          useDefaultFont!
-              ? TextSpan(
+          currentFontsSelected
+              ? const TextSpan()
+              : TextSpan(
                   text: '${ayah.ayahNumber}'
                       .convertEnglishNumbersToArabic('${ayah.ayahNumber}'),
                   style: TextStyle(
@@ -269,19 +236,7 @@ class GetSingleAyah extends StatelessWidget {
                     color:
                         ayahIconColor ?? Theme.of(context).colorScheme.primary,
                   ),
-                )
-              : currentFontsSelected
-                  ? const TextSpan()
-                  : TextSpan(
-                      text: '${ayah.ayahNumber}'
-                          .convertEnglishNumbersToArabic('${ayah.ayahNumber}'),
-                      style: TextStyle(
-                        fontFamily: 'ayahNumber',
-                        package: 'quran_library',
-                        color: ayahIconColor ??
-                            Theme.of(context).colorScheme.primary,
-                      ),
-                    ),
+                ),
         ],
       ),
     );

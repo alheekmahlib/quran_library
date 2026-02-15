@@ -195,7 +195,6 @@ extension QuranGetters on QuranCtrl {
                 englishName: 'Unknown',
                 revelationType: 'Unknown',
                 ayahs: [],
-                isDownloadedFonts: false,
               ));
       if (!surahsOnPage.any((s) => s.surahNumber == surah.surahNumber) &&
           surah.surahNumber != -1) {

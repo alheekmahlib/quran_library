@@ -161,9 +161,6 @@ class SurahCtrl extends GetxController {
       arabicName: firstAyah.arabicName!,
       englishName: firstAyah.englishName!,
       ayahs: surahAyahs,
-      isDownloadedFonts: false,
-      startPage: 1,
-      endPage: surahPages.length,
     );
   }
 

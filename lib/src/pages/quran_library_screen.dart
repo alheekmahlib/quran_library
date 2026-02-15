@@ -546,7 +546,7 @@ class QuranLibraryScreen extends StatelessWidget {
         onPageChanged!(pageIndex);
       }
       quranCtrl.state.currentPageNumber.value = pageIndex + 1;
-      // quranCtrl.saveLastPage(pageIndex + 1);
+      quranCtrl.saveLastPage(pageIndex + 1);
 
       if (quranCtrl.state.fontsSelected.value == 0) {
         // جدولة تحضير QPC v4 بعد خمول حتى لا ينافس أثناء التقليب.

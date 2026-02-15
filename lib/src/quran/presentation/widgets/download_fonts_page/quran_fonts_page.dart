@@ -55,7 +55,11 @@ class _QuranFontsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final isLandscape =
         MediaQuery.of(context).orientation == Orientation.landscape;
+    final size = MediaQuery.sizeOf(context);
+    final isMobile =
+        (Responsive.isMobile(context) || Responsive.isMobileLarge(context));
     return GetBuilder<QuranCtrl>(
+      id: 'qpc_page_$pageIndex',
       builder: (quranCtrl) {
         // QPC v4: التحضير الكامل يتم بعد خمول لتفادي التقطيع أثناء التقليب.
         if (quranCtrl.isQpcV4Enabled && !quranCtrl.isQpcV4AllPagesPrebuilt) {
@@ -64,23 +68,18 @@ class _QuranFontsPage extends StatelessWidget {
 
         return Container(
           padding: pageIndex == 0 || pageIndex == 1
-              ? EdgeInsets.symmetric(
-                  horizontal: MediaQuery.sizeOf(context).width * .08)
+              ? EdgeInsets.symmetric(horizontal: size.width * .08)
               : const EdgeInsets.symmetric(horizontal: 8.0),
           margin: pageIndex == 0 || pageIndex == 1
               ? EdgeInsets.symmetric(
                   vertical: UiHelper.currentOrientation(
-                      MediaQuery.sizeOf(context).width * .16,
-                      MediaQuery.sizeOf(context).height * .01,
-                      context))
+                      size.width * .16, size.height * .01, context))
               : EdgeInsets.zero,
           child: quranCtrl.state.pages.isEmpty
               ? circularProgressWidget ??
                   const CircularProgressIndicator.adaptive()
               : (!kIsWeb && (Platform.isAndroid || Platform.isIOS))
-                  ? isLandscape &&
-                          (Responsive.isMobile(context) ||
-                              Responsive.isMobileLarge(context))
+                  ? isLandscape && isMobile
                       ? SingleChildScrollView(
                           child: PageBuild(
                             pageIndex: pageIndex,

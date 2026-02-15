@@ -25,6 +25,9 @@ class TopAndBottomWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isMobileLargeOrDesktop = Responsive.isMobile(context) ||
+        Responsive.isMobileLarge(context) ||
+        Responsive.isDesktop(context);
     return UiHelper.currentOrientation(
       // شرح: التخطيط العمودي (Portrait)
       // Explanation: Portrait layout
@@ -67,9 +70,7 @@ class TopAndBottomWidget extends StatelessWidget {
 
       // شرح: التخطيط الأفقي (Landscape)
       // Explanation: Landscape layout
-      Responsive.isMobile(context) ||
-              Responsive.isMobileLarge(context) ||
-              Responsive.isDesktop(context)
+      isMobileLargeOrDesktop
           ? Column(
               children: [
                 BuildTopSection(

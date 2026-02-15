@@ -59,12 +59,14 @@ class PageBuild extends StatelessWidget {
 
     final blocks = quranCtrl.getQpcLayoutBlocksForPageSync(pageIndex + 1);
     if (blocks.isEmpty) {
-      QuranFontsService.loadAllFonts(
-        progress: quranCtrl.state.fontsLoadProgress,
-        ready: quranCtrl.state.fontsReady,
-      ).then((_) {
-        quranCtrl.update();
-        quranCtrl.update(['_pageViewBuild']);
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        QuranFontsService.loadAllFonts(
+          progress: quranCtrl.state.fontsLoadProgress,
+          ready: quranCtrl.state.fontsReady,
+        ).then((_) {
+          quranCtrl.update();
+          quranCtrl.update(['_pageViewBuild']);
+        });
       });
       // أثناء غياب بيانات هذه الصفحة نعرض مؤشر تحميل بدل بناء متزامن.
       // تحضير الصفحة/المجاورة يتم عبر getQpcV4BlocksForPageSync.
@@ -81,10 +83,11 @@ class PageBuild extends StatelessWidget {
                 const SizedBox(height: 16),
                 Text(
                   '${(quranCtrl.state.fontsLoadProgress.value * 100).toInt()}%',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontFamily: 'cairo',
                     package: 'quran_library',
                     fontSize: 14,
+                    color: AppColors.getTextColor(isDark),
                   ),
                 ),
               ],
@@ -168,7 +171,6 @@ class PageBuild extends StatelessWidget {
                     fontFamilyOverride: null,
                     fontPackageOverride: null,
                     usePaintColoring: true,
-                    useHafsSizing: false,
                     ayahBookmarked: ayahBookmarked,
                     isCentered: b.isCentered,
                   ),

@@ -109,6 +109,8 @@ class WordInfoCtrl extends GetxController
   }
 
   Future<void> prewarmRecitationsSurahs(Iterable<int> surahNumbers) async {
+    log('Prewarming recitations for surahs: $surahNumbers',
+        name: 'WordInfoCtrl');
     final unique = surahNumbers.toSet();
     var didPrewarmAny = false;
     for (final s in unique) {

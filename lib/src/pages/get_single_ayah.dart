@@ -146,6 +146,7 @@ class GetSingleAyah extends StatelessWidget {
     final bookmarks = bookmarksCtrl.bookmarks;
     final bookmarksAyahs = bookmarksCtrl.bookmarksAyahs;
     final ayahBookmarked = bookmarksAyahs.toList();
+    final allBookmarksList = bookmarks.values.expand((list) => list).toList();
 
     return FittedBox(
       fit: BoxFit.fitWidth,
@@ -205,7 +206,7 @@ class GetSingleAyah extends StatelessWidget {
               },
               textColor: textColor ?? AppColors.getTextColor(isDark ?? false),
               ayahIconColor: ayahIconColor,
-              bookmarks: bookmarks,
+              allBookmarksList: allBookmarksList,
               bookmarksAyahs: bookmarksAyahs,
               bookmarksColor: bookmarksColor,
               ayahSelectedBackgroundColor: ayahSelectedBackgroundColor,
@@ -241,7 +242,8 @@ class GetSingleAyah extends StatelessWidget {
               : useDefaultFont!
                   ? 'hafs'
                   : (currentFontsSelected
-                      ? QuranCtrl.instance.getFontPath(pageNumber - 1)
+                      ? QuranCtrl.instance
+                          .getFontPath(pageNumber - 1, isDark: isDark ?? false)
                       : 'hafs'),
           package: currentFontsSelected ? null : 'quran_library',
           fontSize: fontSize ?? 22,

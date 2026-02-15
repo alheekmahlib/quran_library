@@ -14,11 +14,11 @@ extension QuranGetters on QuranCtrl {
 
   // شرح: تحسين PageController للحصول على أداء أفضل
   // Explanation: Optimized PageController for better performance
-  PageController get quranPagesController {
+  PreloadPageController get quranPagesController {
     // إذا لم يكن الـ controller مُهيأً بعد، أنشئه
     // لا تتحقق من hasClients هنا لأن ذلك يسبب إعادة إنشاء الـ controller
     // قبل أن يتم ربطه بالـ PageView
-    QuranCtrl.instance._pageController ??= PageController(
+    QuranCtrl.instance._pageController ??= PreloadPageController(
       initialPage: (_quranRepository.getLastPage() ?? 1) - 1,
       keepPage: true,
       viewportFraction: 1.0,
@@ -26,7 +26,7 @@ extension QuranGetters on QuranCtrl {
     return QuranCtrl.instance._pageController!;
   }
 
-  set quranPagesController(PageController controller) {
+  set quranPagesController(PreloadPageController controller) {
     // حفظ الـ controller الجديد
     // إذا كان هناك controller قديم، قم بالتخلص منه أولاً
     if (QuranCtrl.instance._pageController != null &&

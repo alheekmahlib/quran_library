@@ -64,8 +64,8 @@ class QuranCtrl extends GetxController {
   late FocusNode searchFocusNode;
   late TextEditingController searchTextController;
 
-  // PageController الداخلي
-  PageController? _pageController;
+  // PreloadPageController الداخلي
+  PreloadPageController? _pageController;
 
   // late QuranSearch quranSearch;
 
@@ -262,8 +262,8 @@ class QuranCtrl extends GetxController {
         }
       }
 
-      // إعادة رسم بعد اكتمال التحضير.
-      update();
+      // لا حاجة لـ update() هنا: الصفحات المعروضة تمت تغذيتها بالفعل عبر prewarmQpcV4Pages.
+      // الصفحات البعيدة ستحصل على البيانات عند التقليب إليها.
     }();
 
     await _qpcV4PrebuildAllFuture;
@@ -276,6 +276,8 @@ class QuranCtrl extends GetxController {
     if (!isQpcV4Enabled) return;
     if (_qpcV4BlocksByPage.length >= 604) return;
     if (_qpcV4PrebuildStarted) return;
+    log('Scheduling QPC v4 prebuild for all pages after $delay of idle time',
+        name: 'QPCv4');
 
     _qpcV4IdlePrebuildTimer?.cancel();
     _qpcV4IdlePrebuildTimer = Timer(delay, () {
@@ -288,6 +290,8 @@ class QuranCtrl extends GetxController {
   List<QpcV4RenderBlock> getQpcV4BlocksForPageSync(int pageNumber) {
     final cached = _qpcV4BlocksByPage[pageNumber];
     if (cached != null) return cached;
+    log('Building QPC v4 blocks for page $pageNumber synchronously',
+        name: 'QPCv4');
 
     // تجنّب البناء المتزامن داخل build للصفحة (يسبب jank).
     // إذا لم تكن الصفحة جاهزة، نعطي أولوية لبناء هذه الصفحة (والمجاورة) أولاً،
@@ -329,7 +333,10 @@ class QuranCtrl extends GetxController {
     }
 
     if (didBuildAny) {
-      update();
+      // تحديث الصفحات المعنيّة فقط (بدل update() الذي يُعيد بناء الكل)
+      update([
+        for (final p in candidates) 'qpc_page_${p - 1}',
+      ]);
     }
   }
 
@@ -484,7 +491,7 @@ class QuranCtrl extends GetxController {
       );
     } else {
       log('Creating new PageController for page: $page', name: 'QuranCtrl');
-      quranPagesController = PageController(
+      quranPagesController = PreloadPageController(
         initialPage: page,
         keepPage: true,
         viewportFraction: 1.0,
@@ -506,7 +513,7 @@ class QuranCtrl extends GetxController {
       );
     } else {
       log('Creating new PageController for page: $page', name: 'QuranCtrl');
-      quranPagesController = PageController(
+      quranPagesController = PreloadPageController(
         initialPage: page,
         keepPage: true,
         viewportFraction: 1.0,
@@ -514,7 +521,7 @@ class QuranCtrl extends GetxController {
     }
   }
 
-  PageController getPageController(BuildContext context) {
+  PreloadPageController getPageController(BuildContext context) {
     final Orientation orientation = MediaQuery.of(context).orientation;
 
     // احسب قيمة الـ viewportFraction الهدف بناءً على حجم/اتجاه الشاشة
@@ -550,7 +557,7 @@ class QuranCtrl extends GetxController {
       currentIndex = currentIndex.clamp(0, 603);
 
       final oldController = quranPagesController;
-      quranPagesController = PageController(
+      quranPagesController = PreloadPageController(
         initialPage: currentIndex,
         keepPage: kIsWeb || GetPlatform.isDesktop,
         viewportFraction: targetFraction,
@@ -584,7 +591,7 @@ class QuranCtrl extends GetxController {
     }
     selectedAyahsByUnequeNumber.refresh();
     // إعادة بناء محدودة للصفحة الحالية فقط
-    update(['selection_page_']);
+    _updateSelectionPages();
     log('selectedAyahs: ${selectedAyahsByUnequeNumber.join(', ')}');
   }
 
@@ -596,7 +603,7 @@ class QuranCtrl extends GetxController {
       selectedAyahsByUnequeNumber.add(ayahUniqueNumber);
     }
     selectedAyahsByUnequeNumber.refresh();
-    update(['selection_page_']);
+    _updateSelectionPages();
   }
 
   void setMultiSelectMode(bool enabled) {
@@ -720,7 +727,21 @@ class QuranCtrl extends GetxController {
 
   void clearSelection() {
     selectedAyahsByUnequeNumber.clear();
-    update(['selection_page_']);
+    _updateSelectionPages();
+  }
+
+  /// إعادة بناء سطور الصفحة الحالية والمجاورتين فقط (selection_page_N)
+  /// بالإضافة للـ text_scale_page_ القديم للتوافق
+  void _updateSelectionPages() {
+    final current = state.currentPageNumber.value - 1; // 0-based pageIndex
+    final ids = <String>[
+      'selection_page_$current',
+      if (current > 0) 'selection_page_${current - 1}',
+      if (current < 603) 'selection_page_${current + 1}',
+      // توافق مع text_scale_rich_text_build
+      'selection_page_',
+    ];
+    update(ids);
   }
 
   Widget textScale(dynamic widget1, dynamic widget2) {

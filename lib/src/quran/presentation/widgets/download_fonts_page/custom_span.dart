@@ -5,16 +5,15 @@ Color? _ayahBackgroundColor({
   required bool isSelected,
   required List<int> bookmarksAyahs,
   required List<int> ayahBookmarked,
-  required Map<int, List<BookmarkModel>> bookmarks,
+  required List<BookmarkModel> allBookmarksList,
   Color? bookmarksColor,
   Color? ayahSelectedBackgroundColor,
 }) {
-  final allBookmarks = bookmarks.values.expand((list) => list).toList();
   if (ayahBookmarked.contains(ayahUQNum)) return bookmarksColor;
   if (bookmarksAyahs.contains(ayahUQNum)) {
     return bookmarksColor ??
         Color(
-          allBookmarks
+          allBookmarksList
               .firstWhere(
                 (b) => b.ayahId == ayahUQNum,
               )
@@ -39,9 +38,9 @@ TextSpan _qpcV4SpanSegment({
   _LongPressStartDetailsFunction? onLongPressStart,
   required Color? textColor,
   required Color? ayahIconColor,
-  required Map<int, List<BookmarkModel>> bookmarks,
   required List<int> bookmarksAyahs,
   required List<int> ayahBookmarked,
+  required List<BookmarkModel> allBookmarksList,
   Color? bookmarksColor,
   Color? ayahSelectedBackgroundColor,
   required bool isFontsLocal,
@@ -59,7 +58,7 @@ TextSpan _qpcV4SpanSegment({
     isSelected: isSelected,
     bookmarksAyahs: bookmarksAyahs,
     ayahBookmarked: ayahBookmarked,
-    bookmarks: bookmarks,
+    allBookmarksList: allBookmarksList,
     bookmarksColor: bookmarksColor,
     ayahSelectedBackgroundColor: ayahSelectedBackgroundColor,
   );
@@ -71,7 +70,9 @@ TextSpan _qpcV4SpanSegment({
   final Color selectedWordBg = const Color(0xffCDAD80).withValues(alpha: 0.25);
 
   final fontFamily = fontFamilyOverride ??
-      (isFontsLocal ? fontsName : quranCtrl.getFontPath(pageIndex));
+      (isFontsLocal
+          ? fontsName
+          : quranCtrl.getFontPath(pageIndex, isDark: isDark));
 
   final baseTextStyle = TextStyle(
     fontFamily: fontFamily,

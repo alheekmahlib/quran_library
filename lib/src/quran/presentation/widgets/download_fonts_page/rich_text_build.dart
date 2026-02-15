@@ -1,6 +1,6 @@
 part of '/quran.dart';
 
-class QpcV4RichTextLine extends StatelessWidget {
+class QpcV4RichTextLine extends StatefulWidget {
   const QpcV4RichTextLine({
     super.key,
     required this.pageIndex,
@@ -22,7 +22,6 @@ class QpcV4RichTextLine extends StatelessWidget {
     this.fontFamilyOverride,
     this.fontPackageOverride,
     this.usePaintColoring = true,
-    this.useHafsSizing = false,
     required this.ayahBookmarked,
     required this.isCentered,
   });
@@ -47,265 +46,247 @@ class QpcV4RichTextLine extends StatelessWidget {
   final String? fontFamilyOverride;
   final String? fontPackageOverride;
   final bool usePaintColoring;
-  final bool useHafsSizing;
   final List<int> ayahBookmarked;
   final bool isCentered;
 
   @override
+  State<QpcV4RichTextLine> createState() => _QpcV4RichTextLineState();
+}
+
+class _QpcV4RichTextLineState extends State<QpcV4RichTextLine> {
+  /// كاش الويدجت المبني — يُعاد بناؤه فقط عند تغيّر selection/bookmarks/word_info
+  Widget? _cachedWidget;
+
+  /// بصمة البيانات المؤثرة على البناء — عند تغيّرها يُبطل الكاش
+  int _lastFingerprint = 0;
+
+  /// حساب بصمة سريعة للبيانات التي تؤثر فعلياً على شكل الويدجت
+  int _computeFingerprint() {
+    final quranCtrl = widget.quranCtrl;
+    // الآيات المحددة + الآيات المظللة برمجياً
+    final selHash = Object.hashAll(quranCtrl.selectedAyahsByUnequeNumber);
+    final extHash = Object.hashAll(quranCtrl.externallyHighlightedAyahs);
+    // bookmarks المؤثرة على هذا السطر
+    final bmHash = Object.hashAll(widget.bookmarksAyahs);
+    final abHash = Object.hashAll(widget.ayahBookmarked);
+    // إعدادات العرض
+    final isDarkHash = widget.isDark.hashCode;
+    final tajweedHash =
+        QuranCtrl.instance.state.isTajweedEnabled.value.hashCode;
+    final wordSelectedHash =
+        WordInfoCtrl.instance.selectedWordRef.value.hashCode;
+    // حالة تبويب القراءات العشر
+    final tenRecHash = WordInfoCtrl.instance.tabController.index.hashCode;
+
+    return Object.hash(selHash, extHash, bmHash, abHash, isDarkHash,
+        tajweedHash, wordSelectedHash, tenRecHash);
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final bookmarksSet = bookmarksAyahs.toSet();
     final wordInfoCtrl = WordInfoCtrl.instance;
-    final withTajweed = QuranCtrl.instance.state.isTajweedEnabled.value;
-    final isTenRecitations = WordInfoCtrl.instance.isTenRecitations;
 
-    // بعد تحميل بيانات القراءات، نحاول تهيئة سور هذه السطر بالخلفية.
-    // ملاحظة: استخدمنا prewarm مجمّع + حارس لتجنب تكرار الاستدعاءات أثناء build.
-    if (wordInfoCtrl.isKindAvailable(WordInfoKind.recitations)) {
-      final surahs = segments.map((s) => s.surahNumber);
-      Future(() => wordInfoCtrl.prewarmRecitationsSurahs(surahs));
-    }
-
+    // GetBuilder بمعرّف خاص بالصفحة — لا يُعاد بناؤه من update() بدون id
     return GetBuilder<QuranCtrl>(
-      id: 'selection_page_',
-      builder: (_) => LayoutBuilder(
-        builder: (ctx, constraints) {
-          final fs = useHafsSizing
-                  ? 100.0
-                  //  PageFontSizeHelper.getFontSize(
-                  //       pageIndex,
-                  //       ctx,
-                  //     ) -
-                  //     4
-                  : PageFontSizeHelper.getFontSize(
-                      pageIndex,
-                      ctx,
-                    )
-              //     :
-              //     PageFontSizeHelper.qcfFontSize(
-              //   context: ctx,
-              //   pageIndex: pageIndex,
-              //   maxWidth: constraints.maxWidth,
-              // )
-              ;
-          // ---------- تحديد أسلوب التلوين ----------
-          final Color resolvedTextColor =
-              textColor ?? AppColors.getTextColor(isDark);
+      id: 'selection_page_${widget.pageIndex}',
+      builder: (_) => GetBuilder<WordInfoCtrl>(
+        id: 'word_info_data',
+        builder: (_) {
+          // قراءة القيم داخل الـ builder حتى تعكس آخر حالة عند كل rebuild
+          final withTajweed = QuranCtrl.instance.state.isTajweedEnabled.value;
+          final isTenRecitations = wordInfoCtrl.isTenRecitations;
 
-          // ColorFilter يُطبَّق انتقائياً عبر الـ RenderBox
-          // (يُصفّي النص القرآني فقط ولا يؤثر على أرقام الآيات)
-          ColorFilter? quranColorFilter;
-          if (!withTajweed && !isTenRecitations) {
-            // بدون تجويد بدون عشر قراءات → لون موحّد
-            quranColorFilter =
-                ColorFilter.mode(resolvedTextColor, BlendMode.srcATop);
-          } else if (withTajweed && isDark) {
-            // تجويد + وضع داكن → عكس الألوان
-            quranColorFilter = const ColorFilter.matrix([
-              -1, 0, 0, 0, 255, //
-              0, -1, 0, 0, 255, //
-              0, 0, -1, 0, 255, //
-              0, 0, 0, 1, 0, //
-            ]);
+          // prewarm القراءات في خلفية
+          if (wordInfoCtrl.isKindAvailable(WordInfoKind.recitations) &&
+              wordInfoCtrl.tabController.index == 1) {
+            final surahs = widget.segments.map((s) => s.surahNumber);
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              wordInfoCtrl.prewarmRecitationsSurahs(surahs);
+            });
           }
 
-          // foreground Paint فقط للقراءات العشر بدون تجويد
-          // (لدعم تلوين كلمات الخلاف بالأحمر لكل كلمة)
-          Paint? normalQTextPaint;
-          Paint? redQTextPaint;
-          if (!withTajweed && isTenRecitations) {
-            normalQTextPaint = Paint()
-              ..colorFilter =
-                  ColorFilter.mode(resolvedTextColor, BlendMode.srcATop);
-            redQTextPaint = Paint()
-              ..colorFilter =
-                  const ColorFilter.mode(Colors.red, BlendMode.srcATop);
+          // فحص البصمة: إذا لم تتغيّر البيانات الفعلية → أعد الكاش
+          final fp = _computeFingerprint();
+          if (_cachedWidget != null && fp == _lastFingerprint) {
+            return _cachedWidget!;
           }
+          _lastFingerprint = fp;
 
-          return _richTextBuild(
-            wordInfoCtrl,
-            context,
-            fs,
-            bookmarksSet,
-            normalQTextPaint: normalQTextPaint,
-            redQTextPaint: redQTextPaint,
-            quranColorFilter: quranColorFilter,
-            withTajweed: withTajweed,
-            isTenRecitations: isTenRecitations,
+          _cachedWidget = LayoutBuilder(
+            builder: (ctx, constraints) {
+              final fs = PageFontSizeHelper.getFontSize(
+                widget.pageIndex,
+                ctx,
+              );
+
+              Paint? redQTextPaint;
+              if (!withTajweed && isTenRecitations) {
+                redQTextPaint = Paint()
+                  ..colorFilter =
+                      const ColorFilter.mode(Colors.red, BlendMode.srcATop);
+              }
+
+              return _buildRichText(
+                wordInfoCtrl,
+                context,
+                fs,
+                redQTextPaint: redQTextPaint,
+                withTajweed: withTajweed,
+                isTenRecitations: isTenRecitations,
+              );
+            },
           );
+          return _cachedWidget!;
         },
       ),
     );
   }
 
-  Widget _richTextBuild(
+  Widget _buildRichText(
     WordInfoCtrl wordInfoCtrl,
     BuildContext context,
-    double fs,
-    Set<int> bookmarksSet, {
-    Paint? normalQTextPaint,
+    double fs, {
     Paint? redQTextPaint,
-    ColorFilter? quranColorFilter,
     required bool withTajweed,
     required bool isTenRecitations,
   }) {
-    return GetBuilder<WordInfoCtrl>(
-      id: 'word_info_data',
-      builder: (_) {
-        final ayahCharRanges = <int, TextSelection>{};
-        final ayahNumberRanges = <TextSelection>[];
-        int charOffset = 0;
+    final bookmarksSet = widget.bookmarksAyahs.toSet();
+    final ayahCharRanges = <int, TextSelection>{};
+    int charOffset = 0;
 
-        final spans =
-            List<InlineSpan>.generate(segments.length, (segmentIndex) {
-          final seg = segments[segmentIndex];
-          final uq = seg.ayahUq;
-          final isSelectedCombined =
-              quranCtrl.selectedAyahsByUnequeNumber.contains(uq) ||
-                  quranCtrl.externallyHighlightedAyahs.contains(uq);
+    final bookmarksAyahsList = bookmarksSet.toList();
+    final allBookmarksList =
+        widget.bookmarks.values.expand((list) => list).toList();
 
-          final ref = WordRef(
-            surahNumber: seg.surahNumber,
-            ayahNumber: seg.ayahNumber,
-            wordNumber: seg.wordNumber,
-          );
+    final spans =
+        List<InlineSpan>.generate(widget.segments.length, (segmentIndex) {
+      final seg = widget.segments[segmentIndex];
+      final uq = seg.ayahUq;
+      final isSelectedCombined =
+          widget.quranCtrl.selectedAyahsByUnequeNumber.contains(uq) ||
+              widget.quranCtrl.externallyHighlightedAyahs.contains(uq);
 
-          final info = wordInfoCtrl.getRecitationsInfoSync(ref);
-          final hasKhilaf = info?.hasKhilaf ?? false;
+      final ref = WordRef(
+        surahNumber: seg.surahNumber,
+        ayahNumber: seg.ayahNumber,
+        wordNumber: seg.wordNumber,
+      );
 
-          // تحديد Paint المناسب: أحمر للخلاف، عادي لغيره
-          final bool wouldForceRed =
-              hasKhilaf && !withTajweed && isTenRecitations;
-          final Paint? qTextPaint = withTajweed
-              ? null
-              : (wouldForceRed
-                  ? (redQTextPaint ?? normalQTextPaint)
-                  : normalQTextPaint);
+      final info = wordInfoCtrl.getRecitationsInfoSync(ref);
+      final hasKhilaf = info?.hasKhilaf ?? false;
 
-          final span = _qpcV4SpanSegment(
+      final bool wouldForceRed = hasKhilaf && !withTajweed && isTenRecitations;
+      final Paint? qTextPaint = wouldForceRed ? redQTextPaint : null;
+
+      final span = _qpcV4SpanSegment(
+        context: context,
+        pageIndex: widget.pageIndex,
+        isSelected: isSelectedCombined,
+        showAyahBookmarkedIcon: widget.showAyahBookmarkedIcon,
+        fontSize: fs,
+        ayahUQNum: uq,
+        ayahNumber: seg.ayahNumber,
+        glyphs: seg.glyphs,
+        showAyahNumber: seg.isAyahEnd,
+        wordRef: ref,
+        isWordKhilaf: hasKhilaf,
+        onLongPressStart: (details) {
+          final ayahModel = widget.quranCtrl.getAyahByUq(uq);
+
+          if (widget.onAyahLongPress != null) {
+            widget.onAyahLongPress!(details, ayahModel);
+            widget.quranCtrl.toggleAyahSelection(uq);
+            widget.quranCtrl.state.isShowMenu.value = false;
+            return;
+          }
+
+          int? bookmarkId;
+          for (final b in allBookmarksList) {
+            if (b.ayahId == uq) {
+              bookmarkId = b.id;
+              break;
+            }
+          }
+
+          if (bookmarkId != null) {
+            BookmarksCtrl.instance.removeBookmark(bookmarkId);
+            return;
+          }
+
+          if (widget.quranCtrl.isMultiSelectMode.value) {
+            widget.quranCtrl.toggleAyahSelectionMulti(uq);
+          } else {
+            widget.quranCtrl.toggleAyahSelection(uq);
+          }
+          widget.quranCtrl.state.isShowMenu.value = false;
+
+          final themedTafsirStyle = TafsirTheme.of(context)?.style;
+          showAyahMenuDialog(
             context: context,
-            pageIndex: pageIndex,
-            isSelected: isSelectedCombined,
-            showAyahBookmarkedIcon: showAyahBookmarkedIcon,
-            fontSize: fs,
-            ayahUQNum: uq,
-            ayahNumber: seg.ayahNumber,
-            glyphs: seg.glyphs,
-            showAyahNumber: seg.isAyahEnd,
-            wordRef: ref,
-            isWordKhilaf: hasKhilaf,
-            onLongPressStart: (details) {
-              final ayahModel = quranCtrl.getAyahByUq(uq);
-
-              if (onAyahLongPress != null) {
-                onAyahLongPress!(details, ayahModel);
-                quranCtrl.toggleAyahSelection(uq);
-                quranCtrl.state.isShowMenu.value = false;
-                return;
-              }
-
-              int? bookmarkId;
-              for (final b in bookmarks.values.expand((list) => list)) {
-                if (b.ayahId == uq) {
-                  bookmarkId = b.id;
-                  break;
-                }
-              }
-
-              if (bookmarkId != null) {
-                BookmarksCtrl.instance.removeBookmark(bookmarkId);
-                return;
-              }
-
-              if (quranCtrl.isMultiSelectMode.value) {
-                quranCtrl.toggleAyahSelectionMulti(uq);
-              } else {
-                quranCtrl.toggleAyahSelection(uq);
-              }
-              quranCtrl.state.isShowMenu.value = false;
-
-              final themedTafsirStyle = TafsirTheme.of(context)?.style;
-              showAyahMenuDialog(
-                context: context,
-                isDark: isDark,
-                ayah: ayahModel,
-                position: details.globalPosition,
-                index: segmentIndex,
-                pageIndex: pageIndex,
-                externalTafsirStyle: themedTafsirStyle,
-              );
-            },
-            textColor: textColor ?? (AppColors.getTextColor(isDark)),
-            ayahIconColor: ayahIconColor,
-            bookmarks: bookmarks,
-            bookmarksAyahs: bookmarksSet.toList(),
-            bookmarksColor: bookmarksColor,
-            ayahSelectedBackgroundColor: ayahSelectedBackgroundColor,
-            isFontsLocal: isFontsLocal,
-            fontsName: fontsName,
-            fontFamilyOverride: fontFamilyOverride,
-            fontPackageOverride: fontPackageOverride,
-            usePaintColoring: usePaintColoring,
-            ayahBookmarked: ayahBookmarked,
-            quranTextForeground: qTextPaint,
-            isDark: isDark,
+            isDark: widget.isDark,
+            ayah: ayahModel,
+            position: details.globalPosition,
+            index: segmentIndex,
+            pageIndex: widget.pageIndex,
+            externalTafsirStyle: themedTafsirStyle,
           );
+        },
+        textColor: widget.textColor ?? (AppColors.getTextColor(widget.isDark)),
+        ayahIconColor: widget.ayahIconColor,
+        allBookmarksList: allBookmarksList,
+        bookmarksAyahs: bookmarksAyahsList,
+        bookmarksColor: widget.bookmarksColor,
+        ayahSelectedBackgroundColor: widget.ayahSelectedBackgroundColor,
+        isFontsLocal: widget.isFontsLocal,
+        fontsName: widget.fontsName,
+        fontFamilyOverride: widget.fontFamilyOverride,
+        fontPackageOverride: widget.fontPackageOverride,
+        usePaintColoring: widget.usePaintColoring,
+        ayahBookmarked: widget.ayahBookmarked,
+        quranTextForeground: qTextPaint,
+        isDark: widget.isDark,
+      );
 
-          final spanStart = charOffset;
-          charOffset += _countCharsInSpan(span);
+      final spanStart = charOffset;
+      charOffset += _countCharsInSpan(span);
 
-          // تتبّع نطاقات أحرف أرقام الآيات للتصفية الانتقائية
-          if (seg.isAyahEnd) {
-            final ayahNumStart = spanStart + seg.glyphs.length;
-            if (ayahNumStart < charOffset) {
-              ayahNumberRanges.add(TextSelection(
-                baseOffset: ayahNumStart,
-                extentOffset: charOffset,
-              ));
-            }
-          }
-
-          if (isSelectedCombined) {
-            if (ayahCharRanges.containsKey(uq)) {
-              ayahCharRanges[uq] = TextSelection(
-                baseOffset: ayahCharRanges[uq]!.baseOffset,
-                extentOffset: charOffset,
-              );
-            } else {
-              ayahCharRanges[uq] = TextSelection(
-                baseOffset: spanStart,
-                extentOffset: charOffset,
-              );
-            }
-          }
-
-          return span;
-        });
-
-        final richText = RichText(
-          textDirection: TextDirection.rtl,
-          textAlign: isCentered ? TextAlign.center : TextAlign.justify,
-          softWrap: true,
-          overflow: TextOverflow.visible,
-          maxLines: null,
-          text: TextSpan(children: spans),
-        );
-
-        final needsRenderWidget =
-            ayahCharRanges.isNotEmpty || quranColorFilter != null;
-
-        if (!needsRenderWidget) {
-          return richText;
+      if (isSelectedCombined) {
+        if (ayahCharRanges.containsKey(uq)) {
+          ayahCharRanges[uq] = TextSelection(
+            baseOffset: ayahCharRanges[uq]!.baseOffset,
+            extentOffset: charOffset,
+          );
+        } else {
+          ayahCharRanges[uq] = TextSelection(
+            baseOffset: spanStart,
+            extentOffset: charOffset,
+          );
         }
+      }
 
-        return _AyahSelectionWidget(
-          selectedRanges: ayahCharRanges.values.toList(),
-          selectionColor: ayahSelectedBackgroundColor ??
-              const Color(0xffCDAD80).withValues(alpha: 0.25),
-          colorFilter: quranColorFilter,
-          ayahNumberRanges: ayahNumberRanges,
-          child: richText,
-        );
-      },
+      return span;
+    });
+
+    final richText = RichText(
+      textDirection: TextDirection.rtl,
+      textAlign: widget.isCentered ? TextAlign.center : TextAlign.justify,
+      softWrap: true,
+      overflow: TextOverflow.visible,
+      maxLines: null,
+      text: TextSpan(children: spans),
+    );
+
+    final needsRenderWidget = ayahCharRanges.isNotEmpty;
+
+    if (!needsRenderWidget) {
+      return richText;
+    }
+
+    return _AyahSelectionWidget(
+      selectedRanges: ayahCharRanges.values.toList(),
+      selectionColor: widget.ayahSelectedBackgroundColor ??
+          const Color(0xffCDAD80).withValues(alpha: 0.25),
+      child: richText,
     );
   }
 }
@@ -331,14 +312,10 @@ int _countCharsInSpan(InlineSpan span) {
 class _AyahSelectionWidget extends SingleChildRenderObjectWidget {
   final List<TextSelection> selectedRanges;
   final Color selectionColor;
-  final ColorFilter? colorFilter;
-  final List<TextSelection> ayahNumberRanges;
 
   const _AyahSelectionWidget({
     required this.selectedRanges,
     required this.selectionColor,
-    this.colorFilter,
-    this.ayahNumberRanges = const [],
     required super.child,
   });
 
@@ -347,8 +324,6 @@ class _AyahSelectionWidget extends SingleChildRenderObjectWidget {
     return _AyahSelectionRenderBox(
       selectedRanges: selectedRanges,
       selectionColor: selectionColor,
-      colorFilter: colorFilter,
-      ayahNumberRanges: ayahNumberRanges,
     );
   }
 
@@ -357,9 +332,7 @@ class _AyahSelectionWidget extends SingleChildRenderObjectWidget {
       BuildContext context, _AyahSelectionRenderBox renderObject) {
     renderObject
       ..selectedRanges = selectedRanges
-      ..selectionColor = selectionColor
-      ..colorFilter = colorFilter
-      ..ayahNumberRanges = ayahNumberRanges;
+      ..selectionColor = selectionColor;
   }
 }
 
@@ -369,12 +342,8 @@ class _AyahSelectionRenderBox extends RenderProxyBox {
   _AyahSelectionRenderBox({
     required List<TextSelection> selectedRanges,
     required Color selectionColor,
-    ColorFilter? colorFilter,
-    List<TextSelection> ayahNumberRanges = const [],
   })  : _selectedRanges = selectedRanges,
-        _selectionColor = selectionColor,
-        _colorFilter = colorFilter,
-        _ayahNumberRanges = ayahNumberRanges;
+        _selectionColor = selectionColor;
 
   List<TextSelection> _selectedRanges;
   set selectedRanges(List<TextSelection> value) {
@@ -390,33 +359,12 @@ class _AyahSelectionRenderBox extends RenderProxyBox {
     markNeedsPaint();
   }
 
-  ColorFilter? _colorFilter;
-  set colorFilter(ColorFilter? value) {
-    if (_colorFilter == value) return;
-    _colorFilter = value;
-    markNeedsPaint();
-  }
-
-  List<TextSelection> _ayahNumberRanges;
-  set ayahNumberRanges(List<TextSelection> value) {
-    if (listEquals(_ayahNumberRanges, value)) return;
-    _ayahNumberRanges = value;
-    markNeedsPaint();
-  }
-
   @override
   void paint(PaintingContext context, Offset offset) {
-    // الخطوة 1: رسم خلفيات التحديد
     if (child is RenderParagraph && _selectedRanges.isNotEmpty) {
       _paintSelectionBackgrounds(context, offset);
     }
-
-    // الخطوة 2: رسم المحتوى مع فلتر لوني انتقائي
-    if (_colorFilter != null) {
-      _paintWithSelectiveFilter(context, offset);
-    } else {
-      super.paint(context, offset);
-    }
+    super.paint(context, offset);
   }
 
   /// رسم خلفيات التحديد خلف الآيات المحدّدة.
@@ -465,66 +413,5 @@ class _AyahSelectionRenderBox extends RenderProxyBox {
         );
       }
     }
-  }
-
-  /// رسم المحتوى مع تطبيق الفلتر اللوني على النص القرآني فقط
-  /// مع استثناء مناطق أرقام الآيات (تُرسم بدون فلتر).
-  void _paintWithSelectiveFilter(PaintingContext context, Offset offset) {
-    final bounds = offset & size;
-
-    // إذا لا توجد أرقام آيات للحماية → فلترة كاملة
-    if (_ayahNumberRanges.isEmpty || child is! RenderParagraph) {
-      context.canvas.saveLayer(bounds, Paint()..colorFilter = _colorFilter);
-      super.paint(context, offset);
-      context.canvas.restore();
-      return;
-    }
-
-    final paragraph = child! as RenderParagraph;
-
-    // جمع مستطيلات أرقام الآيات
-    final ayahRects = <Rect>[];
-    for (final range in _ayahNumberRanges) {
-      final boxes = paragraph.getBoxesForSelection(
-        range,
-        boxHeightStyle: BoxHeightStyle.max,
-      );
-      for (final box in boxes) {
-        ayahRects.add(box.toRect().shift(offset));
-      }
-    }
-
-    if (ayahRects.isEmpty) {
-      context.canvas.saveLayer(bounds, Paint()..colorFilter = _colorFilter);
-      super.paint(context, offset);
-      context.canvas.restore();
-      return;
-    }
-
-    // بناء مسار استثناء: كل شيء ما عدا مناطق أرقام الآيات
-    final exclusionPath = Path()
-      ..fillType = PathFillType.evenOdd
-      ..addRect(bounds);
-    for (final rect in ayahRects) {
-      exclusionPath.addRect(rect);
-    }
-
-    // رسم النص القرآني مع الفلتر (المنطقة المقطوعة تستثني أرقام الآيات)
-    context.canvas.save();
-    context.canvas.clipPath(exclusionPath);
-    context.canvas.saveLayer(bounds, Paint()..colorFilter = _colorFilter);
-    super.paint(context, offset);
-    context.canvas.restore(); // إنهاء saveLayer
-    context.canvas.restore(); // إنهاء clip
-
-    // رسم مناطق أرقام الآيات بدون فلتر
-    final ayahPath = Path();
-    for (final rect in ayahRects) {
-      ayahPath.addRect(rect);
-    }
-    context.canvas.save();
-    context.canvas.clipPath(ayahPath);
-    context.paintChild(child!, offset);
-    context.canvas.restore();
   }
 }

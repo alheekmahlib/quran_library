@@ -417,35 +417,16 @@ class QuranLibraryScreen extends StatelessWidget {
                                     autofocus: kIsWeb ? false : true,
                                     onKeyEvent: (node, event) => quranCtrl
                                         .controlRLByKeyboard(node, event),
-                                    child: PageView.builder(
+                                    child: PreloadPageView.builder(
+                                      preloadPagesCount: 2,
                                       itemCount: 604,
                                       controller:
                                           quranCtrl.getPageController(context),
-                                      padEnds: false,
                                       // شرح: اختيار نوع الفيزياء حسب إعداد التحسين QuranPagesScreen
                                       // Explanation: Choose physics type based on optimization setting
                                       physics: quranCtrl.state.isScaling.value
                                           ? const NeverScrollableScrollPhysics()
                                           : const ClampingScrollPhysics(),
-                                      // شرح: إضافة allowImplicitScrolling لتحسين الأداء
-                                      // Explanation: Adding allowImplicitScrolling for better performance
-                                      allowImplicitScrolling: true,
-                                      // !quranCtrl.isQpcV4Enabled,
-                                      scrollBehavior:
-                                          const MaterialScrollBehavior()
-                                              .copyWith(
-                                        dragDevices: {
-                                          PointerDeviceKind.touch,
-                                          PointerDeviceKind.mouse,
-                                          PointerDeviceKind.trackpad,
-                                          PointerDeviceKind.stylus,
-                                          PointerDeviceKind.unknown
-                                        },
-                                      ),
-
-                                      // شرح: تقليل القص لتخفيف كلفة الرسم ما لم نحتاجه
-                                      // Explanation: Reduce clipping cost unless necessary
-                                      clipBehavior: Clip.none,
                                       // شرح: تحسين معالجة تغيير الصفحة لتقليل التقطيع
                                       // Explanation: Optimized page change handling to reduce stuttering
                                       onPageChanged: (pageIndex) =>
@@ -565,7 +546,7 @@ class QuranLibraryScreen extends StatelessWidget {
         onPageChanged!(pageIndex);
       }
       quranCtrl.state.currentPageNumber.value = pageIndex + 1;
-      quranCtrl.saveLastPage(pageIndex + 1);
+      // quranCtrl.saveLastPage(pageIndex + 1);
 
       if (quranCtrl.state.fontsSelected.value == 0) {
         // جدولة تحضير QPC v4 بعد خمول حتى لا ينافس أثناء التقليب.

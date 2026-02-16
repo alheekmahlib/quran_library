@@ -69,6 +69,8 @@ class TapLongPressRecognizer extends TapGestureRecognizer {
     _longTimer?.cancel();
     _longTimer = null;
 
+    final wasLongHold = _didLongHold;
+
     if (_didShortHold && !_didLongHold) {
       onShortHoldCompleteCallback?.call();
     }
@@ -76,7 +78,11 @@ class TapLongPressRecognizer extends TapGestureRecognizer {
     _lastTapDown = null;
     _didShortHold = false;
     _didLongHold = false;
-    QuranCtrl.instance.showControlToggle();
+
+    // بعد الضغط المطوّل لا نمسح التحديد — toggleAyahSelection عمل update بالفعل
+    if (!wasLongHold) {
+      QuranCtrl.instance.showControlToggle();
+    }
   }
 
   @override

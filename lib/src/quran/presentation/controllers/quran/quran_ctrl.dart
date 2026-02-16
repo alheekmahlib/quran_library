@@ -622,8 +622,7 @@ class QuranCtrl extends GetxController {
       selectedAyahsByUnequeNumber.add(ayahUnequeNumber);
     }
     selectedAyahsByUnequeNumber.refresh();
-    // إعادة بناء محدودة للصفحة الحالية فقط
-    _updateSelectionPages();
+    update();
     log('selectedAyahs: ${selectedAyahsByUnequeNumber.join(', ')}');
   }
 
@@ -635,7 +634,7 @@ class QuranCtrl extends GetxController {
       selectedAyahsByUnequeNumber.add(ayahUniqueNumber);
     }
     selectedAyahsByUnequeNumber.refresh();
-    _updateSelectionPages();
+    update();
   }
 
   void setMultiSelectMode(bool enabled) {
@@ -759,21 +758,7 @@ class QuranCtrl extends GetxController {
 
   void clearSelection() {
     selectedAyahsByUnequeNumber.clear();
-    _updateSelectionPages();
-  }
-
-  /// إعادة بناء سطور الصفحة الحالية والمجاورتين فقط (selection_page_N)
-  /// بالإضافة للـ text_scale_page_ القديم للتوافق
-  void _updateSelectionPages() {
-    final current = state.currentPageNumber.value - 1; // 0-based pageIndex
-    final ids = <String>[
-      'selection_page_$current',
-      if (current > 0) 'selection_page_${current - 1}',
-      if (current < 603) 'selection_page_${current + 1}',
-      // توافق مع text_scale_rich_text_build
-      'selection_page_',
-    ];
-    update(ids);
+    update();
   }
 
   Widget textScale(dynamic widget1, dynamic widget2) {

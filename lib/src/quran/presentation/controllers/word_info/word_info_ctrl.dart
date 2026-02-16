@@ -22,6 +22,10 @@ class WordInfoCtrl extends GetxController
   int recitationsDataRevision = 0;
 
   final Rx<WordRef?> selectedWordRef = Rx<WordRef?>(null);
+
+  /// تفعيل/تعطيل تحديد الكلمة وعرض الـ BottomSheet
+  /// يُضبط من خلال بارامتر [QuranLibraryScreen.enableWordSelection]
+  bool isWordSelectionEnabled = true;
   late TabController tabController;
   VoidCallback? _tabControllerListener;
   int _lastTabIndexNotified = 0;

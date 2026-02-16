@@ -446,13 +446,19 @@ extension QuranGetters on QuranCtrl {
     if (!enableMultiSelect) {
       if (AudioCtrl.instance.state.isPlaying.value) {
         isShowControl.toggle();
-        update(['isShowControl']);
+        update([
+          'isShowControl',
+          'selection_page_${state.currentPageNumber.value}'
+        ]);
       } else if (selectedAyahsByUnequeNumber.isNotEmpty) {
         clearSelection();
       } else {
         clearSelection();
         isShowControl.toggle();
-        update(['isShowControl']);
+        update([
+          'isShowControl',
+          'selection_page_${state.currentPageNumber.value}'
+        ]);
       }
     }
   }

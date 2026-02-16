@@ -74,11 +74,13 @@ class FullQuran extends StatelessWidget {
   Widget build(BuildContext context) {
     return QuranLibraryScreen(
       parentContext: context,
-      isDark: false,
+      isDark: true,
       showAyahBookmarkedIcon: true,
       appLanguageCode: 'ar',
       appIconPathForPlayAudioInBackground:
           'assets/images/quran_library_logo.png',
+      isShowTabBar: true,
+      enableWordSelection: true,
       // ayahIconColor: Colors.teal,
       // backgroundColor: Colors.white,
       // textColor: Colors.black,

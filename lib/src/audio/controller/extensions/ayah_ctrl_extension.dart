@@ -599,7 +599,7 @@ extension AyahCtrlExtension on AudioCtrl {
       {int? initialSurahToDownload,
       AyahAudioStyle? ayahStyle,
       AyahDownloadManagerStyle? style,
-      bool? isDark = true}) async {
+      bool? isDark = false}) async {
     // ابحث عن سياق يحوي MediaQuery لتجنّب أخطاء debugCheckHasMediaQuery
     BuildContext? resolveBottomSheetContext(BuildContext? ctx) {
       try {

@@ -90,24 +90,40 @@ TextSpan _qpcV4SpanSegment({
           );
   }
 
-  final recognizer = TapLongPressRecognizer(
-    shortHoldDuration: const Duration(milliseconds: 150),
-    longHoldDuration: const Duration(milliseconds: 500),
-  )
-    ..onShortHoldStartCallback = () {
-      wordInfoCtrl.setSelectedWord(wordRef);
-    }
-    ..onShortHoldCompleteCallback = () {
-      () async {
-        await showWordInfoBottomSheet(
-            context: context, ref: wordRef, isDark: isDark);
+  final GestureRecognizer recognizer;
+  if (!wordInfoCtrl.isWordSelectionEnabled) {
+    // تحديد الكلمة معطّل: الضغط القصير لا يفعل شيئاً، الضغط المطوّل يفتح قائمة الآية
+    recognizer = TapLongPressRecognizer(
+      shortHoldDuration: const Duration(milliseconds: 150),
+      longHoldDuration: const Duration(milliseconds: 500),
+    )
+      ..onShortHoldStartCallback = () {
+        // فارغ عمداً — لإبقاء الحدث حياً حتى يصل للضغط المطوّل
+      }
+      ..onShortHoldCompleteCallback = null
+      ..onLongHoldStartCallback = (details) {
+        onLongPressStart?.call(details);
+      };
+  } else {
+    recognizer = TapLongPressRecognizer(
+      shortHoldDuration: const Duration(milliseconds: 150),
+      longHoldDuration: const Duration(milliseconds: 500),
+    )
+      ..onShortHoldStartCallback = () {
+        wordInfoCtrl.setSelectedWord(wordRef);
+      }
+      ..onShortHoldCompleteCallback = () {
+        () async {
+          await showWordInfoBottomSheet(
+              context: context, ref: wordRef, isDark: isDark);
+          wordInfoCtrl.clearSelectedWord();
+        }();
+      }
+      ..onLongHoldStartCallback = (details) {
         wordInfoCtrl.clearSelectedWord();
-      }();
-    }
-    ..onLongHoldStartCallback = (details) {
-      wordInfoCtrl.clearSelectedWord();
-      onLongPressStart?.call(details);
-    };
+        onLongPressStart?.call(details);
+      };
+  }
 
   return TextSpan(
     children: <InlineSpan>[

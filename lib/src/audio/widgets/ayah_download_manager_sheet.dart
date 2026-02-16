@@ -129,26 +129,46 @@ class AyahDownloadManagerSheet extends StatelessWidget {
                                 vertical:
                                     effectiveStyle.itemVerticalPadding ?? 8,
                               ),
-                              leading: CircleAvatar(
-                                radius: 18,
-                                backgroundColor: fullyDownloaded
-                                    ? (effectiveStyle.avatarDownloadedColor ??
-                                        Theme.of(context).colorScheme.primary)
-                                    : (effectiveStyle.avatarUndownloadedColor ??
+                              leading: Stack(
+                                alignment: Alignment.center,
+                                children: [
+                                  SvgPicture.asset(
+                                    AssetsPath.assets.suraNum,
+                                    width: 50,
+                                    height: 50,
+                                    colorFilter: ColorFilter.mode(
+                                      effectiveStyle
+                                              .surahNumberDecorationColor ??
+                                          Colors.teal.withValues(alpha: 0.6),
+                                      BlendMode.srcIn,
+                                    ),
+                                  ),
+                                  CircleAvatar(
+                                    radius: 18,
+                                    backgroundColor: fullyDownloaded
+                                        ? (effectiveStyle
+                                                .avatarDownloadedColor ??
                                             Theme.of(context)
                                                 .colorScheme
                                                 .primary)
-                                        .withValues(alpha: .4),
-                                child: Text(
-                                  s.surahNumber
-                                      .toString()
-                                      .convertNumbersAccordingToLang(
-                                          languageCode: language ?? 'ar'),
-                                  style: effectiveStyle.avatarTextStyle ??
-                                      QuranLibrary().cairoStyle.copyWith(
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.bold),
-                                ),
+                                        : (effectiveStyle
+                                                    .avatarUndownloadedColor ??
+                                                Theme.of(context)
+                                                    .colorScheme
+                                                    .primary)
+                                            .withValues(alpha: .4),
+                                    child: Text(
+                                      s.surahNumber
+                                          .toString()
+                                          .convertNumbersAccordingToLang(
+                                              languageCode: language ?? 'ar'),
+                                      style: effectiveStyle.avatarTextStyle ??
+                                          QuranLibrary().cairoStyle.copyWith(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.bold),
+                                    ),
+                                  ),
+                                ],
                               ),
                               title: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,

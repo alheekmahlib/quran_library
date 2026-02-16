@@ -15,7 +15,8 @@
 	* Fix adding custom app logo by appIconPathForPlayAudioInBackground.
 
 * **DELETE:**
-	* Unused parameters. 
+	* Unused parameters.
+	* default fonts.
 
 ## 2.3.6
 

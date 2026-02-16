@@ -50,7 +50,6 @@ part 'src/quran/core/extensions/context_extensions.dart';
 part 'src/quran/core/extensions/convert_arabic_to_english_numbers_extension.dart';
 part 'src/quran/core/extensions/convert_number_extension.dart';
 part 'src/quran/core/extensions/font_size_extension.dart';
-part 'src/quran/core/extensions/fonts_download_widget.dart';
 part 'src/quran/core/extensions/fonts_extension.dart';
 part 'src/quran/core/extensions/sajda_extension.dart';
 part 'src/quran/core/extensions/string_extensions.dart';

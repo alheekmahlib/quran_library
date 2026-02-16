@@ -56,8 +56,8 @@ class _MyAppState extends State<MyApp> {
         );
       },
       home: const Scaffold(
-        // body: SingleAyah(),
-        body: SingleSurah(),
+        body: SingleAyah(),
+        // body: SingleSurah(),
         // body: QuranPages(),
         // body: FullQuran(),
       ),
@@ -146,6 +146,7 @@ class SingleAyah extends StatelessWidget {
         isBold: false,
         islocalFont: false,
         isDark: true,
+        enabledTajweed: true,
       ),
     );
   }

@@ -19,6 +19,7 @@ class GetSingleAyah extends StatelessWidget {
   final Color? bookmarksColor;
   final Color? ayahSelectedBackgroundColor;
   final TextAlign? textAlign;
+  final bool? enabledTajweed;
 
   GetSingleAyah({
     super.key,
@@ -39,12 +40,16 @@ class GetSingleAyah extends StatelessWidget {
     this.bookmarksColor,
     this.ayahSelectedBackgroundColor,
     this.textAlign,
+    this.enabledTajweed,
   });
 
   final QuranCtrl quranCtrl = QuranCtrl.instance;
 
   @override
   Widget build(BuildContext context) {
+    QuranCtrl.instance.state.isTajweedEnabled.value = enabledTajweed ?? false;
+    GetStorage().write(_StorageConstants().isTajweed,
+        QuranCtrl.instance.state.isTajweedEnabled.value);
     if (surahNumber < 1 || surahNumber > 114) {
       return Text(
         'رقم السورة غير صحيح',

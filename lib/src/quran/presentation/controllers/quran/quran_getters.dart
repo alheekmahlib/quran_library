@@ -63,14 +63,21 @@ extension QuranGetters on QuranCtrl {
 
     Get.forceAppUpdate();
 
-    if (idx == 0 && !state.fontsReady.value) {
-      // خطوط التجويد: فك الضغط وتسجيل الخطوط المضغوطة
-      QuranFontsService.loadAllFonts(
-        progress: state.fontsLoadProgress,
-        ready: state.fontsReady,
-      ).then((_) {
-        update();
-        update(['_pageViewBuild']);
+    if (idx == 0 && !QuranFontsService.allLoaded) {
+      // خطوط التجويد: تحميل كسول — الصفحات القريبة أولاً ثم البقية في الخلفية
+      final currentPage = lastPage.clamp(1, 604);
+      QuranFontsService.ensurePagesLoaded(currentPage, radius: 10).then((_) {
+        // update();
+        // update(['_pageViewBuild']);
+        // تحميل بقية الصفحات في الخلفية
+        QuranFontsService.loadRemainingInBackground(
+          startNearPage: currentPage,
+          progress: state.fontsLoadProgress,
+          ready: state.fontsReady,
+        ).then((_) {
+          // update();
+          update(['_pageViewBuild']);
+        });
       });
     }
   }

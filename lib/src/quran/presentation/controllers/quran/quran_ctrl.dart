@@ -79,6 +79,22 @@ class QuranCtrl extends GetxController {
     state.currentPageNumber.value = _quranRepository.getLastPage() ?? 1;
     junpTolastPage();
 
+    // QuranFontsService.ensurePagesLoaded(state.currentPageNumber.value,
+    //         radius: 5)
+    //     .then((_) {
+    //   // quranCtrl.update();
+    //   // update(['_pageViewBuild']);
+    //   // تحميل بقية الصفحات في الخلفية
+    //   QuranFontsService.loadRemainingInBackground(
+    //     startNearPage: state.currentPageNumber.value,
+    //     progress: state.fontsLoadProgress,
+    //     ready: state.fontsReady,
+    //   ).then((_) {
+    //     // update();
+    //     update(['_pageViewBuild']);
+    //   });
+    // });
+
     // ضمان تحميل بيانات المصحف حتى لو لم يتم استدعاء QuranLibrary.init() في التطبيق المضيف.
     // نطلقها بشكل غير متزامن لتجنب إبطاء onInit.
     Future(() => ensureCoreDataLoaded());

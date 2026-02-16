@@ -57,42 +57,21 @@ class PageBuild extends StatelessWidget {
       return const SizedBox.shrink();
     }
 
-    final blocks = quranCtrl.getQpcLayoutBlocksForPageSync(pageIndex + 1);
-    if (blocks.isEmpty) {
+    // التحميل الكسول: تأكد أن خط هذه الصفحة جاهز
+    final int pageNumber = pageIndex + 1;
+    if (!QuranFontsService.isPageReady(pageNumber)) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        QuranFontsService.loadAllFonts(
-          progress: quranCtrl.state.fontsLoadProgress,
-          ready: quranCtrl.state.fontsReady,
-        ).then((_) {
+        QuranFontsService.ensurePagesLoaded(pageNumber, radius: 10).then((_) {
           quranCtrl.update();
           quranCtrl.update(['_pageViewBuild']);
         });
       });
-      // أثناء غياب بيانات هذه الصفحة نعرض مؤشر تحميل بدل بناء متزامن.
-      // تحضير الصفحة/المجاورة يتم عبر getQpcV4BlocksForPageSync.
       return const Center(child: CircularProgressIndicator.adaptive());
     }
 
-    // خطوط التجويد لم تُحمّل بعد — عرض مؤشر تقدّم
-    if (!quranCtrl.state.fontsReady.value) {
-      return Center(
-        child: Obx(() => Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const CircularProgressIndicator.adaptive(),
-                const SizedBox(height: 16),
-                Text(
-                  '${(quranCtrl.state.fontsLoadProgress.value * 100).toInt()}%',
-                  style: TextStyle(
-                    fontFamily: 'cairo',
-                    package: 'quran_library',
-                    fontSize: 14,
-                    color: AppColors.getTextColor(isDark),
-                  ),
-                ),
-              ],
-            )),
-      );
+    final blocks = quranCtrl.getQpcLayoutBlocksForPageSync(pageNumber);
+    if (blocks.isEmpty) {
+      return const Center(child: CircularProgressIndicator.adaptive());
     }
 
     return RepaintBoundary(

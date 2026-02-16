@@ -60,16 +60,24 @@ class QuranLibrary {
             ?.cast<int>() ??
         []);
 
-    // إذا كان خط التجويد مختارًا، ابدأ تحميل الخطوط المضغوطة في الخلفية
-    if (quranCtrl.state.fontsSelected.value == 1) {
-      QuranFontsService.loadAllFonts(
-        progress: quranCtrl.state.fontsLoadProgress,
-        ready: quranCtrl.state.fontsReady,
-      ).then((_) {
-        quranCtrl.update();
-        quranCtrl.update(['_pageViewBuild']);
-      });
-    }
+    // إذا كان خط التجويد مختارًا، ابدأ التحميل الكسول في الخلفية
+    // if (quranCtrl.state.fontsSelected.value == 0) {
+    //   final currentPage =
+    //       (GetStorage().read<int>('lastPage') ?? 1).clamp(1, 604);
+    //   QuranFontsService.ensurePagesLoaded(currentPage, radius: 5).then((_) {
+    //     // quranCtrl.update();
+    //     quranCtrl.update(['_pageViewBuild']);
+    //     // تحميل بقية الصفحات في الخلفية
+    //     QuranFontsService.loadRemainingInBackground(
+    //       startNearPage: currentPage,
+    //       progress: quranCtrl.state.fontsLoadProgress,
+    //       ready: quranCtrl.state.fontsReady,
+    //     ).then((_) {
+    //       // quranCtrl.update();
+    //       quranCtrl.update(['_pageViewBuild']);
+    //     });
+    //   });
+    // }
 
     // if (!kIsWeb) {
     //   QuranCtrl.instance.deleteOldFonts();

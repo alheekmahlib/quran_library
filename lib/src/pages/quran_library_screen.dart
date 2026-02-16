@@ -551,6 +551,8 @@ class QuranLibraryScreen extends StatelessWidget {
       if (quranCtrl.state.fontsSelected.value == 0) {
         // جدولة تحضير QPC v4 بعد خمول حتى لا ينافس أثناء التقليب.
         quranCtrl.scheduleQpcV4AllPagesPrebuild();
+        // تحميل كسول: تأكد من جاهزية الصفحات القريبة من الصفحة الحالية
+        // QuranFontsService.ensurePagesLoaded(pageIndex + 1, radius: 3);
       }
     });
   }

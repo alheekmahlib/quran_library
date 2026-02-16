@@ -1,30 +1,39 @@
 part of '/quran.dart';
 
-/// خدمة تحميل وتسجيل خطوط QCF4 المضغوطة (tajweed).
+/// خدمة تحميل كسول (lazy) وتسجيل خطوط QCF4 المضغوطة (tajweed).
 ///
-/// الخطوط مخزّنة كملفات `.ttf.gz` في assets. عند أول استخدام يتم فك ضغطها
+/// الخطوط مخزّنة كملفات `.ttf.gz` في assets. عند الحاجة يتم فك ضغطها
 /// وتسجيلها عبر [loadFontFromList]. تُحفظ النسخ المفكوكة على القرص
 /// (على المنصات غير الويب) لتسريع التشغيلات اللاحقة.
 ///
-/// في الوضع الداكن مع التجويد، تُسجّل نسخة إضافية من كل خط باسم `page{i}d`
-/// حيث يتم تعديل جدول CPAL لتحويل اللون الأسود الأساسي إلى الأبيض،
-/// مع الحفاظ على جميع ألوان التجويد كما هي.
+/// **التحميل الكسول**: تُحمّل فقط الصفحات القريبة من الصفحة الحالية،
+/// ثم تُكمَل بقية الصفحات في الخلفية تدريجيًا.
 class QuranFontsService {
   QuranFontsService._();
 
   static const int _totalPages = 604;
 
-  /// علم في الذاكرة: هل تم تسجيل جميع الخطوط في هذا التشغيل؟
-  static bool _fontsRegistered = false;
+  /// الصفحات المحمّلة في هذا التشغيل (1-based).
+  static final Set<int> _loadedPages = {};
 
-  /// علم منفصل للخطوط الداكنة.
-  static bool _darkFontsRegistered = false;
+  /// Futures لمنع تكرار تحميل نفس الصفحة عند الاستدعاء المتزامن.
+  static final Map<int, Future<void>> _pageLoadFutures = {};
 
-  /// علم للخطوط بدون تجويد (كل ألوان CPAL موحّدة).
-  static bool _noTajweedFontsRegistered = false;
+  /// Future واحد لتحميل الخلفية لمنع التكرار.
+  static Future<void>? _backgroundLoadFuture;
 
-  /// Future واحد لمنع تكرار التحميل عند الاستدعاء المتزامن.
-  static Future<void>? _loadFuture;
+  /// كاش مجلد الخطوط المفكوكة (يُهيّأ مرة واحدة).
+  static Directory? _cacheDir;
+  static bool _cacheDirInitialized = false;
+
+  /// هل الصفحة المحددة جاهزة للعرض؟ (1-based)
+  static bool isPageReady(int page) => _loadedPages.contains(page);
+
+  /// عدد الصفحات المحمّلة حتى الآن.
+  static int get loadedCount => _loadedPages.length;
+
+  /// هل تم تحميل جميع الصفحات؟
+  static bool get allLoaded => _loadedPages.length >= _totalPages;
 
   /// اسم عائلة الخط للصفحة المحددة (page1 .. page604).
   static String getFontFamily(int pageIndex) => 'page${pageIndex + 1}';
@@ -47,110 +56,181 @@ class QuranFontsService {
         'QCF4_tajweed_$padded.ttf.gz';
   }
 
-  /// تحميل جميع خطوط التجويد (604 صفحة) مرة واحدة.
-  ///
-  /// تُحدّث [progress] (0.0–1.0) بعد كل خط، وتضبط [ready] على `true`
-  /// عند الانتهاء. إذا كانت الخطوط مسجّلة سابقًا تُرجع فورًا.
-  static Future<void> loadAllFonts({
-    required RxDouble progress,
-    required RxBool ready,
-  }) {
-    // منع التكرار عند الاستدعاء من عدة أماكن في نفس الوقت
-    _loadFuture ??= _doLoadAllFonts(progress: progress, ready: ready);
-    return _loadFuture!;
+  // ---------------------------------------------------------------------------
+  // تهيئة مجلد الكاش
+  // ---------------------------------------------------------------------------
+
+  static Future<Directory?> _ensureCacheDir() async {
+    if (_cacheDirInitialized) return _cacheDir;
+    _cacheDirInitialized = true;
+    if (kIsWeb) return null;
+    try {
+      final appDir = await getApplicationDocumentsDirectory();
+      final dir = Directory('${appDir.path}/quran_fonts_cache');
+      if (!dir.existsSync()) {
+        await dir.create(recursive: true);
+      }
+      _cacheDir = dir;
+    } catch (e) {
+      log('QuranFontsService: failed to create cache dir: $e',
+          name: 'QuranFontsService');
+      _cacheDir = null;
+    }
+    return _cacheDir;
   }
 
-  static Future<void> _doLoadAllFonts({
-    required RxDouble progress,
-    required RxBool ready,
-  }) async {
-    if (_fontsRegistered && _darkFontsRegistered && _noTajweedFontsRegistered) {
-      ready.value = true;
-      progress.value = 1.0;
-      return;
-    }
+  // ---------------------------------------------------------------------------
+  // التحميل الكسول: تحميل صفحات قريبة فقط
+  // ---------------------------------------------------------------------------
 
-    Directory? cacheDir;
-    if (!kIsWeb) {
-      try {
-        final appDir = await getApplicationDocumentsDirectory();
-        cacheDir = Directory('${appDir.path}/quran_fonts_cache');
-        if (!cacheDir.existsSync()) {
-          await cacheDir.create(recursive: true);
-        }
-      } catch (e) {
-        log('QuranFontsService: failed to create cache dir: $e',
-            name: 'QuranFontsService');
-        cacheDir = null;
+  /// تحميل الصفحات القريبة من [centerPage] (1-based) بنصف قطر [radius].
+  ///
+  /// مثال: `ensurePagesLoaded(100, radius: 10)` يحمّل الصفحات 90–110.
+  /// يتم تخطّي الصفحات المحمّلة مسبقًا. يُنتظر حتى انتهاء التحميل.
+  static Future<void> ensurePagesLoaded(
+    int centerPage, {
+    int radius = 10,
+  }) async {
+    final cacheDir = await _ensureCacheDir();
+    final start = (centerPage - radius).clamp(1, _totalPages);
+    final end = (centerPage + radius).clamp(1, _totalPages);
+
+    final futures = <Future<void>>[];
+    for (int p = start; p <= end; p++) {
+      if (!_loadedPages.contains(p)) {
+        futures.add(_loadSinglePage(p, cacheDir));
       }
     }
 
-    for (int i = 1; i <= _totalPages; i++) {
+    if (futures.isNotEmpty) {
+      await Future.wait(futures);
+    }
+  }
+
+  /// تحميل بقية الصفحات في الخلفية بترتيب يبدأ من [startNearPage].
+  ///
+  /// تُحدّث [progress] (0.0–1.0) و[ready] عند الانتهاء الكامل.
+  /// لا تُنتظر — تعمل بشكل غير متزامن.
+  static Future<void> loadRemainingInBackground({
+    required int startNearPage,
+    required RxDouble progress,
+    required RxBool ready,
+  }) {
+    if (allLoaded) {
+      progress.value = 1.0;
+      ready.value = true;
+      return Future.value();
+    }
+    // منع التكرار
+    _backgroundLoadFuture ??= _doLoadRemaining(
+      startNearPage: startNearPage,
+      progress: progress,
+      ready: ready,
+    );
+    return _backgroundLoadFuture!;
+  }
+
+  static Future<void> _doLoadRemaining({
+    required int startNearPage,
+    required RxDouble progress,
+    required RxBool ready,
+  }) async {
+    final cacheDir = await _ensureCacheDir();
+    final loadOrder = _buildLoadOrder(startNearPage);
+
+    for (final page in loadOrder) {
+      if (_loadedPages.contains(page)) continue;
+      await _loadSinglePage(page, cacheDir);
+      progress.value = _loadedPages.length / _totalPages;
+    }
+
+    progress.value = 1.0;
+    ready.value = true;
+  }
+
+  /// بناء ترتيب التحميل: يبدأ من [startPage] ويتوسع للخارج.
+  ///
+  /// مثلاً لو startPage=100: 100، 101، 99، 102، 98، 103، 97 ...
+  static List<int> _buildLoadOrder(int startPage) {
+    final order = <int>[];
+    final start = startPage.clamp(1, _totalPages);
+    order.add(start);
+
+    for (int delta = 1; delta < _totalPages; delta++) {
+      final after = start + delta;
+      final before = start - delta;
+      if (after <= _totalPages) order.add(after);
+      if (before >= 1) order.add(before);
+    }
+
+    return order;
+  }
+
+  // ---------------------------------------------------------------------------
+  // تحميل صفحة واحدة مع كل المتغيرات (4 خطوط)
+  // ---------------------------------------------------------------------------
+
+  /// تحميل صفحة واحدة (1-based) مع متغيراتها الأربعة.
+  ///
+  /// - `page{N}` — فاتح مع تجويد
+  /// - `page{N}d` — داكن مع تجويد (CPAL: أسود→أبيض)
+  /// - `page{N}n` — فاتح بدون تجويد (CPAL: كل الألوان→أسود)
+  /// - `page{N}nd` — داكن بدون تجويد (CPAL: كل الألوان→أبيض)
+  static Future<void> _loadSinglePage(int page, Directory? cacheDir) {
+    // منع التكرار عند الاستدعاء المتزامن لنفس الصفحة
+    return _pageLoadFutures.putIfAbsent(page, () async {
       try {
         Uint8List fontBytes;
-        final familyName = 'page$i';
+        final familyName = 'page$page';
 
-        // على غير الويب: جرّب قراءة الكاش أولاً
+        // جرّب قراءة الكاش أولاً
         if (cacheDir != null) {
           final cachedFile = File('${cacheDir.path}/$familyName.ttf');
           if (cachedFile.existsSync()) {
             fontBytes = await cachedFile.readAsBytes();
           } else {
-            // فك الضغط من الـ asset وحفظ في الكاش
-            fontBytes = await _decompressFromAsset(i);
+            fontBytes = await _decompressFromAsset(page);
             try {
               await cachedFile.writeAsBytes(fontBytes, flush: true);
             } catch (e) {
-              log('QuranFontsService: cache write failed for page $i: $e',
+              log('QuranFontsService: cache write failed for page $page: $e',
                   name: 'QuranFontsService');
             }
           }
         } else {
-          // ويب أو كاش غير متاح: فك الضغط في كل مرة
-          fontBytes = await _decompressFromAsset(i);
+          fontBytes = await _decompressFromAsset(page);
         }
 
-        // تسجيل الخط الأصلي (فاتح)
-        if (!_fontsRegistered) {
-          await loadFontFromList(fontBytes, fontFamily: familyName);
-        }
+        // 1. خط فاتح أصلي
+        await loadFontFromList(fontBytes, fontFamily: familyName);
 
-        // تسجيل نسخة داكنة: تعديل CPAL لتحويل الأسود→أبيض
-        if (!_darkFontsRegistered) {
-          final darkBytes = _modifyCpalBaseColor(
-            Uint8List.fromList(fontBytes),
-            const Color(0xFFFFFFFF),
-          );
-          await loadFontFromList(darkBytes, fontFamily: '${familyName}d');
-        }
+        // 2. خط داكن: CPAL أسود → أبيض
+        final darkBytes = _modifyCpalBaseColor(
+          Uint8List.fromList(fontBytes),
+          const Color(0xFFFFFFFF),
+        );
+        await loadFontFromList(darkBytes, fontFamily: '${familyName}d');
 
-        // تسجيل نسخة بدون تجويد فاتحة: كل ألوان CPAL → أسود
-        if (!_noTajweedFontsRegistered) {
-          final ntBytes = _modifyCpalAllColors(
-            Uint8List.fromList(fontBytes),
-            const Color(0xFF000000),
-          );
-          await loadFontFromList(ntBytes, fontFamily: '${familyName}n');
+        // 3. بدون تجويد فاتح: كل الألوان → أسود
+        final ntBytes = _modifyCpalAllColors(
+          Uint8List.fromList(fontBytes),
+          const Color(0xFF000000),
+        );
+        await loadFontFromList(ntBytes, fontFamily: '${familyName}n');
 
-          // نسخة بدون تجويد داكنة: كل ألوان CPAL → أبيض
-          final ntdBytes = _modifyCpalAllColors(
-            Uint8List.fromList(fontBytes),
-            const Color(0xFFFFFFFF),
-          );
-          await loadFontFromList(ntdBytes, fontFamily: '${familyName}nd');
-        }
+        // 4. بدون تجويد داكن: كل الألوان → أبيض
+        final ntdBytes = _modifyCpalAllColors(
+          Uint8List.fromList(fontBytes),
+          const Color(0xFFFFFFFF),
+        );
+        await loadFontFromList(ntdBytes, fontFamily: '${familyName}nd');
+
+        _loadedPages.add(page);
       } catch (e, st) {
-        log('QuranFontsService: failed to load font page $i: $e',
+        log('QuranFontsService: failed to load font page $page: $e',
             name: 'QuranFontsService', stackTrace: st);
       }
-
-      progress.value = i / _totalPages;
-    }
-
-    _fontsRegistered = true;
-    _darkFontsRegistered = true;
-    _noTajweedFontsRegistered = true;
-    ready.value = true;
+    });
   }
 
   /// فك ضغط ملف `.ttf.gz` من الـ assets.
@@ -176,13 +256,9 @@ class QuranFontsService {
     final bd = ByteData.view(
         fontBytes.buffer, fontBytes.offsetInBytes, fontBytes.lengthInBytes);
 
-    // 1. قراءة عدد الجداول من الترويسة
-    // OpenType header: sfVersion(4) + numTables(2) + ...
     if (fontBytes.length < 12) return fontBytes;
     final numTables = bd.getUint16(4);
 
-    // 2. البحث عن جدول CPAL في Table Directory
-    // كل سجل: tag(4) + checkSum(4) + offset(4) + length(4) = 16 bytes
     int? cpalOffset;
     int? cpalLength;
     const cpalTag = 0x4350414C; // 'CPAL' in ASCII
@@ -200,27 +276,17 @@ class QuranFontsService {
     if (cpalOffset == null || cpalLength == null) return fontBytes;
     if (cpalOffset + cpalLength > fontBytes.length) return fontBytes;
 
-    // 3. قراءة بنية CPAL
-    // CPAL header:
-    //   version(2) + numPaletteEntries(2) + numPalettes(2) +
-    //   numColorRecords(2) + colorRecordsArrayOffset(4)
-    //   + paletteIndices[numPalettes] (each 2 bytes)
     if (cpalOffset + 12 > fontBytes.length) return fontBytes;
     final numColorRecords = bd.getUint16(cpalOffset + 6);
     final colorRecordsArrayOffset = bd.getUint32(cpalOffset + 8);
 
-    // العنوان المطلق لسجلات الألوان
     final absColorRecordsOffset = cpalOffset + colorRecordsArrayOffset;
 
-    // 4. تعديل سجلات CPAL: استبدال الأسود فقط
-    // كل سجل لون: B(1) + G(1) + R(1) + A(1) = 4 bytes (ترتيب BGRA)
-    // ملاحظة: Color.r/g/b/a تُرجع قيمًا عشرية (0.0–1.0) في Flutter الحديث
     final newR = (newBaseColor.r * 255).round();
     final newG = (newBaseColor.g * 255).round();
     final newB = (newBaseColor.b * 255).round();
     final newA = (newBaseColor.a * 255).round();
 
-    // نفحص جميع سجلات الألوان (عبر كل الـ palettes)
     for (int c = 0; c < numColorRecords; c++) {
       final colorOffset = absColorRecordsOffset + c * 4;
       if (colorOffset + 4 > fontBytes.length) break;
@@ -279,7 +345,6 @@ class QuranFontsService {
     final newB = (color.b * 255).round();
     final newA = (color.a * 255).round();
 
-    // استبدال كل سجلات الألوان بلون واحد
     for (int c = 0; c < numColorRecords; c++) {
       final colorOffset = absColorRecordsOffset + c * 4;
       if (colorOffset + 4 > fontBytes.length) break;
@@ -305,9 +370,10 @@ class QuranFontsService {
       log('QuranFontsService: clearCache failed: $e',
           name: 'QuranFontsService');
     }
-    _fontsRegistered = false;
-    _darkFontsRegistered = false;
-    _noTajweedFontsRegistered = false;
-    _loadFuture = null;
+    _loadedPages.clear();
+    _pageLoadFutures.clear();
+    _backgroundLoadFuture = null;
+    _cacheDir = null;
+    _cacheDirInitialized = false;
   }
 }

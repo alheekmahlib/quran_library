@@ -23,7 +23,7 @@ class TajweedMenuWidget extends StatelessWidget {
                   height: defaults.height ?? 350,
                   width: defaults.width ?? 350,
                   padding:
-                      defaults.containerPadding ?? const EdgeInsets.all(16.0),
+                      defaults.containerPadding ?? const EdgeInsets.all(8.0),
                   decoration: BoxDecoration(
                     color: defaults.backgroundColor ??
                         AppColors.getBackgroundColor(isDark),
@@ -59,8 +59,7 @@ class TajweedMenuWidget extends StatelessWidget {
                           child: ListView.builder(
                             itemCount: rule.length,
                             itemBuilder: (context, i) {
-                              final Color ruleColor = Color(
-                                  isDark ? rule[i].darkColor : rule[i].color);
+                              final Color ruleColor = Color(rule[i].color);
                               return Container(
                                 margin: defaults.itemMargin ??
                                     const EdgeInsets.symmetric(

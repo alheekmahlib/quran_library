@@ -19,4 +19,9 @@ extension FontsExtension on QuranCtrl {
           : QuranFontsService.getNoTajweedFontFamily(pageIndex);
     }
   }
+
+  /// يُرجع اسم عائلة الخط الأحمر لكلمات الخلاف (القراءات العشر).
+  String getRedFontPath(int pageIndex) {
+    return QuranFontsService.getRedFontFamily(pageIndex);
+  }
 }

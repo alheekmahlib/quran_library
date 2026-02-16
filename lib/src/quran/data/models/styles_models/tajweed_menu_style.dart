@@ -126,7 +126,8 @@ class TajweedMenuStyle {
     return TajweedMenuStyle(
       width: 350,
       height: 350,
-      containerPadding: const EdgeInsets.all(16.0),
+      containerPadding:
+          const EdgeInsets.symmetric(vertical: 6.0, horizontal: 4.0),
       backgroundColor: AppColors.getBackgroundColor(isDark),
       borderRadius: 8,
       headerPadding:

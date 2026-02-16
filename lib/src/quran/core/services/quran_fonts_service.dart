@@ -49,6 +49,9 @@ class QuranFontsService {
   static String getNoTajweedDarkFontFamily(int pageIndex) =>
       'page${pageIndex + 1}nd';
 
+  /// اسم عائلة الخط الأحمر للخلاف (page1nr .. page604nr).
+  static String getRedFontFamily(int pageIndex) => 'page${pageIndex + 1}nr';
+
   /// مسار الـ asset المضغوط للصفحة (1-based).
   static String _assetPath(int page) {
     final padded = page.toString().padLeft(3, '0');
@@ -224,6 +227,13 @@ class QuranFontsService {
           const Color(0xFFFFFFFF),
         );
         await loadFontFromList(ntdBytes, fontFamily: '${familyName}nd');
+
+        // 5. أحمر للخلاف (القراءات العشر): كل الألوان → أحمر
+        final nrBytes = _modifyCpalAllColors(
+          Uint8List.fromList(fontBytes),
+          const Color(0xFFFF0000),
+        );
+        await loadFontFromList(nrBytes, fontFamily: '${familyName}nr');
 
         _loadedPages.add(page);
       } catch (e, st) {

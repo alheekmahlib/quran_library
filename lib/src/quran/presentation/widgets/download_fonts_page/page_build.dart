@@ -75,90 +75,86 @@ class PageBuild extends StatelessWidget {
     }
 
     return RepaintBoundary(
-      child: SizedBox(
-        height: double.infinity,
-        width: double.infinity,
-        child: FittedBox(
-          fit: BoxFit.scaleDown,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: blocks.map((b) {
-              // عند عرض سورة واحدة: نتجاهل الهيدر/البسملة من الـ layout ونتركها للـ SurahPage.
-              if (surahFilterNumber != null &&
-                  (b is QpcV4SurahHeaderBlock || b is QpcV4BasmallahBlock)) {
+      child: FittedBox(
+        fit: BoxFit.scaleDown,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: blocks.map((b) {
+            // عند عرض سورة واحدة: نتجاهل الهيدر/البسملة من الـ layout ونتركها للـ SurahPage.
+            if (surahFilterNumber != null &&
+                (b is QpcV4SurahHeaderBlock || b is QpcV4BasmallahBlock)) {
+              return const SizedBox.shrink();
+            }
+
+            if (b is QpcV4SurahHeaderBlock) {
+              return SurahHeaderWidget(
+                b.surahNumber,
+                bannerStyle: bannerStyle ??
+                    BannerStyle().copyWith(
+                      bannerSvgHeight: 35.w,
+                    ),
+                surahNameStyle: surahNameStyle ??
+                    SurahNameStyle(
+                      surahNameSize: 35.w,
+                      surahNameColor: AppColors.getTextColor(isDark),
+                    ),
+                onSurahBannerPress: onSurahBannerPress,
+                isDark: isDark,
+              );
+            }
+
+            if (b is QpcV4BasmallahBlock) {
+              return BasmallahWidget(
+                surahNumber: b.surahNumber,
+                basmalaStyle: basmalaStyle ??
+                    BasmalaStyle(
+                      basmalaColor: AppColors.getTextColor(isDark),
+                      basmalaFontSize: 23.0.w,
+                      verticalPadding: 0.0,
+                    ),
+              );
+            }
+
+            if (b is QpcV4AyahLineBlock) {
+              final filteredSegments = (surahFilterNumber == null)
+                  ? b.segments
+                  : b.segments
+                      .where((s) => s.surahNumber == surahFilterNumber)
+                      .toList(growable: false);
+
+              if (filteredSegments.isEmpty) {
                 return const SizedBox.shrink();
               }
 
-              if (b is QpcV4SurahHeaderBlock) {
-                return SurahHeaderWidget(
-                  b.surahNumber,
-                  bannerStyle: bannerStyle ??
-                      BannerStyle().copyWith(
-                        bannerSvgHeight: 35,
-                      ),
-                  surahNameStyle: surahNameStyle ??
-                      SurahNameStyle(
-                        surahNameSize: 35,
-                        surahNameColor: AppColors.getTextColor(isDark),
-                      ),
-                  onSurahBannerPress: onSurahBannerPress,
+              return RepaintBoundary(
+                child: QpcV4RichTextLine(
+                  pageIndex: pageIndex,
+                  textColor: textColor,
                   isDark: isDark,
-                );
-              }
+                  bookmarks: bookmarks,
+                  onAyahLongPress: onAyahLongPress,
+                  bookmarkList: bookmarkList,
+                  ayahIconColor: ayahIconColor,
+                  showAyahBookmarkedIcon: showAyahBookmarkedIcon,
+                  bookmarksAyahs: bookmarksAyahs,
+                  bookmarksColor: bookmarksColor,
+                  ayahSelectedBackgroundColor: ayahSelectedBackgroundColor,
+                  context: context,
+                  quranCtrl: quranCtrl,
+                  segments: filteredSegments,
+                  isFontsLocal: isFontsLocal ?? false,
+                  fontsName: fontsName ?? '',
+                  fontFamilyOverride: null,
+                  fontPackageOverride: null,
+                  usePaintColoring: true,
+                  ayahBookmarked: ayahBookmarked,
+                  isCentered: b.isCentered,
+                ),
+              );
+            }
 
-              if (b is QpcV4BasmallahBlock) {
-                return BasmallahWidget(
-                  surahNumber: b.surahNumber,
-                  basmalaStyle: basmalaStyle ??
-                      BasmalaStyle(
-                        basmalaColor: AppColors.getTextColor(isDark),
-                        basmalaFontSize: 23.0,
-                        verticalPadding: 0.0,
-                      ),
-                );
-              }
-
-              if (b is QpcV4AyahLineBlock) {
-                final filteredSegments = (surahFilterNumber == null)
-                    ? b.segments
-                    : b.segments
-                        .where((s) => s.surahNumber == surahFilterNumber)
-                        .toList(growable: false);
-
-                if (filteredSegments.isEmpty) {
-                  return const SizedBox.shrink();
-                }
-
-                return RepaintBoundary(
-                  child: QpcV4RichTextLine(
-                    pageIndex: pageIndex,
-                    textColor: textColor,
-                    isDark: isDark,
-                    bookmarks: bookmarks,
-                    onAyahLongPress: onAyahLongPress,
-                    bookmarkList: bookmarkList,
-                    ayahIconColor: ayahIconColor,
-                    showAyahBookmarkedIcon: showAyahBookmarkedIcon,
-                    bookmarksAyahs: bookmarksAyahs,
-                    bookmarksColor: bookmarksColor,
-                    ayahSelectedBackgroundColor: ayahSelectedBackgroundColor,
-                    context: context,
-                    quranCtrl: quranCtrl,
-                    segments: filteredSegments,
-                    isFontsLocal: isFontsLocal ?? false,
-                    fontsName: fontsName ?? '',
-                    fontFamilyOverride: null,
-                    fontPackageOverride: null,
-                    usePaintColoring: true,
-                    ayahBookmarked: ayahBookmarked,
-                    isCentered: b.isCentered,
-                  ),
-                );
-              }
-
-              return const SizedBox.shrink();
-            }).toList(),
-          ),
+            return const SizedBox.shrink();
+          }).toList(),
         ),
       ),
     );

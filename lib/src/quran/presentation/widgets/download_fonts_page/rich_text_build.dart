@@ -77,14 +77,19 @@ class _QpcV4RichTextLineState extends State<QpcV4RichTextLine> {
         WordInfoCtrl.instance.selectedWordRef.value.hashCode;
     // حالة تبويب القراءات العشر
     final tenRecHash = WordInfoCtrl.instance.tabController.index.hashCode;
+    // تغيّر بيانات القراءات (عند اكتمال prewarm)
+    final recitationsRevisionHash =
+        WordInfoCtrl.instance.recitationsDataRevision.hashCode;
 
     return Object.hash(selHash, extHash, bmHash, abHash, isDarkHash,
-        tajweedHash, wordSelectedHash, tenRecHash);
+        tajweedHash, wordSelectedHash, tenRecHash, recitationsRevisionHash);
   }
 
   @override
   Widget build(BuildContext context) {
     final wordInfoCtrl = WordInfoCtrl.instance;
+    final isLandscape =
+        MediaQuery.of(context).orientation == Orientation.landscape;
 
     // GetBuilder بمعرّف خاص بالصفحة — لا يُعاد بناؤه من update() بدون id
     return GetBuilder<QuranCtrl>(
@@ -97,9 +102,10 @@ class _QpcV4RichTextLineState extends State<QpcV4RichTextLine> {
           final isTenRecitations = wordInfoCtrl.isTenRecitations;
 
           // prewarm القراءات في خلفية
-          if (wordInfoCtrl.isKindAvailable(WordInfoKind.recitations) &&
-              wordInfoCtrl.tabController.index == 1) {
-            final surahs = widget.segments.map((s) => s.surahNumber);
+          if (isTenRecitations &&
+              !withTajweed &&
+              wordInfoCtrl.isKindAvailable(WordInfoKind.recitations)) {
+            final surahs = widget.segments.map((s) => s.surahNumber).toSet();
             WidgetsBinding.instance.addPostFrameCallback((_) {
               wordInfoCtrl.prewarmRecitationsSurahs(surahs);
             });
@@ -114,23 +120,17 @@ class _QpcV4RichTextLineState extends State<QpcV4RichTextLine> {
 
           _cachedWidget = LayoutBuilder(
             builder: (ctx, constraints) {
-              final fs = PageFontSizeHelper.getFontSize(
-                widget.pageIndex,
-                ctx,
-              );
-
-              Paint? redQTextPaint;
-              if (!withTajweed && isTenRecitations) {
-                redQTextPaint = Paint()
-                  ..colorFilter =
-                      const ColorFilter.mode(Colors.red, BlendMode.srcATop);
-              }
+              final fs = isLandscape
+                  ? 100.0
+                  : PageFontSizeHelper.getFontSize(
+                      widget.pageIndex,
+                      ctx,
+                    ).h;
 
               return _buildRichText(
                 wordInfoCtrl,
                 context,
                 fs,
-                redQTextPaint: redQTextPaint,
                 withTajweed: withTajweed,
                 isTenRecitations: isTenRecitations,
               );
@@ -146,17 +146,19 @@ class _QpcV4RichTextLineState extends State<QpcV4RichTextLine> {
     WordInfoCtrl wordInfoCtrl,
     BuildContext context,
     double fs, {
-    Paint? redQTextPaint,
     required bool withTajweed,
     required bool isTenRecitations,
   }) {
     final bookmarksSet = widget.bookmarksAyahs.toSet();
     final ayahCharRanges = <int, TextSelection>{};
+    final bookmarkCharRanges = <int, _ColoredTextRange>{};
+    TextSelection? wordSelectionRange;
     int charOffset = 0;
 
     final bookmarksAyahsList = bookmarksSet.toList();
     final allBookmarksList =
         widget.bookmarks.values.expand((list) => list).toList();
+    final ayahBookmarkedSet = widget.ayahBookmarked.toSet();
 
     final spans =
         List<InlineSpan>.generate(widget.segments.length, (segmentIndex) {
@@ -174,9 +176,6 @@ class _QpcV4RichTextLineState extends State<QpcV4RichTextLine> {
 
       final info = wordInfoCtrl.getRecitationsInfoSync(ref);
       final hasKhilaf = info?.hasKhilaf ?? false;
-
-      final bool wouldForceRed = hasKhilaf && !withTajweed && isTenRecitations;
-      final Paint? qTextPaint = wouldForceRed ? redQTextPaint : null;
 
       final span = _qpcV4SpanSegment(
         context: context,
@@ -243,12 +242,19 @@ class _QpcV4RichTextLineState extends State<QpcV4RichTextLine> {
         fontPackageOverride: widget.fontPackageOverride,
         usePaintColoring: widget.usePaintColoring,
         ayahBookmarked: widget.ayahBookmarked,
-        quranTextForeground: qTextPaint,
         isDark: widget.isDark,
       );
 
       final spanStart = charOffset;
       charOffset += _countCharsInSpan(span);
+
+      // تتبع نطاق الكلمة المحددة
+      if (wordInfoCtrl.selectedWordRef.value == ref) {
+        wordSelectionRange = TextSelection(
+          baseOffset: spanStart,
+          extentOffset: charOffset,
+        );
+      }
 
       if (isSelectedCombined) {
         if (ayahCharRanges.containsKey(uq)) {
@@ -260,6 +266,45 @@ class _QpcV4RichTextLineState extends State<QpcV4RichTextLine> {
           ayahCharRanges[uq] = TextSelection(
             baseOffset: spanStart,
             extentOffset: charOffset,
+          );
+        }
+      }
+
+      // تتبع نطاقات العلامات المرجعية (bookmarks)
+      final isBookmarked =
+          ayahBookmarkedSet.contains(uq) || bookmarksSet.contains(uq);
+      if (isBookmarked) {
+        Color bmColor;
+        if (widget.bookmarksColor != null) {
+          bmColor = widget.bookmarksColor!;
+        } else if (ayahBookmarkedSet.contains(uq) &&
+            widget.bookmarksColor != null) {
+          bmColor = widget.bookmarksColor!;
+        } else {
+          final bm = allBookmarksList.cast<BookmarkModel?>().firstWhere(
+                (b) => b!.ayahId == uq,
+                orElse: () => null,
+              );
+          bmColor = bm != null
+              ? Color(bm.colorCode).withValues(alpha: 0.3)
+              : const Color(0xffCDAD80).withValues(alpha: 0.3);
+        }
+
+        if (bookmarkCharRanges.containsKey(uq)) {
+          bookmarkCharRanges[uq] = _ColoredTextRange(
+            range: TextSelection(
+              baseOffset: bookmarkCharRanges[uq]!.range.baseOffset,
+              extentOffset: charOffset,
+            ),
+            color: bmColor,
+          );
+        } else {
+          bookmarkCharRanges[uq] = _ColoredTextRange(
+            range: TextSelection(
+              baseOffset: spanStart,
+              extentOffset: charOffset,
+            ),
+            color: bmColor,
           );
         }
       }
@@ -276,9 +321,11 @@ class _QpcV4RichTextLineState extends State<QpcV4RichTextLine> {
       text: TextSpan(children: spans),
     );
 
-    final needsRenderWidget = ayahCharRanges.isNotEmpty;
+    final hasSelection = ayahCharRanges.isNotEmpty;
+    final hasBookmarks = bookmarkCharRanges.isNotEmpty;
+    final hasWordSelection = wordSelectionRange != null;
 
-    if (!needsRenderWidget) {
+    if (!hasSelection && !hasBookmarks && !hasWordSelection) {
       return richText;
     }
 
@@ -286,6 +333,8 @@ class _QpcV4RichTextLineState extends State<QpcV4RichTextLine> {
       selectedRanges: ayahCharRanges.values.toList(),
       selectionColor: widget.ayahSelectedBackgroundColor ??
           const Color(0xffCDAD80).withValues(alpha: 0.25),
+      bookmarkRanges: bookmarkCharRanges.values.toList(),
+      wordSelectionRange: wordSelectionRange,
       child: richText,
     );
   }
@@ -308,14 +357,25 @@ int _countCharsInSpan(InlineSpan span) {
   return 0;
 }
 
-/// ويدجت يرسم خلفية التحديد خلف النص القرآني لكل آية على حدة.
+/// نموذج يحمل نطاق نصي مع لون مخصص.
+class _ColoredTextRange {
+  final TextSelection range;
+  final Color color;
+  const _ColoredTextRange({required this.range, required this.color});
+}
+
+/// ويدجت يرسم خلفية التحديد والعلامات المرجعية خلف النص القرآني لكل آية على حدة.
 class _AyahSelectionWidget extends SingleChildRenderObjectWidget {
   final List<TextSelection> selectedRanges;
   final Color selectionColor;
+  final List<_ColoredTextRange> bookmarkRanges;
+  final TextSelection? wordSelectionRange;
 
   const _AyahSelectionWidget({
     required this.selectedRanges,
     required this.selectionColor,
+    this.bookmarkRanges = const [],
+    this.wordSelectionRange,
     required super.child,
   });
 
@@ -324,6 +384,8 @@ class _AyahSelectionWidget extends SingleChildRenderObjectWidget {
     return _AyahSelectionRenderBox(
       selectedRanges: selectedRanges,
       selectionColor: selectionColor,
+      bookmarkRanges: bookmarkRanges,
+      wordSelectionRange: wordSelectionRange,
     );
   }
 
@@ -332,7 +394,9 @@ class _AyahSelectionWidget extends SingleChildRenderObjectWidget {
       BuildContext context, _AyahSelectionRenderBox renderObject) {
     renderObject
       ..selectedRanges = selectedRanges
-      ..selectionColor = selectionColor;
+      ..selectionColor = selectionColor
+      ..bookmarkRanges = bookmarkRanges
+      ..wordSelectionRange = wordSelectionRange;
   }
 }
 
@@ -342,8 +406,15 @@ class _AyahSelectionRenderBox extends RenderProxyBox {
   _AyahSelectionRenderBox({
     required List<TextSelection> selectedRanges,
     required Color selectionColor,
+    List<_ColoredTextRange> bookmarkRanges = const [],
+    TextSelection? wordSelectionRange,
   })  : _selectedRanges = selectedRanges,
-        _selectionColor = selectionColor;
+        _selectionColor = selectionColor,
+        _bookmarkRanges = bookmarkRanges,
+        _wordSelectionRange = wordSelectionRange;
+
+  static const _wordSelectionColor =
+      Color(0xffCDAD80); // بدون alpha — يُطبّق عند الرسم
 
   List<TextSelection> _selectedRanges;
   set selectedRanges(List<TextSelection> value) {
@@ -359,10 +430,42 @@ class _AyahSelectionRenderBox extends RenderProxyBox {
     markNeedsPaint();
   }
 
+  List<_ColoredTextRange> _bookmarkRanges;
+  set bookmarkRanges(List<_ColoredTextRange> value) {
+    _bookmarkRanges = value;
+    markNeedsPaint();
+  }
+
+  TextSelection? _wordSelectionRange;
+  set wordSelectionRange(TextSelection? value) {
+    if (_wordSelectionRange == value) return;
+    _wordSelectionRange = value;
+    markNeedsPaint();
+  }
+
   @override
   void paint(PaintingContext context, Offset offset) {
-    if (child is RenderParagraph && _selectedRanges.isNotEmpty) {
-      _paintSelectionBackgrounds(context, offset);
+    if (child is RenderParagraph) {
+      // 1) علامات مرجعية (أسفل طبقة)
+      if (_bookmarkRanges.isNotEmpty) {
+        _paintColoredRanges(context, offset, _bookmarkRanges);
+      }
+      // 2) تحديد الكلمة
+      if (_wordSelectionRange != null) {
+        final paint = Paint()
+          ..color = _wordSelectionColor.withValues(alpha: 0.25);
+        _paintMergedBoxes(
+          child! as RenderParagraph,
+          context,
+          offset,
+          [_wordSelectionRange!],
+          paint,
+        );
+      }
+      // 3) تحديد الآية (أعلى طبقة)
+      if (_selectedRanges.isNotEmpty) {
+        _paintSelectionBackgrounds(context, offset);
+      }
     }
     super.paint(context, offset);
   }
@@ -371,9 +474,30 @@ class _AyahSelectionRenderBox extends RenderProxyBox {
   void _paintSelectionBackgrounds(PaintingContext context, Offset offset) {
     final paragraph = child! as RenderParagraph;
     final bgPaint = Paint()..color = _selectionColor;
+    _paintMergedBoxes(paragraph, context, offset, _selectedRanges, bgPaint);
+  }
+
+  /// رسم خلفيات العلامات المرجعية - كل نطاق بلونه الخاص.
+  void _paintColoredRanges(
+      PaintingContext context, Offset offset, List<_ColoredTextRange> ranges) {
+    final paragraph = child! as RenderParagraph;
+    for (final cr in ranges) {
+      final paint = Paint()..color = cr.color;
+      _paintMergedBoxes(paragraph, context, offset, [cr.range], paint);
+    }
+  }
+
+  /// دمج المستطيلات على نفس السطر ورسم RRect مستدير.
+  void _paintMergedBoxes(
+    RenderParagraph paragraph,
+    PaintingContext context,
+    Offset offset,
+    List<TextSelection> ranges,
+    Paint bgPaint,
+  ) {
     const padding = EdgeInsets.only(left: 4, right: 4, top: 0, bottom: -6);
 
-    for (final range in _selectedRanges) {
+    for (final range in ranges) {
       final boxes = paragraph.getBoxesForSelection(
         range,
         boxHeightStyle: BoxHeightStyle.max,

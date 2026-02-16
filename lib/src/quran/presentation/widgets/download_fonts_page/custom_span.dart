@@ -1,28 +1,5 @@
 part of '/quran.dart';
 
-Color? _ayahBackgroundColor({
-  required int ayahUQNum,
-  required bool isSelected,
-  required List<int> bookmarksAyahs,
-  required List<int> ayahBookmarked,
-  required List<BookmarkModel> allBookmarksList,
-  Color? bookmarksColor,
-  Color? ayahSelectedBackgroundColor,
-}) {
-  if (ayahBookmarked.contains(ayahUQNum)) return bookmarksColor;
-  if (bookmarksAyahs.contains(ayahUQNum)) {
-    return bookmarksColor ??
-        Color(
-          allBookmarksList
-              .firstWhere(
-                (b) => b.ayahId == ayahUQNum,
-              )
-              .colorCode,
-        ).withValues(alpha: 0.3);
-  }
-  return null;
-}
-
 TextSpan _qpcV4SpanSegment({
   required BuildContext context,
   required int pageIndex,
@@ -48,45 +25,34 @@ TextSpan _qpcV4SpanSegment({
   String? fontFamilyOverride,
   String? fontPackageOverride,
   bool usePaintColoring = true,
-  Paint? quranTextForeground,
   required bool isDark,
 }) {
   final quranCtrl = QuranCtrl.instance;
   final wordInfoCtrl = WordInfoCtrl.instance;
-  final bg = _ayahBackgroundColor(
-    ayahUQNum: ayahUQNum,
-    isSelected: isSelected,
-    bookmarksAyahs: bookmarksAyahs,
-    ayahBookmarked: ayahBookmarked,
-    allBookmarksList: allBookmarksList,
-    bookmarksColor: bookmarksColor,
-    ayahSelectedBackgroundColor: ayahSelectedBackgroundColor,
-  );
 
   final withTajweed = QuranCtrl.instance.state.isTajweedEnabled.value;
   final isTenRecitations = WordInfoCtrl.instance.isTenRecitations;
   final bool forceRed = isWordKhilaf && !withTajweed && isTenRecitations;
-  final bool isWordSelected = wordInfoCtrl.selectedWordRef.value == wordRef;
-  final Color selectedWordBg = const Color(0xffCDAD80).withValues(alpha: 0.25);
 
-  final fontFamily = fontFamilyOverride ??
-      (isFontsLocal
-          ? fontsName
-          : quranCtrl.getFontPath(pageIndex, isDark: isDark));
+  // اختيار الخط: كلمات الخلاف تستخدم خط CPAL أحمر بدلاً من foreground Paint
+  final String fontFamily;
+  if (fontFamilyOverride != null) {
+    fontFamily = fontFamilyOverride;
+  } else if (isFontsLocal) {
+    fontFamily = fontsName;
+  } else if (forceRed) {
+    fontFamily = quranCtrl.getRedFontPath(pageIndex);
+  } else {
+    fontFamily = quranCtrl.getFontPath(pageIndex, isDark: isDark);
+  }
 
   final baseTextStyle = TextStyle(
     fontFamily: fontFamily,
     package: fontPackageOverride,
     fontSize: fontSize,
-    height: !usePaintColoring ? 1.3 : 2,
+    height: 2.2,
     wordSpacing: usePaintColoring ? -2 : 0,
-    backgroundColor: bg ?? (isWordSelected ? selectedWordBg : null),
-    foreground: quranTextForeground,
-    color: quranTextForeground == null
-        ? (forceRed
-            ? Colors.red
-            : (textColor ?? AppColors.getTextColor(isDark)))
-        : null,
+    color: textColor ?? AppColors.getTextColor(isDark),
   );
 
   InlineSpan? tail;
@@ -117,7 +83,6 @@ TextSpan _qpcV4SpanSegment({
               height: 1.5,
               package: 'quran_library',
               color: ayahIconColor ?? Theme.of(context).colorScheme.primary,
-              backgroundColor: bg,
             ),
             recognizer: LongPressGestureRecognizer(
                 duration: const Duration(milliseconds: 500))

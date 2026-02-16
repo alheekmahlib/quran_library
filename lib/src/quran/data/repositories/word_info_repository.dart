@@ -75,16 +75,18 @@ class WordInfoRepository {
     return surah?.lookup(ref);
   }
 
-  Future<void> prewarmRecitationsSurah(int surahNumber) async {
-    if (!isKindDownloaded(WordInfoKind.recitations)) return;
+  Future<bool> prewarmRecitationsSurah(int surahNumber) async {
+    if (!isKindDownloaded(WordInfoKind.recitations)) return false;
     final cache = _cacheByKind[WordInfoKind.recitations]!;
     final loading = _loadingSurahsByKind[WordInfoKind.recitations]!;
-    if (cache.containsKey(surahNumber)) return;
-    if (loading.contains(surahNumber)) return;
+    // إذا كانت السورة موجودة مسبقًا بالكاش فلا نعتبرها "تحميلًا جديدًا".
+    if (cache.containsKey(surahNumber)) return false;
+    if (loading.contains(surahNumber)) return false;
     loading.add(surahNumber);
     try {
       await _ensureSurahLoaded(
           kind: WordInfoKind.recitations, surahNumber: surahNumber);
+      return cache.containsKey(surahNumber);
     } finally {
       loading.remove(surahNumber);
     }

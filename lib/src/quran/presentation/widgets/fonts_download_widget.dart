@@ -136,6 +136,8 @@ class TajweedButtonWidget extends StatelessWidget {
                 child: InkWell(
                   onTap: () {
                     QuranCtrl.instance.state.isTajweedEnabled.toggle();
+                    GetStorage().write(_StorageConstants().isTajweed,
+                        QuranCtrl.instance.state.isTajweedEnabled.value);
                     Get.forceAppUpdate();
                   },
                   borderRadius: BorderRadius.circular(12.0),

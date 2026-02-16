@@ -177,24 +177,24 @@ class QpcV4PageRenderer {
       // وباقي النص، ونعتبر أننا عالجنا فاصل بداية الصفحة.
       if (addSingleSpaceBetweenFirstTwoWords && realWordsWritten == 0) {
         final runes = resolvedText.runes.toList(growable: false);
-        if (runes.length > 1 && runes.first == _ornamentHizbMark) {
-          final glyphs =
-              '${String.fromCharCode(runes.first)}\u202F${String.fromCharCodes(runes.skip(1))}';
-          didInsertSingleSpaceBetweenFirstTwoWords = true;
-          segments.add(
-            QpcV4WordSegment(
-              wordId: w.id,
-              ayahUq: uq,
-              surahNumber: w.surah,
-              ayahNumber: w.ayah,
-              wordNumber: w.wordIndex,
-              glyphs: glyphs,
-              isAyahEnd: isAyahEnd,
-            ),
-          );
-          realWordsWritten += 2;
-          continue;
-        }
+        // if (runes.length > 1 && runes.first == _ornamentHizbMark) {
+        final glyphs =
+            '${String.fromCharCode(runes.first)}\u202F${String.fromCharCodes(runes.skip(1))}';
+        didInsertSingleSpaceBetweenFirstTwoWords = true;
+        segments.add(
+          QpcV4WordSegment(
+            wordId: w.id,
+            ayahUq: uq,
+            surahNumber: w.surah,
+            ayahNumber: w.ayah,
+            wordNumber: w.wordIndex,
+            glyphs: glyphs,
+            isAyahEnd: isAyahEnd,
+          ),
+        );
+        realWordsWritten += 2;
+        continue;
+        // }
       }
 
       var glyphs = resolvedText;

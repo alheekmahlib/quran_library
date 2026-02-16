@@ -48,7 +48,12 @@ class AyahModel {
 
   /// Factory لإنشاء الموديل من json الخاص بالخطوط المنزلة
   /// Factory to create model from downloaded fonts JSON
-  factory AyahModel.fromDownloadedFontsJson(Map<String, dynamic> json) {
+  factory AyahModel.fromDownloadedFontsJson(
+    Map<String, dynamic> json, {
+    int? surahNumber,
+    String? arabicName,
+    String? englishName,
+  }) {
     return AyahModel(
       ayahUQNumber: json['number'],
       ayahNumber: json['numberInSurah'],
@@ -59,12 +64,12 @@ class AyahModel {
       hizb: json['hizbQuarter'],
       sajda: json['sajda'],
       singleAyahTextColor: json['singleAyahTextColor'],
-      surahNumber: null,
+      surahNumber: surahNumber,
       lineStart: null,
       lineEnd: null,
       quarter: null,
-      englishName: null,
-      arabicName: null,
+      englishName: englishName,
+      arabicName: arabicName,
       sajdaBool: null,
       centered: null,
     );
@@ -183,13 +188,22 @@ class SurahModel {
   /// Factory لإنشاء السورة من json الخطوط المنزلة
   /// Factory to create surah from downloaded fonts JSON
   factory SurahModel.fromDownloadedFontsJson(Map<String, dynamic> json) {
+    final int surahNumber = json['number'];
+    final String arabicName = json['name'];
+    final String englishName = json['englishName'];
     var ayahsFromJson = json['ayahs'] as List;
-    List<AyahModel> ayahsList =
-        ayahsFromJson.map((i) => AyahModel.fromDownloadedFontsJson(i)).toList();
+    List<AyahModel> ayahsList = ayahsFromJson
+        .map((i) => AyahModel.fromDownloadedFontsJson(
+              i,
+              surahNumber: surahNumber,
+              arabicName: arabicName,
+              englishName: englishName,
+            ))
+        .toList();
     return SurahModel(
-      surahNumber: json['number'],
-      arabicName: json['name'],
-      englishName: json['englishName'],
+      surahNumber: surahNumber,
+      arabicName: arabicName,
+      englishName: englishName,
       revelationType: json['revelationType'],
       ayahs: ayahsList,
     );

@@ -122,6 +122,8 @@ class QuranCtrl extends GetxController {
       }
     }();
 
+    QuranCtrl.instance.state.isTajweedEnabled.value =
+        GetStorage().read(_StorageConstants().isTajweed) ?? false;
     await _coreDataLoadFuture;
   }
 
@@ -168,6 +170,9 @@ class QuranCtrl extends GetxController {
       state.surahs =
           surahsJson.map((s) => SurahModel.fromDownloadedFontsJson(s)).toList();
 
+      // مزامنة القوائم على مستوى الـ instance مع state لتجنب القوائم الفارغة
+      surahs.addAll(state.surahs);
+
       for (final surah in state.surahs) {
         // نقل بيانات السورة إلى كل آية حتى يعمل البحث بشكل صحيح
         for (final ayah in surah.ayahs) {
@@ -177,6 +182,9 @@ class QuranCtrl extends GetxController {
         }
         state.allAyahs.addAll(surah.ayahs);
       }
+
+      // مزامنة قائمة الآيات على مستوى الـ instance
+      ayahs.addAll(state.allAyahs);
       List.generate(604, (pageIndex) {
         state.pages.add(state.allAyahs
             .where((ayah) => ayah.page == pageIndex + 1)

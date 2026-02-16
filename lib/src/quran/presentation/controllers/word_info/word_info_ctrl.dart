@@ -10,9 +10,6 @@ class WordInfoCtrl extends GetxController
 
   final WordInfoRepository _repository;
 
-  // حارس لمنع إعادة prewarm لنفس السورة مراراً أثناء بناء صفحات المصحف.
-  final Set<int> _prewarmedRecitationsSurahs = <int>{};
-
   final RxBool isPreparingDownload = false.obs;
   final RxBool isDownloading = false.obs;
   final RxDouble downloadProgress = 0.0.obs;
@@ -20,19 +17,50 @@ class WordInfoCtrl extends GetxController
 
   final Rx<WordInfoKind> selectedKind = WordInfoKind.recitations.obs;
 
+  /// رقم مراجعة (revision) يتغير عند وصول/تغير بيانات القراءات في الذاكرة.
+  /// يُستخدم لإبطال كاش عرض سطور QPC v4 عند اكتمال prewarm.
+  int recitationsDataRevision = 0;
+
   final Rx<WordRef?> selectedWordRef = Rx<WordRef?>(null);
   late TabController tabController;
+  VoidCallback? _tabControllerListener;
+  int _lastTabIndexNotified = 0;
 
   bool get isTenRecitations => tabController.index == 1;
 
   @override
   void onInit() {
-    tabController = TabController(length: 2, vsync: this);
+    tabController = TabController(
+        initialIndex:
+            GetStorage().read(_StorageConstants().isTenRecitations) ?? 0,
+        length: 2,
+        vsync: this);
+
+    _lastTabIndexNotified = tabController.index;
+
+    _tabControllerListener = () {
+      // حدّث مرة واحدة لكل تغيّر فعلي بالـ index.
+      final idx = tabController.index;
+      if (idx == _lastTabIndexNotified) return;
+      _lastTabIndexNotified = idx;
+      GetStorage().write(
+        _StorageConstants().isTenRecitations,
+        idx,
+      );
+      update(['word_info_data']);
+      QuranCtrl.instance.update();
+    };
+    tabController.addListener(_tabControllerListener!);
     super.onInit();
   }
 
   @override
   void onClose() {
+    final listener = _tabControllerListener;
+    if (listener != null) {
+      tabController.removeListener(listener);
+      _tabControllerListener = null;
+    }
     tabController.dispose();
     super.onClose();
   }
@@ -40,6 +68,10 @@ class WordInfoCtrl extends GetxController
   void setSelectedKind(WordInfoKind kind) {
     selectedKind.value = kind;
     update(['word_info_kind']);
+  }
+
+  void _bumpRecitationsRevision() {
+    recitationsDataRevision++;
   }
 
   void setSelectedWord(WordRef ref) {
@@ -86,6 +118,10 @@ class WordInfoCtrl extends GetxController
         },
       );
 
+      if (kind == WordInfoKind.recitations) {
+        _bumpRecitationsRevision();
+      }
+
       isPreparingDownload.value = false;
       isDownloading.value = false;
       downloadingKind.value = null;
@@ -102,23 +138,22 @@ class WordInfoCtrl extends GetxController
   }
 
   Future<void> prewarmRecitationsSurah(int surahNumber) async {
-    if (!_prewarmedRecitationsSurahs.add(surahNumber)) return;
-    await _repository.prewarmRecitationsSurah(surahNumber);
-    // إعادة بناء واحدة بعد تحميل بيانات السورة الجديدة
+    final didLoad = await _repository.prewarmRecitationsSurah(surahNumber);
+    if (!didLoad) return;
+    _bumpRecitationsRevision();
     update(['word_info_data']);
   }
 
   Future<void> prewarmRecitationsSurahs(Iterable<int> surahNumbers) async {
-    log('Prewarming recitations for surahs: $surahNumbers',
-        name: 'WordInfoCtrl');
     final unique = surahNumbers.toSet();
     var didPrewarmAny = false;
     for (final s in unique) {
-      if (!_prewarmedRecitationsSurahs.add(s)) continue;
-      didPrewarmAny = true;
-      await _repository.prewarmRecitationsSurah(s);
+      final didLoad = await _repository.prewarmRecitationsSurah(s);
+      if (didLoad) didPrewarmAny = true;
     }
     if (didPrewarmAny) {
+      log('Prewarming recitations for surahs: $unique', name: 'WordInfoCtrl');
+      _bumpRecitationsRevision();
       update(['word_info_data']);
     }
   }

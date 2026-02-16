@@ -8,7 +8,6 @@ final List<Map<String, dynamic>> tajweedRules = [
       {
         'index': 0,
         'color': 0xff999999,
-        'darkColor': 0xff999999,
         'text': {
           'ar': 'إدغام ، وما لا يُلفَظ',
           'en': 'Silent letter',
@@ -24,7 +23,6 @@ final List<Map<String, dynamic>> tajweedRules = [
       {
         'index': 1,
         'color': 0xffD0A421,
-        'darkColor': 0xff4A76FB,
         'text': {
           'ar': 'مدّ حركتان',
           'en': 'Normal madd (2)',
@@ -40,7 +38,6 @@ final List<Map<String, dynamic>> tajweedRules = [
       {
         'index': 2,
         'color': 0xffFE7D03,
-        'darkColor': 0xffFE7D03,
         'text': {
           'ar': 'مدّ ٢ أو ٤ أو ٦ جوازا',
           'en': 'Separated madd (2/4/6)',
@@ -56,7 +53,6 @@ final List<Map<String, dynamic>> tajweedRules = [
       {
         'index': 3,
         'color': 0xffFF4D8E,
-        'darkColor': 0xff29FFFF,
         'text': {
           'ar': 'مدّ واجب ٤ أو ٥ حركات',
           'en': 'Connected madd (4/5)',
@@ -72,7 +68,6 @@ final List<Map<String, dynamic>> tajweedRules = [
       {
         'index': 4,
         'color': 0xffE30000,
-        'darkColor': 0xff1EA0FF,
         'text': {
           'ar': 'مدّ ٦ حركات لزوما',
           'en': 'Necessary madd (6)',
@@ -88,7 +83,6 @@ final List<Map<String, dynamic>> tajweedRules = [
       {
         'index': 5,
         'color': 0xff26B55D,
-        'darkColor': 0xffFF6DFF,
         'text': {
           'ar': 'إخفاء ، ومواقع الغُنًّة (حركتان)',
           'en': 'Ghunna/ikhfa’',
@@ -104,7 +98,6 @@ final List<Map<String, dynamic>> tajweedRules = [
       {
         'index': 6,
         'color': 0xff00DEFF,
-        'darkColor': 0xffEE701E,
         'text': {
           'ar': 'قلقلة',
           'en': 'Qalqala (echo)',
@@ -153,7 +146,6 @@ final List<Map<String, dynamic>> tajweedRules = [
 
 class TajweedRuleModel {
   final int color;
-  final int darkColor;
 
   /// قد يكون النص متعدد اللغات وفق الهيكلة الجديدة.
   /// في حال التحويل لقائمة لغة واحدة عبر [forLanguage] يصبح هذا الحقل مفردًا.
@@ -166,7 +158,6 @@ class TajweedRuleModel {
 
   TajweedRuleModel({
     required this.color,
-    required this.darkColor,
     required this.text,
     this.resolvedText,
     this.index,
@@ -184,7 +175,6 @@ class TajweedRuleModel {
 
     return TajweedRuleModel(
       color: color,
-      darkColor: darkColor,
       text: text,
       resolvedText: resolved,
       index: index,
@@ -197,7 +187,6 @@ class TajweedRuleModel {
     return TajweedRuleModel(
       index: json['index'] as int?,
       color: json['color'] as int,
-      darkColor: json['darkColor'] as int,
       text: textValue is String
           ? <String, String>{
               'ar': textValue,
@@ -210,7 +199,6 @@ class TajweedRuleModel {
     return {
       'index': index,
       'color': color,
-      'darkColor': darkColor,
       'text': text,
     };
   }

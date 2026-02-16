@@ -170,6 +170,8 @@ extension QuranGetters on QuranCtrl {
         (p) => p.ayahNumber == ayahNumber,
       );
 
+      log('Ayah found: Surah $surahNumber, Ayah $ayahNumber, Page ${ayah.page}');
+
       return ayah.page > 0 ? ayah.page : 1;
     } catch (e) {
       return 1; // إرجاع الصفحة الأولى في حالة حدوث خطأ

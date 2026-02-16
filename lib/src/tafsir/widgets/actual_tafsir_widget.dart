@@ -48,6 +48,7 @@ class ActualTafsirWidget extends StatelessWidget {
           isDark: isDark,
           pageIndex: pageIndex! + 1,
           textColor: s.textColor,
+          textAlign: TextAlign.center,
         ),
         Text.rich(
           TextSpan(

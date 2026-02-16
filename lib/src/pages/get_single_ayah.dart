@@ -18,6 +18,7 @@ class GetSingleAyah extends StatelessWidget {
   final bool showAyahBookmarkedIcon;
   final Color? bookmarksColor;
   final Color? ayahSelectedBackgroundColor;
+  final TextAlign? textAlign;
 
   GetSingleAyah({
     super.key,
@@ -37,6 +38,7 @@ class GetSingleAyah extends StatelessWidget {
     this.showAyahBookmarkedIcon = false,
     this.bookmarksColor,
     this.ayahSelectedBackgroundColor,
+    this.textAlign,
   });
 
   final QuranCtrl quranCtrl = QuranCtrl.instance;
@@ -50,6 +52,7 @@ class GetSingleAyah extends StatelessWidget {
           fontSize: fontSize ?? 22,
           color: textColor ?? AppColors.getTextColor(isDark!),
         ),
+        textAlign: textAlign,
       );
     }
     final ayah = ayahs ??
@@ -58,6 +61,19 @@ class GetSingleAyah extends StatelessWidget {
     final pageNumber = pageIndex ??
         QuranCtrl.instance
             .getPageNumberByAyahAndSurahNumber(ayahNumber, surahNumber);
+    QuranFontsService.ensurePagesLoaded(pageNumber, radius: 10).then((_) {
+      // update();
+      // update(['_pageViewBuild']);
+      // تحميل بقية الصفحات في الخلفية
+      QuranFontsService.loadRemainingInBackground(
+        startNearPage: pageNumber,
+        progress: QuranCtrl.instance.state.fontsLoadProgress,
+        ready: QuranCtrl.instance.state.fontsReady,
+      ).then((_) {
+        // update();
+        QuranCtrl.instance.update(['single_ayah_$surahNumber-$ayahNumber']);
+      });
+    });
     log('surahNumber: $surahNumber, ayahNumber: $ayahNumber, pageNumber: $pageNumber');
 
     if (ayah.text.isEmpty) {
@@ -67,12 +83,17 @@ class GetSingleAyah extends StatelessWidget {
           fontSize: fontSize ?? 22,
           color: textColor ?? AppColors.getTextColor(isDark!),
         ),
+        textAlign: textAlign,
       );
     }
 
     // استخدام نفس طريقة عرض PageBuild إذا كان QPC Layout مفعل
     if (quranCtrl.isQpcLayoutEnabled) {
-      return _buildQpcLayout(context, pageNumber, ayah);
+      return GetBuilder<QuranCtrl>(
+          id: 'single_ayah_$surahNumber-$ayahNumber',
+          builder: (_) {
+            return _buildQpcLayout(context, pageNumber, ayah);
+          });
     }
 
     // العرض التقليدي للخطوط الأخرى
@@ -142,7 +163,7 @@ class GetSingleAyah extends StatelessWidget {
 
     return RichText(
       textDirection: TextDirection.rtl,
-      textAlign: TextAlign.right,
+      textAlign: textAlign ?? TextAlign.right,
       softWrap: true,
       overflow: TextOverflow.visible,
       maxLines: null,
@@ -197,8 +218,6 @@ class GetSingleAyah extends StatelessWidget {
   /// العرض التقليدي للخطوط غير QPC
   Widget _buildTraditionalLayout(
       BuildContext context, int pageNumber, AyahModel ayah) {
-    final bool currentFontsSelected = QuranCtrl.instance.isQpcV4Enabled;
-
     return RichText(
       textDirection: TextDirection.rtl,
       textAlign: TextAlign.justify,
@@ -209,11 +228,9 @@ class GetSingleAyah extends StatelessWidget {
         style: TextStyle(
           fontFamily: islocalFont == true
               ? fontsName
-              : (currentFontsSelected
-                  ? QuranCtrl.instance
-                      .getFontPath(pageNumber - 1, isDark: isDark ?? false)
-                  : 'hafs'),
-          package: currentFontsSelected ? null : 'quran_library',
+              : QuranCtrl.instance
+                  .getFontPath(pageNumber - 1, isDark: isDark ?? false),
+          package: 'quran_library',
           fontSize: fontSize ?? 22,
           height: 2.0,
           fontWeight: isBold! ? FontWeight.bold : FontWeight.normal,
@@ -221,22 +238,17 @@ class GetSingleAyah extends StatelessWidget {
         ),
         children: [
           TextSpan(
-            text: currentFontsSelected
-                ? '${ayah.text.replaceAll('\n', '').split(' ').join(' ')} '
-                : '${ayah.text} ',
+            text: '${ayah.text.replaceAll('\n', '').split(' ').join(' ')} ',
           ),
-          currentFontsSelected
-              ? const TextSpan()
-              : TextSpan(
-                  text: '${ayah.ayahNumber}'
-                      .convertEnglishNumbersToArabic('${ayah.ayahNumber}'),
-                  style: TextStyle(
-                    fontFamily: 'ayahNumber',
-                    package: 'quran_library',
-                    color:
-                        ayahIconColor ?? Theme.of(context).colorScheme.primary,
-                  ),
-                ),
+          TextSpan(
+            text: '${ayah.ayahNumber}'
+                .convertEnglishNumbersToArabic('${ayah.ayahNumber}'),
+            style: TextStyle(
+              fontFamily: 'ayahNumber',
+              package: 'quran_library',
+              color: ayahIconColor ?? Theme.of(context).colorScheme.primary,
+            ),
+          ),
         ],
       ),
     );

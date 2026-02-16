@@ -123,7 +123,7 @@ class SingleSurah extends StatelessWidget {
   Widget build(BuildContext context) {
     return SurahDisplayScreen(
       parentContext: context,
-      surahNumber: 109,
+      surahNumber: 2,
       isDark: false,
       appLanguageCode: 'ar',
       useDefaultAppBar: true,

@@ -23,7 +23,8 @@ import 'package:get_storage/get_storage.dart';
 import 'package:html/dom.dart' as dom;
 import 'package:html/parser.dart' as html_parser;
 import 'package:path_provider/path_provider.dart';
-import 'package:preload_page_view/preload_page_view.dart';
+import 'package:preload_page_view/preload_page_view.dart'
+    hide PageScrollPhysics, PageMetrics;
 
 import 'src/audio/audio.dart';
 import 'src/core/utils/app_colors.dart';
@@ -39,6 +40,7 @@ import 'src/tafsir/tafsir.dart';
 part 'src/core/theme/quran_library_theme.dart';
 part 'src/core/utils/assets_path.dart';
 part 'src/core/utils/toast_utils.dart';
+part 'src/core/widgets/patched_preload_page_view.dart';
 part 'src/flutter_quran_utils.dart';
 part 'src/pages/get_single_ayah.dart';
 part 'src/pages/quran_library_screen.dart';

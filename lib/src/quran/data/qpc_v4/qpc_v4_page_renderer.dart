@@ -20,7 +20,7 @@ class QpcV4PageRenderer {
   final QpcV4WordTextResolver? wordTextResolver;
   final bool insertWordSeparatorBetweenWords;
 
-  static const int _ornamentHizbMark = 0x06DE; // ۞
+  // static const int _ornamentHizbMark = 0x06DE; // ۞
 
   List<QpcV4RenderBlock> buildPage({required int pageNumber}) {
     final lines = store.linesByPage[pageNumber];

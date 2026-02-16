@@ -882,19 +882,31 @@ class QuranCtrl extends GetxController {
     // تأكد من جاهزية المتحكم قبل التحريك
     if (!quranPagesController.hasClients) return KeyEventResult.ignored;
 
+    // وضع الصفحتين (viewportFraction < 1): نقفز بمقدار 2
+    final step = quranPagesController.viewportFraction < 1.0 ? 2 : 1;
+    final currentIndex = quranPagesController.page?.round() ?? 0;
+
     if (event.logicalKey == LogicalKeyboardKey.arrowLeft) {
       log('Left Arrow Pressed');
-      quranPagesController.nextPage(
-        duration: const Duration(milliseconds: 600),
-        curve: Curves.easeInOut,
-      );
+      final target = currentIndex + step;
+      if (target <= 603) {
+        quranPagesController.animateToPage(
+          target,
+          duration: const Duration(milliseconds: 600),
+          curve: Curves.easeInOut,
+        );
+      }
       return KeyEventResult.handled;
     } else if (event.logicalKey == LogicalKeyboardKey.arrowRight) {
       log('Right Arrow Pressed');
-      quranPagesController.previousPage(
-        duration: const Duration(milliseconds: 600),
-        curve: Curves.easeInOut,
-      );
+      final target = currentIndex - step;
+      if (target >= 0) {
+        quranPagesController.animateToPage(
+          target,
+          duration: const Duration(milliseconds: 600),
+          curve: Curves.easeInOut,
+        );
+      }
       return KeyEventResult.handled;
     }
     return KeyEventResult.ignored;

@@ -417,8 +417,9 @@ class QuranLibraryScreen extends StatelessWidget {
                                     autofocus: kIsWeb ? false : true,
                                     onKeyEvent: (node, event) => quranCtrl
                                         .controlRLByKeyboard(node, event),
-                                    child: PreloadPageView.builder(
+                                    child: PatchedPreloadPageView.builder(
                                       preloadPagesCount: 2,
+                                      padEnds: false,
                                       itemCount: 604,
                                       controller:
                                           quranCtrl.getPageController(context),

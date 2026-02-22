@@ -606,59 +606,56 @@ class _ControlWidget extends StatelessWidget {
       builder: (quranCtrl) {
         final visible = quranCtrl.isShowControl.value;
         return RepaintBoundary(
-          child: IgnorePointer(
-            ignoring: !visible,
-            child: AnimatedOpacity(
-              opacity: visible ? 1.0 : 0.0,
-              duration: const Duration(milliseconds: 150),
-              curve: Curves.easeInOut,
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  // السلايدر السفلي - يظهر من الأسفل للأعلى
-                  // Bottom slider - appears from bottom to top
-                  isShowAudioSlider!
-                      ? AyahsAudioWidget(
-                          style: ayahStyle ??
-                              AyahAudioStyle.defaults(
-                                  isDark: isDark, context: context),
-                          isDark: isDark,
-                          languageCode: languageCode,
-                          downloadManagerStyle: ayahDownloadManagerStyle,
-                        )
-                      : const SizedBox.shrink(),
-                  kIsWeb
-                      ? JumpingPageControllerWidget(
-                          backgroundColor: backgroundColor,
-                          isDark: isDark,
-                          textColor: textColor,
-                          quranCtrl: quranCtrl,
-                        )
-                      : const SizedBox.shrink(),
-                  appBar == null && useDefaultAppBar && visible
-                      ? _QuranTopBar(
-                          languageCode,
-                          isDark,
-                          style: surahStyle ?? SurahAudioStyle(),
-                          backgroundColor: backgroundColor,
-                          downloadFontsDialogStyle: downloadFontsDialogStyle,
-                          isFontsLocal: isFontsLocal,
-                        )
-                      : const SizedBox.shrink(),
-                  isShowTabBar!
-                      ? Positioned(
-                          top: 70,
-                          child: QuranOrTenRecitationsTabBar(
-                              bgColor: backgroundColor ??
-                                  AppColors.getBackgroundColor(isDark),
-                              defaults: topBarStyle ??
-                                  QuranTopBarStyle.defaults(
-                                      context: context, isDark: isDark),
-                              isDark: isDark),
-                        )
-                      : const SizedBox.shrink(),
-                ],
-              ),
+          child: AnimatedOpacity(
+            opacity: visible ? 1.0 : 0.0,
+            duration: const Duration(milliseconds: 150),
+            curve: Curves.easeInOut,
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                // السلايدر السفلي - يظهر من الأسفل للأعلى
+                // Bottom slider - appears from bottom to top
+                isShowAudioSlider!
+                    ? AyahsAudioWidget(
+                        style: ayahStyle ??
+                            AyahAudioStyle.defaults(
+                                isDark: isDark, context: context),
+                        isDark: isDark,
+                        languageCode: languageCode,
+                        downloadManagerStyle: ayahDownloadManagerStyle,
+                      )
+                    : const SizedBox.shrink(),
+                kIsWeb
+                    ? JumpingPageControllerWidget(
+                        backgroundColor: backgroundColor,
+                        isDark: isDark,
+                        textColor: textColor,
+                        quranCtrl: quranCtrl,
+                      )
+                    : const SizedBox.shrink(),
+                appBar == null && useDefaultAppBar && visible
+                    ? _QuranTopBar(
+                        languageCode,
+                        isDark,
+                        style: surahStyle ?? SurahAudioStyle(),
+                        backgroundColor: backgroundColor,
+                        downloadFontsDialogStyle: downloadFontsDialogStyle,
+                        isFontsLocal: isFontsLocal,
+                      )
+                    : const SizedBox.shrink(),
+                isShowTabBar!
+                    ? Positioned(
+                        top: 70,
+                        child: QuranOrTenRecitationsTabBar(
+                            bgColor: backgroundColor ??
+                                AppColors.getBackgroundColor(isDark),
+                            defaults: topBarStyle ??
+                                QuranTopBarStyle.defaults(
+                                    context: context, isDark: isDark),
+                            isDark: isDark),
+                      )
+                    : const SizedBox.shrink(),
+              ],
             ),
           ),
         );

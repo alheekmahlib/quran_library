@@ -120,7 +120,9 @@ class PageViewBuild extends StatelessWidget {
                     ayahBookmarked: ayahBookmarked!,
                   ),
                 )),
-        quranCtrl.staticPages.isEmpty || quranCtrl.isLoading.value
+        (quranCtrl.state.allAyahs.isEmpty ||
+                quranCtrl.state.surahs.isEmpty ||
+                quranCtrl.state.pages.isEmpty)
             ? Center(
                 child:
                     circularProgressWidget ?? const CircularProgressIndicator())

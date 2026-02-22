@@ -219,6 +219,7 @@ class _QpcV4RichTextLineState extends State<QpcV4RichTextLine> {
           }
           widget.quranCtrl.state.isShowMenu.value = false;
 
+          if (!context.mounted) return;
           final themedTafsirStyle = TafsirTheme.of(context)?.style;
           showAyahMenuDialog(
             context: context,

@@ -611,6 +611,7 @@ class QuranCtrl extends GetxController {
 
   /// Toggle the selection of an ayah by its unique number
   void toggleAyahSelection(int ayahUnequeNumber, {bool forceAddition = false}) {
+    if (isClosed) return;
     log('selectedAyahs: ${selectedAyahsByUnequeNumber.join(', ')}');
     if (!forceAddition &&
         selectedAyahsByUnequeNumber.contains(ayahUnequeNumber)) {
@@ -628,6 +629,7 @@ class QuranCtrl extends GetxController {
 
   /// إضافة/إزالة آية من التحديد بدون مسح بقية التحديد (للوضع المتعدد)
   void toggleAyahSelectionMulti(int ayahUniqueNumber) {
+    if (isClosed) return;
     if (selectedAyahsByUnequeNumber.contains(ayahUniqueNumber)) {
       selectedAyahsByUnequeNumber.remove(ayahUniqueNumber);
     } else {

@@ -114,8 +114,10 @@ TextSpan _qpcV4SpanSegment({
       }
       ..onShortHoldCompleteCallback = () {
         () async {
+          if (!context.mounted) return;
           await showWordInfoBottomSheet(
               context: context, ref: wordRef, isDark: isDark);
+          if (!context.mounted) return;
           wordInfoCtrl.clearSelectedWord();
         }();
       }

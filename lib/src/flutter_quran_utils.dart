@@ -183,8 +183,11 @@ class QuranLibrary {
   void jumpToAyah(int pageNumber, int ayahUQNumber) {
     quranCtrl.jumpToPage(pageNumber - 1);
     quranCtrl.toggleAyahSelection(ayahUQNumber);
-    Future.delayed(const Duration(seconds: 3))
-        .then((_) => quranCtrl.toggleAyahSelection(ayahUQNumber));
+    Future.delayed(const Duration(seconds: 3)).then((_) {
+      if (!quranCtrl.isClosed) {
+        quranCtrl.toggleAyahSelection(ayahUQNumber);
+      }
+    });
   }
 
   /// [jumpToPage] يتيح لك التنقل إلى أي صفحة في القرآن باستخدام رقم الصفحة.

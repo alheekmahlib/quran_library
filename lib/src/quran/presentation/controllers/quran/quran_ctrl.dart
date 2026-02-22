@@ -40,7 +40,6 @@ class QuranCtrl extends GetxController {
   bool get isQpcLayoutEnabled => isQpcV4Enabled;
 
   RxList<QuranPageModel> staticPages = <QuranPageModel>[].obs;
-  RxList<int> quranStops = <int>[].obs;
   final List<SurahModel> surahs = [];
   final List<AyahModel> ayahs = [];
   int lastPage = 1;
@@ -130,7 +129,6 @@ class QuranCtrl extends GetxController {
   @override
   void onClose() {
     staticPages.close();
-    quranStops.close();
     selectedAyahsByUnequeNumber.close();
     searchResultAyahs.close();
     scaleFactor.close();

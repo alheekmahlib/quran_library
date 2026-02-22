@@ -273,6 +273,20 @@ extension QuranGetters on QuranCtrl {
     );
   }
 
+  AyahModel getJuzStartPage(int juzNumber) {
+    return state.allAyahs.firstWhere(
+      (a) => a.juz == juzNumber,
+      orElse: () => AyahModel.empty(),
+    );
+  }
+
+  AyahModel getHizbStartPage(int hizbNumber) {
+    return state.allAyahs.firstWhere(
+      (a) => a.hizb == hizbNumber,
+      orElse: () => AyahModel.empty(),
+    );
+  }
+
   AyahModel getSingleAyahByAyahAndSurahNumber(int ayahNumber, int surahNumber) {
     return state.surahs[surahNumber - 1].ayahs.firstWhere(
       (ayah) => ayah.ayahNumber == ayahNumber,

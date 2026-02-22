@@ -77,34 +77,34 @@ class AyahModel {
 
   /// Factory لإنشاء الموديل من json الأصلي
   /// Factory to create model from original JSON
-  factory AyahModel.fromOriginalJson(Map<String, dynamic> json) {
-    // معالجة نص الآية كما في الموديل القديم
-    String ayahText = json['aya_text'];
-    if (ayahText[ayahText.length - 1] == '\n') {
-      ayahText = ayahText.insert(' ', ayahText.length - 1);
-    } else {
-      ayahText = '$ayahText ';
-    }
-    return AyahModel(
-      ayahUQNumber: json['id'],
-      ayahNumber: json['aya_no'],
-      text: ayahText,
-      ayaTextEmlaey: json['aya_text_emlaey'] ?? '',
-      juz: json['jozz'],
-      page: json['page'],
-      surahNumber: json['sura_no'] ?? json['sora'] ?? 0,
-      lineStart: json['line_start'],
-      lineEnd: json['line_end'],
-      quarter: json['quarter'] ?? -1,
-      hizb: json['hizb'] ?? -1,
-      englishName: json['sura_name_en'] ?? json['sora_name_en'],
-      arabicName: json['sura_name_ar'] ?? json['sora_name_ar'],
-      sajdaBool: false,
-      sajda: null,
-      singleAyahTextColor: null,
-      centered: json['centered'] ?? false,
-    );
-  }
+  // factory AyahModel.fromOriginalJson(Map<String, dynamic> json) {
+  //   // معالجة نص الآية كما في الموديل القديم
+  //   String ayahText = json['aya_text'];
+  //   if (ayahText[ayahText.length - 1] == '\n') {
+  //     ayahText = ayahText.insert(' ', ayahText.length - 1);
+  //   } else {
+  //     ayahText = '$ayahText ';
+  //   }
+  //   return AyahModel(
+  //     ayahUQNumber: json['id'],
+  //     ayahNumber: json['aya_no'],
+  //     text: ayahText,
+  //     ayaTextEmlaey: json['aya_text_emlaey'] ?? '',
+  //     juz: json['jozz'],
+  //     page: json['page'],
+  //     surahNumber: json['sura_no'] ?? json['sora'] ?? 0,
+  //     lineStart: json['line_start'],
+  //     lineEnd: json['line_end'],
+  //     quarter: json['quarter'] ?? -1,
+  //     hizb: json['hizb'] ?? -1,
+  //     englishName: json['sura_name_en'] ?? json['sora_name_en'],
+  //     arabicName: json['sura_name_ar'] ?? json['sora_name_ar'],
+  //     sajdaBool: false,
+  //     sajda: null,
+  //     singleAyahTextColor: null,
+  //     centered: json['centered'] ?? false,
+  //   );
+  // }
 
   factory AyahModel.empty() {
     return AyahModel(
@@ -214,7 +214,7 @@ class SurahModel {
   factory SurahModel.fromOriginalJson(Map<String, dynamic> json) {
     var ayahsFromJson = json['ayahs'] as List;
     List<AyahModel> ayahsList =
-        ayahsFromJson.map((i) => AyahModel.fromOriginalJson(i)).toList();
+        ayahsFromJson.map((i) => AyahModel.fromDownloadedFontsJson(i)).toList();
     return SurahModel(
       surahNumber: json['index'],
       arabicName: json['name_ar'],

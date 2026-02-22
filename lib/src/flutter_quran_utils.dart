@@ -205,16 +205,21 @@ class QuranLibrary {
 
   /// [jumpToJoz] let's you navigate to any quran jozz with jozz number
   /// Note it receives jozz number not jozz index
-  void jumpToJoz(int jozz) =>
-      jumpToPage(jozz == 1 ? 0 : (quranCtrl.quranStops[(jozz - 1) * 8 - 1]));
+  void jumpToJoz(int jozz) {
+    final page = quranCtrl.getJuzStartPage(jozz).page;
+    jumpToPage(jozz == 1 ? 0 : page);
+  }
 
   /// [jumpToHizb] يتيح لك التنقل إلى أي جزء في القرآن باستخدام رقم الجزء.
   /// ملاحظة: تستقبل هذه الطريقة رقم الجزء وليس فهرس الجزء.
   ///
   /// [jumpToHizb] let's you navigate to any quran hizb with hizb number
   /// Note it receives hizb number not hizb index
-  void jumpToHizb(int hizb) =>
-      jumpToPage(hizb == 1 ? 0 : (quranCtrl.quranStops[(hizb - 1) * 4 - 1]));
+  void jumpToHizb(int hizb) {
+    log('Jumping to Hizb $hizb');
+    final page = quranCtrl.getHizbStartPage((hizb) * 4 - 3).page;
+    jumpToPage(hizb == 1 ? 0 : page);
+  }
 
   /// [jumpToBookmark] يتيح لك التنقل إلى علامة مرجعية معينة.
   /// ملاحظة: يجب أن يكون رقم صفحة العلامة المرجعية بين 1 و604.

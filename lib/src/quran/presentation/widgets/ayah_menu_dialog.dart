@@ -52,7 +52,7 @@ class AyahMenuDialog extends StatelessWidget {
       onDismiss?.call();
     }
 
-    final themed = AyahLongClickTheme.of(overlayContext)?.style;
+    final themed = AyahLongClickTheme.of(rootContext)?.style;
     final s = themed ??
         AyahMenuStyle.defaults(isDark: isDark, context: overlayContext);
 
@@ -62,7 +62,7 @@ class AyahMenuDialog extends StatelessWidget {
 
     // محاولة الحصول على نمط مدير التحميل من الثيم أولاً / Try to get download manager style from theme first
     final themedDownloadManager =
-        AyahDownloadManagerTheme.of(overlayContext)?.style;
+        AyahDownloadManagerTheme.of(rootContext)?.style;
     final sDownloadManager = themedDownloadManager ??
         AyahDownloadManagerStyle.defaults(
             isDark: isDark, context: overlayContext);

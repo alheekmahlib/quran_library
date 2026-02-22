@@ -75,7 +75,7 @@ class FullQuran extends StatelessWidget {
   Widget build(BuildContext context) {
     return QuranLibraryScreen(
       parentContext: context,
-      isDark: false,
+      isDark: true,
       showAyahBookmarkedIcon: true,
       appLanguageCode: 'ar',
       appIconPathForPlayAudioInBackground:
@@ -83,12 +83,12 @@ class FullQuran extends StatelessWidget {
       isShowTabBar: true,
       isFontsLocal: false,
       enableWordSelection: true,
-      // ayahMenuStyle:
-      //     AyahMenuStyle.defaults(isDark: false, context: context).copyWith(
-      //   customMenuItems: [
-      //     const Icon(Icons.share, size: 28, color: Colors.teal),
-      //   ],
-      // ),
+      ayahMenuStyle:
+          AyahMenuStyle.defaults(isDark: false, context: context).copyWith(
+        customMenuItems: [
+          const Icon(Icons.share, size: 28, color: Colors.teal),
+        ],
+      ),
       // ayahIconColor: Colors.teal,
       // backgroundColor: Colors.white,
       // textColor: Colors.black,

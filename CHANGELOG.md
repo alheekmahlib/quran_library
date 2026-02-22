@@ -10,6 +10,10 @@
 	* Audio buttons in Word Info bottom sheet (play word / play ayah words).
 	* State getters: `isWordAudioPlaying`, `isWordAudioLoading`, `isPlayingAyahWords`, `currentPlayingWordRef`.
 
+* **FIX:**
+	* Fix add `customMenuItems` in `AyahMenuStyle`.
+	* Tajweed rules list.
+
 ## 3.0.1
 
 * **ADD:**

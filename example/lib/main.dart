@@ -6,6 +6,7 @@ import 'package:quran_library/quran_library.dart';
 Future<void> main() async {
   await WidgetsFlutterBinding.ensureInitialized();
   await QuranLibrary.init();
+  QuranLibrary.initWordAudio();
   runApp(
     // DevicePreview(
     //   builder: (context) => const MyApp(),
@@ -74,17 +75,23 @@ class FullQuran extends StatelessWidget {
   Widget build(BuildContext context) {
     return QuranLibraryScreen(
       parentContext: context,
-      isDark: true,
+      isDark: false,
       showAyahBookmarkedIcon: true,
       appLanguageCode: 'ar',
       appIconPathForPlayAudioInBackground:
           'assets/images/quran_library_logo.png',
       isShowTabBar: true,
+      isFontsLocal: false,
       enableWordSelection: true,
+      // ayahMenuStyle:
+      //     AyahMenuStyle.defaults(isDark: false, context: context).copyWith(
+      //   customMenuItems: [
+      //     const Icon(Icons.share, size: 28, color: Colors.teal),
+      //   ],
+      // ),
       // ayahIconColor: Colors.teal,
       // backgroundColor: Colors.white,
       // textColor: Colors.black,
-      isFontsLocal: false,
       // tafsirStyle:
       //     TafsirStyle.defaults(isDark: false, context: context).copyWith(
       //   widthOfBottomSheet: 500,

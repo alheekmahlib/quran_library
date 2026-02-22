@@ -10,9 +10,6 @@ PODS:
   - just_audio (0.0.1):
     - Flutter
     - FlutterMacOS
-  - path_provider_foundation (0.0.1):
-    - Flutter
-    - FlutterMacOS
   - sqflite_darwin (0.0.4):
     - Flutter
     - FlutterMacOS
@@ -23,7 +20,6 @@ DEPENDENCIES:
   - connectivity_plus (from `Flutter/ephemeral/.symlinks/plugins/connectivity_plus/macos`)
   - FlutterMacOS (from `Flutter/ephemeral`)
   - just_audio (from `Flutter/ephemeral/.symlinks/plugins/just_audio/darwin`)
-  - path_provider_foundation (from `Flutter/ephemeral/.symlinks/plugins/path_provider_foundation/darwin`)
   - sqflite_darwin (from `Flutter/ephemeral/.symlinks/plugins/sqflite_darwin/darwin`)
 
 EXTERNAL SOURCES:
@@ -37,8 +33,6 @@ EXTERNAL SOURCES:
     :path: Flutter/ephemeral
   just_audio:
     :path: Flutter/ephemeral/.symlinks/plugins/just_audio/darwin
-  path_provider_foundation:
-    :path: Flutter/ephemeral/.symlinks/plugins/path_provider_foundation/darwin
   sqflite_darwin:
     :path: Flutter/ephemeral/.symlinks/plugins/sqflite_darwin/darwin
 
@@ -48,7 +42,6 @@ SPEC CHECKSUMS:
   connectivity_plus: 4adf20a405e25b42b9c9f87feff8f4b6fde18a4e
   FlutterMacOS: d0db08ddef1a9af05a5ec4b724367152bb0500b1
   just_audio: 4e391f57b79cad2b0674030a00453ca5ce817eed
-  path_provider_foundation: bb55f6dbba17d0dccd6737fe6f7f34fbd0376880
   sqflite_darwin: 20b2a3a3b70e43edae938624ce550a3cbf66a3d0
 
 PODFILE CHECKSUM: 9ebaf0ce3d369aaa26a9ea0e159195ed94724cf3

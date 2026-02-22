@@ -67,6 +67,13 @@ class WordInfoBottomSheetStyle {
   final double? innerBorderWidth;
   final Widget? handleWidget;
 
+  // Audio buttons
+  final Color? audioButtonColor;
+  final Color? audioButtonActiveColor;
+  final double? audioButtonSize;
+  final String? playWordTooltip;
+  final String? playAyahWordsTooltip;
+
   const WordInfoBottomSheetStyle({
     this.backgroundColor,
     this.borderRadius,
@@ -110,6 +117,11 @@ class WordInfoBottomSheetStyle {
     this.innerBorderWidth,
     this.textBackgroundColor,
     this.handleWidget,
+    this.audioButtonColor,
+    this.audioButtonActiveColor,
+    this.audioButtonSize,
+    this.playWordTooltip,
+    this.playAyahWordsTooltip,
   });
 
   WordInfoBottomSheetStyle copyWith({
@@ -155,6 +167,11 @@ class WordInfoBottomSheetStyle {
     double? innerBorderWidth,
     Color? textBackgroundColor,
     Widget? handleWidget,
+    Color? audioButtonColor,
+    Color? audioButtonActiveColor,
+    double? audioButtonSize,
+    String? playWordTooltip,
+    String? playAyahWordsTooltip,
   }) {
     return WordInfoBottomSheetStyle(
       backgroundColor: backgroundColor ?? this.backgroundColor,
@@ -204,6 +221,12 @@ class WordInfoBottomSheetStyle {
       innerBorderWidth: innerBorderWidth ?? this.innerBorderWidth,
       textBackgroundColor: textBackgroundColor ?? this.textBackgroundColor,
       handleWidget: handleWidget ?? this.handleWidget,
+      audioButtonColor: audioButtonColor ?? this.audioButtonColor,
+      audioButtonActiveColor:
+          audioButtonActiveColor ?? this.audioButtonActiveColor,
+      audioButtonSize: audioButtonSize ?? this.audioButtonSize,
+      playWordTooltip: playWordTooltip ?? this.playWordTooltip,
+      playAyahWordsTooltip: playAyahWordsTooltip ?? this.playAyahWordsTooltip,
     );
   }
 
@@ -286,6 +309,11 @@ class WordInfoBottomSheetStyle {
       innerBorderWidth: 1.2,
       textBackgroundColor: isDark ? const Color(0xFF151515) : Colors.white,
       handleWidget: null,
+      audioButtonColor: Colors.teal,
+      audioButtonActiveColor: Colors.teal.shade700,
+      audioButtonSize: 22,
+      playWordTooltip: 'تشغيل الكلمة',
+      playAyahWordsTooltip: 'تشغيل كلمات الآية',
     );
   }
 }

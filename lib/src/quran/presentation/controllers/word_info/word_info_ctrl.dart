@@ -66,6 +66,7 @@ class WordInfoCtrl extends GetxController
       _tabControllerListener = null;
     }
     tabController.dispose();
+    WordAudioService.instance.stop();
     super.onClose();
   }
 
@@ -160,5 +161,52 @@ class WordInfoCtrl extends GetxController
       _bumpRecitationsRevision();
       update(['word_info_data']);
     }
+  }
+
+  // ─── صوت الكلمات ───
+
+  /// هل تمت تهيئة خدمة صوت الكلمات (OAuth2 credentials)؟
+  bool get isWordAudioInitialized => WordAudioService.instance.isInitialized;
+
+  /// تشغيل صوت كلمة واحدة.
+  Future<void> playWordAudio(WordRef ref) async {
+    final svc = WordAudioService.instance;
+
+    // إذا كانت نفس الكلمة تُشغّل، أوقف
+    if (svc.isPlaying.value &&
+        !svc.isPlayingAyahWords.value &&
+        svc.currentPlayingRef.value == ref) {
+      await stopWordAudio();
+      return;
+    }
+
+    await svc.playWord(ref);
+    update(['word_info_audio']);
+  }
+
+  /// تشغيل كل كلمات الآية بالتسلسل.
+  Future<void> playAyahWordsAudio(WordRef ref) async {
+    final svc = WordAudioService.instance;
+
+    // إذا كانت نفس الآية تُشغّل، أوقف
+    if (svc.isPlaying.value &&
+        svc.isPlayingAyahWords.value &&
+        svc.currentPlayingRef.value?.surahNumber == ref.surahNumber &&
+        svc.currentPlayingRef.value?.ayahNumber == ref.ayahNumber) {
+      await stopWordAudio();
+      return;
+    }
+
+    await svc.playAyahWords(
+      surahNumber: ref.surahNumber,
+      ayahNumber: ref.ayahNumber,
+    );
+    update(['word_info_audio']);
+  }
+
+  /// إيقاف صوت الكلمات.
+  Future<void> stopWordAudio() async {
+    await WordAudioService.instance.stop();
+    update(['word_info_audio']);
   }
 }

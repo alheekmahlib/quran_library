@@ -1,3 +1,15 @@
+## 3.1.0
+
+* **ADD:**
+	* Word-by-word audio playback (single word & full ayah words).
+	* `QuranLibrary.initWordAudio()` to enable word audio feature.
+	* `playWordAudio()` / `playWordAudioByNumbers()` to play a single word.
+	* `playAyahWordsAudio()` / `playAyahWordsAudioByNumbers()` to play all words of an ayah sequentially.
+	* `stopWordAudio()` to stop word audio playback.
+	* `getAyahWordCount()` to get the number of words in an ayah.
+	* Audio buttons in Word Info bottom sheet (play word / play ayah words).
+	* State getters: `isWordAudioPlaying`, `isWordAudioLoading`, `isPlayingAyahWords`, `currentPlayingWordRef`.
+
 ## 3.0.1
 
 * **ADD:**

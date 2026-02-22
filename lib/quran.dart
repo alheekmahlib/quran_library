@@ -1,4 +1,4 @@
-import 'dart:async' show Completer, Timer;
+import 'dart:async' show Completer, StreamSubscription, Timer;
 import 'dart:convert' show jsonDecode, jsonEncode;
 import 'dart:developer' show log;
 import 'dart:io' show File, Platform, Directory;
@@ -58,6 +58,7 @@ part 'src/quran/core/extensions/text_span_extension.dart';
 part 'src/quran/core/helpers/page_font_size.dart';
 part 'src/quran/core/services/quran_fonts_service.dart';
 part 'src/quran/core/services/sura_json_files_service.dart';
+part 'src/quran/core/services/word_audio_service.dart';
 part 'src/quran/core/services/zip_download_service.dart';
 part 'src/quran/core/utils/storage_constants.dart';
 part 'src/quran/core/utils/tajweed_rules_list.dart';

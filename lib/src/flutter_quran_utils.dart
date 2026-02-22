@@ -117,6 +117,17 @@ class QuranLibrary {
     _isInitialized = true;
   }
 
+  /// تفعيل خدمة صوت الكلمات (word-by-word audio).
+  ///
+  /// تستخدم CDN عام بدون حاجة لمصادقة.
+  /// يجب استدعاؤها بعد [init].
+  /// ```dart
+  /// QuranLibrary.initWordAudio();
+  /// ```
+  static void initWordAudio() {
+    WordAudioService.instance.init();
+  }
+
   /// A singleton instance of the `QuranCtrl` class.
   ///
   /// This instance is used to access the functionalities provided by the
@@ -774,6 +785,130 @@ class QuranLibrary {
   /// Word Info download progress as a value between 0 and 1.
   double get wordInfoDownloadProgress =>
       WordInfoCtrl.instance.downloadProgress.value / 100;
+
+  //////////// [Word Audio — صوت الكلمات] ////////////
+
+  /// هل تمت تهيئة خدمة صوت الكلمات عبر [initWordAudio]؟
+  ///
+  /// Whether word audio service has been initialized via [initWordAudio].
+  bool get isWordAudioInitialized => WordAudioService.instance.isInitialized;
+
+  /// هل يتم تشغيل صوت كلمة حالياً؟
+  ///
+  /// Whether a word audio is currently playing.
+  bool get isWordAudioPlaying => WordAudioService.instance.isPlaying.value;
+
+  /// هل يتم تحميل صوت كلمة حالياً؟
+  ///
+  /// Whether a word audio is currently loading.
+  bool get isWordAudioLoading => WordAudioService.instance.isLoading.value;
+
+  /// هل يتم تشغيل كلمات آية كاملة (وليس كلمة واحدة فقط)؟
+  ///
+  /// Whether all words of an ayah are being played sequentially.
+  bool get isPlayingAyahWords =>
+      WordAudioService.instance.isPlayingAyahWords.value;
+
+  /// مرجع الكلمة التي يتم تشغيلها حالياً (أو null).
+  ///
+  /// The reference of the currently playing word (or null).
+  WordRef? get currentPlayingWordRef =>
+      WordAudioService.instance.currentPlayingRef.value;
+
+  /// تشغيل صوت كلمة واحدة. إذا كانت نفس الكلمة قيد التشغيل، يتم إيقافها.
+  ///
+  /// Play audio for a single word. If the same word is playing, it will stop.
+  ///
+  /// مثال / Example:
+  /// ```dart
+  /// await QuranLibrary().playWordAudio(
+  ///   ref: const WordRef(surahNumber: 1, ayahNumber: 1, wordNumber: 1),
+  /// );
+  /// ```
+  Future<void> playWordAudio({required WordRef ref}) async {
+    await WordInfoCtrl.instance.playWordAudio(ref);
+  }
+
+  /// تشغيل صوت كلمة واحدة عبر أرقام (سورة/آية/كلمة).
+  ///
+  /// Play a single word audio by (surah/ayah/word) numbers.
+  ///
+  /// مثال / Example:
+  /// ```dart
+  /// await QuranLibrary().playWordAudioByNumbers(
+  ///   surahNumber: 1,
+  ///   ayahNumber: 1,
+  ///   wordNumber: 1,
+  /// );
+  /// ```
+  Future<void> playWordAudioByNumbers({
+    required int surahNumber,
+    required int ayahNumber,
+    required int wordNumber,
+  }) async {
+    await playWordAudio(
+      ref: WordRef(
+        surahNumber: surahNumber,
+        ayahNumber: ayahNumber,
+        wordNumber: wordNumber,
+      ),
+    );
+  }
+
+  /// تشغيل جميع كلمات آية بالتسلسل. إذا كانت نفس الآية قيد التشغيل، يتم إيقافها.
+  ///
+  /// Play all words of an ayah sequentially. If the same ayah is playing, it will stop.
+  ///
+  /// مثال / Example:
+  /// ```dart
+  /// await QuranLibrary().playAyahWordsAudio(
+  ///   ref: const WordRef(surahNumber: 1, ayahNumber: 1, wordNumber: 1),
+  /// );
+  /// ```
+  Future<void> playAyahWordsAudio({required WordRef ref}) async {
+    await WordInfoCtrl.instance.playAyahWordsAudio(ref);
+  }
+
+  /// تشغيل جميع كلمات آية عبر أرقام (سورة/آية).
+  ///
+  /// Play all words of an ayah by (surah/ayah) numbers.
+  ///
+  /// مثال / Example:
+  /// ```dart
+  /// await QuranLibrary().playAyahWordsAudioByNumbers(
+  ///   surahNumber: 1,
+  ///   ayahNumber: 1,
+  /// );
+  /// ```
+  Future<void> playAyahWordsAudioByNumbers({
+    required int surahNumber,
+    required int ayahNumber,
+  }) async {
+    await playAyahWordsAudio(
+      ref: WordRef(
+        surahNumber: surahNumber,
+        ayahNumber: ayahNumber,
+        wordNumber: 1,
+      ),
+    );
+  }
+
+  /// إيقاف صوت الكلمات.
+  ///
+  /// Stop word audio playback.
+  Future<void> stopWordAudio() async {
+    await WordInfoCtrl.instance.stopWordAudio();
+  }
+
+  /// الحصول على عدد الكلمات الفعلية في آية (بدون علامة نهاية الآية).
+  ///
+  /// Get the actual word count of an ayah (excluding end marker).
+  int getAyahWordCount({
+    required int surahNumber,
+    required int ayahNumber,
+  }) {
+    return WordAudioService.instance.getAyahWordCount(surahNumber, ayahNumber);
+  }
 
   //////////// [Tajweed (Ayah)] ////////////
 

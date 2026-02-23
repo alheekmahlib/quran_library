@@ -31,6 +31,7 @@ class SurahDisplayScreen extends StatelessWidget {
     this.textColor,
     this.useDefaultAppBar = true,
     this.ayahBookmarked = const [],
+    this.isAyahBookmarked,
     this.ayahStyle,
     this.surahStyle,
     this.isShowAudioSlider = true,
@@ -140,6 +141,10 @@ class SurahDisplayScreen extends StatelessWidget {
   /// قائمة الآيات المحفوظة
   /// List of bookmarked ayahs
   final List<int> ayahBookmarked;
+
+  /// Callback مخصص لتحديد هل الآية محفوظة أم لا
+  /// Custom callback to determine whether an ayah is bookmarked
+  final bool Function(AyahModel ayah)? isAyahBookmarked;
 
   /// نمط تخصيص مظهر المشغل الصوتي للآيات - يتحكم في الألوان والخطوط والأيقونات [ayahStyle]
   ///
@@ -545,6 +550,7 @@ class SurahDisplayScreen extends StatelessWidget {
                 onSurahBannerPress: onSurahBannerPress,
                 ayahSelectedBackgroundColor: ayahSelectedBackgroundColor,
                 ayahBookmarked: ayahBookmarked,
+                isAyahBookmarked: isAyahBookmarked,
               );
             }),
       ),

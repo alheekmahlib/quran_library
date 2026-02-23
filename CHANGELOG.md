@@ -9,10 +9,13 @@
 	* `getAyahWordCount()` to get the number of words in an ayah.
 	* Audio buttons in Word Info bottom sheet (play word / play ayah words).
 	* State getters: `isWordAudioPlaying`, `isWordAudioLoading`, `isPlayingAyahWords`, `currentPlayingWordRef`.
+	* Optional `isAyahBookmarked(AyahModel)` callback to determine bookmark state dynamically (overrides `ayahBookmarked` and internal bookmarks UI).
+	* `customChildBuilder(BuildContext context, int pageIndex)` in `TopBottomQuranStyle` to build a dynamic top widget per page.
 
 * **FIX:**
 	* Fix add `customMenuItems` in `AyahMenuStyle`.
 	* Tajweed rules list.
+	* jump to Hizb.
 
 ## 3.0.1
 

@@ -48,6 +48,7 @@ class QuranLibraryScreen extends StatelessWidget {
     this.isFontsLocal = false,
     this.fontsName = '',
     this.ayahBookmarked = const [],
+    this.isAyahBookmarked,
     this.ayahStyle,
     this.surahStyle,
     this.isShowAudioSlider = true,
@@ -215,6 +216,12 @@ class QuranLibraryScreen extends StatelessWidget {
   ///
   /// [ayahBookmarked] Pass the list of bookmarked ayahs
   final List<int>? ayahBookmarked;
+
+  /// Callback اختياري لتحديد ما إذا كانت الآية محفوظة.
+  ///
+  /// عند توفيره سيتم تجاهل [ayahBookmarked] و BookmarksCtrl.bookmarksAyahs
+  /// في تحديد حالة الحفظ (الأيقونة/الخلفية).
+  final bool Function(AyahModel ayah)? isAyahBookmarked;
 
   /// نمط تخصيص مظهر المشغل الصوتي للآيات - يتحكم في الألوان والخطوط والأيقونات [ayahStyle]
   ///
@@ -468,6 +475,7 @@ class QuranLibraryScreen extends StatelessWidget {
                                         isDark: isDark,
                                         fontsName: fontsName,
                                         ayahBookmarked: ayahBookmarked,
+                                        isAyahBookmarked: isAyahBookmarked,
                                         parentContext: parentContext,
                                         isFontsLocal: isFontsLocal,
                                       ),
@@ -499,6 +507,7 @@ class QuranLibraryScreen extends StatelessWidget {
                                     isDark: isDark,
                                     fontsName: fontsName,
                                     ayahBookmarked: ayahBookmarked,
+                                    isAyahBookmarked: isAyahBookmarked,
                                     parentContext: parentContext,
                                     isFontsLocal: isFontsLocal,
                                   ),
@@ -687,6 +696,7 @@ class _ItemBuilderWidget extends StatelessWidget {
     required this.isDark,
     required this.fontsName,
     required this.ayahBookmarked,
+    required this.isAyahBookmarked,
     required this.parentContext,
     required this.isFontsLocal,
   });
@@ -713,6 +723,7 @@ class _ItemBuilderWidget extends StatelessWidget {
   final bool isDark;
   final String? fontsName;
   final List<int>? ayahBookmarked;
+  final bool Function(AyahModel ayah)? isAyahBookmarked;
   final BuildContext parentContext;
   final bool? isFontsLocal;
 
@@ -754,6 +765,7 @@ class _ItemBuilderWidget extends StatelessWidget {
             isDark: isDark,
             fontsName: fontsName,
             ayahBookmarked: ayahBookmarked,
+            isAyahBookmarked: isAyahBookmarked,
             userContext: parentContext,
             pageIndex: index,
             quranCtrl: quranCtrl,

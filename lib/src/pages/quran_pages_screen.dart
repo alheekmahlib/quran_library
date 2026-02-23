@@ -38,6 +38,7 @@ class QuranPagesScreen extends StatelessWidget {
     this.isFontsLocal = false,
     this.fontsName = '',
     this.ayahBookmarked = const [],
+    this.isAyahBookmarked,
     this.ayahStyle,
     this.surahStyle,
     this.isShowAudioSlider = true,
@@ -100,6 +101,7 @@ class QuranPagesScreen extends StatelessWidget {
   final bool? isFontsLocal;
   final String? fontsName;
   final List<int>? ayahBookmarked;
+  final bool Function(AyahModel ayah)? isAyahBookmarked;
   final AyahAudioStyle? ayahStyle;
   final SurahAudioStyle? surahStyle;
   final bool? isShowAudioSlider;
@@ -347,6 +349,7 @@ class QuranPagesScreen extends StatelessWidget {
                           isDark: isDark,
                           fontsName: fontsName,
                           ayahBookmarked: ayahBookmarked,
+                          isAyahBookmarked: isAyahBookmarked,
                           userContext: parentContext,
                           pageIndex: globalIndex,
                           quranCtrl: quranCtrl,

@@ -23,6 +23,7 @@ class PageBuild extends StatelessWidget {
     required this.isFontsLocal,
     required this.fontsName,
     required this.ayahBookmarked,
+    this.isAyahBookmarked,
     required this.context,
     required this.quranCtrl,
   });
@@ -48,6 +49,7 @@ class PageBuild extends StatelessWidget {
   final bool? isFontsLocal;
   final String? fontsName;
   final List<int> ayahBookmarked;
+  final bool Function(AyahModel ayah)? isAyahBookmarked;
   final BuildContext context;
   final QuranCtrl quranCtrl;
 
@@ -148,6 +150,7 @@ class PageBuild extends StatelessWidget {
                   fontPackageOverride: null,
                   usePaintColoring: true,
                   ayahBookmarked: ayahBookmarked,
+                  isAyahBookmarked: isAyahBookmarked,
                   isCentered: b.isCentered,
                 ),
               );

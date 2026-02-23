@@ -22,6 +22,7 @@ class SurahPageViewBuild extends StatelessWidget {
     this.ayahIconColor,
     this.showAyahBookmarkedIcon = true,
     this.ayahBookmarked = const [],
+    this.isAyahBookmarked,
     this.onAyahLongPress,
     this.onSurahBannerPress,
     this.bannerStyle,
@@ -51,6 +52,7 @@ class SurahPageViewBuild extends StatelessWidget {
   final Color? ayahIconColor;
   final bool showAyahBookmarkedIcon;
   final List<int> ayahBookmarked;
+  final bool Function(AyahModel ayah)? isAyahBookmarked;
 
   final void Function(LongPressStartDetails details, AyahModel ayah)?
       onAyahLongPress;
@@ -140,6 +142,7 @@ class SurahPageViewBuild extends StatelessWidget {
                       isFontsLocal: false,
                       fontsName: '',
                       ayahBookmarked: ayahBookmarked,
+                      isAyahBookmarked: isAyahBookmarked,
                       context: context,
                       quranCtrl: QuranCtrl.instance,
                     ),

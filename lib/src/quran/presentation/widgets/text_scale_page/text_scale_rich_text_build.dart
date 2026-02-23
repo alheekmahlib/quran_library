@@ -17,6 +17,7 @@ class TextScaleRichTextBuild extends StatelessWidget {
     required this.bookmarksColor,
     required this.ayahSelectedBackgroundColor,
     required this.languageCode,
+    this.isAyahBookmarked,
   });
 
   final Color? textColor;
@@ -34,6 +35,7 @@ class TextScaleRichTextBuild extends StatelessWidget {
   final Color? bookmarksColor;
   final Color? ayahSelectedBackgroundColor;
   final String? languageCode;
+  final bool Function(AyahModel ayah)? isAyahBookmarked;
   final quranCtrl = QuranCtrl.instance;
 
   @override
@@ -76,6 +78,11 @@ class TextScaleRichTextBuild extends StatelessWidget {
                         .contains(ayahs[ayahIndex].ayahUQNumber) ||
                     quranCtrl.externallyHighlightedAyahs
                         .contains(ayahs[ayahIndex].ayahUQNumber);
+
+                final bool effectiveHasBookmark = isAyahBookmarked != null
+                    ? isAyahBookmarked!(ayahs[ayahIndex])
+                    : (ayahBookmarked.contains(ayahs[ayahIndex].ayahUQNumber) ||
+                        bookmarksAyahs.contains(ayahs[ayahIndex].ayahUQNumber));
                 return _customSpan(
                   context: context,
                   text: ayahs[ayahIndex].text,
@@ -87,8 +94,8 @@ class TextScaleRichTextBuild extends StatelessWidget {
                       .getCurrentSurahByPageNumber(pageIndex + 1)
                       .surahNumber,
                   ayahUQNum: ayahs[ayahIndex].ayahUQNumber,
-                  hasBookmark:
-                      ayahBookmarked.contains(ayahs[ayahIndex].ayahUQNumber),
+                  hasBookmark: effectiveHasBookmark,
+                  isAyahBookmarked: isAyahBookmarked,
                   onLongPressStart: (details) {
                     if (onAyahLongPress != null) {
                       onAyahLongPress!(details, ayahs[ayahIndex]);
@@ -137,7 +144,8 @@ class TextScaleRichTextBuild extends StatelessWidget {
                       ayahIconColor ?? Theme.of(context).colorScheme.primary,
                   showAyahBookmarkedIcon: showAyahBookmarkedIcon,
                   bookmarks: bookmarks,
-                  bookmarksAyahs: bookmarksAyahs,
+                  bookmarksAyahs:
+                      isAyahBookmarked != null ? const <int>[] : bookmarksAyahs,
                   bookmarksColor: bookmarksColor,
                   ayahSelectedBackgroundColor: ayahSelectedBackgroundColor,
                   ayahNumber: ayahs[ayahIndex].ayahNumber,

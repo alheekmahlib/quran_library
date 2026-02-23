@@ -41,6 +41,7 @@ class PageViewBuild extends StatelessWidget {
     required this.isDark,
     required this.fontsName,
     required this.ayahBookmarked,
+    this.isAyahBookmarked,
     required this.userContext,
     required this.pageIndex,
     required this.quranCtrl,
@@ -67,6 +68,7 @@ class PageViewBuild extends StatelessWidget {
   final bool isDark;
   final String? fontsName;
   final List<int>? ayahBookmarked;
+  final bool Function(AyahModel ayah)? isAyahBookmarked;
   final BuildContext userContext;
   final int pageIndex;
   final QuranCtrl quranCtrl;
@@ -118,6 +120,7 @@ class PageViewBuild extends StatelessWidget {
                     isFontsLocal: isFontsLocal,
                     fontsName: fontsName,
                     ayahBookmarked: ayahBookmarked!,
+                    isAyahBookmarked: isAyahBookmarked,
                   ),
                 )),
         (quranCtrl.state.allAyahs.isEmpty ||
@@ -152,6 +155,7 @@ class PageViewBuild extends StatelessWidget {
                   isDark: isDark,
                   circularProgressWidget: circularProgressWidget,
                   ayahBookmarked: ayahBookmarked!,
+                  isAyahBookmarked: isAyahBookmarked,
                 ),
               ),
       ),

@@ -23,6 +23,7 @@ class QpcV4RichTextLine extends StatefulWidget {
     this.fontPackageOverride,
     this.usePaintColoring = true,
     required this.ayahBookmarked,
+    this.isAyahBookmarked,
     required this.isCentered,
   });
 
@@ -47,6 +48,7 @@ class QpcV4RichTextLine extends StatefulWidget {
   final String? fontPackageOverride;
   final bool usePaintColoring;
   final List<int> ayahBookmarked;
+  final bool Function(AyahModel ayah)? isAyahBookmarked;
   final bool isCentered;
 
   @override
@@ -69,6 +71,16 @@ class _QpcV4RichTextLineState extends State<QpcV4RichTextLine> {
     // bookmarks المؤثرة على هذا السطر
     final bmHash = Object.hashAll(widget.bookmarksAyahs);
     final abHash = Object.hashAll(widget.ayahBookmarked);
+    final overrideHash = widget.isAyahBookmarked == null
+        ? 0
+        : Object.hashAll(
+            widget.segments.map(
+              (s) => Object.hash(
+                s.ayahUq,
+                widget.isAyahBookmarked!(quranCtrl.getAyahByUq(s.ayahUq)),
+              ),
+            ),
+          );
     // إعدادات العرض
     final isDarkHash = widget.isDark.hashCode;
     final tajweedHash =
@@ -81,8 +93,17 @@ class _QpcV4RichTextLineState extends State<QpcV4RichTextLine> {
     final recitationsRevisionHash =
         WordInfoCtrl.instance.recitationsDataRevision.hashCode;
 
-    return Object.hash(selHash, extHash, bmHash, abHash, isDarkHash,
-        tajweedHash, wordSelectedHash, tenRecHash, recitationsRevisionHash);
+    return Object.hash(
+        selHash,
+        extHash,
+        bmHash,
+        abHash,
+        isDarkHash,
+        tajweedHash,
+        wordSelectedHash,
+        tenRecHash,
+        recitationsRevisionHash,
+        overrideHash);
   }
 
   @override
@@ -234,9 +255,12 @@ class _QpcV4RichTextLineState extends State<QpcV4RichTextLine> {
         textColor: widget.textColor ?? (AppColors.getTextColor(widget.isDark)),
         ayahIconColor: widget.ayahIconColor,
         allBookmarksList: allBookmarksList,
-        bookmarksAyahs: bookmarksAyahsList,
+        bookmarksAyahs: widget.isAyahBookmarked != null
+            ? const <int>[]
+            : bookmarksAyahsList,
         bookmarksColor: widget.bookmarksColor,
         ayahSelectedBackgroundColor: widget.ayahSelectedBackgroundColor,
+        isAyahBookmarked: widget.isAyahBookmarked,
         isFontsLocal: widget.isFontsLocal,
         fontsName: widget.fontsName,
         fontFamilyOverride: widget.fontFamilyOverride,
@@ -272,11 +296,15 @@ class _QpcV4RichTextLineState extends State<QpcV4RichTextLine> {
       }
 
       // تتبع نطاقات العلامات المرجعية (bookmarks)
-      final isBookmarked =
-          ayahBookmarkedSet.contains(uq) || bookmarksSet.contains(uq);
+      final isBookmarked = widget.isAyahBookmarked != null
+          ? widget.isAyahBookmarked!(widget.quranCtrl.getAyahByUq(uq))
+          : (ayahBookmarkedSet.contains(uq) || bookmarksSet.contains(uq));
       if (isBookmarked) {
         Color bmColor;
-        if (widget.bookmarksColor != null) {
+        if (widget.isAyahBookmarked != null) {
+          bmColor = widget.bookmarksColor ??
+              const Color(0xffCDAD80).withValues(alpha: 0.3);
+        } else if (widget.bookmarksColor != null) {
           bmColor = widget.bookmarksColor!;
         } else if (ayahBookmarkedSet.contains(uq) &&
             widget.bookmarksColor != null) {

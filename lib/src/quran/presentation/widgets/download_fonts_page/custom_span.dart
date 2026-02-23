@@ -20,6 +20,7 @@ TextSpan _qpcV4SpanSegment({
   required List<BookmarkModel> allBookmarksList,
   Color? bookmarksColor,
   Color? ayahSelectedBackgroundColor,
+  bool Function(AyahModel ayah)? isAyahBookmarked,
   required bool isFontsLocal,
   required String fontsName,
   String? fontFamilyOverride,
@@ -29,6 +30,7 @@ TextSpan _qpcV4SpanSegment({
 }) {
   final quranCtrl = QuranCtrl.instance;
   final wordInfoCtrl = WordInfoCtrl.instance;
+  final AyahModel ayahModel = quranCtrl.getAyahByUq(ayahUQNum);
 
   final withTajweed = QuranCtrl.instance.state.isTajweedEnabled.value;
   final isTenRecitations = WordInfoCtrl.instance.isTenRecitations;
@@ -56,8 +58,10 @@ TextSpan _qpcV4SpanSegment({
   );
 
   InlineSpan? tail;
-  final hasBookmark =
-      ayahBookmarked.contains(ayahUQNum) || bookmarksAyahs.contains(ayahUQNum);
+  final hasBookmark = isAyahBookmarked != null
+      ? isAyahBookmarked(ayahModel)
+      : (ayahBookmarked.contains(ayahUQNum) ||
+          bookmarksAyahs.contains(ayahUQNum));
   if (showAyahNumber) {
     tail = hasBookmark && showAyahBookmarkedIcon && !kIsWeb
         ? WidgetSpan(
@@ -159,12 +163,13 @@ TextSpan _customSpan({
   Color? ayahSelectedBackgroundColor,
   String? languageCode,
   required bool hasBookmark,
+  bool Function(AyahModel ayah)? isAyahBookmarked,
   required bool isDark,
 }) {
   final allBookmarks = bookmarks.values.expand((list) => list).toList();
-  hasBookmark == false
-      ? (bookmarksAyahs.contains(ayahUQNum) ? true : false)
-      : hasBookmark;
+  final bool effectiveHasBookmark = isAyahBookmarked != null
+      ? isAyahBookmarked(QuranCtrl.instance.getAyahByUq(ayahUQNum))
+      : (hasBookmark || bookmarksAyahs.contains(ayahUQNum));
   if (text.isNotEmpty) {
     return TextSpan(
       children: [
@@ -175,28 +180,32 @@ TextSpan _customSpan({
             fontSize: fontSize,
             height: 2.1,
             color: textColor ?? (AppColors.getTextColor(isDark)),
-            backgroundColor: hasBookmark
+            backgroundColor: effectiveHasBookmark
                 ? bookmarksColor
-                : (bookmarksAyahs.contains(ayahUQNum)
-                    ? bookmarksColor ??
-                        Color(allBookmarks
-                                .firstWhere(
-                                  (b) => b.ayahId == ayahUQNum,
-                                )
-                                .colorCode)
-                            .withValues(alpha: 0.3)
-                    : isSelected
+                : (isAyahBookmarked != null
+                    ? (isSelected
                         ? ayahSelectedBackgroundColor ??
                             const Color(0xffCDAD80).withValues(alpha: 0.25)
-                        : null),
+                        : null)
+                    : (bookmarksAyahs.contains(ayahUQNum)
+                        ? bookmarksColor ??
+                            Color(allBookmarks
+                                    .firstWhere(
+                                      (b) => b.ayahId == ayahUQNum,
+                                    )
+                                    .colorCode)
+                                .withValues(alpha: 0.3)
+                        : isSelected
+                            ? ayahSelectedBackgroundColor ??
+                                const Color(0xffCDAD80).withValues(alpha: 0.25)
+                            : null)),
             package: "quran_library",
           ),
           recognizer: LongPressGestureRecognizer(
               duration: const Duration(milliseconds: 500))
             ..onLongPressStart = onLongPressStart,
         ),
-        (hasBookmark || bookmarksAyahs.contains(ayahUQNum)) &&
-                showAyahBookmarkedIcon
+        effectiveHasBookmark && showAyahBookmarkedIcon
             ? WidgetSpan(
                 alignment: PlaceholderAlignment.middle,
                 child: Padding(
@@ -214,21 +223,27 @@ TextSpan _customSpan({
                   fontSize: fontSize,
                   height: 2.1,
                   color: ayahIconColor ?? Theme.of(context).colorScheme.primary,
-                  backgroundColor: hasBookmark
+                  backgroundColor: effectiveHasBookmark
                       ? bookmarksColor
-                      : (bookmarksAyahs.contains(ayahUQNum)
-                          ? bookmarksColor ??
-                              Color(allBookmarks
-                                      .firstWhere(
-                                        (b) => b.ayahId == ayahUQNum,
-                                      )
-                                      .colorCode)
-                                  .withValues(alpha: 0.3)
-                          : isSelected
+                      : (isAyahBookmarked != null
+                          ? (isSelected
                               ? ayahSelectedBackgroundColor ??
                                   const Color(0xffCDAD80)
                                       .withValues(alpha: 0.25)
-                              : null),
+                              : null)
+                          : (bookmarksAyahs.contains(ayahUQNum)
+                              ? bookmarksColor ??
+                                  Color(allBookmarks
+                                          .firstWhere(
+                                            (b) => b.ayahId == ayahUQNum,
+                                          )
+                                          .colorCode)
+                                      .withValues(alpha: 0.3)
+                              : isSelected
+                                  ? ayahSelectedBackgroundColor ??
+                                      const Color(0xffCDAD80)
+                                          .withValues(alpha: 0.25)
+                                  : null)),
                   package: "quran_library",
                 ),
                 recognizer: LongPressGestureRecognizer(

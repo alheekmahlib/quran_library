@@ -77,6 +77,7 @@ class FullQuran extends StatelessWidget {
       parentContext: context,
       isDark: true,
       showAyahBookmarkedIcon: true,
+      useDefaultAppBar: true,
       appLanguageCode: 'ar',
       appIconPathForPlayAudioInBackground:
           'assets/images/quran_library_logo.png',

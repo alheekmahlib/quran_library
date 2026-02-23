@@ -423,6 +423,9 @@ class QuranLibraryScreen extends StatelessWidget {
                                 quranCtrl.update();
                               }
                             },
+                            onTap: onPagePress == null
+                                ? () => quranCtrl.showControlToggle()
+                                : () => onPagePress!(),
                             child: withPageView
                                 ? Focus(
                                     focusNode:

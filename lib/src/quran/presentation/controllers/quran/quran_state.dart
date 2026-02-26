@@ -2,7 +2,7 @@ part of '/quran.dart';
 
 class QuranState {
   /// -------- [Variables] ----------
-  List<SurahModel> surahs = [];
+  // List<SurahModel> surahs = [];
   List<List<AyahModel>> pages = [];
   List<AyahModel> allAyahs = [];
 

@@ -61,10 +61,10 @@ class SurahAudioList extends StatelessWidget {
           physics: const BouncingScrollPhysics(),
           addAutomaticKeepAlives: true,
           addRepaintBoundaries: true,
-          itemCount: quranCtrl.state.surahs.length,
+          itemCount: quranCtrl.surahs.length,
           scrollDirection: Axis.vertical,
           itemBuilder: (_, index) {
-            final surah = quranCtrl.state.surahs[index];
+            final surah = quranCtrl.surahs[index];
             int surahNumber = index + 1;
 
             return Container(

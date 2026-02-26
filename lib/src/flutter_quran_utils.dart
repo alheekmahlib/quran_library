@@ -240,8 +240,8 @@ class QuranLibrary {
   /// [jumpToSurah] let's you navigate to any quran surah with surah number
   /// Note it receives surah number not surah index
   void jumpToSurah(int surah) {
-    jumpToPage(quranCtrl.state.surahs[surah - 1].ayahs.first.page);
-    log('Jumped to Surah $surah at page ${quranCtrl.state.surahs[surah - 1].ayahs.first.page}');
+    jumpToPage(quranCtrl.surahs[surah - 1].ayahs.first.page);
+    log('Jumped to Surah $surah at page ${quranCtrl.surahs[surah - 1].ayahs.first.page}');
   }
 
   /// [allJoz] returns list of all Quran joz' names

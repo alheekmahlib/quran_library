@@ -40,7 +40,7 @@ class QuranCtrl extends GetxController {
   bool get isQpcLayoutEnabled => isQpcV4Enabled;
 
   RxList<QuranPageModel> staticPages = <QuranPageModel>[].obs;
-  final List<SurahModel> surahs = [];
+  List<SurahModel> surahs = [];
   final List<AyahModel> ayahs = [];
   int lastPage = 1;
   int? initialPage;
@@ -163,15 +163,15 @@ class QuranCtrl extends GetxController {
     if (lastPage != 0) {
       jumpToPage(lastPage - 1);
     }
-    if (state.surahs.isEmpty) {
+    if (surahs.isEmpty) {
       List<dynamic> surahsJson = await _quranRepository.getQuranDataV3();
-      state.surahs =
+      surahs =
           surahsJson.map((s) => SurahModel.fromDownloadedFontsJson(s)).toList();
 
       // مزامنة القوائم على مستوى الـ instance مع state لتجنب القوائم الفارغة
-      surahs.addAll(state.surahs);
+      // surahs.addAll(surahs);
 
-      for (final surah in state.surahs) {
+      for (final surah in surahs) {
         // نقل بيانات السورة إلى كل آية حتى يعمل البحث بشكل صحيح
         for (final ayah in surah.ayahs) {
           ayah.surahNumber ??= surah.surahNumber;
@@ -205,7 +205,7 @@ class QuranCtrl extends GetxController {
 
   void _buildAyahUqIndexIfNeeded() {
     if (_ayahUqBySurahAyahKey.isNotEmpty) return;
-    for (final surah in state.surahs) {
+    for (final surah in surahs) {
       for (final ayah in surah.ayahs) {
         _ayahUqBySurahAyahKey[
                 _surahAyahKey(surah.surahNumber, ayah.ayahNumber)] =
@@ -476,7 +476,7 @@ class QuranCtrl extends GetxController {
       final normalizedSearchText =
           normalizeText(cleanedSearchText.toLowerCase().trim());
 
-      final filteredSurahs = state.surahs.where((surah) {
+      final filteredSurahs = surahs.where((surah) {
         // إزالة التشكيل وتطبيع أسماء السور
         // Remove diacritics and normalize surah names
         final cleanedSurahNameAr = removeDiacriticsQuran(surah.arabicName);

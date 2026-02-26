@@ -166,9 +166,9 @@ extension QuranGetters on QuranCtrl {
     if (surahNumber > 114) return 114;
 
     try {
-      final ayah = state.surahs[surahNumber - 1].ayahs.firstWhere(
-        (p) => p.ayahNumber == ayahNumber,
-      );
+      final ayah = surahs[surahNumber - 1].ayahs.firstWhere(
+            (p) => p.ayahNumber == ayahNumber,
+          );
 
       log('Ayah found: Surah $surahNumber, Ayah $ayahNumber, Page ${ayah.page}');
 
@@ -180,7 +180,7 @@ extension QuranGetters on QuranCtrl {
 
   /// will return the surah number of the first ayahs..
   /// even if the page contains another surah.
-  int getSurahNumberFromPage(int pageNumber) => state.surahs
+  int getSurahNumberFromPage(int pageNumber) => surahs
       .firstWhere(
           (s) => s.ayahs.firstWhereOrNull((a) => a.page == pageNumber) != null)
       .surahNumber;
@@ -197,7 +197,7 @@ extension QuranGetters on QuranCtrl {
     List<AyahModel> pageAyahs = getPageAyahsByIndex(pageNumber - 1);
     List<SurahModel> surahsOnPage = [];
     for (AyahModel ayah in pageAyahs) {
-      SurahModel surah = state.surahs.firstWhere((s) => s.ayahs.contains(ayah),
+      SurahModel surah = surahs.firstWhere((s) => s.ayahs.contains(ayah),
           orElse: () => SurahModel(
                 surahNumber: 1,
                 arabicName: 'Unknown',
@@ -223,9 +223,8 @@ extension QuranGetters on QuranCtrl {
   ///
   /// Returns:
   ///   `SurahModel`: The SurahModel representing the Surah of the first Ayah on the specified page.
-  SurahModel getCurrentSurahByPageNumber(int pageNumber) =>
-      state.surahs.firstWhere(
-          (s) => s.ayahs.contains(getPageAyahsByIndex(pageNumber - 1).first));
+  SurahModel getCurrentSurahByPageNumber(int pageNumber) => surahs.firstWhere(
+      (s) => s.ayahs.contains(getPageAyahsByIndex(pageNumber - 1).first));
 
   /// Retrieves the Surah data for a given Ayah.
   ///
@@ -237,7 +236,7 @@ extension QuranGetters on QuranCtrl {
   /// Returns:
   ///   `SurahModel`: The SurahModel representing the Surah of the given Ayah.
   SurahModel getSurahDataByAyah(AyahModel ayah) =>
-      state.surahs.firstWhere((s) => s.ayahs.contains(ayah));
+      surahs.firstWhere((s) => s.ayahs.contains(ayah));
 
   /// Retrieves the Surah data for a given unique Ayah number.
   ///
@@ -251,8 +250,8 @@ extension QuranGetters on QuranCtrl {
   /// Returns:
   ///   `SurahModel`: The SurahModel representing the Surah containing
   ///   the Ayah with the given unique number.
-  SurahModel getSurahDataByAyahUQ(int ayah) => state.surahs
-      .firstWhere((s) => s.ayahs.any((a) => a.ayahUQNumber == ayah));
+  SurahModel getSurahDataByAyahUQ(int ayah) =>
+      surahs.firstWhere((s) => s.ayahs.any((a) => a.ayahUQNumber == ayah));
 
   /// Retrieves the Juz data for a given page number.
   ///
@@ -288,10 +287,10 @@ extension QuranGetters on QuranCtrl {
   }
 
   AyahModel getSingleAyahByAyahAndSurahNumber(int ayahNumber, int surahNumber) {
-    return state.surahs[surahNumber - 1].ayahs.firstWhere(
-      (ayah) => ayah.ayahNumber == ayahNumber,
-      orElse: () => AyahModel.empty(),
-    );
+    return surahs[surahNumber - 1].ayahs.firstWhere(
+          (ayah) => ayah.ayahNumber == ayahNumber,
+          orElse: () => AyahModel.empty(),
+        );
   }
 
   /// Retrieves the display string for the Hizb quarter of the given page number.

@@ -197,7 +197,8 @@ extension QuranGetters on QuranCtrl {
     List<AyahModel> pageAyahs = getPageAyahsByIndex(pageNumber - 1);
     List<SurahModel> surahsOnPage = [];
     for (AyahModel ayah in pageAyahs) {
-      SurahModel surah = surahs.firstWhere((s) => s.ayahs.contains(ayah),
+      SurahModel surah = surahs.firstWhere(
+          (s) => s.ayahs.any((a) => a.ayahUQNumber == ayah.ayahUQNumber),
           orElse: () => SurahModel(
                 surahNumber: 1,
                 arabicName: 'Unknown',
@@ -223,20 +224,28 @@ extension QuranGetters on QuranCtrl {
   ///
   /// Returns:
   ///   `SurahModel`: The SurahModel representing the Surah of the first Ayah on the specified page.
-  SurahModel getCurrentSurahByPageNumber(int pageNumber) => surahs.firstWhere(
-      (s) => s.ayahs.contains(getPageAyahsByIndex(pageNumber - 1).first));
+  SurahModel getCurrentSurahByPageNumber(int pageNumber) {
+    final firstAyah = getPageAyahsByIndex(pageNumber - 1).first;
+    return surahs.firstWhere(
+      (s) => s.ayahs.any((a) => a.ayahUQNumber == firstAyah.ayahUQNumber),
+      orElse: () => surahs.first,
+    );
+  }
 
   /// Retrieves the Surah data for a given Ayah.
   ///
   /// This method returns the SurahModel of the Surah that contains the given Ayah.
+  /// يستخدم [ayahUQNumber] للمقارنة بدلاً من المساواة المرجعية.
   ///
   /// Parameters:
   ///   ayah (AyahModel): The Ayah for which to retrieve the Surah data.
   ///
   /// Returns:
   ///   `SurahModel`: The SurahModel representing the Surah of the given Ayah.
-  SurahModel getSurahDataByAyah(AyahModel ayah) =>
-      surahs.firstWhere((s) => s.ayahs.contains(ayah));
+  SurahModel getSurahDataByAyah(AyahModel ayah) => surahs.firstWhere(
+        (s) => s.ayahs.any((a) => a.ayahUQNumber == ayah.ayahUQNumber),
+        orElse: () => surahs.first,
+      );
 
   /// Retrieves the Surah data for a given unique Ayah number.
   ///

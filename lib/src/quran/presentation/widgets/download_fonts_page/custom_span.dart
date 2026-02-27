@@ -27,6 +27,7 @@ TextSpan _qpcV4SpanSegment({
   String? fontPackageOverride,
   bool usePaintColoring = true,
   required bool isDark,
+  VoidCallback? onPagePress,
 }) {
   final quranCtrl = QuranCtrl.instance;
   final wordInfoCtrl = WordInfoCtrl.instance;
@@ -101,6 +102,7 @@ TextSpan _qpcV4SpanSegment({
       shortHoldDuration: const Duration(milliseconds: 150),
       longHoldDuration: const Duration(milliseconds: 500),
     )
+      ..onQuickTapCallback = onPagePress
       ..onShortHoldStartCallback = () {
         // فارغ عمداً — لإبقاء الحدث حياً حتى يصل للضغط المطوّل
       }
@@ -113,6 +115,7 @@ TextSpan _qpcV4SpanSegment({
       shortHoldDuration: const Duration(milliseconds: 150),
       longHoldDuration: const Duration(milliseconds: 500),
     )
+      ..onQuickTapCallback = onPagePress
       ..onShortHoldStartCallback = () {
         wordInfoCtrl.setSelectedWord(wordRef);
       }

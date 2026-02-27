@@ -27,6 +27,7 @@ class _QuranFontsPage extends StatelessWidget {
   final String? fontsName;
   final List<int> ayahBookmarked;
   final bool Function(AyahModel ayah)? isAyahBookmarked;
+  final VoidCallback? onPagePress;
 
   const _QuranFontsPage({
     required this.context,
@@ -51,6 +52,7 @@ class _QuranFontsPage extends StatelessWidget {
     this.fontsName,
     required this.ayahBookmarked,
     this.isAyahBookmarked,
+    this.onPagePress,
   });
 
   @override
@@ -107,6 +109,7 @@ class _QuranFontsPage extends StatelessWidget {
                             isAyahBookmarked: isAyahBookmarked,
                             context: context,
                             quranCtrl: quranCtrl,
+                            onPagePress: onPagePress,
                           ),
                         )
                       : PageBuild(
@@ -133,6 +136,7 @@ class _QuranFontsPage extends StatelessWidget {
                           isAyahBookmarked: isAyahBookmarked,
                           context: context,
                           quranCtrl: quranCtrl,
+                          onPagePress: onPagePress,
                         )
                   : PageBuild(
                       pageIndex: pageIndex,
@@ -157,6 +161,7 @@ class _QuranFontsPage extends StatelessWidget {
                       isAyahBookmarked: isAyahBookmarked,
                       context: context,
                       quranCtrl: quranCtrl,
+                      onPagePress: onPagePress,
                     ),
         );
       },

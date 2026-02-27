@@ -121,6 +121,7 @@ class PageViewBuild extends StatelessWidget {
                     fontsName: fontsName,
                     ayahBookmarked: ayahBookmarked!,
                     isAyahBookmarked: isAyahBookmarked,
+                    onPagePress: onPagePress,
                   ),
                 )),
         (quranCtrl.state.allAyahs.isEmpty ||

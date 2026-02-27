@@ -279,8 +279,7 @@ class QuranLibrary {
       return _cache[cacheKey] as List<String>;
     }
     final surahList = quranCtrl.surahsList
-        .map((surah) =>
-            isArabic ? 'سورة ${surah.name}' : 'Surah ${surah.englishName}')
+        .map((surah) => isArabic ? surah.name : surah.englishName)
         .toList();
     _cache[cacheKey] = surahList;
     return surahList;

@@ -5,13 +5,14 @@ Future<void> showWordInfoBottomSheet({
   required WordRef ref,
   WordInfoKind initialKind = WordInfoKind.recitations,
   required bool isDark,
+  WordInfoBottomSheetStyle? wordInfoStyle,
 }) async {
   final ctrl = WordInfoCtrl.instance;
   ctrl.setSelectedKind(initialKind);
 
-  final WordInfoBottomSheetStyle defaults =
+  final WordInfoBottomSheetStyle defaults = wordInfoStyle ??
       WordInfoDialogTheme.of(context)?.style ??
-          WordInfoBottomSheetStyle.defaults(isDark: isDark, context: context);
+      WordInfoBottomSheetStyle.defaults(isDark: isDark, context: context);
   final size = MediaQuery.sizeOf(context);
   // final maxHFactor = (defaults.maxHeightFactor ?? 0.9).clamp(0.0, 1.0);
   final maxWFactor = (defaults.maxWidthFactor ?? 1.0).clamp(0.0, 1.0);
@@ -35,6 +36,8 @@ Future<void> showWordInfoBottomSheet({
         initialKind: initialKind,
         ctrl: ctrl,
         isDark: isDark,
+        defaults: wordInfoStyle ??
+            WordInfoBottomSheetStyle.defaults(isDark: isDark, context: context),
       );
     },
   );
@@ -47,19 +50,17 @@ class WordInfoWidget extends StatelessWidget {
     required this.initialKind,
     required this.ctrl,
     required this.isDark,
+    required this.defaults,
   });
 
   final WordRef ref;
   final WordInfoKind initialKind;
   final WordInfoCtrl ctrl;
   final bool isDark;
+  final WordInfoBottomSheetStyle defaults;
 
   @override
   Widget build(BuildContext context) {
-    final WordInfoBottomSheetStyle defaults =
-        WordInfoDialogTheme.of(context)?.style ??
-            WordInfoBottomSheetStyle.defaults(isDark: isDark, context: context);
-
     final tabs = [
       Tab(text: defaults.tabRecitationsText ?? 'القراءات'),
       Tab(text: defaults.tabTasreefText ?? 'التصريف'),

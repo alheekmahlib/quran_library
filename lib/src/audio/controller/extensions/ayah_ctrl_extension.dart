@@ -324,7 +324,7 @@ extension AyahCtrlExtension on AudioCtrl {
       AyahAudioStyle? ayahAudioStyle,
       AyahDownloadManagerStyle? ayahDownloadManagerStyle,
       bool? isDarkMode}) async {
-    getAyahUQNumber(QuranCtrl.instance.state.currentPageNumber.value - 1);
+    // getAyahUQNumber(QuranCtrl.instance.state.currentPageNumber.value - 1);
     if (!await validateBeforePlayAyah) {
       ToastUtils().showToast(
           context,

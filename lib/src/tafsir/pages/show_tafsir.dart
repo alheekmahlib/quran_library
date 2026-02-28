@@ -81,19 +81,18 @@ class ShowTafseer extends StatelessWidget {
               ),
               child: Column(
                 children: <Widget>[
-          s.handleWidget ??
-              Container(
-                width: 60,
-                height: 5,
-                margin: 
-                    const EdgeInsets.only(bottom: 8, top: 8),
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade500,
-                  borderRadius:
-                      BorderRadius.circular(3),
-                ),
-              ),
+                  s.handleWidget ??
+                      Container(
+                        width: 60,
+                        height: 5,
+                        margin: const EdgeInsets.only(bottom: 8, top: 8),
+                        decoration: BoxDecoration(
+                          color: Colors.grey.shade500,
+                          borderRadius: BorderRadius.circular(3),
+                        ),
+                      ),
                   TabBar(
+                    indicatorSize: TabBarIndicatorSize.tab,
                     labelStyle: s.tabBarLabelStyle ??
                         TextStyle(
                           fontFamily: 'cairo',

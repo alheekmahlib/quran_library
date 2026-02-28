@@ -78,6 +78,7 @@ class AyahChangeReader extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: TabBar(
+                    indicatorSize: TabBarIndicatorSize.tab,
                     indicatorColor: effectiveStyle.tabIndicatorColor!,
                     labelColor: effectiveStyle.tabLabelColor!,
                     unselectedLabelColor:

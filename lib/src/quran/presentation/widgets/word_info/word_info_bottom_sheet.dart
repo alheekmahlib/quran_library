@@ -135,6 +135,7 @@ class WordInfoWidget extends StatelessWidget {
                           onTap: (index) {
                             ctrl.setSelectedKind(WordInfoKind.values[index]);
                           },
+                          indicatorSize: TabBarIndicatorSize.tab,
                           labelStyle: defaults.tabLabelStyle ??
                               TextStyle(
                                 fontSize: 16,

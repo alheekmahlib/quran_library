@@ -257,6 +257,7 @@ class _MenuBottomSheet extends StatelessWidget {
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: TabBar(
+                  indicatorSize: TabBarIndicatorSize.tab,
                   indicator: BoxDecoration(
                     color: accentColor,
                     borderRadius: BorderRadius.circular(10),

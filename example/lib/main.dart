@@ -57,10 +57,10 @@ class _MyAppState extends State<MyApp> {
         );
       },
       home: const Scaffold(
-        // body: SingleAyah(),
+        body: SingleAyah(),
         // body: SingleSurah(),
         // body: QuranPages(),
-        body: FullQuran(),
+        // body: FullQuran(),
       ),
     );
   }
@@ -157,6 +157,12 @@ class SingleAyah extends StatelessWidget {
         islocalFont: false,
         isDark: true,
         enabledTajweed: true,
+        enableWordSelection: true,
+        onWordTap: (ref) {
+          print(
+              'سورة: ${ref.surahNumber}, آية: ${ref.ayahNumber}, كلمة: ${ref.wordNumber}');
+        },
+        selectedWordColor: Colors.amber.withValues(alpha: 0.3),
       ),
     );
   }

@@ -155,7 +155,7 @@ class WordInfoWidget extends StatelessWidget {
                       Flexible(
                         child: TabBarView(
                           children: [
-                            _WordInfoKindTab(
+                            WordInfoKindTab(
                               kind: WordInfoKind.recitations,
                               kindLabelAr:
                                   defaults.tabRecitationsText ?? 'القراءات',
@@ -164,7 +164,7 @@ class WordInfoWidget extends StatelessWidget {
                               isDark: isDark,
                               style: defaults,
                             ),
-                            _WordInfoKindTab(
+                            WordInfoKindTab(
                               kind: WordInfoKind.tasreef,
                               kindLabelAr: defaults.tabTasreefText ?? 'التصريف',
                               ref: ref,
@@ -172,7 +172,7 @@ class WordInfoWidget extends StatelessWidget {
                               isDark: isDark,
                               style: defaults,
                             ),
-                            _WordInfoKindTab(
+                            WordInfoKindTab(
                               kind: WordInfoKind.eerab,
                               kindLabelAr: defaults.tabEerabText ?? 'الإعراب',
                               ref: ref,
@@ -195,8 +195,9 @@ class WordInfoWidget extends StatelessWidget {
   }
 }
 
-class _WordInfoKindTab extends StatelessWidget {
-  const _WordInfoKindTab({
+class WordInfoKindTab extends StatelessWidget {
+  const WordInfoKindTab({
+    super.key,
     required this.kind,
     required this.kindLabelAr,
     required this.ref,

@@ -154,10 +154,11 @@ class AyahChangeReader extends StatelessWidget {
                 .activeAyahReaders[audioCtrl.state.ayahReaderIndex.value]
                 .name
                 .tr,
-            style: QuranLibrary().cairoStyle.copyWith(
-                  color: currentReaderColor,
-                  fontSize: fontSize,
-                ),
+            style: effectiveStyle.currentReaderTextStyle ??
+                QuranLibrary().cairoStyle.copyWith(
+                      color: currentReaderColor,
+                      fontSize: fontSize,
+                    ),
           ),
         ),
         const SizedBox(width: 4),

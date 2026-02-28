@@ -40,6 +40,7 @@ class AyahAudioStyle {
   final TextStyle? headerDialogTitleStyle;
   final TextStyle? readerDialogTitleStyle;
   final Color? currentReaderColor;
+  final TextStyle? currentReaderTextStyle;
 
   AyahAudioStyle({
     this.textColor,
@@ -81,6 +82,7 @@ class AyahAudioStyle {
     this.headerDialogTitleStyle,
     this.readerDialogTitleStyle,
     this.currentReaderColor,
+    this.currentReaderTextStyle,
   });
 
   AyahAudioStyle copyWith({
@@ -123,6 +125,7 @@ class AyahAudioStyle {
     TextStyle? headerDialogTitleStyle,
     TextStyle? readerDialogTitleStyle,
     Color? currentReaderColor,
+    TextStyle? currentReaderTextStyle,
   }) {
     return AyahAudioStyle(
       textColor: textColor ?? this.textColor,
@@ -181,6 +184,8 @@ class AyahAudioStyle {
       readerDialogTitleStyle:
           readerDialogTitleStyle ?? this.readerDialogTitleStyle,
       currentReaderColor: currentReaderColor ?? this.currentReaderColor,
+      currentReaderTextStyle:
+          currentReaderTextStyle ?? this.currentReaderTextStyle,
     );
   }
 
@@ -254,6 +259,7 @@ class AyahAudioStyle {
       headerDialogTitleStyle: null,
       readerDialogTitleStyle: null,
       currentReaderColor: onBg,
+      currentReaderTextStyle: null,
     );
   }
 }

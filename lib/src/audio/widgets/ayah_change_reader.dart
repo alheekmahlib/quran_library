@@ -63,6 +63,7 @@ class AyahChangeReader extends StatelessWidget {
             titleColor: effectiveStyle.dialogHeaderTitleColor,
             backgroundGradient: effectiveStyle.dialogHeaderBackgroundGradient,
             closeIconColor: effectiveStyle.dialogCloseIconColor,
+            titleTextStyle: effectiveStyle.headerDialogTitleStyle,
           ),
         ),
         const SizedBox(height: 8),
@@ -226,10 +227,11 @@ class ReaderListBuild extends StatelessWidget {
             contentPadding: const EdgeInsets.symmetric(horizontal: 8),
             title: Text(
               info.name.tr,
-              style: QuranLibrary().cairoStyle.copyWith(
-                    color: textColor,
-                    fontSize: itemFontSize,
-                  ),
+              style: effectiveStyle.readerDialogTitleStyle ??
+                  QuranLibrary().cairoStyle.copyWith(
+                        color: textColor,
+                        fontSize: itemFontSize,
+                      ),
             ),
             trailing: _SelectionIndicator(
                 isSelected: isSelected,

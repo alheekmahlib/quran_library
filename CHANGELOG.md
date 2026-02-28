@@ -1,3 +1,13 @@
+## 3.1.1
+
+* **ADD:**
+	* Word-by-word audio playback (single word & full ayah words).
+
+* **FIX:**
+	* Make the library support `useMaterial3`.
+	* Fix some styles.
+	* jump to Hizb.
+
 ## 3.1.0
 
 * **ADD:**
@@ -16,7 +26,7 @@
 	* Fix add `customMenuItems` in `AyahMenuStyle`.
 	* Tajweed rules list.
 	* jump to Hizb.
-
+	
 ## 3.0.1
 
 * **ADD:**

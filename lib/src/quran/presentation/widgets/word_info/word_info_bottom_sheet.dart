@@ -102,7 +102,8 @@ class WordInfoWidget extends StatelessWidget {
                   ),
             ),
           // أزرار تشغيل صوت الكلمة والآية
-          if (ctrl.isWordAudioInitialized) ...[
+          if (ctrl.isWordAudioInitialized &&
+              (defaults.withWordAudioButton ?? true)) ...[
             _WordAudioButtons(
               ref: ref,
               ctrl: ctrl,

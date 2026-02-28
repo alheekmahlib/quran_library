@@ -75,6 +75,7 @@ class WordInfoBottomSheetStyle {
   final String? playWordTooltip;
   final String? playAyahWordsTooltip;
   final bool? withWordText;
+  final bool? withWordAudioButton;
 
   const WordInfoBottomSheetStyle({
     this.backgroundColor,
@@ -126,6 +127,7 @@ class WordInfoBottomSheetStyle {
     this.playAyahWordsTooltip,
     this.withTitle,
     this.withWordText,
+    this.withWordAudioButton,
   });
 
   WordInfoBottomSheetStyle copyWith({
@@ -178,6 +180,7 @@ class WordInfoBottomSheetStyle {
     String? playAyahWordsTooltip,
     bool? withTitle,
     bool? withWordText,
+    bool? withWordAudioButton,
   }) {
     return WordInfoBottomSheetStyle(
       backgroundColor: backgroundColor ?? this.backgroundColor,
@@ -235,6 +238,7 @@ class WordInfoBottomSheetStyle {
       playAyahWordsTooltip: playAyahWordsTooltip ?? this.playAyahWordsTooltip,
       withTitle: withTitle ?? this.withTitle,
       withWordText: withWordText ?? this.withWordText,
+      withWordAudioButton: withWordAudioButton ?? this.withWordAudioButton,
     );
   }
 
@@ -324,6 +328,7 @@ class WordInfoBottomSheetStyle {
       playAyahWordsTooltip: 'تشغيل كلمات الآية',
       withTitle: true,
       withWordText: true,
+      withWordAudioButton: true,
     );
   }
 }

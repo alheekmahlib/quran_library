@@ -89,26 +89,28 @@ class WordInfoWidget extends StatelessWidget {
                       BorderRadius.circular(defaults.handleBorderRadius ?? 3),
                 ),
               ),
-          Text(
-            defaults.titleText ?? 'عن الكلمة',
-            style: defaults.titleTextStyle ??
-                TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.getTextColor(isDark),
-                  fontFamily: 'cairo',
-                  package: 'quran_library',
-                ),
-          ),
+          if (defaults.withTitle ?? true)
+            Text(
+              defaults.titleText ?? 'عن الكلمة',
+              style: defaults.titleTextStyle ??
+                  TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.getTextColor(isDark),
+                    fontFamily: 'cairo',
+                    package: 'quran_library',
+                  ),
+            ),
           // أزرار تشغيل صوت الكلمة والآية
-          if (ctrl.isWordAudioInitialized)
+          if (ctrl.isWordAudioInitialized) ...[
             _WordAudioButtons(
               ref: ref,
               ctrl: ctrl,
               isDark: isDark,
               style: defaults,
             ),
-          const SizedBox(height: 8),
+            const SizedBox(height: 8),
+          ],
           Expanded(
             child: GetBuilder<WordInfoCtrl>(
               id: 'word_info_kind',
@@ -376,19 +378,21 @@ class WordInfoKindTab extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        Text(
-                          data.word,
-                          textDirection: TextDirection.rtl,
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                            color: wordColor,
-                            fontFamily: 'naskh',
-                            package: 'quran_library',
+                        if (style.withWordText ?? true) ...[
+                          Text(
+                            data.word,
+                            textDirection: TextDirection.rtl,
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                              color: wordColor,
+                              fontFamily: 'naskh',
+                              package: 'quran_library',
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 12),
+                          const SizedBox(height: 12),
+                        ],
                         SelectableText.rich(
                           buildMarkedContentSpan(
                             content: data.content,

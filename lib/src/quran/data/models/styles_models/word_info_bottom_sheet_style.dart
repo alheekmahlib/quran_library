@@ -29,6 +29,7 @@ class WordInfoBottomSheetStyle {
   final String? titleText;
   final TextStyle? titleTextStyle;
   final EdgeInsetsGeometry? titlePadding;
+  final bool? withTitle;
 
   // Text overrides
   final String? tabRecitationsText;
@@ -73,6 +74,7 @@ class WordInfoBottomSheetStyle {
   final double? audioButtonSize;
   final String? playWordTooltip;
   final String? playAyahWordsTooltip;
+  final bool? withWordText;
 
   const WordInfoBottomSheetStyle({
     this.backgroundColor,
@@ -122,6 +124,8 @@ class WordInfoBottomSheetStyle {
     this.audioButtonSize,
     this.playWordTooltip,
     this.playAyahWordsTooltip,
+    this.withTitle,
+    this.withWordText,
   });
 
   WordInfoBottomSheetStyle copyWith({
@@ -172,6 +176,8 @@ class WordInfoBottomSheetStyle {
     double? audioButtonSize,
     String? playWordTooltip,
     String? playAyahWordsTooltip,
+    bool? withTitle,
+    bool? withWordText,
   }) {
     return WordInfoBottomSheetStyle(
       backgroundColor: backgroundColor ?? this.backgroundColor,
@@ -227,6 +233,8 @@ class WordInfoBottomSheetStyle {
       audioButtonSize: audioButtonSize ?? this.audioButtonSize,
       playWordTooltip: playWordTooltip ?? this.playWordTooltip,
       playAyahWordsTooltip: playAyahWordsTooltip ?? this.playAyahWordsTooltip,
+      withTitle: withTitle ?? this.withTitle,
+      withWordText: withWordText ?? this.withWordText,
     );
   }
 
@@ -314,6 +322,8 @@ class WordInfoBottomSheetStyle {
       audioButtonSize: 22,
       playWordTooltip: 'تشغيل الكلمة',
       playAyahWordsTooltip: 'تشغيل كلمات الآية',
+      withTitle: true,
+      withWordText: true,
     );
   }
 }

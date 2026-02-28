@@ -140,7 +140,8 @@ class AyahChangeReader extends StatelessWidget {
   }
 
   Widget _buildTitle(AyahAudioStyle effectiveStyle, bool dark) {
-    final Color textColor = effectiveStyle.textColor!;
+    final Color playIconColor = effectiveStyle.playIconColor!;
+    final Color currentReaderColor = effectiveStyle.currentReaderColor!;
     final double fontSize = effectiveStyle.readerNameFontSize!;
 
     return Row(
@@ -154,7 +155,7 @@ class AyahChangeReader extends StatelessWidget {
                 .name
                 .tr,
             style: QuranLibrary().cairoStyle.copyWith(
-                  color: textColor,
+                  color: currentReaderColor,
                   fontSize: fontSize,
                 ),
           ),
@@ -167,7 +168,7 @@ class AyahChangeReader extends StatelessWidget {
           child: Icon(
             Icons.keyboard_arrow_down_outlined,
             size: fontSize.clamp(16, 20),
-            color: textColor,
+            color: playIconColor,
           ),
         ),
       ],

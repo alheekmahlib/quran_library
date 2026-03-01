@@ -91,14 +91,14 @@ class GetSingleAyah extends StatelessWidget {
       // update();
       // update(['_pageViewBuild']);
       // تحميل بقية الصفحات في الخلفية
-      QuranFontsService.loadRemainingInBackground(
-        startNearPage: pageNumber,
-        progress: QuranCtrl.instance.state.fontsLoadProgress,
-        ready: QuranCtrl.instance.state.fontsReady,
-      ).then((_) {
-        // update();
-        QuranCtrl.instance.update(['single_ayah_$surahNumber-$ayahNumber']);
-      });
+      // QuranFontsService.loadRemainingInBackground(
+      //   startNearPage: pageNumber,
+      //   progress: QuranCtrl.instance.state.fontsLoadProgress,
+      //   ready: QuranCtrl.instance.state.fontsReady,
+      // ).then((_) {
+      //   // update();
+      //   QuranCtrl.instance.update(['single_ayah_$surahNumber-$ayahNumber']);
+      // });
     });
     log('surahNumber: $surahNumber, ayahNumber: $ayahNumber, pageNumber: $pageNumber');
 

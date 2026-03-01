@@ -123,6 +123,7 @@ class WordInfoWidget extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Container(
+                        height: defaults.tabBarHeight ?? 40,
                         margin: EdgeInsets.symmetric(
                           horizontal: defaults.horizontalMargin ?? 8,
                         ),
@@ -251,13 +252,15 @@ class WordInfoKindTab extends StatelessWidget {
             AppColors.getBackgroundColor(isDark),
         borderRadius:
             BorderRadius.circular(style.innerContainerBorderRadius ?? 16),
-        boxShadow: [
-          BoxShadow(
-            color: style.innerShadowColor ?? Colors.grey.withValues(alpha: 0.1),
-            blurRadius: style.innerShadowBlurRadius ?? 8,
-            offset: style.innerShadowOffset ?? const Offset(0, 0),
-          ),
-        ],
+        boxShadow: style.innerContainerBoxShadow ??
+            [
+              BoxShadow(
+                color: style.innerShadowColor ??
+                    Colors.grey.withValues(alpha: 0.1),
+                blurRadius: style.innerShadowBlurRadius ?? 8,
+                offset: style.innerShadowOffset ?? const Offset(0, 0),
+              ),
+            ],
         border: Border.symmetric(
           horizontal: BorderSide(
             color:
@@ -291,38 +294,30 @@ class WordInfoKindTab extends StatelessWidget {
                     textDirection: TextDirection.rtl,
                   ),
                   const SizedBox(height: 12),
-                  DownloadButtonWidget(
-                    onTap: () async {
-                      isDownloading ? null : await ctrl.downloadKind(kind);
-                    },
-                    isVisible: true,
-                    isSelected: false,
-                    downloaded: false,
-                    background: Colors.teal.withValues(alpha: 0.1),
-                    valueColor: Colors.teal,
-                    borderColor: Colors.teal,
-                    downloading:
-                        isDownloading || ctrl.isPreparingDownload.value,
-                    preparing: isDownloading || ctrl.isPreparingDownload.value,
-                    progress: ctrl.downloadProgress.value,
-                    children: [
-                      Text(
-                        isDownloading
-                            ? (style.downloadingText ?? 'جاري التحميل...')
-                            : (style.downloadText ?? 'تحميل'),
-                        style: style.buttonTextStyle ??
-                            TextStyle(
-                              fontSize: 16,
-                              color: AppColors.getTextColor(isDark),
-                              fontFamily: 'cairo',
-                              package: 'quran_library',
-                            ),
-                      ),
-                      if (isDownloading || ctrl.isPreparingDownload.value) ...[
-                        const SizedBox(width: 12),
+                  if (style.downloadButtonWidget != null)
+                    style.downloadButtonWidget!(context, kind)
+                  else
+                    DownloadButtonWidget(
+                      onTap: () async {
+                        isDownloading ? null : await ctrl.downloadKind(kind);
+                      },
+                      isVisible: true,
+                      isSelected: false,
+                      downloaded: false,
+                      background: Colors.teal.withValues(alpha: 0.1),
+                      valueColor: Colors.teal,
+                      borderColor: Colors.teal,
+                      downloading:
+                          isDownloading || ctrl.isPreparingDownload.value,
+                      preparing:
+                          isDownloading || ctrl.isPreparingDownload.value,
+                      progress: ctrl.downloadProgress.value,
+                      children: [
                         Text(
-                          '${ctrl.downloadProgress.value.toStringAsFixed(0)}%',
-                          style: style.progressTextStyle ??
+                          isDownloading
+                              ? (style.downloadingText ?? 'جاري التحميل...')
+                              : (style.downloadText ?? 'تحميل'),
+                          style: style.buttonTextStyle ??
                               TextStyle(
                                 fontSize: 16,
                                 color: AppColors.getTextColor(isDark),
@@ -330,9 +325,22 @@ class WordInfoKindTab extends StatelessWidget {
                                 package: 'quran_library',
                               ),
                         ),
+                        if (isDownloading ||
+                            ctrl.isPreparingDownload.value) ...[
+                          const SizedBox(width: 12),
+                          Text(
+                            '${ctrl.downloadProgress.value.toStringAsFixed(0)}%',
+                            style: style.progressTextStyle ??
+                                TextStyle(
+                                  fontSize: 16,
+                                  color: AppColors.getTextColor(isDark),
+                                  fontFamily: 'cairo',
+                                  package: 'quran_library',
+                                ),
+                          ),
+                        ],
                       ],
-                    ],
-                  ),
+                    ),
                 ],
               ),
             );

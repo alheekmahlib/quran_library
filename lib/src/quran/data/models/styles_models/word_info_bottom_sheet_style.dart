@@ -79,6 +79,9 @@ class WordInfoBottomSheetStyle {
   final bool? withWordAudioButton;
   final Color? tabLabelColor;
   final Color? tabUnselectedLabelColor;
+  final double? tabBarHeight;
+  final List<BoxShadow>? innerContainerBoxShadow;
+  final WordInfoBottomSheetStyleCustomChildBuilder? downloadButtonWidget;
 
   const WordInfoBottomSheetStyle({
     this.backgroundColor,
@@ -134,6 +137,9 @@ class WordInfoBottomSheetStyle {
     this.tabLabelColor,
     this.tabUnselectedLabelColor,
     this.tabBackgroundColor,
+    this.tabBarHeight,
+    this.innerContainerBoxShadow,
+    this.downloadButtonWidget,
   });
 
   WordInfoBottomSheetStyle copyWith({
@@ -190,6 +196,9 @@ class WordInfoBottomSheetStyle {
     Color? tabLabelColor,
     Color? tabUnselectedLabelColor,
     Color? tabBackgroundColor,
+    double? tabBarHeight,
+    List<BoxShadow>? innerContainerBoxShadow,
+    WordInfoBottomSheetStyleCustomChildBuilder? downloadButtonWidget,
   }) {
     return WordInfoBottomSheetStyle(
       backgroundColor: backgroundColor ?? this.backgroundColor,
@@ -252,6 +261,10 @@ class WordInfoBottomSheetStyle {
       tabUnselectedLabelColor:
           tabUnselectedLabelColor ?? this.tabUnselectedLabelColor,
       tabBackgroundColor: tabBackgroundColor ?? this.tabBackgroundColor,
+      tabBarHeight: tabBarHeight ?? this.tabBarHeight,
+      innerContainerBoxShadow:
+          innerContainerBoxShadow ?? this.innerContainerBoxShadow,
+      downloadButtonWidget: downloadButtonWidget ?? this.downloadButtonWidget,
     );
   }
 
@@ -345,6 +358,20 @@ class WordInfoBottomSheetStyle {
       tabLabelColor: textColor,
       tabUnselectedLabelColor: textColor.withValues(alpha: 0.6),
       tabBackgroundColor: Colors.teal.withValues(alpha: 0.1),
+      tabBarHeight: 48,
+      innerContainerBoxShadow: [
+        BoxShadow(
+          color: Colors.grey.withValues(alpha: 0.1),
+          blurRadius: 8,
+          offset: const Offset(0, 0),
+        ),
+      ],
+      downloadButtonWidget: null,
     );
   }
 }
+
+typedef WordInfoBottomSheetStyleCustomChildBuilder = Widget Function(
+  BuildContext context,
+  WordInfoKind kind,
+);

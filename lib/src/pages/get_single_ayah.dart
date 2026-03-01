@@ -381,7 +381,7 @@ class GetSingleAyah extends StatelessWidget {
     final baseTextStyle = TextStyle(
       fontFamily: fontFamily,
       fontSize: fontSize,
-      height: 2.2,
+      height: 1.2,
       wordSpacing: -2,
       color: textColor ?? AppColors.getTextColor(isDark ?? false),
     );

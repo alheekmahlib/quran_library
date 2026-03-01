@@ -127,7 +127,7 @@ class WordInfoWidget extends StatelessWidget {
                           horizontal: defaults.horizontalMargin ?? 8,
                         ),
                         decoration: BoxDecoration(
-                          color: (defaults.tabIndicatorColor ??
+                          color: (defaults.tabBackgroundColor ??
                                   Theme.of(context).colorScheme.primary)
                               .withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(16),
@@ -145,6 +145,14 @@ class WordInfoWidget extends StatelessWidget {
                                 fontFamily: 'cairo',
                                 package: 'quran_library',
                               ),
+                          unselectedLabelStyle: defaults.tabLabelStyle ??
+                              TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.getTextColor(isDark),
+                                fontFamily: 'cairo',
+                                package: 'quran_library',
+                              ),
                           indicator: BoxDecoration(
                             color: defaults.tabIndicatorColor ??
                                 (Theme.of(context).colorScheme.primary)
@@ -152,6 +160,12 @@ class WordInfoWidget extends StatelessWidget {
                             borderRadius: BorderRadius.circular(
                                 defaults.tabIndicatorRadius ?? 10),
                           ),
+                          labelColor: defaults.tabLabelColor ??
+                              AppColors.getTextColor(isDark),
+                          unselectedLabelColor:
+                              defaults.tabUnselectedLabelColor ??
+                                  AppColors.getTextColor(isDark)
+                                      .withValues(alpha: 0.6),
                           indicatorPadding: defaults.tabIndicatorPadding ??
                               const EdgeInsets.all(4),
                           tabs: tabs,

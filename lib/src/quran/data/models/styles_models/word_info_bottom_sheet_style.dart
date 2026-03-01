@@ -46,6 +46,7 @@ class WordInfoBottomSheetStyle {
   final EdgeInsetsGeometry? tabIndicatorPadding;
   final double? tabIndicatorRadius;
   final Color? tabIndicatorColor;
+  final Color? tabBackgroundColor;
   final double? dividerHeight;
 
   // Content
@@ -76,6 +77,8 @@ class WordInfoBottomSheetStyle {
   final String? playAyahWordsTooltip;
   final bool? withWordText;
   final bool? withWordAudioButton;
+  final Color? tabLabelColor;
+  final Color? tabUnselectedLabelColor;
 
   const WordInfoBottomSheetStyle({
     this.backgroundColor,
@@ -128,6 +131,9 @@ class WordInfoBottomSheetStyle {
     this.withTitle,
     this.withWordText,
     this.withWordAudioButton,
+    this.tabLabelColor,
+    this.tabUnselectedLabelColor,
+    this.tabBackgroundColor,
   });
 
   WordInfoBottomSheetStyle copyWith({
@@ -181,6 +187,9 @@ class WordInfoBottomSheetStyle {
     bool? withTitle,
     bool? withWordText,
     bool? withWordAudioButton,
+    Color? tabLabelColor,
+    Color? tabUnselectedLabelColor,
+    Color? tabBackgroundColor,
   }) {
     return WordInfoBottomSheetStyle(
       backgroundColor: backgroundColor ?? this.backgroundColor,
@@ -239,6 +248,10 @@ class WordInfoBottomSheetStyle {
       withTitle: withTitle ?? this.withTitle,
       withWordText: withWordText ?? this.withWordText,
       withWordAudioButton: withWordAudioButton ?? this.withWordAudioButton,
+      tabLabelColor: tabLabelColor ?? this.tabLabelColor,
+      tabUnselectedLabelColor:
+          tabUnselectedLabelColor ?? this.tabUnselectedLabelColor,
+      tabBackgroundColor: tabBackgroundColor ?? this.tabBackgroundColor,
     );
   }
 
@@ -329,6 +342,9 @@ class WordInfoBottomSheetStyle {
       withTitle: true,
       withWordText: true,
       withWordAudioButton: true,
+      tabLabelColor: textColor,
+      tabUnselectedLabelColor: textColor.withValues(alpha: 0.6),
+      tabBackgroundColor: Colors.teal.withValues(alpha: 0.1),
     );
   }
 }

@@ -131,7 +131,7 @@ class WordInfoWidget extends StatelessWidget {
                           color: (defaults.tabBackgroundColor ??
                                   Theme.of(context).colorScheme.primary)
                               .withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(16),
+                          borderRadius: BorderRadius.circular(8),
                         ),
                         child: TabBar(
                           onTap: (index) {

@@ -98,6 +98,10 @@ class QuranCtrl extends GetxController {
     // نطلقها بشكل غير متزامن لتجنب إبطاء onInit.
     Future(() => ensureCoreDataLoaded());
 
+    // تحميل آخر وضع عرض محفوظ
+    // Load saved display mode
+    loadSavedDisplayMode();
+
     searchFocusNode = FocusNode();
     searchTextController = TextEditingController();
   }
@@ -555,11 +559,14 @@ class QuranCtrl extends GetxController {
     final Orientation orientation = MediaQuery.of(context).orientation;
 
     // احسب قيمة الـ viewportFraction الهدف بناءً على حجم/اتجاه الشاشة
-    // استخدم GetPlatform.isDesktop للتحقق من المنصة (macOS, Windows, Linux)
-    // مع التأكد من أن الشاشة عريضة بما يكفي لعرض صفحتين
+    // viewportFraction 0.5 فقط في الوضع الافتراضي على شاشات الديسكتوب العريضة
+    // Other display modes always use 1.0 to show a single page
     final bool isWideDesktop =
         Responsive.isDesktop(context) && orientation == Orientation.landscape;
-    double targetFraction = isWideDesktop ? 0.5 : 1.0;
+    final currentMode = state.displayMode.value;
+    final bool useDualFraction =
+        isWideDesktop && currentMode == QuranDisplayMode.defaultMode;
+    double targetFraction = useDualFraction ? 0.5 : 1.0;
 
     log(
         'getPageController: isDesktop=${GetPlatform.isDesktop}, isWideDesktop=$isWideDesktop, '
@@ -580,9 +587,15 @@ class QuranCtrl extends GetxController {
         currentIndex =
             (p != null) ? p.round() : state.currentPageNumber.value - 1;
       } else {
-        // إذا لم يكن هناك clients، استخدم القيمة المحفوظة مباشرة
-        final savedPage = _quranRepository.getLastPage() ?? 1;
-        currentIndex = savedPage - 1;
+        // إذا لم يكن هناك clients، استخدم القيمة من state أولًا ثم المحفوظة
+        // Prefer state value (updated by setDisplayMode) over stored value
+        final stateVal = state.currentPageNumber.value;
+        if (stateVal > 0) {
+          currentIndex = stateVal - 1;
+        } else {
+          final savedPage = _quranRepository.getLastPage() ?? 1;
+          currentIndex = savedPage - 1;
+        }
       }
       currentIndex = currentIndex.clamp(0, 603);
 

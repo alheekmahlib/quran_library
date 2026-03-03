@@ -1,12 +1,26 @@
-## 3.1.1
+## 3.2.0
 
 * **ADD:**
+	* Multiple display modes for Quran pages:
+		* **Default** – the original swipeable PageView.
+		* **Single Scrollable** – vertically scrollable page with horizontal swipe.
+		* **Dual Page** – two pages side-by-side (large screens / landscape).
+		* **Quran + Tafsir Side** – Quran page beside a tafsir panel (landscape).
+		* **Ayah with Inline Tafsir** – each ayah followed by its tafsir text (portrait & landscape).
+	* `DisplayModeBar` widget that appears/hides with the control overlay on screen tap.
+	* Display mode persisted via `GetStorage` (remembers the last chosen mode).
+	* Three new customizable style classes: `DisplayModeBarStyle`, `AyahTafsirInlineStyle`, `QuranTafsirSideStyle`.
+	* Corresponding `InheritedWidget` theme providers: `DisplayModeBarTheme`, `AyahTafsirInlineTheme`, `QuranTafsirSideTheme`.
+	* New optional parameters on `QuranLibraryScreen`: `displayModeBarStyle`, `ayahTafsirInlineStyle`, `quranTafsirSideStyle`.
 	* Word-by-word audio playback (single word & full ayah words).
 
 * **FIX:**
 	* Make the library support `useMaterial3`.
 	* Fix some styles.
 	* jump to Hizb.
+	* Fixed page jump to page 1 when switching display modes — now preserves current page.
+	* Fixed `viewportFraction: 0.5` applied to non-default display modes on web/desktop (dual pages shown incorrectly).
+	* Fixed `RenderFlex unbounded height` crash in `SingleScrollablePage` when `PageViewBuild` contains a `Column` with `Flexible` inside `SingleChildScrollView`.
 
 ## 3.1.0
 

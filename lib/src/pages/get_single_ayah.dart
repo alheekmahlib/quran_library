@@ -35,6 +35,9 @@ class GetSingleAyah extends StatelessWidget {
   /// لتحديد كلمة برمجياً من الخارج. عند تمريره يُتجاهل التحديد المحلي.
   final WordRef? externalSelectedWordRef;
 
+  /// لإظهار أيقونة بجانب الآية.
+  final bool? showAyahNumber;
+
   GetSingleAyah({
     super.key,
     required this.surahNumber,
@@ -59,6 +62,7 @@ class GetSingleAyah extends StatelessWidget {
     this.onWordTap,
     this.selectedWordColor,
     this.externalSelectedWordRef,
+    this.showAyahNumber = true,
   });
 
   final QuranCtrl quranCtrl = QuranCtrl.instance;
@@ -172,6 +176,7 @@ class GetSingleAyah extends StatelessWidget {
             fontSize: fs,
             ayahUq: ayahUq,
             pageNumber: pageNumber,
+            showAyahNumber: showAyahNumber,
           );
         },
       ),
@@ -185,6 +190,7 @@ class GetSingleAyah extends StatelessWidget {
     required double fontSize,
     required int ayahUq,
     required int pageNumber,
+    bool? showAyahNumber,
   }) {
     final wordInfoCtrl = WordInfoCtrl.instance;
     final bookmarksCtrl = BookmarksCtrl.instance;
@@ -225,7 +231,7 @@ class GetSingleAyah extends StatelessWidget {
             ayahUQNum: uq,
             ayahNumber: seg.ayahNumber,
             glyphs: seg.glyphs,
-            showAyahNumber: seg.isAyahEnd,
+            showAyahNumber: showAyahNumber ?? seg.isAyahEnd,
             wordRef: ref,
             isWordKhilaf: hasKhilaf,
             textColor: textColor ?? AppColors.getTextColor(isDark ?? false),

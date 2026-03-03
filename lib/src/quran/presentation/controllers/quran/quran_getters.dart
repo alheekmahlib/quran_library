@@ -487,6 +487,64 @@ extension QuranGetters on QuranCtrl {
     }
   }
 
+  // -------- [Display Mode] ----------
+
+  /// الوضع الحالي للعرض
+  /// Current display mode
+  QuranDisplayMode get currentDisplayMode => state.displayMode.value;
+
+  /// تعيين وضع العرض مع الحفظ في التخزين المحلي
+  /// Set display mode and persist to local storage
+  void setDisplayMode(QuranDisplayMode mode) {
+    if (state.displayMode.value == mode) return;
+
+    // حفظ الصفحة الحالية قبل تغيير الوضع لمنع العودة للصفحة الأولى
+    // Save current page before mode switch to prevent jumping to page 1
+    int currentPage = state.currentPageNumber.value - 1;
+    if (quranPagesController.hasClients) {
+      final double? p = quranPagesController.page;
+      if (p != null) currentPage = p.round();
+    }
+    currentPage = currentPage.clamp(0, 603);
+
+    // تحديث رقم الصفحة وحفظه في التخزين لضمان عدم فقدانه عند إعادة إنشاء الـ controller
+    state.currentPageNumber.value = currentPage + 1;
+    saveLastPage(currentPage + 1);
+
+    // إعادة إنشاء الـ controller بالصفحة الحالية
+    final oldController = quranPagesController;
+    quranPagesController = PreloadPageController(
+      initialPage: currentPage,
+      keepPage: true,
+      viewportFraction: 1.0,
+    );
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      try {
+        if (oldController != quranPagesController) oldController.dispose();
+      } catch (_) {}
+    });
+
+    state.displayMode.value = mode;
+    GetStorage().write(_StorageConstants().displayMode, mode.storageIndex);
+    update(['display_mode', 'quran_display_content']);
+  }
+
+  /// تحميل آخر وضع عرض محفوظ من التخزين المحلي
+  /// Load saved display mode from local storage
+  void loadSavedDisplayMode() {
+    final saved = GetStorage().read<int>(_StorageConstants().displayMode);
+    if (saved != null) {
+      state.displayMode.value =
+          QuranDisplayModeExtension.fromStorageIndex(saved);
+    }
+  }
+
+  /// الأوضاع المتاحة حسب الاتجاه وحجم الشاشة
+  /// Available modes based on orientation and screen size
+  List<QuranDisplayMode> getAvailableModes(BuildContext context) {
+    return QuranDisplayModeExtension.availableModes(context);
+  }
+
   List<TajweedRuleModel> getTajweedRulesListForLanguage({
     required String languageCode,
     String fallbackLanguageCode = 'ar',

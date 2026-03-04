@@ -214,18 +214,18 @@ class _TajweedAyaTab extends StatelessWidget {
                     // padding: const EdgeInsets.all(16),
                     child: Column(
                       children: [
-                        GetSingleAyah(
-                          surahNumber: surahs.surahNumber,
-                          ayahNumber: data.ayaNumber,
-                          fontSize: 24,
-                          isBold: false,
-                          isSingleAyah: false,
-                          isDark: isDark,
-                          textColor: tafsirStyle.textColor,
-                          textAlign: TextAlign.center,
-                          enabledTajweed:
-                              QuranCtrl.instance.state.isTajweedEnabled.value,
-                        ),
+                        // GetSingleAyah(
+                        //   surahNumber: surahs.surahNumber,
+                        //   ayahNumber: data.ayaNumber,
+                        //   fontSize: 24,
+                        //   isBold: false,
+                        //   isSingleAyah: false,
+                        //   isDark: isDark,
+                        //   textColor: tafsirStyle.textColor,
+                        //   textAlign: TextAlign.center,
+                        //   enabledTajweed:
+                        //       QuranCtrl.instance.state.isTajweedEnabled.value,
+                        // ),
                         const SizedBox(height: 6),
                         context.horizontalDivider(
                           color: tafsirStyle.dividerColor,

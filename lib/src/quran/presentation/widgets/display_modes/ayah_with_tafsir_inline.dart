@@ -518,8 +518,8 @@ class _InlineAyahTafsirItem extends StatelessWidget {
                                 )
                               : Text(
                                   '${ayah.ayahNumber}'
-                                      .convertNumbersAccordingToLang(
-                                          languageCode: languageCode),
+                                      .convertEnglishNumbersToArabic(
+                                          ayah.ayahNumber.toString()),
                                   style: TextStyle(
                                     fontFamily: 'ayahNumber',
                                     fontSize: (fontSize + 5),

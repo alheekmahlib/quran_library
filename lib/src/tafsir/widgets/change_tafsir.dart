@@ -50,12 +50,13 @@ class ChangeTafsirDialog extends StatelessWidget {
                           .tafsirAndTranslationsItems[
                               tafsirCtrl.radioValue.value]
                           .name,
-                  style: QuranLibrary().cairoStyle.copyWith(
-                        color: tafsirStyle?.currentTafsirColor ??
-                            const Color(0xffCDAD80),
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                      ),
+                  style: tafsirStyle?.currentTafsirTextStyle ??
+                      QuranLibrary().cairoStyle.copyWith(
+                            color: tafsirStyle?.currentTafsirColor ??
+                                const Color(0xffCDAD80),
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                          ),
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
@@ -116,6 +117,7 @@ class DailogBuild extends StatelessWidget {
                       backgroundGradient:
                           tafsirStyle?.dialogHeaderBackgroundGradient,
                       closeIconColor: tafsirStyle?.dialogCloseIconColor,
+                      titleTextStyle: tafsirStyle?.dialogHeaderTitleTextStyle,
                     ),
                   ),
                   Expanded(
@@ -169,10 +171,11 @@ class DailogBuild extends StatelessWidget {
         ),
         child: Text(
           title!,
-          style: QuranLibrary().cairoStyle.copyWith(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: tafsirStyle?.textTitleColor!),
+          style: tafsirStyle?.dialogTypeTextStyle ??
+              QuranLibrary().cairoStyle.copyWith(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: tafsirStyle?.textTitleColor!),
           textAlign: TextAlign.center,
         ),
       );
@@ -373,14 +376,16 @@ class TafsirItemWidget extends StatelessWidget {
                                 tafsirCtrl
                                     .tafsirAndTranslationsItems[tafsirIndex]
                                     .name,
-                            style: QuranLibrary().cairoStyle.copyWith(
-                                  color: tafsirCtrl.radioValue.value ==
-                                          tafsirIndex
-                                      ? tafsirStyle.selectedTafsirTextColor!
-                                      : tafsirStyle.unSelectedTafsirTextColor!,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                            style: tafsirStyle.tafsirTextTextStyle ??
+                                QuranLibrary().cairoStyle.copyWith(
+                                      color: tafsirCtrl.radioValue.value ==
+                                              tafsirIndex
+                                          ? tafsirStyle.selectedTafsirTextColor!
+                                          : tafsirStyle
+                                              .unSelectedTafsirTextColor!,
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                           ),
                           Text(
                             tafsirIndex >= 28
@@ -389,17 +394,9 @@ class TafsirItemWidget extends StatelessWidget {
                                     tafsirCtrl
                                         .tafsirAndTranslationsItems[tafsirIndex]
                                         .bookName,
-                            style: QuranLibrary().cairoStyle.copyWith(
-                                  color: tafsirCtrl.radioValue.value ==
-                                          tafsirIndex
-                                      ? tafsirStyle.selectedTafsirTextColor ??
-                                          (AppColors.getTextColor(isDark))
-                                      : tafsirStyle.unSelectedTafsirTextColor ??
-                                          (isDark
-                                              ? Colors.white
-                                              : Colors.black),
-                                  fontSize: 12,
-                                ),
+                            style: tafsirStyle.tafsirTextTextStyle!.copyWith(
+                              fontSize: 12,
+                            ),
                           ),
                         ],
                       ),

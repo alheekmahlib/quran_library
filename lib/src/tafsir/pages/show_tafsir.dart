@@ -101,6 +101,14 @@ class ShowTafseer extends StatelessWidget {
                           fontSize: 14,
                           color: AppColors.getTextColor(isDark),
                         ),
+                    unselectedLabelStyle: s.tabBarUnselectedLabelStyle ??
+                        TextStyle(
+                          fontFamily: 'cairo',
+                          package: 'quran_library',
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                          color: AppColors.getTextColor(isDark),
+                        ),
                     tabs: const [
                       Tab(text: 'التفسير'),
                       Tab(text: 'أحكام التجويد'),

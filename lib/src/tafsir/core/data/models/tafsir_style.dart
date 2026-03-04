@@ -53,6 +53,11 @@ class TafsirStyle {
   final TextStyle? tajweedProgressTextStyle;
   final TextStyle? tajweedContentTextStyle;
   final TextStyle? tabBarLabelStyle;
+  final TextStyle? tabBarUnselectedLabelStyle;
+  final TextStyle? dialogHeaderTitleTextStyle;
+  final TextStyle? dialogTypeTextStyle;
+  final TextStyle? tafsirTextTextStyle;
+  final TextStyle? currentTafsirTextStyle;
   final Widget? handleWidget;
 
   TafsirStyle({
@@ -107,6 +112,11 @@ class TafsirStyle {
     this.tajweedContentTextStyle,
     this.tabBarLabelStyle,
     this.handleWidget,
+    this.tabBarUnselectedLabelStyle,
+    this.dialogHeaderTitleTextStyle,
+    this.dialogTypeTextStyle,
+    this.tafsirTextTextStyle,
+    this.currentTafsirTextStyle,
   });
 
   TafsirStyle copyWith({
@@ -160,7 +170,12 @@ class TafsirStyle {
     TextStyle? tajweedProgressTextStyle,
     TextStyle? tajweedContentTextStyle,
     TextStyle? tabBarLabelStyle,
+    TextStyle? tabBarUnselectedLabelStyle,
     Widget? handleWidget,
+    TextStyle? dialogHeaderTitleTextStyle,
+    TextStyle? dialogTypeTextStyle,
+    TextStyle? tafsirTextTextStyle,
+    TextStyle? currentTafsirTextStyle,
   }) {
     return TafsirStyle(
       tafsirNameWidget: tafsirNameWidget ?? this.tafsirNameWidget,
@@ -235,6 +250,14 @@ class TafsirStyle {
           tajweedContentTextStyle ?? this.tajweedContentTextStyle,
       tabBarLabelStyle: tabBarLabelStyle ?? this.tabBarLabelStyle,
       handleWidget: handleWidget ?? this.handleWidget,
+      tabBarUnselectedLabelStyle:
+          tabBarUnselectedLabelStyle ?? this.tabBarUnselectedLabelStyle,
+      dialogHeaderTitleTextStyle:
+          dialogHeaderTitleTextStyle ?? this.dialogHeaderTitleTextStyle,
+      dialogTypeTextStyle: dialogTypeTextStyle ?? this.dialogTypeTextStyle,
+      tafsirTextTextStyle: tafsirTextTextStyle ?? this.tafsirTextTextStyle,
+      currentTafsirTextStyle:
+          currentTafsirTextStyle ?? this.currentTafsirTextStyle,
     );
   }
 
@@ -395,6 +418,41 @@ class TafsirStyle {
         color: AppColors.getTextColor(isDark),
       ),
       handleWidget: null,
+      tabBarUnselectedLabelStyle: TextStyle(
+        fontFamily: 'cairo',
+        package: 'quran_library',
+        fontWeight: FontWeight.bold,
+        fontSize: 14,
+        color: AppColors.getTextColor(isDark),
+      ),
+      dialogHeaderTitleTextStyle: TextStyle(
+        fontSize: 18.0,
+        fontWeight: FontWeight.bold,
+        fontFamily: 'cairo',
+        height: 1.3,
+        color: AppColors.getTextColor(isDark),
+        package: 'quran_library',
+      ),
+      dialogTypeTextStyle: TextStyle(
+        fontSize: 16,
+        fontWeight: FontWeight.bold,
+        color: AppColors.getTextColor(isDark),
+        fontFamily: 'cairo',
+        package: 'quran_library',
+      ),
+      tafsirTextTextStyle: TextStyle(
+        fontSize: 14,
+        color: AppColors.getTextColor(isDark),
+        fontFamily: 'cairo',
+        package: 'quran_library',
+      ),
+      currentTafsirTextStyle: TextStyle(
+        fontSize: 14,
+        fontWeight: FontWeight.bold,
+        color: primary,
+        fontFamily: 'cairo',
+        package: 'quran_library',
+      ),
     );
   }
 }

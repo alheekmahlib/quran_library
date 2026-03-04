@@ -111,15 +111,13 @@ class _TajweedAyaTab extends StatelessWidget {
                         isVisible: true,
                         isSelected: false,
                         downloaded: false,
-                        background:
-                            (tafsirStyle.tajweedMarkedTextStyle?.color ??
-                                    Colors.teal)
-                                .withValues(alpha: 0.1),
-                        valueColor: tafsirStyle.tajweedMarkedTextStyle?.color ??
+                        background: (tafsirStyle.tajweedAyahTextStyle?.color ??
+                                Colors.teal)
+                            .withValues(alpha: 0.1),
+                        valueColor: tafsirStyle.tajweedAyahTextStyle?.color ??
                             Colors.teal,
-                        borderColor:
-                            tafsirStyle.tajweedMarkedTextStyle?.color ??
-                                Colors.teal,
+                        borderColor: tafsirStyle.tajweedAyahTextStyle?.color ??
+                            Colors.teal,
                         downloading: isDownloading ||
                             tajweedCtrl.isPreparingDownload.value,
                         preparing: isDownloading ||

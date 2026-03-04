@@ -46,6 +46,7 @@ class TafsirStyle {
   final String? tajweedDownloadingText;
   final String? tajweedLoadErrorText;
   final String? tajweedNoDataText;
+  final TextStyle? tajweedAyahTextStyle;
   final TextStyle? tajweedMarkedTextStyle;
   final TextStyle? tajweedStatusTextStyle;
   final TextStyle? tajweedButtonTextStyle;
@@ -104,6 +105,7 @@ class TafsirStyle {
     this.tajweedDownloadingText,
     this.tajweedLoadErrorText,
     this.tajweedNoDataText,
+    this.tajweedAyahTextStyle,
     this.tajweedMarkedTextStyle,
     this.tajweedStatusTextStyle,
     this.tajweedButtonTextStyle,
@@ -238,6 +240,7 @@ class TafsirStyle {
           tajweedDownloadingText ?? this.tajweedDownloadingText,
       tajweedLoadErrorText: tajweedLoadErrorText ?? this.tajweedLoadErrorText,
       tajweedNoDataText: tajweedNoDataText ?? this.tajweedNoDataText,
+      tajweedAyahTextStyle: tajweedAyahTextStyle ?? this.tajweedAyahTextStyle,
       tajweedMarkedTextStyle:
           tajweedMarkedTextStyle ?? this.tajweedMarkedTextStyle,
       tajweedStatusTextStyle:
@@ -365,6 +368,13 @@ class TafsirStyle {
       tajweedDownloadingText: tajweedDownloading,
       tajweedLoadErrorText: tajweedLoadError,
       tajweedNoDataText: tajweedNoData,
+      tajweedAyahTextStyle: const TextStyle(
+        fontSize: 24,
+        fontWeight: FontWeight.bold,
+        color: Colors.teal,
+        fontFamily: 'hafs',
+        package: 'quran_library',
+      ),
       tajweedMarkedTextStyle: const TextStyle(
         color: Colors.teal,
         fontWeight: FontWeight.w700,

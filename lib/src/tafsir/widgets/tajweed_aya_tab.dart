@@ -52,6 +52,7 @@ class _TajweedAyaTab extends StatelessWidget {
     if (tajweedCtrl.isAvailable) {
       Future(() => tajweedCtrl.prewarmSurah(surahNumber));
     }
+    final surahs = quranCtrl.getCurrentSurahByPageNumber(ayah.page);
 
     return Container(
       margin: EdgeInsets.symmetric(
@@ -110,13 +111,15 @@ class _TajweedAyaTab extends StatelessWidget {
                         isVisible: true,
                         isSelected: false,
                         downloaded: false,
-                        background: (tafsirStyle.tajweedAyahTextStyle?.color ??
-                                Colors.teal)
-                            .withValues(alpha: 0.1),
-                        valueColor: tafsirStyle.tajweedAyahTextStyle?.color ??
+                        background:
+                            (tafsirStyle.tajweedMarkedTextStyle?.color ??
+                                    Colors.teal)
+                                .withValues(alpha: 0.1),
+                        valueColor: tafsirStyle.tajweedMarkedTextStyle?.color ??
                             Colors.teal,
-                        borderColor: tafsirStyle.tajweedAyahTextStyle?.color ??
-                            Colors.teal,
+                        borderColor:
+                            tafsirStyle.tajweedMarkedTextStyle?.color ??
+                                Colors.teal,
                         downloading: isDownloading ||
                             tajweedCtrl.isPreparingDownload.value,
                         preparing: isDownloading ||
@@ -213,20 +216,24 @@ class _TajweedAyaTab extends StatelessWidget {
                     // padding: const EdgeInsets.all(16),
                     child: Column(
                       children: [
-                        Text(
-                          '﴿${data.ayaText}﴾',
-                          textDirection: TextDirection.rtl,
+                        GetSingleAyah(
+                          surahNumber: surahs.surahNumber,
+                          ayahNumber: data.ayaNumber,
+                          fontSize: 24,
+                          isBold: false,
+                          isSingleAyah: false,
+                          isDark: isDark,
+                          textColor: tafsirStyle.textColor,
                           textAlign: TextAlign.center,
-                          style: tafsirStyle.tajweedAyahTextStyle ??
-                              const TextStyle(
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.teal,
-                                fontFamily: 'hafs',
-                                package: 'quran_library',
-                              ),
+                          enabledTajweed:
+                              QuranCtrl.instance.state.isTajweedEnabled.value,
                         ),
-                        const SizedBox(height: 12),
+                        const SizedBox(height: 6),
+                        context.horizontalDivider(
+                          color: tafsirStyle.dividerColor,
+                          height: 1.5,
+                        ),
+                        const SizedBox(height: 6),
                         SelectableText.rich(
                           buildMarkedContentSpan(
                             content: data.content,

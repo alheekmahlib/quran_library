@@ -479,7 +479,7 @@ class _InlineAyahTafsirItem extends StatelessWidget {
           // رقم الآية واسم السورة — يتفاعل مع تغييرات الإشارات المرجعية
 
           if (withOptionsBar == true)
-            (style.optionsBarWidget) ??
+            (style.optionsBarWidget?.call(ayah, surah, pageIndex)) ??
                 GetBuilder<BookmarksCtrl>(
                   id: 'bookmarks',
                   builder: (bookmarksCtrl) {

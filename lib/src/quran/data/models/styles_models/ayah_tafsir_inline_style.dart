@@ -1,5 +1,11 @@
 part of '/quran.dart';
 
+typedef AyahTafsirInlineOptionsBarWidget = Widget Function(
+  AyahModel ayah,
+  SurahModel surah,
+  int pageIndex,
+);
+
 /// نمط وضع عرض الآية مع التفسير المدمج
 ///
 /// [AyahTafsirInlineStyle] Customization style for the ayah-with-inline-tafsir
@@ -75,7 +81,7 @@ class AyahTafsirInlineStyle {
   final Widget? headerWidget;
 
   /// عنصر واجهة المستخدم لشريط خيارات إضافية (مثل مشاركة الآية أو إضافتها للمفضلة)
-  final Widget? optionsBarWidget;
+  final AyahTafsirInlineOptionsBarWidget? optionsBarWidget;
 
   /// أيقونة زر تشغيل صوت الآية
   final IconData? playIconData;
@@ -171,7 +177,7 @@ class AyahTafsirInlineStyle {
     Color? fontSizeIconColor,
     Widget? fontSizeWidget,
     Widget? headerWidget,
-    Widget? optionsBarWidget,
+    AyahTafsirInlineOptionsBarWidget? optionsBarWidget,
     IconData? playIconData,
     Color? playIconColor,
     double? iconSize,

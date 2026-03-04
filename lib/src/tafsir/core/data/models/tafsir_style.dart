@@ -59,6 +59,7 @@ class TafsirStyle {
   final TextStyle? tafsirTextTextStyle;
   final TextStyle? currentTafsirTextStyle;
   final Widget? handleWidget;
+  final Widget? tajweedDownloadButtonWidget;
 
   TafsirStyle({
     this.backgroundColor,
@@ -117,6 +118,7 @@ class TafsirStyle {
     this.dialogTypeTextStyle,
     this.tafsirTextTextStyle,
     this.currentTafsirTextStyle,
+    this.tajweedDownloadButtonWidget,
   });
 
   TafsirStyle copyWith({
@@ -176,6 +178,7 @@ class TafsirStyle {
     TextStyle? dialogTypeTextStyle,
     TextStyle? tafsirTextTextStyle,
     TextStyle? currentTafsirTextStyle,
+    Widget? tajweedDownloadButtonWidget,
   }) {
     return TafsirStyle(
       tafsirNameWidget: tafsirNameWidget ?? this.tafsirNameWidget,
@@ -258,6 +261,8 @@ class TafsirStyle {
       tafsirTextTextStyle: tafsirTextTextStyle ?? this.tafsirTextTextStyle,
       currentTafsirTextStyle:
           currentTafsirTextStyle ?? this.currentTafsirTextStyle,
+      tajweedDownloadButtonWidget:
+          tajweedDownloadButtonWidget ?? this.tajweedDownloadButtonWidget,
     );
   }
 
@@ -453,6 +458,7 @@ class TafsirStyle {
         fontFamily: 'cairo',
         package: 'quran_library',
       ),
+      tajweedDownloadButtonWidget: null,
     );
   }
 }

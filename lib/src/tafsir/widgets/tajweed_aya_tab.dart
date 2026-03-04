@@ -102,55 +102,56 @@ class _TajweedAyaTab extends StatelessWidget {
                     textDirection: TextDirection.rtl,
                   ),
                   const SizedBox(height: 12),
-                  DownloadButtonWidget(
-                    onTap: () async {
-                      isDownloading ? null : await tajweedCtrl.download();
-                    },
-                    isVisible: true,
-                    isSelected: false,
-                    downloaded: false,
-                    background:
-                        (tafsirStyle.tajweedAyahTextStyle?.color ?? Colors.teal)
+                  tafsirStyle.tajweedDownloadButtonWidget ??
+                      DownloadButtonWidget(
+                        onTap: () async {
+                          isDownloading ? null : await tajweedCtrl.download();
+                        },
+                        isVisible: true,
+                        isSelected: false,
+                        downloaded: false,
+                        background: (tafsirStyle.tajweedAyahTextStyle?.color ??
+                                Colors.teal)
                             .withValues(alpha: 0.1),
-                    valueColor:
-                        tafsirStyle.tajweedAyahTextStyle?.color ?? Colors.teal,
-                    borderColor:
-                        tafsirStyle.tajweedAyahTextStyle?.color ?? Colors.teal,
-                    downloading:
-                        isDownloading || tajweedCtrl.isPreparingDownload.value,
-                    preparing:
-                        isDownloading || tajweedCtrl.isPreparingDownload.value,
-                    progress: tajweedCtrl.downloadProgress.value,
-                    children: [
-                      Text(
-                        isDownloading
-                            ? (tafsirStyle.tajweedDownloadingText ??
-                                'جاري التحميل...')
-                            : (tafsirStyle.tajweedDownloadText ?? 'تحميل'),
-                        style: tafsirStyle.tajweedButtonTextStyle ??
-                            TextStyle(
-                              fontSize: 16,
-                              color: AppColors.getTextColor(isDark),
-                              fontFamily: 'cairo',
-                              package: 'quran_library',
+                        valueColor: tafsirStyle.tajweedAyahTextStyle?.color ??
+                            Colors.teal,
+                        borderColor: tafsirStyle.tajweedAyahTextStyle?.color ??
+                            Colors.teal,
+                        downloading: isDownloading ||
+                            tajweedCtrl.isPreparingDownload.value,
+                        preparing: isDownloading ||
+                            tajweedCtrl.isPreparingDownload.value,
+                        progress: tajweedCtrl.downloadProgress.value,
+                        children: [
+                          Text(
+                            isDownloading
+                                ? (tafsirStyle.tajweedDownloadingText ??
+                                    'جاري التحميل...')
+                                : (tafsirStyle.tajweedDownloadText ?? 'تحميل'),
+                            style: tafsirStyle.tajweedButtonTextStyle ??
+                                TextStyle(
+                                  fontSize: 16,
+                                  color: AppColors.getTextColor(isDark),
+                                  fontFamily: 'cairo',
+                                  package: 'quran_library',
+                                ),
+                          ),
+                          if (isDownloading ||
+                              tajweedCtrl.isPreparingDownload.value) ...[
+                            const SizedBox(width: 12),
+                            Text(
+                              '${tajweedCtrl.downloadProgress.value.toStringAsFixed(0)}%',
+                              style: tafsirStyle.tajweedProgressTextStyle ??
+                                  TextStyle(
+                                    fontSize: 14,
+                                    color: AppColors.getTextColor(isDark),
+                                    fontFamily: 'cairo',
+                                    package: 'quran_library',
+                                  ),
                             ),
+                          ],
+                        ],
                       ),
-                      if (isDownloading ||
-                          tajweedCtrl.isPreparingDownload.value) ...[
-                        const SizedBox(width: 12),
-                        Text(
-                          '${tajweedCtrl.downloadProgress.value.toStringAsFixed(0)}%',
-                          style: tafsirStyle.tajweedProgressTextStyle ??
-                              TextStyle(
-                                fontSize: 14,
-                                color: AppColors.getTextColor(isDark),
-                                fontFamily: 'cairo',
-                                package: 'quran_library',
-                              ),
-                        ),
-                      ],
-                    ],
-                  ),
                 ],
               ),
             );

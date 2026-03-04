@@ -358,7 +358,10 @@ class QuranLibraryScreen extends StatelessWidget {
     // }
     final String deviceLocale = Localizations.localeOf(context).languageCode;
     final String languageCode = appLanguageCode ?? deviceLocale;
-    QuranCtrl.instance.state.currentPageNumber.value = pageIndex + 1;
+    // ضبط الصفحة فقط إذا مُرِّر pageIndex غير صفري — لتجنّب إعادة تعيين الصفحة المحفوظة
+    if (pageIndex > 0) {
+      QuranCtrl.instance.state.currentPageNumber.value = pageIndex + 1;
+    }
     WordInfoCtrl.instance.isWordSelectionEnabled = enableWordSelection;
     return PopScope(
       onPopInvokedWithResult: (b, _) async {
@@ -560,7 +563,7 @@ class QuranLibraryScreen extends StatelessWidget {
                                     surahNameStyle: surahNameStyle,
                                     onSurahBannerPress: onSurahBannerPress,
                                     basmalaStyle: basmalaStyle,
-                                    ayahBookmarked: ayahBookmarked ?? const [],
+                                    ayahBookmarked: ayahBookmarked,
                                     isAyahBookmarked: isAyahBookmarked,
                                     showAyahBookmarkedIcon:
                                         showAyahBookmarkedIcon,

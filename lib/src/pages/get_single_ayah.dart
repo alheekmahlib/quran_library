@@ -91,7 +91,7 @@ class GetSingleAyah extends StatelessWidget {
     final pageNumber = pageIndex ??
         QuranCtrl.instance
             .getPageNumberByAyahAndSurahNumber(ayahNumber, surahNumber);
-    QuranFontsService.ensurePagesLoaded(pageNumber, radius: 1).then((_) {
+    QuranFontsService.ensurePagesLoaded(pageNumber, radius: 0).then((_) {
       // update();
       // update(['_pageViewBuild']);
       // تحميل بقية الصفحات في الخلفية
@@ -231,7 +231,7 @@ class GetSingleAyah extends StatelessWidget {
             ayahUQNum: uq,
             ayahNumber: seg.ayahNumber,
             glyphs: seg.glyphs,
-            showAyahNumber: showAyahNumber ?? seg.isAyahEnd,
+            showAyahNumber: (showAyahNumber ?? true) && seg.isAyahEnd,
             wordRef: ref,
             isWordKhilaf: hasKhilaf,
             textColor: textColor ?? AppColors.getTextColor(isDark ?? false),

@@ -509,9 +509,9 @@ class QuranCtrl extends GetxController {
 
   void saveLastPage(int lastPage) {
     this.lastPage = lastPage;
-    SchedulerBinding.instance.scheduleTask(() async {
-      _quranRepository.saveLastPage(lastPage);
-    }, Priority.idle);
+    // كتابة فورية — GetStorage يحدّث الذاكرة لحظياً ويدير كتابة القرص تلقائياً بتأجيل 16ms.
+    _quranRepository.saveLastPage(lastPage);
+    log('Saved last page: $lastPage', name: 'QuranCtrl');
   }
 
   // شرح: تحسين التنقل للحصول على سكرول أكثر سلاسة
@@ -573,31 +573,27 @@ class QuranCtrl extends GetxController {
         'targetFraction=$targetFraction',
         name: 'QuranCtrl');
 
-    // إذا لم يكن لدينا عملاء (أول إنشاء) أو تغيّرت القيمة، أعد إنشاء المتحكم
-    final bool needsNewController = !quranPagesController.hasClients ||
-        (quranPagesController.viewportFraction != targetFraction);
+    // أعد إنشاء المتحكم فقط عند تغيّر viewportFraction.
+    // لا نتحقق من hasClients لأن jumpToPage في onInit ينشئ controller بـ initialPage صحيح
+    // وإعادة إنشائه قبل ربطه بالـ PageView يضيع تلك القيمة.
+    final bool needsNewController =
+        quranPagesController.viewportFraction != targetFraction;
 
     if (needsNewController) {
       // حافظ على الفهرس الحالي للصفحة
-      // استخدم الصفحة من الـ controller إذا كان له clients،
-      // وإلا استخدم state.currentPageNumber أو القيمة المحفوظة في التخزين
       int currentIndex;
       if (quranPagesController.hasClients) {
         final double? p = quranPagesController.page;
         currentIndex =
             (p != null) ? p.round() : state.currentPageNumber.value - 1;
       } else {
-        // إذا لم يكن هناك clients، استخدم القيمة من state أولًا ثم المحفوظة
-        // Prefer state value (updated by setDisplayMode) over stored value
-        final stateVal = state.currentPageNumber.value;
-        if (stateVal > 0) {
-          currentIndex = stateVal - 1;
-        } else {
-          final savedPage = _quranRepository.getLastPage() ?? 1;
-          currentIndex = savedPage - 1;
-        }
+        // قراءة مباشرة من التخزين — المصدر الأوثق للصفحة المحفوظة
+        final savedPage = _quranRepository.getLastPage() ?? 1;
+        currentIndex = savedPage - 1;
       }
       currentIndex = currentIndex.clamp(0, 603);
+      log('Creating new PageController with initialPage: $currentIndex',
+          name: 'QuranCtrl');
 
       final oldController = quranPagesController;
       quranPagesController = PreloadPageController(

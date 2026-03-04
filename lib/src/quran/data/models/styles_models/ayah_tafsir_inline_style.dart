@@ -205,7 +205,7 @@ class AyahTafsirInlineStyle {
       tafsirPadding: tafsirPadding ?? this.tafsirPadding,
       ayahNumberColor: ayahNumberColor ?? this.ayahNumberColor,
       optionsBarBackgroundColor:
-          ayahNumberBackgroundColor ?? this.optionsBarBackgroundColor,
+          ayahNumberBackgroundColor ?? optionsBarBackgroundColor,
       tafsirSelectorBarColor:
           tafsirSelectorBarColor ?? this.tafsirSelectorBarColor,
       tafsirSelectorTextColor:

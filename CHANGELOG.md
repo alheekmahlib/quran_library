@@ -13,6 +13,7 @@
 	* Corresponding `InheritedWidget` theme providers: `DisplayModeBarTheme`, `AyahTafsirInlineTheme`, `QuranTafsirSideTheme`.
 	* New optional parameters on `QuranLibraryScreen`: `displayModeBarStyle`, `ayahTafsirInlineStyle`, `quranTafsirSideStyle`.
 	* Word-by-word audio playback (single word & full ayah words).
+	* Add showAyahNumber parameter to GetSingleAyah widget #34.
 
 * **FIX:**
 	* Make the library support `useMaterial3`.

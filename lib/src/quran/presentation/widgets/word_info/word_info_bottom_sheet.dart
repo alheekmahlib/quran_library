@@ -19,12 +19,12 @@ Future<void> showWordInfoBottomSheet({
 
   await showModalBottomSheet(
     context: context,
-    isScrollControlled: false,
+    isScrollControlled: true,
     backgroundColor: Colors.transparent,
     enableDrag: true,
     isDismissible: true,
     constraints: BoxConstraints(
-      // maxHeight: size.height * maxHFactor,
+      maxHeight: size.height * .9,
       maxWidth: size.width * maxWFactor,
     ),
     shape: const RoundedRectangleBorder(

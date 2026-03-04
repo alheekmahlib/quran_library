@@ -84,8 +84,8 @@ class FullQuran extends StatelessWidget {
       isShowTabBar: true,
       isFontsLocal: false,
       enableWordSelection: true,
-      isAyahBookmarked: (ayah) =>
-          ayah.ayahUQNumber == 12 && ayah.surahNumber == 2,
+      // isAyahBookmarked: (ayah) =>
+      //     ayah.ayahUQNumber == 12 && ayah.surahNumber == 2,
       ayahMenuStyle:
           AyahMenuStyle.defaults(isDark: false, context: context).copyWith(
         customMenuItems: [

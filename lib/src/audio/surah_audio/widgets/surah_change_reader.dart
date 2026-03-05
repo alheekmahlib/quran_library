@@ -63,6 +63,7 @@ class SurahChangeSurahReader extends StatelessWidget {
             backgroundGradient: s.dialogHeaderBackgroundGradient,
             titleColor: s.dialogHeaderTitleColor,
             closeIconColor: s.dialogCloseIconColor,
+            titleTextStyle: s.dialogHeaderTitleTextStyle,
           ),
           const SizedBox(height: 8),
           const Divider(height: 1),
@@ -100,10 +101,11 @@ class SurahChangeSurahReader extends StatelessWidget {
                     contentPadding: const EdgeInsets.symmetric(horizontal: 8),
                     title: Text(
                       info.name.tr,
-                      style: QuranLibrary().cairoStyle.copyWith(
-                            color: textColor,
-                            fontSize: itemFontSize,
-                          ),
+                      style: s.dialogReaderItemTextStyle ??
+                          QuranLibrary().cairoStyle.copyWith(
+                                color: textColor,
+                                fontSize: itemFontSize,
+                              ),
                     ),
                     trailing: _SelectionIndicator(
                         isSelected: isSelected,
@@ -134,10 +136,11 @@ class SurahChangeSurahReader extends StatelessWidget {
                 .activeSurahReaders[surahAudioCtrl.state.surahReaderIndex.value]
                 .name
                 .tr,
-            style: QuranLibrary().cairoStyle.copyWith(
-                  color: textColor,
-                  fontSize: fontSize,
-                ),
+            style: s.readerNameTextStyle ??
+                QuranLibrary().cairoStyle.copyWith(
+                      color: textColor,
+                      fontSize: fontSize,
+                    ),
           ),
         ),
         const SizedBox(width: 4),

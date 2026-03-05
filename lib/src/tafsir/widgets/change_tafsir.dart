@@ -61,9 +61,10 @@ class ChangeTafsirDialog extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 6),
-              Icon(Icons.keyboard_arrow_down_rounded,
-                  size: 24,
-                  color: tafsirStyle?.currentTafsirColor ?? Colors.grey),
+              tafsirStyle?.readerDropdownWidget ??
+                  Icon(Icons.keyboard_arrow_down_rounded,
+                      size: 24,
+                      color: tafsirStyle?.currentTafsirColor ?? Colors.grey),
             ],
           ),
         ),

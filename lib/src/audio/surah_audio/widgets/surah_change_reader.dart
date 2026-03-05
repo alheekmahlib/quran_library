@@ -144,16 +144,17 @@ class SurahChangeSurahReader extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 4),
-        Semantics(
-          button: true,
-          enabled: true,
-          label: 'Change Reader'.tr,
-          child: Icon(
-            Icons.keyboard_arrow_down_outlined,
-            size: fontSize.clamp(16, 20),
-            color: textColor,
-          ),
-        ),
+        s.readerDropdownWidget ??
+            Semantics(
+              button: true,
+              enabled: true,
+              label: 'Change Reader'.tr,
+              child: Icon(
+                Icons.keyboard_arrow_down_outlined,
+                size: fontSize.clamp(16, 20),
+                color: s.playIconColor,
+              ),
+            ),
       ],
     );
   }

@@ -191,6 +191,10 @@ class SurahAudioStyle {
   /// Text style for dialog header title
   final TextStyle? dialogHeaderTitleTextStyle;
 
+  /// ويدجت مخصص بدلاً من أيقونة السهم الافتراضية بجانب اسم القارئ
+  /// Custom widget to replace the default dropdown arrow icon next to reader name
+  final Widget? readerDropdownWidget;
+
   /// منشئ فئة SurahAudioStyle
   /// SurahAudioStyle class constructor
   SurahAudioStyle({
@@ -241,6 +245,7 @@ class SurahAudioStyle {
     this.readerNameTextStyle,
     this.dialogReaderItemTextStyle,
     this.dialogHeaderTitleTextStyle,
+    this.readerDropdownWidget,
   });
 
   SurahAudioStyle copyWith({
@@ -291,6 +296,7 @@ class SurahAudioStyle {
     TextStyle? readerNameTextStyle,
     TextStyle? dialogReaderItemTextStyle,
     TextStyle? dialogHeaderTitleTextStyle,
+    Widget? readerDropdownWidget,
   }) {
     return SurahAudioStyle(
       textColor: textColor ?? this.textColor,
@@ -356,6 +362,7 @@ class SurahAudioStyle {
           dialogReaderItemTextStyle ?? this.dialogReaderItemTextStyle,
       dialogHeaderTitleTextStyle:
           dialogHeaderTitleTextStyle ?? this.dialogHeaderTitleTextStyle,
+      readerDropdownWidget: readerDropdownWidget ?? this.readerDropdownWidget,
     );
   }
 

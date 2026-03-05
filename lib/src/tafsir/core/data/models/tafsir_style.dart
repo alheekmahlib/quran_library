@@ -63,7 +63,7 @@ class TafsirStyle {
 
   /// ويدجت مخصص بدلاً من أيقونة السهم الافتراضية بجانب اسم القارئ
   /// Custom widget to replace the default dropdown arrow icon next to reader name
-  final Widget? readerDropdownWidget;
+  final Widget? tafsirDropdownWidget;
 
   TafsirStyle({
     this.backgroundColor,
@@ -123,7 +123,7 @@ class TafsirStyle {
     this.tafsirTextTextStyle,
     this.currentTafsirTextStyle,
     this.tajweedDownloadButtonWidget,
-    this.readerDropdownWidget,
+    this.tafsirDropdownWidget,
   });
 
   TafsirStyle copyWith({
@@ -269,7 +269,7 @@ class TafsirStyle {
           currentTafsirTextStyle ?? this.currentTafsirTextStyle,
       tajweedDownloadButtonWidget:
           tajweedDownloadButtonWidget ?? this.tajweedDownloadButtonWidget,
-      readerDropdownWidget: readerDropdownWidget ?? this.readerDropdownWidget,
+      tafsirDropdownWidget: readerDropdownWidget ?? tafsirDropdownWidget,
     );
   }
 
@@ -466,7 +466,7 @@ class TafsirStyle {
         package: 'quran_library',
       ),
       tajweedDownloadButtonWidget: null,
-      readerDropdownWidget: null,
+      tafsirDropdownWidget: null,
     );
   }
 }

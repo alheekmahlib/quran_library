@@ -93,7 +93,7 @@ class DailogBuild extends StatelessWidget {
       id: 'tafsirs_menu_list',
       builder: (tafsirCtrl) {
         return Dialog(
-          backgroundColor: tafsirStyle?.backgroundColor!,
+          backgroundColor: tafsirStyle?.dialogBackgroundColor!,
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           child: ConstrainedBox(

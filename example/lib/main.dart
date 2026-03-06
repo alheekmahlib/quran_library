@@ -156,6 +156,7 @@ class SingleAyah extends StatelessWidget {
         isBold: false,
         islocalFont: false,
         isDark: true,
+        textHeight: 1.5,
         enabledTajweed: true,
         enableWordSelection: true,
         onWordTap: (ref) {

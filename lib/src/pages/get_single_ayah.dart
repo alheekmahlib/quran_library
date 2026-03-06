@@ -38,6 +38,8 @@ class GetSingleAyah extends StatelessWidget {
   /// لإظهار أيقونة بجانب الآية.
   final bool? showAyahNumber;
 
+  final double? textHeight;
+
   GetSingleAyah({
     super.key,
     required this.surahNumber,
@@ -63,6 +65,7 @@ class GetSingleAyah extends StatelessWidget {
     this.selectedWordColor,
     this.externalSelectedWordRef,
     this.showAyahNumber = true,
+    this.textHeight,
   });
 
   final QuranCtrl quranCtrl = QuranCtrl.instance;
@@ -387,7 +390,7 @@ class GetSingleAyah extends StatelessWidget {
     final baseTextStyle = TextStyle(
       fontFamily: fontFamily,
       fontSize: fontSize,
-      height: 1.2,
+      height: textHeight ?? 1.2,
       wordSpacing: -2,
       color: textColor ?? AppColors.getTextColor(isDark ?? false),
     );

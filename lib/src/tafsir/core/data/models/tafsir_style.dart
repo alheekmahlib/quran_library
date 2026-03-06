@@ -60,6 +60,7 @@ class TafsirStyle {
   final TextStyle? currentTafsirTextStyle;
   final Widget? handleWidget;
   final Widget? tajweedDownloadButtonWidget;
+  final Color? dialogBackgroundColor;
 
   /// ويدجت مخصص بدلاً من أيقونة السهم الافتراضية بجانب اسم القارئ
   /// Custom widget to replace the default dropdown arrow icon next to reader name
@@ -124,6 +125,7 @@ class TafsirStyle {
     this.currentTafsirTextStyle,
     this.tajweedDownloadButtonWidget,
     this.tafsirDropdownWidget,
+    this.dialogBackgroundColor,
   });
 
   TafsirStyle copyWith({
@@ -184,7 +186,8 @@ class TafsirStyle {
     TextStyle? tafsirTextTextStyle,
     TextStyle? currentTafsirTextStyle,
     Widget? tajweedDownloadButtonWidget,
-    Widget? readerDropdownWidget,
+    Widget? tafsirDropdownWidget,
+    Color? dialogBackgroundColor,
   }) {
     return TafsirStyle(
       tafsirNameWidget: tafsirNameWidget ?? this.tafsirNameWidget,
@@ -269,7 +272,9 @@ class TafsirStyle {
           currentTafsirTextStyle ?? this.currentTafsirTextStyle,
       tajweedDownloadButtonWidget:
           tajweedDownloadButtonWidget ?? this.tajweedDownloadButtonWidget,
-      tafsirDropdownWidget: readerDropdownWidget ?? tafsirDropdownWidget,
+      tafsirDropdownWidget: tafsirDropdownWidget ?? this.tafsirDropdownWidget,
+      dialogBackgroundColor:
+          dialogBackgroundColor ?? this.dialogBackgroundColor,
     );
   }
 
@@ -467,6 +472,7 @@ class TafsirStyle {
       ),
       tajweedDownloadButtonWidget: null,
       tafsirDropdownWidget: null,
+      dialogBackgroundColor: AppColors.getBackgroundColor(isDark),
     );
   }
 }

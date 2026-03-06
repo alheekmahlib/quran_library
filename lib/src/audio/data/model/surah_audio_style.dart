@@ -395,7 +395,7 @@ class SurahAudioStyle {
 
       // خصائص نافذة اختيار القارئ
       dialogHeight: MediaQuery.of(context).size.height * 0.7,
-      dialogWidth: MediaQuery.of(context).size.width * 0.6,
+      dialogWidth: null,
       dialogHeaderTitleColor: onBg,
       dialogCloseIconColor: onBg,
       dialogHeaderBackgroundGradient: LinearGradient(
@@ -447,6 +447,7 @@ class SurahAudioStyle {
       downloadProgressColor: Colors.white,
       noInternetConnectionText: 'لا يوجد اتصال بالإنترنت',
       timeContainerColor: primary,
+      readerDropdownWidget: null,
     );
   }
 }

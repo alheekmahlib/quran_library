@@ -10,6 +10,7 @@ class SurahChangeSurahReader extends StatelessWidget {
   Widget build(BuildContext context) {
     final bool dark = isDark;
     final s = style ?? SurahAudioStyle.defaults(isDark: dark, context: context);
+    Orientation orientation = MediaQuery.of(context).orientation;
 
     return GestureDetector(
       onTap: () => showDialog(
@@ -27,8 +28,10 @@ class SurahChangeSurahReader extends StatelessWidget {
             constraints: BoxConstraints(
               maxHeight:
                   s.dialogHeight ?? MediaQuery.of(context).size.height * 0.7,
-              maxWidth:
-                  s.dialogWidth ?? MediaQuery.of(context).size.width * 0.6,
+              maxWidth: s.dialogWidth ??
+                  (orientation == Orientation.portrait
+                      ? MediaQuery.of(context).size.width * 0.8
+                      : MediaQuery.of(context).size.width * 0.6),
             ),
             child: _buildDialog(context, s, dark),
           ),

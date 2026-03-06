@@ -248,11 +248,12 @@ class TafsirItemWidget extends StatelessWidget {
                     return isDownloaded.value
                         ? tafsirCtrl.getIsRemovableItem(tafsirIndex)
                             ? IconButton(
-                                icon: Icon(
-                                  Icons.delete_forever_outlined,
-                                  size: 22,
-                                  color: tafsirStyle.downloadIconColor,
-                                ),
+                                icon: tafsirStyle.removeTafsirIconWidget ??
+                                    Icon(
+                                      Icons.delete_forever_outlined,
+                                      size: 22,
+                                      color: tafsirStyle.downloadIconColor,
+                                    ),
                                 onPressed: () async {
                                   tafsirCtrl.update(['tafsirs_menu_list']);
                                   await tafsirCtrl.deleteTafsirOrTranslation(
@@ -262,8 +263,8 @@ class TafsirItemWidget extends StatelessWidget {
                             : Container(
                                 height: 20,
                                 width: 20,
-                                margin:
-                                    const EdgeInsets.symmetric(horizontal: 14),
+                                margin: const EdgeInsets.symmetric(
+                                    horizontal: 14, vertical: 8),
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
                                   border: Border.all(
@@ -341,11 +342,14 @@ class TafsirItemWidget extends StatelessWidget {
                                     return Visibility(
                                       visible: !hideIcon,
                                       child: IconButton(
-                                        icon: Icon(
-                                          Icons.cloud_download_outlined,
-                                          size: 22,
-                                          color: tafsirStyle.downloadIconColor,
-                                        ),
+                                        icon: tafsirStyle
+                                                .downloadTafsirIconWidget ??
+                                            Icon(
+                                              Icons.cloud_download_outlined,
+                                              size: 22,
+                                              color:
+                                                  tafsirStyle.downloadIconColor,
+                                            ),
                                         onPressed: () async {
                                           tafsirCtrl.downloadIndex.value =
                                               tafsirIndex;

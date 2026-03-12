@@ -73,14 +73,22 @@ class AyahMenuDialog extends StatelessWidget {
     final screenSize = MediaQuery.of(overlayContext).size;
     final padding = MediaQuery.of(overlayContext).padding;
 
-    // حساب العرض الفعلي للحوار بناءً على المحتوى / Calculate actual dialog width based on content
-    int itemsCount = 5 +
-        customMenuItems
-            .length; // عدد الأيقونات الأساسية (3 ألوان + نسخ + تفسير) / Basic icons count
-    if (customMenuItems.isNotEmpty) itemsCount += customMenuItems.length;
-    double dialogWidth = (itemsCount * 40) +
-        (itemsCount * 16) +
-        40; // عرض كل أيقونة + التباعد + الهوامش / Icon width + spacing + margins
+    // حساب عدد العناصر الفعلي بناءً على الأزرار المرئية / Count all visible items
+    int itemsCount = customMenuItems.length;
+    if (s.showPlayButton ?? true) itemsCount += 1;
+    if ((s.showPlayAllButton ?? true) && !kIsWeb) itemsCount += 1;
+    if (s.showTafsirButton ?? true) itemsCount += 1;
+    if (s.showCopyButton ?? true) itemsCount += 1;
+    if (s.showBookmarkButtons ?? true) {
+      itemsCount += (s.bookmarkColorCodes?.length ?? 3);
+    }
+    final iconSz = s.iconSize ?? 24.0;
+    final hPad = s.iconHorizontalPadding ?? 8.0;
+    double dialogWidth = (itemsCount * (iconSz + hPad * 2)) +
+        28; // أيقونة + تباعد + هوامش الحاوية
+    // تأكد من عدم تجاوز عرض الشاشة / Ensure dialog doesn't exceed screen width
+    final maxWidth = screenSize.width - padding.left - padding.right - 20;
+    if (dialogWidth > maxWidth) dialogWidth = maxWidth;
     double dialogHeight = 80; // ارتفاع الحوار / Dialog height
 
     // حساب الموضع الأفقي مع التأكد من البقاء داخل الشاشة / Calculate horizontal position ensuring it stays within screen
@@ -114,14 +122,6 @@ class AyahMenuDialog extends StatelessWidget {
           dialogHeight -
           10; // هامش من الحافة السفلى / Bottom margin
     }
-    final bookmarkCount = (s.showBookmarkButtons ?? true)
-        ? (s.bookmarkColorCodes?.length ?? 3)
-        : 0;
-    itemsCount += bookmarkCount;
-    if (s.showCopyButton ?? true) itemsCount += 1;
-    if (s.showTafsirButton ?? true) itemsCount += 1;
-    // لا نعيد إضافة عناصر custom ثانيةً لتجنّب مضاعفة الحساب
-
     return Obx(
       () => QuranCtrl.instance.state.isShowMenu.value
           ? Positioned(

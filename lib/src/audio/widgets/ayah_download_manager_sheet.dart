@@ -184,6 +184,10 @@ class AyahDownloadManagerSheet extends StatelessWidget {
                                               effectiveStyle.surahNameSize ??
                                                   30,
                                           height: 1.2,
+                                          fontFamilyFallback: const [
+                                            "surahName"
+                                          ],
+                                          inherit: false,
                                           package: "quran_library",
                                         ),
                                   ),

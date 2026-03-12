@@ -225,6 +225,8 @@ class _SearchTabState extends State<_SearchTab> {
                           textColor: textColor,
                           isDark: widget.isDark,
                           pageIndex: ayah.page,
+                          enabledTajweed:
+                              quranCtrl.state.isTajweedEnabled.value,
                           // ayahs: ayah,
                         ),
                       ),

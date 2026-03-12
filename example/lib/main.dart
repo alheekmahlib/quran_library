@@ -75,17 +75,17 @@ class FullQuran extends StatelessWidget {
   Widget build(BuildContext context) {
     return QuranLibraryScreen(
       parentContext: context,
-      isDark: true,
+      isDark: false,
       showAyahBookmarkedIcon: true,
       useDefaultAppBar: true,
       appLanguageCode: 'ar',
-      appIconPathForPlayAudioInBackground:
-          'assets/images/quran_library_logo.png',
+      // appIconPathForPlayAudioInBackground:
+      //     'assets/images/quran_library_logo.png',
       isShowTabBar: true,
       isFontsLocal: false,
       enableWordSelection: true,
-      isAyahBookmarked: (ayah) =>
-          ayah.ayahUQNumber == 12 && ayah.surahNumber == 2,
+      // isAyahBookmarked: (ayah) =>
+      //     ayah.ayahUQNumber == 12 && ayah.surahNumber == 2,
       ayahMenuStyle:
           AyahMenuStyle.defaults(isDark: false, context: context).copyWith(
         customMenuItems: [
@@ -156,7 +156,14 @@ class SingleAyah extends StatelessWidget {
         isBold: false,
         islocalFont: false,
         isDark: true,
+        textHeight: 1.5,
         enabledTajweed: true,
+        enableWordSelection: true,
+        onWordTap: (ref) {
+          print(
+              'سورة: ${ref.surahNumber}, آية: ${ref.ayahNumber}, كلمة: ${ref.wordNumber}');
+        },
+        selectedWordColor: Colors.amber.withValues(alpha: 0.3),
       ),
     );
   }

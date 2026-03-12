@@ -21,6 +21,10 @@ class TapLongPressRecognizer extends TapGestureRecognizer {
   VoidCallback? onShortHoldCompleteCallback;
   void Function(LongPressStartDetails details)? onLongHoldStartCallback;
 
+  /// يُستدعى عند الضغط السريع العادي (بدون ضغط مطوّل).
+  /// إذا لم يُعيَّن، يتم استدعاء [QuranCtrl.instance.showControlToggle] كسلوك افتراضي.
+  VoidCallback? onQuickTapCallback;
+
   Timer? _shortTimer;
   Timer? _longTimer;
   bool _didShortHold = false;
@@ -81,7 +85,11 @@ class TapLongPressRecognizer extends TapGestureRecognizer {
 
     // بعد الضغط المطوّل لا نمسح التحديد — toggleAyahSelection عمل update بالفعل
     if (!wasLongHold) {
-      QuranCtrl.instance.showControlToggle();
+      if (onQuickTapCallback != null) {
+        onQuickTapCallback!();
+      } else {
+        QuranCtrl.instance.showControlToggle();
+      }
     }
   }
 

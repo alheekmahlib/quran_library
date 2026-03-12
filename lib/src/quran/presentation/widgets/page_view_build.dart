@@ -87,7 +87,7 @@ class PageViewBuild extends StatelessWidget {
       init: QuranCtrl.instance,
       builder: (quranCtrl) => quranCtrl.textScale(
         (quranCtrl.state.allAyahs.isEmpty ||
-                quranCtrl.state.surahs.isEmpty ||
+                quranCtrl.surahs.isEmpty ||
                 quranCtrl.state.pages.isEmpty)
             ? Center(
                 child:
@@ -121,10 +121,11 @@ class PageViewBuild extends StatelessWidget {
                     fontsName: fontsName,
                     ayahBookmarked: ayahBookmarked!,
                     isAyahBookmarked: isAyahBookmarked,
+                    onPagePress: onPagePress,
                   ),
                 )),
         (quranCtrl.state.allAyahs.isEmpty ||
-                quranCtrl.state.surahs.isEmpty ||
+                quranCtrl.surahs.isEmpty ||
                 quranCtrl.state.pages.isEmpty)
             ? Center(
                 child:

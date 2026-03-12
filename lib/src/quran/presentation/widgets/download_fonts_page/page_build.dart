@@ -26,6 +26,7 @@ class PageBuild extends StatelessWidget {
     this.isAyahBookmarked,
     required this.context,
     required this.quranCtrl,
+    this.onPagePress,
   });
 
   final int pageIndex;
@@ -52,6 +53,7 @@ class PageBuild extends StatelessWidget {
   final bool Function(AyahModel ayah)? isAyahBookmarked;
   final BuildContext context;
   final QuranCtrl quranCtrl;
+  final VoidCallback? onPagePress;
 
   @override
   Widget build(BuildContext context) {
@@ -152,6 +154,7 @@ class PageBuild extends StatelessWidget {
                   ayahBookmarked: ayahBookmarked,
                   isAyahBookmarked: isAyahBookmarked,
                   isCentered: b.isCentered,
+                  onPagePress: onPagePress,
                 ),
               );
             }

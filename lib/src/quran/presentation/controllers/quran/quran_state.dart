@@ -2,7 +2,7 @@ part of '/quran.dart';
 
 class QuranState {
   /// -------- [Variables] ----------
-  List<SurahModel> surahs = [];
+  // List<SurahModel> surahs = [];
   List<List<AyahModel>> pages = [];
   List<AyahModel> allAyahs = [];
 
@@ -36,6 +36,10 @@ class QuranState {
 
   RxBool isTajweedEnabled = false.obs;
 
+  /// وضع العرض الحالي (افتراضي، صفحة قابلة للتمرير، صفحتان، مصحف+تفسير، آية+تفسير)
+  /// Current display mode
+  Rx<QuranDisplayMode> displayMode = QuranDisplayMode.defaultMode.obs;
+
   // ملاحظة: تم إزالة GlobalKey<ScaffoldState> لتجنب التعارض مع التطبيقات الأخرى
   // Note: GlobalKey<ScaffoldState> has been removed to avoid conflicts with other applications
 
@@ -51,6 +55,7 @@ class QuranState {
     fontsSelected.close();
     fontsReady.close();
     fontsLoadProgress.close();
+    displayMode.close();
     quranPageRLFocusNode.dispose();
   }
 }

@@ -25,6 +25,7 @@ class QpcV4RichTextLine extends StatefulWidget {
     required this.ayahBookmarked,
     this.isAyahBookmarked,
     required this.isCentered,
+    this.onPagePress,
   });
 
   final int pageIndex;
@@ -50,6 +51,7 @@ class QpcV4RichTextLine extends StatefulWidget {
   final List<int> ayahBookmarked;
   final bool Function(AyahModel ayah)? isAyahBookmarked;
   final bool isCentered;
+  final VoidCallback? onPagePress;
 
   @override
   State<QpcV4RichTextLine> createState() => _QpcV4RichTextLineState();
@@ -268,6 +270,7 @@ class _QpcV4RichTextLineState extends State<QpcV4RichTextLine> {
         usePaintColoring: widget.usePaintColoring,
         ayahBookmarked: widget.ayahBookmarked,
         isDark: widget.isDark,
+        onPagePress: widget.onPagePress,
       );
 
       final spanStart = charOffset;

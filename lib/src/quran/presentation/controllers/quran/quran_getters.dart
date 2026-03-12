@@ -166,9 +166,9 @@ extension QuranGetters on QuranCtrl {
     if (surahNumber > 114) return 114;
 
     try {
-      final ayah = state.surahs[surahNumber - 1].ayahs.firstWhere(
-        (p) => p.ayahNumber == ayahNumber,
-      );
+      final ayah = surahs[surahNumber - 1].ayahs.firstWhere(
+            (p) => p.ayahNumber == ayahNumber,
+          );
 
       log('Ayah found: Surah $surahNumber, Ayah $ayahNumber, Page ${ayah.page}');
 
@@ -180,7 +180,7 @@ extension QuranGetters on QuranCtrl {
 
   /// will return the surah number of the first ayahs..
   /// even if the page contains another surah.
-  int getSurahNumberFromPage(int pageNumber) => state.surahs
+  int getSurahNumberFromPage(int pageNumber) => surahs
       .firstWhere(
           (s) => s.ayahs.firstWhereOrNull((a) => a.page == pageNumber) != null)
       .surahNumber;
@@ -197,7 +197,8 @@ extension QuranGetters on QuranCtrl {
     List<AyahModel> pageAyahs = getPageAyahsByIndex(pageNumber - 1);
     List<SurahModel> surahsOnPage = [];
     for (AyahModel ayah in pageAyahs) {
-      SurahModel surah = state.surahs.firstWhere((s) => s.ayahs.contains(ayah),
+      SurahModel surah = surahs.firstWhere(
+          (s) => s.ayahs.any((a) => a.ayahUQNumber == ayah.ayahUQNumber),
           orElse: () => SurahModel(
                 surahNumber: 1,
                 arabicName: 'Unknown',
@@ -223,21 +224,28 @@ extension QuranGetters on QuranCtrl {
   ///
   /// Returns:
   ///   `SurahModel`: The SurahModel representing the Surah of the first Ayah on the specified page.
-  SurahModel getCurrentSurahByPageNumber(int pageNumber) =>
-      state.surahs.firstWhere(
-          (s) => s.ayahs.contains(getPageAyahsByIndex(pageNumber - 1).first));
+  SurahModel getCurrentSurahByPageNumber(int pageNumber) {
+    final firstAyah = getPageAyahsByIndex(pageNumber - 1).first;
+    return surahs.firstWhere(
+      (s) => s.ayahs.any((a) => a.ayahUQNumber == firstAyah.ayahUQNumber),
+      orElse: () => surahs.first,
+    );
+  }
 
   /// Retrieves the Surah data for a given Ayah.
   ///
   /// This method returns the SurahModel of the Surah that contains the given Ayah.
+  /// يستخدم [ayahUQNumber] للمقارنة بدلاً من المساواة المرجعية.
   ///
   /// Parameters:
   ///   ayah (AyahModel): The Ayah for which to retrieve the Surah data.
   ///
   /// Returns:
   ///   `SurahModel`: The SurahModel representing the Surah of the given Ayah.
-  SurahModel getSurahDataByAyah(AyahModel ayah) =>
-      state.surahs.firstWhere((s) => s.ayahs.contains(ayah));
+  SurahModel getSurahDataByAyah(AyahModel ayah) => surahs.firstWhere(
+        (s) => s.ayahs.any((a) => a.ayahUQNumber == ayah.ayahUQNumber),
+        orElse: () => surahs.first,
+      );
 
   /// Retrieves the Surah data for a given unique Ayah number.
   ///
@@ -251,8 +259,8 @@ extension QuranGetters on QuranCtrl {
   /// Returns:
   ///   `SurahModel`: The SurahModel representing the Surah containing
   ///   the Ayah with the given unique number.
-  SurahModel getSurahDataByAyahUQ(int ayah) => state.surahs
-      .firstWhere((s) => s.ayahs.any((a) => a.ayahUQNumber == ayah));
+  SurahModel getSurahDataByAyahUQ(int ayah) =>
+      surahs.firstWhere((s) => s.ayahs.any((a) => a.ayahUQNumber == ayah));
 
   /// Retrieves the Juz data for a given page number.
   ///
@@ -288,10 +296,10 @@ extension QuranGetters on QuranCtrl {
   }
 
   AyahModel getSingleAyahByAyahAndSurahNumber(int ayahNumber, int surahNumber) {
-    return state.surahs[surahNumber - 1].ayahs.firstWhere(
-      (ayah) => ayah.ayahNumber == ayahNumber,
-      orElse: () => AyahModel.empty(),
-    );
+    return surahs[surahNumber - 1].ayahs.firstWhere(
+          (ayah) => ayah.ayahNumber == ayahNumber,
+          orElse: () => AyahModel.empty(),
+        );
   }
 
   /// Retrieves the display string for the Hizb quarter of the given page number.
@@ -477,6 +485,64 @@ extension QuranGetters on QuranCtrl {
         ]);
       }
     }
+  }
+
+  // -------- [Display Mode] ----------
+
+  /// الوضع الحالي للعرض
+  /// Current display mode
+  QuranDisplayMode get currentDisplayMode => state.displayMode.value;
+
+  /// تعيين وضع العرض مع الحفظ في التخزين المحلي
+  /// Set display mode and persist to local storage
+  void setDisplayMode(QuranDisplayMode mode) {
+    if (state.displayMode.value == mode) return;
+
+    // حفظ الصفحة الحالية قبل تغيير الوضع لمنع العودة للصفحة الأولى
+    // Save current page before mode switch to prevent jumping to page 1
+    int currentPage = state.currentPageNumber.value - 1;
+    if (quranPagesController.hasClients) {
+      final double? p = quranPagesController.page;
+      if (p != null) currentPage = p.round();
+    }
+    currentPage = currentPage.clamp(0, 603);
+
+    // تحديث رقم الصفحة وحفظه في التخزين لضمان عدم فقدانه عند إعادة إنشاء الـ controller
+    state.currentPageNumber.value = currentPage + 1;
+    saveLastPage(currentPage + 1);
+
+    // إعادة إنشاء الـ controller بالصفحة الحالية
+    final oldController = quranPagesController;
+    quranPagesController = PreloadPageController(
+      initialPage: currentPage,
+      keepPage: true,
+      viewportFraction: 1.0,
+    );
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      try {
+        if (oldController != quranPagesController) oldController.dispose();
+      } catch (_) {}
+    });
+
+    state.displayMode.value = mode;
+    GetStorage().write(_StorageConstants().displayMode, mode.storageIndex);
+    update(['display_mode', 'quran_display_content']);
+  }
+
+  /// تحميل آخر وضع عرض محفوظ من التخزين المحلي
+  /// Load saved display mode from local storage
+  void loadSavedDisplayMode() {
+    final saved = GetStorage().read<int>(_StorageConstants().displayMode);
+    if (saved != null) {
+      state.displayMode.value =
+          QuranDisplayModeExtension.fromStorageIndex(saved);
+    }
+  }
+
+  /// الأوضاع المتاحة حسب الاتجاه وحجم الشاشة
+  /// Available modes based on orientation and screen size
+  List<QuranDisplayMode> getAvailableModes(BuildContext context) {
+    return QuranDisplayModeExtension.availableModes(context);
   }
 
   List<TajweedRuleModel> getTajweedRulesListForLanguage({

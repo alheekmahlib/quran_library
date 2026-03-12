@@ -30,11 +30,13 @@ class AudioCtrl extends GetxController {
       _addDownloadedSurahToPlaylist(),
       _updateDownloadedAyahsMap(),
     ]);
-    // getAyahUQNumber(QuranCtrl.instance.state.currentPageNumber.value - 1);
+    getAyahUQNumber(QuranCtrl.instance.state.currentPageNumber.value - 1);
 
-    // ever(QuranCtrl.instance.state.currentPageNumber, (pageNumber) {
-    //   getAyahUQNumber(pageNumber - 1);
-    // });
+    debounce(
+      QuranCtrl.instance.state.currentPageNumber,
+      (pageNumber) => getAyahUQNumber(pageNumber - 1),
+      time: const Duration(milliseconds: 300),
+    );
 
     state.surahsPlayList = List.generate(114, (i) {
       state.selectedSurahIndex.value = i;
@@ -657,11 +659,11 @@ class AudioCtrl extends GetxController {
   void getAyahUQNumber(int pageNumber) {
     final ayahs =
         QuranCtrl.instance.getCurrentPageAyahsSeparatedForBasmalah(pageNumber);
-    log('Fetching AyahUQNumber for page $pageNumber', name: 'AudioCtrl');
     if (ayahs.isNotEmpty) {
-      state.currentAyahUniqueNumber.value = ayahs.first.first.ayahUQNumber;
-      log('Updated currentAyahUniqueNumber to ${state.currentAyahUniqueNumber.value} for page $pageNumber',
-          name: 'AudioCtrl');
+      final newValue = ayahs.first.first.ayahUQNumber;
+      if (state.currentAyahUniqueNumber.value != newValue) {
+        state.currentAyahUniqueNumber.value = newValue;
+      }
     }
   }
 }

@@ -20,6 +20,9 @@ class _StorageConstants {
   final String isTafsir = 'IS_TAFSEER';
   final String fontSize = 'FONT_SIZE';
 
+  /// Display Mode
+  final String displayMode = 'DISPLAY_MODE';
+
   ///Singleton factory
   static final _StorageConstants _instance = _StorageConstants._internal();
 

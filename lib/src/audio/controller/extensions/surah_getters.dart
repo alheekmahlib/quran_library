@@ -49,7 +49,7 @@ extension SurahGetters on AudioCtrl {
 
   MediaItem get mediaItem => MediaItem(
         id: '${state.currentAudioListSurahNum.value}',
-        title: QuranCtrl.instance.state
+        title: QuranCtrl.instance
             .surahs[(state.currentAudioListSurahNum.value - 1)].arabicName,
         artist: ReadersConstants
             .activeSurahReaders[state.surahReaderIndex.value].name.tr,

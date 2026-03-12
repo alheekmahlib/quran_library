@@ -32,6 +32,7 @@ class QuranOrTenRecitationsTabBar extends StatelessWidget {
               ],
             ),
             child: TabBar(
+              indicatorSize: TabBarIndicatorSize.tab,
               controller: WordInfoCtrl.instance.tabController,
               onTap: (index) async {
                 // عند اختيار "القراءات العشر" تأكد من أن البيانات محمّلة.

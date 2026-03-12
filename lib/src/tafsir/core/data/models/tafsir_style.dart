@@ -53,7 +53,20 @@ class TafsirStyle {
   final TextStyle? tajweedProgressTextStyle;
   final TextStyle? tajweedContentTextStyle;
   final TextStyle? tabBarLabelStyle;
+  final TextStyle? tabBarUnselectedLabelStyle;
+  final TextStyle? dialogHeaderTitleTextStyle;
+  final TextStyle? dialogTypeTextStyle;
+  final TextStyle? tafsirTextTextStyle;
+  final TextStyle? currentTafsirTextStyle;
   final Widget? handleWidget;
+  final Widget? tajweedDownloadButtonWidget;
+  final Color? dialogBackgroundColor;
+  final Widget? removeTafsirIconWidget;
+  final Widget? downloadTafsirIconWidget;
+
+  /// ويدجت مخصص بدلاً من أيقونة السهم الافتراضية بجانب اسم القارئ
+  /// Custom widget to replace the default dropdown arrow icon next to reader name
+  final Widget? tafsirDropdownWidget;
 
   TafsirStyle({
     this.backgroundColor,
@@ -107,6 +120,16 @@ class TafsirStyle {
     this.tajweedContentTextStyle,
     this.tabBarLabelStyle,
     this.handleWidget,
+    this.tabBarUnselectedLabelStyle,
+    this.dialogHeaderTitleTextStyle,
+    this.dialogTypeTextStyle,
+    this.tafsirTextTextStyle,
+    this.currentTafsirTextStyle,
+    this.tajweedDownloadButtonWidget,
+    this.tafsirDropdownWidget,
+    this.dialogBackgroundColor,
+    this.removeTafsirIconWidget,
+    this.downloadTafsirIconWidget,
   });
 
   TafsirStyle copyWith({
@@ -160,7 +183,17 @@ class TafsirStyle {
     TextStyle? tajweedProgressTextStyle,
     TextStyle? tajweedContentTextStyle,
     TextStyle? tabBarLabelStyle,
+    TextStyle? tabBarUnselectedLabelStyle,
     Widget? handleWidget,
+    TextStyle? dialogHeaderTitleTextStyle,
+    TextStyle? dialogTypeTextStyle,
+    TextStyle? tafsirTextTextStyle,
+    TextStyle? currentTafsirTextStyle,
+    Widget? tajweedDownloadButtonWidget,
+    Widget? tafsirDropdownWidget,
+    Color? dialogBackgroundColor,
+    Widget? removeTafsirIconWidget,
+    Widget? downloadTafsirIconWidget,
   }) {
     return TafsirStyle(
       tafsirNameWidget: tafsirNameWidget ?? this.tafsirNameWidget,
@@ -235,6 +268,23 @@ class TafsirStyle {
           tajweedContentTextStyle ?? this.tajweedContentTextStyle,
       tabBarLabelStyle: tabBarLabelStyle ?? this.tabBarLabelStyle,
       handleWidget: handleWidget ?? this.handleWidget,
+      tabBarUnselectedLabelStyle:
+          tabBarUnselectedLabelStyle ?? this.tabBarUnselectedLabelStyle,
+      dialogHeaderTitleTextStyle:
+          dialogHeaderTitleTextStyle ?? this.dialogHeaderTitleTextStyle,
+      dialogTypeTextStyle: dialogTypeTextStyle ?? this.dialogTypeTextStyle,
+      tafsirTextTextStyle: tafsirTextTextStyle ?? this.tafsirTextTextStyle,
+      currentTafsirTextStyle:
+          currentTafsirTextStyle ?? this.currentTafsirTextStyle,
+      tajweedDownloadButtonWidget:
+          tajweedDownloadButtonWidget ?? this.tajweedDownloadButtonWidget,
+      tafsirDropdownWidget: tafsirDropdownWidget ?? this.tafsirDropdownWidget,
+      dialogBackgroundColor:
+          dialogBackgroundColor ?? this.dialogBackgroundColor,
+      removeTafsirIconWidget:
+          removeTafsirIconWidget ?? this.removeTafsirIconWidget,
+      downloadTafsirIconWidget:
+          downloadTafsirIconWidget ?? this.downloadTafsirIconWidget,
     );
   }
 
@@ -395,6 +445,46 @@ class TafsirStyle {
         color: AppColors.getTextColor(isDark),
       ),
       handleWidget: null,
+      tabBarUnselectedLabelStyle: TextStyle(
+        fontFamily: 'cairo',
+        package: 'quran_library',
+        fontWeight: FontWeight.bold,
+        fontSize: 14,
+        color: AppColors.getTextColor(isDark),
+      ),
+      dialogHeaderTitleTextStyle: TextStyle(
+        fontSize: 18.0,
+        fontWeight: FontWeight.bold,
+        fontFamily: 'cairo',
+        height: 1.3,
+        color: AppColors.getTextColor(isDark),
+        package: 'quran_library',
+      ),
+      dialogTypeTextStyle: TextStyle(
+        fontSize: 16,
+        fontWeight: FontWeight.bold,
+        color: AppColors.getTextColor(isDark),
+        fontFamily: 'cairo',
+        package: 'quran_library',
+      ),
+      tafsirTextTextStyle: TextStyle(
+        fontSize: 14,
+        color: AppColors.getTextColor(isDark),
+        fontFamily: 'cairo',
+        package: 'quran_library',
+      ),
+      currentTafsirTextStyle: TextStyle(
+        fontSize: 14,
+        fontWeight: FontWeight.bold,
+        color: primary,
+        fontFamily: 'cairo',
+        package: 'quran_library',
+      ),
+      tajweedDownloadButtonWidget: null,
+      tafsirDropdownWidget: null,
+      dialogBackgroundColor: AppColors.getBackgroundColor(isDark),
+      removeTafsirIconWidget: null,
+      downloadTafsirIconWidget: null,
     );
   }
 }

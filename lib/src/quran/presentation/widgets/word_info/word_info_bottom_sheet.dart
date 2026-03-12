@@ -5,25 +5,26 @@ Future<void> showWordInfoBottomSheet({
   required WordRef ref,
   WordInfoKind initialKind = WordInfoKind.recitations,
   required bool isDark,
+  WordInfoBottomSheetStyle? wordInfoStyle,
 }) async {
   final ctrl = WordInfoCtrl.instance;
   ctrl.setSelectedKind(initialKind);
 
-  final WordInfoBottomSheetStyle defaults =
+  final WordInfoBottomSheetStyle defaults = wordInfoStyle ??
       WordInfoDialogTheme.of(context)?.style ??
-          WordInfoBottomSheetStyle.defaults(isDark: isDark, context: context);
+      WordInfoBottomSheetStyle.defaults(isDark: isDark, context: context);
   final size = MediaQuery.sizeOf(context);
   // final maxHFactor = (defaults.maxHeightFactor ?? 0.9).clamp(0.0, 1.0);
   final maxWFactor = (defaults.maxWidthFactor ?? 1.0).clamp(0.0, 1.0);
 
   await showModalBottomSheet(
     context: context,
-    isScrollControlled: false,
+    isScrollControlled: true,
     backgroundColor: Colors.transparent,
     enableDrag: true,
     isDismissible: true,
     constraints: BoxConstraints(
-      // maxHeight: size.height * maxHFactor,
+      maxHeight: size.height * .9,
       maxWidth: size.width * maxWFactor,
     ),
     shape: const RoundedRectangleBorder(
@@ -35,6 +36,8 @@ Future<void> showWordInfoBottomSheet({
         initialKind: initialKind,
         ctrl: ctrl,
         isDark: isDark,
+        defaults: wordInfoStyle ??
+            WordInfoBottomSheetStyle.defaults(isDark: isDark, context: context),
       );
     },
   );
@@ -47,19 +50,17 @@ class WordInfoWidget extends StatelessWidget {
     required this.initialKind,
     required this.ctrl,
     required this.isDark,
+    required this.defaults,
   });
 
   final WordRef ref;
   final WordInfoKind initialKind;
   final WordInfoCtrl ctrl;
   final bool isDark;
+  final WordInfoBottomSheetStyle defaults;
 
   @override
   Widget build(BuildContext context) {
-    final WordInfoBottomSheetStyle defaults =
-        WordInfoDialogTheme.of(context)?.style ??
-            WordInfoBottomSheetStyle.defaults(isDark: isDark, context: context);
-
     final tabs = [
       Tab(text: defaults.tabRecitationsText ?? 'القراءات'),
       Tab(text: defaults.tabTasreefText ?? 'التصريف'),
@@ -88,26 +89,29 @@ class WordInfoWidget extends StatelessWidget {
                       BorderRadius.circular(defaults.handleBorderRadius ?? 3),
                 ),
               ),
-          Text(
-            defaults.titleText ?? 'عن الكلمة',
-            style: defaults.titleTextStyle ??
-                TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.getTextColor(isDark),
-                  fontFamily: 'cairo',
-                  package: 'quran_library',
-                ),
-          ),
+          if (defaults.withTitle ?? true)
+            Text(
+              defaults.titleText ?? 'عن الكلمة',
+              style: defaults.titleTextStyle ??
+                  TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.getTextColor(isDark),
+                    fontFamily: 'cairo',
+                    package: 'quran_library',
+                  ),
+            ),
           // أزرار تشغيل صوت الكلمة والآية
-          if (ctrl.isWordAudioInitialized)
+          if (ctrl.isWordAudioInitialized &&
+              (defaults.withWordAudioButton ?? true)) ...[
             _WordAudioButtons(
               ref: ref,
               ctrl: ctrl,
               isDark: isDark,
               style: defaults,
             ),
-          const SizedBox(height: 8),
+            const SizedBox(height: 8),
+          ],
           Expanded(
             child: GetBuilder<WordInfoCtrl>(
               id: 'word_info_kind',
@@ -119,20 +123,30 @@ class WordInfoWidget extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Container(
+                        height: defaults.tabBarHeight ?? 40,
                         margin: EdgeInsets.symmetric(
                           horizontal: defaults.horizontalMargin ?? 8,
                         ),
                         decoration: BoxDecoration(
-                          color: (defaults.tabIndicatorColor ??
+                          color: (defaults.tabBackgroundColor ??
                                   Theme.of(context).colorScheme.primary)
                               .withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(16),
+                          borderRadius: BorderRadius.circular(8),
                         ),
                         child: TabBar(
                           onTap: (index) {
                             ctrl.setSelectedKind(WordInfoKind.values[index]);
                           },
+                          indicatorSize: TabBarIndicatorSize.tab,
                           labelStyle: defaults.tabLabelStyle ??
+                              TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.getTextColor(isDark),
+                                fontFamily: 'cairo',
+                                package: 'quran_library',
+                              ),
+                          unselectedLabelStyle: defaults.tabLabelStyle ??
                               TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
@@ -147,6 +161,12 @@ class WordInfoWidget extends StatelessWidget {
                             borderRadius: BorderRadius.circular(
                                 defaults.tabIndicatorRadius ?? 10),
                           ),
+                          labelColor: defaults.tabLabelColor ??
+                              AppColors.getTextColor(isDark),
+                          unselectedLabelColor:
+                              defaults.tabUnselectedLabelColor ??
+                                  AppColors.getTextColor(isDark)
+                                      .withValues(alpha: 0.6),
                           indicatorPadding: defaults.tabIndicatorPadding ??
                               const EdgeInsets.all(4),
                           tabs: tabs,
@@ -155,7 +175,7 @@ class WordInfoWidget extends StatelessWidget {
                       Flexible(
                         child: TabBarView(
                           children: [
-                            _WordInfoKindTab(
+                            WordInfoKindTab(
                               kind: WordInfoKind.recitations,
                               kindLabelAr:
                                   defaults.tabRecitationsText ?? 'القراءات',
@@ -164,7 +184,7 @@ class WordInfoWidget extends StatelessWidget {
                               isDark: isDark,
                               style: defaults,
                             ),
-                            _WordInfoKindTab(
+                            WordInfoKindTab(
                               kind: WordInfoKind.tasreef,
                               kindLabelAr: defaults.tabTasreefText ?? 'التصريف',
                               ref: ref,
@@ -172,7 +192,7 @@ class WordInfoWidget extends StatelessWidget {
                               isDark: isDark,
                               style: defaults,
                             ),
-                            _WordInfoKindTab(
+                            WordInfoKindTab(
                               kind: WordInfoKind.eerab,
                               kindLabelAr: defaults.tabEerabText ?? 'الإعراب',
                               ref: ref,
@@ -195,8 +215,9 @@ class WordInfoWidget extends StatelessWidget {
   }
 }
 
-class _WordInfoKindTab extends StatelessWidget {
-  const _WordInfoKindTab({
+class WordInfoKindTab extends StatelessWidget {
+  const WordInfoKindTab({
+    super.key,
     required this.kind,
     required this.kindLabelAr,
     required this.ref,
@@ -231,13 +252,15 @@ class _WordInfoKindTab extends StatelessWidget {
             AppColors.getBackgroundColor(isDark),
         borderRadius:
             BorderRadius.circular(style.innerContainerBorderRadius ?? 16),
-        boxShadow: [
-          BoxShadow(
-            color: style.innerShadowColor ?? Colors.grey.withValues(alpha: 0.1),
-            blurRadius: style.innerShadowBlurRadius ?? 8,
-            offset: style.innerShadowOffset ?? const Offset(0, 0),
-          ),
-        ],
+        boxShadow: style.innerContainerBoxShadow ??
+            [
+              BoxShadow(
+                color: style.innerShadowColor ??
+                    Colors.grey.withValues(alpha: 0.1),
+                blurRadius: style.innerShadowBlurRadius ?? 8,
+                offset: style.innerShadowOffset ?? const Offset(0, 0),
+              ),
+            ],
         border: Border.symmetric(
           horizontal: BorderSide(
             color:
@@ -271,38 +294,30 @@ class _WordInfoKindTab extends StatelessWidget {
                     textDirection: TextDirection.rtl,
                   ),
                   const SizedBox(height: 12),
-                  DownloadButtonWidget(
-                    onTap: () async {
-                      isDownloading ? null : await ctrl.downloadKind(kind);
-                    },
-                    isVisible: true,
-                    isSelected: false,
-                    downloaded: false,
-                    background: Colors.teal.withValues(alpha: 0.1),
-                    valueColor: Colors.teal,
-                    borderColor: Colors.teal,
-                    downloading:
-                        isDownloading || ctrl.isPreparingDownload.value,
-                    preparing: isDownloading || ctrl.isPreparingDownload.value,
-                    progress: ctrl.downloadProgress.value,
-                    children: [
-                      Text(
-                        isDownloading
-                            ? (style.downloadingText ?? 'جاري التحميل...')
-                            : (style.downloadText ?? 'تحميل'),
-                        style: style.buttonTextStyle ??
-                            TextStyle(
-                              fontSize: 16,
-                              color: AppColors.getTextColor(isDark),
-                              fontFamily: 'cairo',
-                              package: 'quran_library',
-                            ),
-                      ),
-                      if (isDownloading || ctrl.isPreparingDownload.value) ...[
-                        const SizedBox(width: 12),
+                  if (style.downloadButtonWidget != null)
+                    style.downloadButtonWidget!(context, kind)
+                  else
+                    DownloadButtonWidget(
+                      onTap: () async {
+                        isDownloading ? null : await ctrl.downloadKind(kind);
+                      },
+                      isVisible: true,
+                      isSelected: false,
+                      downloaded: false,
+                      background: Colors.teal.withValues(alpha: 0.1),
+                      valueColor: Colors.teal,
+                      borderColor: Colors.teal,
+                      downloading:
+                          isDownloading || ctrl.isPreparingDownload.value,
+                      preparing:
+                          isDownloading || ctrl.isPreparingDownload.value,
+                      progress: ctrl.downloadProgress.value,
+                      children: [
                         Text(
-                          '${ctrl.downloadProgress.value.toStringAsFixed(0)}%',
-                          style: style.progressTextStyle ??
+                          isDownloading
+                              ? (style.downloadingText ?? 'جاري التحميل...')
+                              : (style.downloadText ?? 'تحميل'),
+                          style: style.buttonTextStyle ??
                               TextStyle(
                                 fontSize: 16,
                                 color: AppColors.getTextColor(isDark),
@@ -310,9 +325,22 @@ class _WordInfoKindTab extends StatelessWidget {
                                 package: 'quran_library',
                               ),
                         ),
+                        if (isDownloading ||
+                            ctrl.isPreparingDownload.value) ...[
+                          const SizedBox(width: 12),
+                          Text(
+                            '${ctrl.downloadProgress.value.toStringAsFixed(0)}%',
+                            style: style.progressTextStyle ??
+                                TextStyle(
+                                  fontSize: 16,
+                                  color: AppColors.getTextColor(isDark),
+                                  fontFamily: 'cairo',
+                                  package: 'quran_library',
+                                ),
+                          ),
+                        ],
                       ],
-                    ],
-                  ),
+                    ),
                 ],
               ),
             );
@@ -374,19 +402,21 @@ class _WordInfoKindTab extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        Text(
-                          data.word,
-                          textDirection: TextDirection.rtl,
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                            color: wordColor,
-                            fontFamily: 'naskh',
-                            package: 'quran_library',
+                        if (style.withWordText ?? true) ...[
+                          Text(
+                            data.word,
+                            textDirection: TextDirection.rtl,
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                              color: wordColor,
+                              fontFamily: 'naskh',
+                              package: 'quran_library',
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 12),
+                          const SizedBox(height: 12),
+                        ],
                         SelectableText.rich(
                           buildMarkedContentSpan(
                             content: data.content,

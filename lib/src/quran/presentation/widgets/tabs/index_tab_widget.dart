@@ -29,6 +29,7 @@ class _IndexTab extends StatelessWidget {
                   BorderRadius.circular((style.tabBarRadius ?? 12).toDouble()),
             ),
             child: TabBar(
+              indicatorSize: TabBarIndicatorSize.tab,
               indicator: BoxDecoration(
                 color: accentColor,
                 borderRadius: BorderRadius.circular(

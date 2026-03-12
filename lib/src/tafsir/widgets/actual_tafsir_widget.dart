@@ -49,6 +49,7 @@ class ActualTafsirWidget extends StatelessWidget {
           pageIndex: pageIndex! + 1,
           textColor: s.textColor,
           textAlign: TextAlign.center,
+          enabledTajweed: QuranCtrl.instance.state.isTajweedEnabled.value,
         ),
         Text.rich(
           TextSpan(

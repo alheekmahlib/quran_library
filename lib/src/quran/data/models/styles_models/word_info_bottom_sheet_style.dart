@@ -29,6 +29,7 @@ class WordInfoBottomSheetStyle {
   final String? titleText;
   final TextStyle? titleTextStyle;
   final EdgeInsetsGeometry? titlePadding;
+  final bool? withTitle;
 
   // Text overrides
   final String? tabRecitationsText;
@@ -45,6 +46,7 @@ class WordInfoBottomSheetStyle {
   final EdgeInsetsGeometry? tabIndicatorPadding;
   final double? tabIndicatorRadius;
   final Color? tabIndicatorColor;
+  final Color? tabBackgroundColor;
   final double? dividerHeight;
 
   // Content
@@ -73,6 +75,13 @@ class WordInfoBottomSheetStyle {
   final double? audioButtonSize;
   final String? playWordTooltip;
   final String? playAyahWordsTooltip;
+  final bool? withWordText;
+  final bool? withWordAudioButton;
+  final Color? tabLabelColor;
+  final Color? tabUnselectedLabelColor;
+  final double? tabBarHeight;
+  final List<BoxShadow>? innerContainerBoxShadow;
+  final WordInfoBottomSheetStyleCustomChildBuilder? downloadButtonWidget;
 
   const WordInfoBottomSheetStyle({
     this.backgroundColor,
@@ -122,6 +131,15 @@ class WordInfoBottomSheetStyle {
     this.audioButtonSize,
     this.playWordTooltip,
     this.playAyahWordsTooltip,
+    this.withTitle,
+    this.withWordText,
+    this.withWordAudioButton,
+    this.tabLabelColor,
+    this.tabUnselectedLabelColor,
+    this.tabBackgroundColor,
+    this.tabBarHeight,
+    this.innerContainerBoxShadow,
+    this.downloadButtonWidget,
   });
 
   WordInfoBottomSheetStyle copyWith({
@@ -172,6 +190,15 @@ class WordInfoBottomSheetStyle {
     double? audioButtonSize,
     String? playWordTooltip,
     String? playAyahWordsTooltip,
+    bool? withTitle,
+    bool? withWordText,
+    bool? withWordAudioButton,
+    Color? tabLabelColor,
+    Color? tabUnselectedLabelColor,
+    Color? tabBackgroundColor,
+    double? tabBarHeight,
+    List<BoxShadow>? innerContainerBoxShadow,
+    WordInfoBottomSheetStyleCustomChildBuilder? downloadButtonWidget,
   }) {
     return WordInfoBottomSheetStyle(
       backgroundColor: backgroundColor ?? this.backgroundColor,
@@ -227,6 +254,17 @@ class WordInfoBottomSheetStyle {
       audioButtonSize: audioButtonSize ?? this.audioButtonSize,
       playWordTooltip: playWordTooltip ?? this.playWordTooltip,
       playAyahWordsTooltip: playAyahWordsTooltip ?? this.playAyahWordsTooltip,
+      withTitle: withTitle ?? this.withTitle,
+      withWordText: withWordText ?? this.withWordText,
+      withWordAudioButton: withWordAudioButton ?? this.withWordAudioButton,
+      tabLabelColor: tabLabelColor ?? this.tabLabelColor,
+      tabUnselectedLabelColor:
+          tabUnselectedLabelColor ?? this.tabUnselectedLabelColor,
+      tabBackgroundColor: tabBackgroundColor ?? this.tabBackgroundColor,
+      tabBarHeight: tabBarHeight ?? this.tabBarHeight,
+      innerContainerBoxShadow:
+          innerContainerBoxShadow ?? this.innerContainerBoxShadow,
+      downloadButtonWidget: downloadButtonWidget ?? this.downloadButtonWidget,
     );
   }
 
@@ -314,6 +352,26 @@ class WordInfoBottomSheetStyle {
       audioButtonSize: 22,
       playWordTooltip: 'تشغيل الكلمة',
       playAyahWordsTooltip: 'تشغيل كلمات الآية',
+      withTitle: true,
+      withWordText: true,
+      withWordAudioButton: true,
+      tabLabelColor: textColor,
+      tabUnselectedLabelColor: textColor.withValues(alpha: 0.6),
+      tabBackgroundColor: Colors.teal.withValues(alpha: 0.1),
+      tabBarHeight: 48,
+      innerContainerBoxShadow: [
+        BoxShadow(
+          color: Colors.grey.withValues(alpha: 0.1),
+          blurRadius: 8,
+          offset: const Offset(0, 0),
+        ),
+      ],
+      downloadButtonWidget: null,
     );
   }
 }
+
+typedef WordInfoBottomSheetStyleCustomChildBuilder = Widget Function(
+  BuildContext context,
+  WordInfoKind kind,
+);

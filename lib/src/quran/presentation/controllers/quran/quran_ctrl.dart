@@ -40,7 +40,7 @@ class QuranCtrl extends GetxController {
   bool get isQpcLayoutEnabled => isQpcV4Enabled;
 
   RxList<QuranPageModel> staticPages = <QuranPageModel>[].obs;
-  final List<SurahModel> surahs = [];
+  List<SurahModel> surahs = [];
   final List<AyahModel> ayahs = [];
   int lastPage = 1;
   int? initialPage;
@@ -97,6 +97,10 @@ class QuranCtrl extends GetxController {
     // ضمان تحميل بيانات المصحف حتى لو لم يتم استدعاء QuranLibrary.init() في التطبيق المضيف.
     // نطلقها بشكل غير متزامن لتجنب إبطاء onInit.
     Future(() => ensureCoreDataLoaded());
+
+    // تحميل آخر وضع عرض محفوظ
+    // Load saved display mode
+    loadSavedDisplayMode();
 
     searchFocusNode = FocusNode();
     searchTextController = TextEditingController();
@@ -163,15 +167,15 @@ class QuranCtrl extends GetxController {
     if (lastPage != 0) {
       jumpToPage(lastPage - 1);
     }
-    if (state.surahs.isEmpty) {
+    if (surahs.isEmpty) {
       List<dynamic> surahsJson = await _quranRepository.getQuranDataV3();
-      state.surahs =
+      surahs =
           surahsJson.map((s) => SurahModel.fromDownloadedFontsJson(s)).toList();
 
       // مزامنة القوائم على مستوى الـ instance مع state لتجنب القوائم الفارغة
-      surahs.addAll(state.surahs);
+      // surahs.addAll(surahs);
 
-      for (final surah in state.surahs) {
+      for (final surah in surahs) {
         // نقل بيانات السورة إلى كل آية حتى يعمل البحث بشكل صحيح
         for (final ayah in surah.ayahs) {
           ayah.surahNumber ??= surah.surahNumber;
@@ -205,7 +209,7 @@ class QuranCtrl extends GetxController {
 
   void _buildAyahUqIndexIfNeeded() {
     if (_ayahUqBySurahAyahKey.isNotEmpty) return;
-    for (final surah in state.surahs) {
+    for (final surah in surahs) {
       for (final ayah in surah.ayahs) {
         _ayahUqBySurahAyahKey[
                 _surahAyahKey(surah.surahNumber, ayah.ayahNumber)] =
@@ -476,7 +480,7 @@ class QuranCtrl extends GetxController {
       final normalizedSearchText =
           normalizeText(cleanedSearchText.toLowerCase().trim());
 
-      final filteredSurahs = state.surahs.where((surah) {
+      final filteredSurahs = surahs.where((surah) {
         // إزالة التشكيل وتطبيع أسماء السور
         // Remove diacritics and normalize surah names
         final cleanedSurahNameAr = removeDiacriticsQuran(surah.arabicName);
@@ -505,9 +509,9 @@ class QuranCtrl extends GetxController {
 
   void saveLastPage(int lastPage) {
     this.lastPage = lastPage;
-    SchedulerBinding.instance.scheduleTask(() async {
-      _quranRepository.saveLastPage(lastPage);
-    }, Priority.idle);
+    // كتابة فورية — GetStorage يحدّث الذاكرة لحظياً ويدير كتابة القرص تلقائياً بتأجيل 16ms.
+    _quranRepository.saveLastPage(lastPage);
+    log('Saved last page: $lastPage', name: 'QuranCtrl');
   }
 
   // شرح: تحسين التنقل للحصول على سكرول أكثر سلاسة
@@ -555,36 +559,41 @@ class QuranCtrl extends GetxController {
     final Orientation orientation = MediaQuery.of(context).orientation;
 
     // احسب قيمة الـ viewportFraction الهدف بناءً على حجم/اتجاه الشاشة
-    // استخدم GetPlatform.isDesktop للتحقق من المنصة (macOS, Windows, Linux)
-    // مع التأكد من أن الشاشة عريضة بما يكفي لعرض صفحتين
+    // viewportFraction 0.5 فقط في الوضع الافتراضي على شاشات الديسكتوب العريضة
+    // Other display modes always use 1.0 to show a single page
     final bool isWideDesktop =
         Responsive.isDesktop(context) && orientation == Orientation.landscape;
-    double targetFraction = isWideDesktop ? 0.5 : 1.0;
+    final currentMode = state.displayMode.value;
+    final bool useDualFraction =
+        isWideDesktop && currentMode == QuranDisplayMode.defaultMode;
+    double targetFraction = useDualFraction ? 0.5 : 1.0;
 
     log(
         'getPageController: isDesktop=${GetPlatform.isDesktop}, isWideDesktop=$isWideDesktop, '
         'targetFraction=$targetFraction',
         name: 'QuranCtrl');
 
-    // إذا لم يكن لدينا عملاء (أول إنشاء) أو تغيّرت القيمة، أعد إنشاء المتحكم
-    final bool needsNewController = !quranPagesController.hasClients ||
-        (quranPagesController.viewportFraction != targetFraction);
+    // أعد إنشاء المتحكم فقط عند تغيّر viewportFraction.
+    // لا نتحقق من hasClients لأن jumpToPage في onInit ينشئ controller بـ initialPage صحيح
+    // وإعادة إنشائه قبل ربطه بالـ PageView يضيع تلك القيمة.
+    final bool needsNewController =
+        quranPagesController.viewportFraction != targetFraction;
 
     if (needsNewController) {
       // حافظ على الفهرس الحالي للصفحة
-      // استخدم الصفحة من الـ controller إذا كان له clients،
-      // وإلا استخدم state.currentPageNumber أو القيمة المحفوظة في التخزين
       int currentIndex;
       if (quranPagesController.hasClients) {
         final double? p = quranPagesController.page;
         currentIndex =
             (p != null) ? p.round() : state.currentPageNumber.value - 1;
       } else {
-        // إذا لم يكن هناك clients، استخدم القيمة المحفوظة مباشرة
+        // قراءة مباشرة من التخزين — المصدر الأوثق للصفحة المحفوظة
         final savedPage = _quranRepository.getLastPage() ?? 1;
         currentIndex = savedPage - 1;
       }
       currentIndex = currentIndex.clamp(0, 603);
+      log('Creating new PageController with initialPage: $currentIndex',
+          name: 'QuranCtrl');
 
       final oldController = quranPagesController;
       quranPagesController = PreloadPageController(

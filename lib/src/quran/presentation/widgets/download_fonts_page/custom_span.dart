@@ -27,6 +27,7 @@ TextSpan _qpcV4SpanSegment({
   String? fontPackageOverride,
   bool usePaintColoring = true,
   required bool isDark,
+  VoidCallback? onPagePress,
 }) {
   final quranCtrl = QuranCtrl.instance;
   final wordInfoCtrl = WordInfoCtrl.instance;
@@ -72,8 +73,8 @@ TextSpan _qpcV4SpanSegment({
                   : const EdgeInsets.only(right: 4.0, left: 4.0, bottom: 16.0),
               child: SvgPicture.asset(
                 AssetsPath.assets.ayahBookmarked,
-                height: quranCtrl.isQpcV4Enabled ? 30 : 100,
-                width: quranCtrl.isQpcV4Enabled ? 30 : 100,
+                height: UiHelper.currentOrientation(30.0.h, 130.0.h, context),
+                width: UiHelper.currentOrientation(30.0.w, 130.0.w, context),
               ),
             ),
           )
@@ -101,6 +102,7 @@ TextSpan _qpcV4SpanSegment({
       shortHoldDuration: const Duration(milliseconds: 150),
       longHoldDuration: const Duration(milliseconds: 500),
     )
+      ..onQuickTapCallback = onPagePress
       ..onShortHoldStartCallback = () {
         // فارغ عمداً — لإبقاء الحدث حياً حتى يصل للضغط المطوّل
       }
@@ -113,6 +115,7 @@ TextSpan _qpcV4SpanSegment({
       shortHoldDuration: const Duration(milliseconds: 150),
       longHoldDuration: const Duration(milliseconds: 500),
     )
+      ..onQuickTapCallback = onPagePress
       ..onShortHoldStartCallback = () {
         wordInfoCtrl.setSelectedWord(wordRef);
       }

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 import 'expandable_text.dart';
 
-class ReadMoreLess extends StatelessWidget {
+class ReadMoreLess extends StatefulWidget {
   /// The main text to be displayed.
   final List<TextSpan> text;
 
@@ -79,54 +79,74 @@ class ReadMoreLess extends StatelessWidget {
         );
 
   @override
+  State<ReadMoreLess> createState() => _ReadMoreLessState();
+}
+
+class _ReadMoreLessState extends State<ReadMoreLess> {
+  bool? _exceeds;
+  double _lastMaxWidth = 0;
+
+  bool _checkExceeds(TextStyle textStyle, BoxConstraints size) {
+    if (_exceeds != null && size.maxWidth == _lastMaxWidth) return _exceeds!;
+    _lastMaxWidth = size.maxWidth;
+
+    final span = TextSpan(children: widget.text, style: textStyle);
+    final tp = TextPainter(
+      maxLines: widget.maxLines,
+      textAlign: widget.textAlign,
+      textDirection: TextDirection.ltr,
+      text: span,
+    );
+    tp.layout(maxWidth: size.maxWidth);
+    _exceeds = tp.didExceedMaxLines;
+    tp.dispose();
+    return _exceeds!;
+  }
+
+  @override
+  void didUpdateWidget(covariant ReadMoreLess oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.text != widget.text ||
+        oldWidget.textStyle != widget.textStyle ||
+        oldWidget.maxLines != widget.maxLines) {
+      _exceeds = null;
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    TextStyle ts = textStyle ?? Theme.of(context).textTheme.bodyMedium!;
+    TextStyle ts = widget.textStyle ?? Theme.of(context).textTheme.bodyMedium!;
 
     return Column(
       children: <Widget>[
         LayoutBuilder(
           builder: (context, size) {
-            return exceedsMaxLines(ts, size)
+            return _checkExceeds(ts, size)
                 ? ExpandableText(
-                    text: text,
-                    animationDuration: animationDuration,
-                    collapsedHeight: collapsedHeight,
-                    readLessText: readLessText,
-                    readMoreText: readMoreText,
-                    textAlign: textAlign,
+                    text: widget.text,
+                    animationDuration: widget.animationDuration,
+                    collapsedHeight: widget.collapsedHeight,
+                    readLessText: widget.readLessText,
+                    readMoreText: widget.readMoreText,
+                    textAlign: widget.textAlign,
                     textStyle: ts,
-                    iconCollapsed: iconCollapsed,
-                    iconExpanded: iconExpanded,
-                    customButtonBuilder: customButtonBuilder,
-                    iconColor: iconColor,
-                    buttonTextStyle: buttonTextStyle,
-                    textDirection: textDirection,
+                    iconCollapsed: widget.iconCollapsed,
+                    iconExpanded: widget.iconExpanded,
+                    customButtonBuilder: widget.customButtonBuilder,
+                    iconColor: widget.iconColor,
+                    buttonTextStyle: widget.buttonTextStyle,
+                    textDirection: widget.textDirection,
                   )
                 : ArabicJustifiedRichText(
                     excludedWords: const ['محمد'],
-                    textSpan: TextSpan(children: text, style: ts),
+                    textSpan: TextSpan(children: widget.text, style: ts),
                     overflow: TextOverflow.fade,
-                    textAlign: textAlign,
-                    textDirection: textDirection,
+                    textAlign: widget.textAlign,
+                    textDirection: widget.textDirection,
                   );
           },
         ),
       ],
     );
-  }
-
-  bool exceedsMaxLines(TextStyle textStyle, BoxConstraints size) {
-    final span = TextSpan(children: text, style: textStyle);
-
-    final tp = TextPainter(
-      maxLines: maxLines,
-      textAlign: textAlign,
-      textDirection: TextDirection.ltr,
-      text: span,
-    );
-
-    tp.layout(maxWidth: size.maxWidth);
-
-    return tp.didExceedMaxLines;
   }
 }

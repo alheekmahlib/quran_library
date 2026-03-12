@@ -104,16 +104,13 @@ class SingleScrollablePage extends StatelessWidget {
             child: _KeepAlive(
               child: LayoutBuilder(
                 builder: (context, constraints) {
-                  // نستخدم ارتفاع الشاشة المتاح × 1.3 كحد أقصى
-                  // لإعطاء مساحة كافية للتمرير دون ارتفاع غير محدود
-                  final pageHeight = constraints.maxHeight > 0
-                      ? constraints.maxHeight * 2.8
-                      : MediaQuery.of(context).size.height * 2.8;
+                  final viewportHeight = constraints.maxHeight > 0
+                      ? constraints.maxHeight
+                      : MediaQuery.of(context).size.height;
                   return SingleChildScrollView(
                     physics: const ClampingScrollPhysics(),
-                    child: SizedBox(
-                      height: pageHeight,
-                      width: double.infinity,
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(minHeight: viewportHeight),
                       child: PageViewBuild(
                         circularProgressWidget: circularProgressWidget,
                         languageCode: languageCode,

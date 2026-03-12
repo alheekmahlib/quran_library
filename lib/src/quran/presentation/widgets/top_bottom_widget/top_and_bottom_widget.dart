@@ -71,23 +71,26 @@ class TopAndBottomWidget extends StatelessWidget {
       // شرح: التخطيط الأفقي (Landscape)
       // Explanation: Landscape layout
       isMobileLargeOrDesktop
-          ? Column(
-              children: [
-                BuildTopSection(
-                  isRight: isRight,
-                  languageCode: languageCode,
-                  pageIndex: pageIndex,
-                  isSurah: isSurah!,
-                  surahNumber: surahNumber,
-                ),
-                Flexible(
-                  child: child,
-                ),
-                BuildBottomSection(
-                    pageIndex: pageIndex,
-                    isRight: isRight,
-                    languageCode: languageCode!),
-              ],
+          ? LayoutBuilder(
+              builder: (context, constraints) {
+                final bounded = constraints.maxHeight.isFinite;
+                return Column(
+                  children: [
+                    BuildTopSection(
+                      isRight: isRight,
+                      languageCode: languageCode,
+                      pageIndex: pageIndex,
+                      isSurah: isSurah!,
+                      surahNumber: surahNumber,
+                    ),
+                    if (bounded) Flexible(child: child) else child,
+                    BuildBottomSection(
+                        pageIndex: pageIndex,
+                        isRight: isRight,
+                        languageCode: languageCode!),
+                  ],
+                );
+              },
             )
           : SingleChildScrollView(
               child: Column(

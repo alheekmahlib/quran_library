@@ -199,6 +199,10 @@ class _AyahTafsirInlinePageState extends State<_AyahTafsirInlinePage>
   late Future<void> _tafsirFuture;
   late int _lastRadioValue;
 
+  /// كاش نتائج toFlutterText لتجنب إعادة تحليل HTML/Regex في كل build
+  final Map<int, List<TextSpan>> _parsedTafsirCache = {};
+  bool _lastIsDark = false;
+
   @override
   bool get wantKeepAlive => true;
 
@@ -206,6 +210,7 @@ class _AyahTafsirInlinePageState extends State<_AyahTafsirInlinePage>
   void initState() {
     super.initState();
     _lastRadioValue = TafsirCtrl.instance.radioValue.value;
+    _lastIsDark = widget.isDark;
     _tafsirFuture = _loadTafsir(widget.pageIndex + 1);
   }
 
@@ -217,7 +222,12 @@ class _AyahTafsirInlinePageState extends State<_AyahTafsirInlinePage>
     if (oldWidget.pageIndex != widget.pageIndex ||
         _lastRadioValue != currentRadio) {
       _lastRadioValue = currentRadio;
+      _parsedTafsirCache.clear();
       _tafsirFuture = _loadTafsir(widget.pageIndex + 1);
+    }
+    if (widget.isDark != _lastIsDark) {
+      _lastIsDark = widget.isDark;
+      _parsedTafsirCache.clear();
     }
   }
 
@@ -257,15 +267,46 @@ class _AyahTafsirInlinePageState extends State<_AyahTafsirInlinePage>
               child: GetBuilder<TafsirCtrl>(
                 id: 'change_font_size',
                 builder: (ctrl) {
+                  // بناء Map للتفسير مرة واحدة بدل البحث الخطي لكل آية
+                  final tafsirMap = <int, TafsirTableData>{};
+                  for (final t in ctrl.tafseerList) {
+                    tafsirMap[t.id] = t;
+                  }
                   return ListView.builder(
                     padding: EdgeInsets.zero,
                     itemCount: pageAyahs.length,
                     addAutomaticKeepAlives: true,
                     itemBuilder: (context, index) {
                       final ayah = pageAyahs[index];
-                      final tafsir = _getTafsirForAyah(ayah, ctrl);
-                      final surah =
-                          quranCtrl.getCurrentSurahByPageNumber(ayah.page);
+                      final tafsir = tafsirMap[ayah.ayahUQNumber] ??
+                          const TafsirTableData(
+                            id: 0,
+                            tafsirText: '',
+                            ayahNum: 0,
+                            pageNum: 0,
+                            surahNum: 0,
+                          );
+                      // O(1) بدل O(n) — الوصول المباشر عبر surahNumber
+                      final surahNum = ayah.surahNumber ?? 0;
+                      final surah = (surahNum > 0 &&
+                              surahNum <= quranCtrl.surahs.length)
+                          ? quranCtrl.surahs[surahNum - 1]
+                          : quranCtrl.getCurrentSurahByPageNumber(ayah.page);
+
+                      // كاش toFlutterText لتجنب HTML parsing متكرر
+                      List<TextSpan>? cachedSpans;
+                      if (tafsir.tafsirText.isNotEmpty &&
+                          ctrl.selectedTafsir.isTafsir) {
+                        cachedSpans = _parsedTafsirCache[ayah.ayahUQNumber];
+                        if (cachedSpans == null) {
+                          cachedSpans = tafsir.tafsirText
+                              .toFlutterText(widget.isDark)
+                              .map((e) => e is TextSpan ? e : const TextSpan())
+                              .toList()
+                              .cast<TextSpan>();
+                          _parsedTafsirCache[ayah.ayahUQNumber] = cachedSpans;
+                        }
+                      }
 
                       return RepaintBoundary(
                         child: _InlineAyahTafsirItem(
@@ -290,6 +331,7 @@ class _AyahTafsirInlinePageState extends State<_AyahTafsirInlinePage>
                           bookmarksColor: widget.bookmarksColor,
                           withOptionsBar: widget.withOptionsBar,
                           showAyahNumber: widget.showAyahNumber,
+                          cachedTafsirSpans: cachedSpans,
                         ),
                       );
                     },
@@ -300,20 +342,6 @@ class _AyahTafsirInlinePageState extends State<_AyahTafsirInlinePage>
           ],
         );
       },
-    );
-  }
-
-  TafsirTableData _getTafsirForAyah(AyahModel ayah, TafsirCtrl ctrl) {
-    final ayahIndex = ayah.ayahUQNumber;
-    return ctrl.tafseerList.firstWhere(
-      (e) => e.id == ayahIndex,
-      orElse: () => const TafsirTableData(
-        id: 0,
-        tafsirText: '',
-        ayahNum: 0,
-        pageNum: 0,
-        surahNum: 0,
-      ),
     );
   }
 }
@@ -387,6 +415,7 @@ class _InlineAyahTafsirItem extends StatelessWidget {
     this.bookmarksColor,
     this.withOptionsBar = true,
     this.showAyahNumber = false,
+    this.cachedTafsirSpans,
   });
 
   final AyahModel ayah;
@@ -409,6 +438,7 @@ class _InlineAyahTafsirItem extends StatelessWidget {
   final Color? bookmarksColor;
   final bool? withOptionsBar;
   final bool? showAyahNumber;
+  final List<TextSpan>? cachedTafsirSpans;
 
   @override
   Widget build(BuildContext context) {
@@ -483,12 +513,12 @@ class _InlineAyahTafsirItem extends StatelessWidget {
                 GetBuilder<BookmarksCtrl>(
                   id: 'bookmarks',
                   builder: (bookmarksCtrl) {
-                    final bookmarksAyahs = bookmarksCtrl.bookmarksAyahs;
+                    final bookmarksSet = bookmarksCtrl.bookmarksAyahsSet;
                     final int ayahUQNum = ayah.ayahUQNumber;
                     final hasBookmark = isAyahBookmarked != null
                         ? isAyahBookmarked!(ayah)
                         : (ayahBookmarked.contains(ayahUQNum) ||
-                            bookmarksAyahs.contains(ayahUQNum));
+                            bookmarksSet.contains(ayahUQNum));
 
                     return Container(
                       width: double.infinity,
@@ -651,11 +681,13 @@ class _InlineAyahTafsirItem extends StatelessWidget {
             child: tafsir.tafsirText.isNotEmpty
                 ? ReadMoreLess(
                     text: isTafsir
-                        ? tafsir.tafsirText
-                            .toFlutterText(isDark)
-                            .map((e) => e is TextSpan ? e : const TextSpan())
-                            .toList()
-                            .cast<TextSpan>()
+                        ? (cachedTafsirSpans ??
+                            tafsir.tafsirText
+                                .toFlutterText(isDark)
+                                .map(
+                                    (e) => e is TextSpan ? e : const TextSpan())
+                                .toList()
+                                .cast<TextSpan>())
                         : [
                             TextSpan(
                               text: tafsir.tafsirText,

@@ -387,6 +387,7 @@ class GetSingleAyah extends StatelessWidget {
       return _SingleAyahWordHighlight(
         wordSelectionRanges: highlightRanges,
         highlightColor: effectiveColor,
+        isContiguous: range != null,
         child: richText,
       );
     }
@@ -481,9 +482,13 @@ class _SingleAyahWordHighlight extends SingleChildRenderObjectWidget {
   final List<TextSelection> wordSelectionRanges;
   final Color highlightColor;
 
+  /// عند `true` يُرسم النطاق كشريط متصل مع borderRadius على أول/آخر حافة فقط.
+  final bool isContiguous;
+
   const _SingleAyahWordHighlight({
     required this.wordSelectionRanges,
     required this.highlightColor,
+    this.isContiguous = false,
     required super.child,
   });
 
@@ -492,6 +497,7 @@ class _SingleAyahWordHighlight extends SingleChildRenderObjectWidget {
     return _SingleAyahWordHighlightRenderBox(
       wordRanges: wordSelectionRanges,
       highlightColor: highlightColor,
+      isContiguous: isContiguous,
     );
   }
 
@@ -500,7 +506,8 @@ class _SingleAyahWordHighlight extends SingleChildRenderObjectWidget {
       BuildContext context, _SingleAyahWordHighlightRenderBox renderObject) {
     renderObject
       ..wordRanges = wordSelectionRanges
-      ..highlightColor = highlightColor;
+      ..highlightColor = highlightColor
+      ..isContiguous = isContiguous;
   }
 }
 
@@ -508,8 +515,10 @@ class _SingleAyahWordHighlightRenderBox extends RenderProxyBox {
   _SingleAyahWordHighlightRenderBox({
     required List<TextSelection> wordRanges,
     required Color highlightColor,
+    required bool isContiguous,
   })  : _wordRanges = wordRanges,
-        _highlightColor = highlightColor;
+        _highlightColor = highlightColor,
+        _isContiguous = isContiguous;
 
   List<TextSelection> _wordRanges;
   set wordRanges(List<TextSelection> value) {
@@ -525,56 +534,156 @@ class _SingleAyahWordHighlightRenderBox extends RenderProxyBox {
     markNeedsPaint();
   }
 
+  bool _isContiguous;
+  set isContiguous(bool value) {
+    if (_isContiguous == value) return;
+    _isContiguous = value;
+    markNeedsPaint();
+  }
+
+  static const _radius = Radius.circular(16);
+  static const _padding =
+      EdgeInsets.only(left: 4, right: 4, top: 0, bottom: -6);
+
   @override
   void paint(PaintingContext context, Offset offset) {
-    if (child is RenderParagraph) {
+    if (child is RenderParagraph && _wordRanges.isNotEmpty) {
       final paragraph = child! as RenderParagraph;
       final paint = Paint()..color = _highlightColor;
-      const padding = EdgeInsets.only(left: 4, right: 4, top: 0, bottom: -6);
 
-      for (final range in _wordRanges) {
-        final boxes = paragraph.getBoxesForSelection(
-          range,
-          boxHeightStyle: BoxHeightStyle.max,
-        );
-        if (boxes.isEmpty) continue;
-
-        // دمج المستطيلات على نفس السطر
-        final mergedRects = <Rect>[];
-        Rect? current;
-        double? currentTop;
-        const lineTolerance = 2.0;
-
-        for (final box in boxes) {
-          final rect = box.toRect();
-          if (current == null) {
-            current = rect;
-            currentTop = rect.top;
-          } else if ((rect.top - currentTop!).abs() < lineTolerance) {
-            current = Rect.fromLTRB(
-              math.min(current.left, rect.left),
-              math.min(current.top, rect.top),
-              math.max(current.right, rect.right),
-              math.max(current.bottom, rect.bottom),
-            );
-          } else {
-            mergedRects.add(current);
-            current = rect;
-            currentTop = rect.top;
-          }
-        }
-        if (current != null) mergedRects.add(current);
-
-        for (final rect in mergedRects) {
-          final padded = padding.inflateRect(rect).shift(offset);
-          context.canvas.drawRRect(
-            RRect.fromRectAndRadius(padded, const Radius.circular(16)),
-            paint,
-          );
-        }
+      if (_isContiguous) {
+        _paintContiguous(paragraph, context, offset, paint);
+      } else {
+        _paintIndividual(paragraph, context, offset, paint);
       }
     }
     super.paint(context, offset);
+  }
+
+  /// رسم نطاق متصل — كل سطر مستطيل واحد، borderRadius على الحواف الخارجية فقط.
+  void _paintContiguous(
+    RenderParagraph paragraph,
+    PaintingContext context,
+    Offset offset,
+    Paint paint,
+  ) {
+    // جمع كل boxes من كل النطاقات في قائمة واحدة
+    final allBoxes = <TextBox>[];
+    for (final range in _wordRanges) {
+      allBoxes.addAll(paragraph.getBoxesForSelection(
+        range,
+        boxHeightStyle: BoxHeightStyle.max,
+      ));
+    }
+    if (allBoxes.isEmpty) return;
+
+    // دمج المستطيلات على نفس السطر
+    final lineRects = <Rect>[];
+    Rect? current;
+    double? currentTop;
+    const lineTolerance = 2.0;
+
+    for (final box in allBoxes) {
+      final rect = box.toRect();
+      if (current == null) {
+        current = rect;
+        currentTop = rect.top;
+      } else if ((rect.top - currentTop!).abs() < lineTolerance) {
+        current = Rect.fromLTRB(
+          math.min(current.left, rect.left),
+          math.min(current.top, rect.top),
+          math.max(current.right, rect.right),
+          math.max(current.bottom, rect.bottom),
+        );
+      } else {
+        lineRects.add(current);
+        current = rect;
+        currentTop = rect.top;
+      }
+    }
+    if (current != null) lineRects.add(current);
+
+    // رسم كل سطر: borderRadius على الحواف الخارجية فقط
+    for (int i = 0; i < lineRects.length; i++) {
+      final padded = _padding.inflateRect(lineRects[i]).shift(offset);
+      final bool isFirst = i == 0;
+      final bool isLast = i == lineRects.length - 1;
+
+      // النص RTL: أول سطر حوافه اليمنى مستديرة، آخر سطر حوافه اليسرى
+      // لسطر واحد: كل الحواف مستديرة
+      final RRect rRect;
+      if (lineRects.length == 1) {
+        rRect = RRect.fromRectAndRadius(padded, _radius);
+      } else if (isFirst) {
+        // أول سطر في RTL: حواف يمنى مستديرة (topRight, bottomRight)
+        rRect = RRect.fromRectAndCorners(
+          padded,
+          topRight: _radius,
+          bottomRight: _radius,
+        );
+      } else if (isLast) {
+        // آخر سطر في RTL: حواف يسرى مستديرة (topLeft, bottomLeft)
+        rRect = RRect.fromRectAndCorners(
+          padded,
+          topLeft: _radius,
+          bottomLeft: _radius,
+        );
+      } else {
+        // أسطر وسطى: بدون borderRadius
+        rRect = RRect.fromRectAndRadius(padded, Radius.zero);
+      }
+
+      context.canvas.drawRRect(rRect, paint);
+    }
+  }
+
+  /// رسم كل كلمة بشكل منفصل مع borderRadius على كل مستطيل.
+  void _paintIndividual(
+    RenderParagraph paragraph,
+    PaintingContext context,
+    Offset offset,
+    Paint paint,
+  ) {
+    for (final range in _wordRanges) {
+      final boxes = paragraph.getBoxesForSelection(
+        range,
+        boxHeightStyle: BoxHeightStyle.max,
+      );
+      if (boxes.isEmpty) continue;
+
+      final mergedRects = <Rect>[];
+      Rect? current;
+      double? currentTop;
+      const lineTolerance = 2.0;
+
+      for (final box in boxes) {
+        final rect = box.toRect();
+        if (current == null) {
+          current = rect;
+          currentTop = rect.top;
+        } else if ((rect.top - currentTop!).abs() < lineTolerance) {
+          current = Rect.fromLTRB(
+            math.min(current.left, rect.left),
+            math.min(current.top, rect.top),
+            math.max(current.right, rect.right),
+            math.max(current.bottom, rect.bottom),
+          );
+        } else {
+          mergedRects.add(current);
+          current = rect;
+          currentTop = rect.top;
+        }
+      }
+      if (current != null) mergedRects.add(current);
+
+      for (final rect in mergedRects) {
+        final padded = _padding.inflateRect(rect).shift(offset);
+        context.canvas.drawRRect(
+          RRect.fromRectAndRadius(padded, _radius),
+          paint,
+        );
+      }
+    }
   }
 }
 

@@ -35,6 +35,10 @@ class GetSingleAyah extends StatelessWidget {
   /// لتحديد كلمة برمجياً من الخارج. عند تمريره يُتجاهل التحديد المحلي.
   final WordRef? externalSelectedWordRef;
 
+  /// نطاق كلمات محدّدة (شامل). مثال: `(fromWord: 1, toWord: 3)` يُظلل
+  /// الكلمات 1 و2 و3. يأخذ أولوية على [externalSelectedWordRef].
+  final ({int fromWord, int toWord})? selectedWordsRange;
+
   /// لإظهار أيقونة بجانب الآية.
   final bool? showAyahNumber;
 
@@ -64,6 +68,7 @@ class GetSingleAyah extends StatelessWidget {
     this.onWordTap,
     this.selectedWordColor,
     this.externalSelectedWordRef,
+    this.selectedWordsRange,
     this.showAyahNumber = true,
     this.textHeight,
   });
@@ -262,7 +267,24 @@ class GetSingleAyah extends StatelessWidget {
     int pageNumber,
     List<QpcV4WordSegment> segments,
   ) {
-    // تهيئة الكلمة المحدّدة
+    // نطاق خارجي يأخذ أولوية → لا حاجة لحالة محلية
+    if (selectedWordsRange != null) {
+      return LayoutBuilder(
+        builder: (ctx, constraints) {
+          final fs =
+              fontSize ?? PageFontSizeHelper.getFontSize(pageNumber - 1, ctx);
+          return _buildSelectableRichText(
+            context: context,
+            segments: segments,
+            fontSize: fs,
+            pageNumber: pageNumber,
+            selectedWord: null,
+          );
+        },
+      );
+    }
+
+    // تهيئة الكلمة المحدّدة (وضع كلمة واحدة)
     if (externalSelectedWordRef != null) {
       _localSelectedWord.value = externalSelectedWordRef;
     } else if (_localSelectedWord.value == null && segments.isNotEmpty) {
@@ -307,8 +329,10 @@ class GetSingleAyah extends StatelessWidget {
     final effectiveColor = selectedWordColor ??
         Theme.of(context).colorScheme.primary.withValues(alpha: 0.25);
 
-    // حساب نطاق أحرف الكلمة المحدّدة لرسم التظليل عبر CustomPaint
-    TextSelection? wordSelectionRange;
+    final range = selectedWordsRange;
+
+    // جمع نطاقات أحرف الكلمات المحدّدة لرسم التظليل عبر CustomPaint
+    final List<TextSelection> highlightRanges = [];
     int charOffset = 0;
 
     final spans = List.generate(segments.length, (i) {
@@ -327,14 +351,22 @@ class GetSingleAyah extends StatelessWidget {
         pageNumber: pageNumber,
       );
 
-      // حساب عدد أحرف هذا الـ span لتحديد نطاق الكلمة المحدّدة
       final spanCharCount = _countCharsInSpan(span);
-      if (selectedWord == ref) {
-        // نطاق الـ glyphs فقط (بدون tail)
-        wordSelectionRange = TextSelection(
+
+      // تحديد ما إذا كانت هذه الكلمة ضمن النطاق أو الكلمة الواحدة
+      final bool isSelected;
+      if (range != null) {
+        isSelected =
+            seg.wordNumber >= range.fromWord && seg.wordNumber <= range.toWord;
+      } else {
+        isSelected = selectedWord == ref;
+      }
+
+      if (isSelected) {
+        highlightRanges.add(TextSelection(
           baseOffset: charOffset,
           extentOffset: charOffset + seg.glyphs.length,
-        );
+        ));
       }
       charOffset += spanCharCount;
 
@@ -350,10 +382,10 @@ class GetSingleAyah extends StatelessWidget {
       text: TextSpan(children: spans),
     );
 
-    // لف بـ _AyahSelectionWidget لرسم تظليل الكلمة المحدّدة بـ CustomPaint
-    if (wordSelectionRange != null) {
+    // لف بـ CustomPaint لرسم تظليل الكلمات المحدّدة
+    if (highlightRanges.isNotEmpty) {
       return _SingleAyahWordHighlight(
-        wordSelectionRange: wordSelectionRange!,
+        wordSelectionRanges: highlightRanges,
         highlightColor: effectiveColor,
         child: richText,
       );
@@ -444,13 +476,13 @@ class GetSingleAyah extends StatelessWidget {
   }
 }
 
-/// ويدجت رسم محلي لتظليل الكلمة المحدّدة — معزول عن [_AyahSelectionWidget]
+/// ويدجت رسم محلي لتظليل الكلمات المحدّدة — معزول عن [_AyahSelectionWidget]
 class _SingleAyahWordHighlight extends SingleChildRenderObjectWidget {
-  final TextSelection wordSelectionRange;
+  final List<TextSelection> wordSelectionRanges;
   final Color highlightColor;
 
   const _SingleAyahWordHighlight({
-    required this.wordSelectionRange,
+    required this.wordSelectionRanges,
     required this.highlightColor,
     required super.child,
   });
@@ -458,7 +490,7 @@ class _SingleAyahWordHighlight extends SingleChildRenderObjectWidget {
   @override
   RenderObject createRenderObject(BuildContext context) {
     return _SingleAyahWordHighlightRenderBox(
-      wordRange: wordSelectionRange,
+      wordRanges: wordSelectionRanges,
       highlightColor: highlightColor,
     );
   }
@@ -467,22 +499,22 @@ class _SingleAyahWordHighlight extends SingleChildRenderObjectWidget {
   void updateRenderObject(
       BuildContext context, _SingleAyahWordHighlightRenderBox renderObject) {
     renderObject
-      ..wordRange = wordSelectionRange
+      ..wordRanges = wordSelectionRanges
       ..highlightColor = highlightColor;
   }
 }
 
 class _SingleAyahWordHighlightRenderBox extends RenderProxyBox {
   _SingleAyahWordHighlightRenderBox({
-    required TextSelection wordRange,
+    required List<TextSelection> wordRanges,
     required Color highlightColor,
-  })  : _wordRange = wordRange,
+  })  : _wordRanges = wordRanges,
         _highlightColor = highlightColor;
 
-  TextSelection _wordRange;
-  set wordRange(TextSelection value) {
-    if (_wordRange == value) return;
-    _wordRange = value;
+  List<TextSelection> _wordRanges;
+  set wordRanges(List<TextSelection> value) {
+    if (listEquals(_wordRanges, value)) return;
+    _wordRanges = value;
     markNeedsPaint();
   }
 
@@ -497,13 +529,15 @@ class _SingleAyahWordHighlightRenderBox extends RenderProxyBox {
   void paint(PaintingContext context, Offset offset) {
     if (child is RenderParagraph) {
       final paragraph = child! as RenderParagraph;
-      final boxes = paragraph.getBoxesForSelection(
-        _wordRange,
-        boxHeightStyle: BoxHeightStyle.max,
-      );
-      if (boxes.isNotEmpty) {
-        final paint = Paint()..color = _highlightColor;
-        const padding = EdgeInsets.only(left: 4, right: 4, top: 0, bottom: -6);
+      final paint = Paint()..color = _highlightColor;
+      const padding = EdgeInsets.only(left: 4, right: 4, top: 0, bottom: -6);
+
+      for (final range in _wordRanges) {
+        final boxes = paragraph.getBoxesForSelection(
+          range,
+          boxHeightStyle: BoxHeightStyle.max,
+        );
+        if (boxes.isEmpty) continue;
 
         // دمج المستطيلات على نفس السطر
         final mergedRects = <Rect>[];

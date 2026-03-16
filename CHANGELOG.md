@@ -1,3 +1,8 @@
+## 3.2.1
+
+* **ADD:**
+	* `selectedWordsRange` to `GetSingleAyah`
+
 ## 3.2.0
 
 * **ADD:**

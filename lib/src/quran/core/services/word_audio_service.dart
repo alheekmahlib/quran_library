@@ -20,6 +20,9 @@ class WordAudioService {
   // ─── المشغّل ───
   AudioPlayer? _player;
 
+  /// وصول عام للمشغّل — يُستخدم للاستماع إلى currentIndexStream من الخارج.
+  AudioPlayer get player => _audioPlayer;
+
   AudioPlayer get _audioPlayer {
     _player ??= AudioPlayer();
     return _player!;

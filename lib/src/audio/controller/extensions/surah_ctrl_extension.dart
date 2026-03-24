@@ -41,6 +41,18 @@ extension SurahCtrlExtension on AudioCtrl {
       SurahAudioStyle? style}) async {
     final isConnected = InternetConnectionController.instance.isConnected;
 
+    // إذا كانت نفس السورة محمّلة والمشغّل جاهز (إيقاف مؤقت)، استأنف فقط
+    if (state.isPlayingSurahsMode &&
+        state.currentAudioListSurahNum.value == surahNumber &&
+        state.audioPlayer.processingState == ProcessingState.ready &&
+        !state.audioPlayer.playing) {
+      state.isPlaying.value = true;
+      enableSurahAutoNextListener();
+      enableSurahPositionSaving();
+      await state.audioPlayer.play();
+      return;
+    }
+
     if (!isConnected && state.isSurahDownloadedByNumber(surahNumber).value) {
       await startDownloadOrPlayExistsSurah();
     } else if (!isConnected) {
@@ -58,9 +70,7 @@ extension SurahCtrlExtension on AudioCtrl {
       state.currentAudioListSurahNum.value = surahNumber;
       cancelDownload();
       state.isPlaying.value = true;
-      state.isSurahDownloadedByNumber(surahNumber).value
-          ? await startDownloadOrPlayExistsSurah()
-          : await state.audioPlayer.play();
+      await startDownloadOrPlayExistsSurah();
     }
   }
 

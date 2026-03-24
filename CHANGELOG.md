@@ -3,6 +3,10 @@
 * **ADD:**
 	* `selectedWordsRange` to `GetSingleAyah`
 
+* **FIX:**
+	* Surah audio last listen.
+	* Check internet connection.
+
 ## 3.2.0
 
 * **ADD:**

@@ -70,7 +70,11 @@ extension SurahCtrlExtension on AudioCtrl {
       state.currentAudioListSurahNum.value = surahNumber;
       cancelDownload();
       state.isPlaying.value = true;
-      await startDownloadOrPlayExistsSurah();
+
+      await state.stopAllAudio();
+      state.isSurahDownloadedByNumber(surahNumber).value
+          ? await startDownloadOrPlayExistsSurah()
+          : await state.audioPlayer.play();
     }
   }
 

@@ -6,6 +6,7 @@
 * **FIX:**
 	* Surah audio last listen.
 	* Check internet connection.
+	* Fix screen `AyahWithTafsirInline`.
 
 ## 3.2.0
 

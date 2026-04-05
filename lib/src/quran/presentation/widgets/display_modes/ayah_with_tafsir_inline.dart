@@ -199,8 +199,6 @@ class _AyahTafsirInlinePageState extends State<_AyahTafsirInlinePage>
   late Future<void> _tafsirFuture;
   late int _lastRadioValue;
 
-  /// كاش نتائج toFlutterText لتجنب إعادة تحليل HTML/Regex في كل build
-  final Map<int, List<TextSpan>> _parsedTafsirCache = {};
   bool _lastIsDark = false;
 
   @override
@@ -221,22 +219,27 @@ class _AyahTafsirInlinePageState extends State<_AyahTafsirInlinePage>
     // أعد تحميل التفسير فقط إذا تغيّر رقم الصفحة أو مصدر التفسير
     if (oldWidget.pageIndex != widget.pageIndex ||
         _lastRadioValue != currentRadio) {
+      final sourceChanged = _lastRadioValue != currentRadio;
       _lastRadioValue = currentRadio;
-      _parsedTafsirCache.clear();
-      _tafsirFuture = _loadTafsir(widget.pageIndex + 1);
+      _tafsirFuture =
+          _loadTafsir(widget.pageIndex + 1, forceReload: sourceChanged);
     }
     if (widget.isDark != _lastIsDark) {
       _lastIsDark = widget.isDark;
-      _parsedTafsirCache.clear();
     }
   }
 
-  Future<void> _loadTafsir(int pageNumber) async {
+  Future<void> _loadTafsir(int pageNumber, {bool forceReload = false}) async {
     final tafsirCtrl = TafsirCtrl.instance;
     if (tafsirCtrl.selectedTafsir.isTafsir) {
-      await tafsirCtrl.fetchData(pageNumber);
+      // تحميل فقط إذا كانت القائمة فارغة أو تغيّر المصدر
+      if (forceReload || tafsirCtrl.tafseerList.isEmpty) {
+        await tafsirCtrl.fetchData(pageNumber);
+      }
     } else {
-      await tafsirCtrl.fetchTranslate();
+      if (forceReload || tafsirCtrl.translationList.isEmpty) {
+        await tafsirCtrl.fetchTranslate();
+      }
     }
   }
 
@@ -267,72 +270,98 @@ class _AyahTafsirInlinePageState extends State<_AyahTafsirInlinePage>
               child: GetBuilder<TafsirCtrl>(
                 id: 'change_font_size',
                 builder: (ctrl) {
+                  final isTafsir = ctrl.selectedTafsir.isTafsir;
+                  final language = ctrl
+                      .tafsirAndTranslationsItems[ctrl.radioValue.value].name;
+
                   // بناء Map للتفسير مرة واحدة بدل البحث الخطي لكل آية
                   final tafsirMap = <int, TafsirTableData>{};
-                  for (final t in ctrl.tafseerList) {
-                    tafsirMap[t.id] = t;
+                  if (isTafsir) {
+                    for (final t in ctrl.tafseerList) {
+                      tafsirMap[t.id] = t;
+                    }
                   }
-                  return ListView.builder(
-                    padding: EdgeInsets.zero,
-                    itemCount: pageAyahs.length,
-                    addAutomaticKeepAlives: true,
-                    itemBuilder: (context, index) {
-                      final ayah = pageAyahs[index];
-                      final tafsir = tafsirMap[ayah.ayahUQNumber] ??
-                          const TafsirTableData(
-                            id: 0,
-                            tafsirText: '',
-                            ayahNum: 0,
-                            pageNum: 0,
-                            surahNum: 0,
+
+                  // بناء Map للترجمة عند وضع الترجمة
+                  final translationMap = <String, TranslationModel>{};
+                  if (!isTafsir) {
+                    for (final t in ctrl.translationList) {
+                      translationMap['${t.surahNumber}:${t.ayahNumber}'] = t;
+                    }
+                  }
+
+                  return GetBuilder<BookmarksCtrl>(
+                    id: 'bookmarks',
+                    builder: (bookmarksCtrl) {
+                      final bookmarksSet = bookmarksCtrl.bookmarksAyahsSet;
+                      return ListView.builder(
+                        padding: EdgeInsets.zero,
+                        itemCount: pageAyahs.length,
+                        addAutomaticKeepAlives: true,
+                        cacheExtent: 600,
+                        itemBuilder: (context, index) {
+                          final ayah = pageAyahs[index];
+                          final tafsir = isTafsir
+                              ? (tafsirMap[ayah.ayahUQNumber] ??
+                                  const TafsirTableData(
+                                    id: 0,
+                                    tafsirText: '',
+                                    ayahNum: 0,
+                                    pageNum: 0,
+                                    surahNum: 0,
+                                  ))
+                              : const TafsirTableData(
+                                  id: 0,
+                                  tafsirText: '',
+                                  ayahNum: 0,
+                                  pageNum: 0,
+                                  surahNum: 0,
+                                );
+
+                          // البحث عن الترجمة بناءً على رقم السورة والآية
+                          final translation = !isTafsir
+                              ? translationMap[
+                                  '${ayah.surahNumber}:${ayah.ayahNumber}']
+                              : null;
+
+                          // O(1) بدل O(n) — الوصول المباشر عبر surahNumber
+                          final surahNum = ayah.surahNumber ?? 0;
+                          final surah = (surahNum > 0 &&
+                                  surahNum <= quranCtrl.surahs.length)
+                              ? quranCtrl.surahs[surahNum - 1]
+                              : quranCtrl
+                                  .getCurrentSurahByPageNumber(ayah.page);
+
+                          return RepaintBoundary(
+                            child: _InlineAyahTafsirItem(
+                              ayah: ayah,
+                              tafsir: tafsir,
+                              surah: surah,
+                              isDark: widget.isDark,
+                              style: widget.style,
+                              tafsirCtrl: ctrl,
+                              pageIndex: widget.pageIndex,
+                              languageCode: widget.languageCode,
+                              bannerStyle: widget.bannerStyle,
+                              surahNameStyle: widget.surahNameStyle,
+                              onSurahBannerPress: widget.onSurahBannerPress,
+                              basmalaStyle: widget.basmalaStyle,
+                              audioStyle: widget.audioStyle,
+                              ayahDownloadManagerStyle:
+                                  widget.ayahDownloadManagerStyle,
+                              ayahBookmarked: widget.ayahBookmarked,
+                              isAyahBookmarked: widget.isAyahBookmarked,
+                              showAyahBookmarkedIcon:
+                                  widget.showAyahBookmarkedIcon,
+                              bookmarksColor: widget.bookmarksColor,
+                              withOptionsBar: widget.withOptionsBar,
+                              showAyahNumber: widget.showAyahNumber,
+                              translation: translation,
+                              bookmarksSet: bookmarksSet,
+                              language: language,
+                            ),
                           );
-                      // O(1) بدل O(n) — الوصول المباشر عبر surahNumber
-                      final surahNum = ayah.surahNumber ?? 0;
-                      final surah = (surahNum > 0 &&
-                              surahNum <= quranCtrl.surahs.length)
-                          ? quranCtrl.surahs[surahNum - 1]
-                          : quranCtrl.getCurrentSurahByPageNumber(ayah.page);
-
-                      // كاش toFlutterText لتجنب HTML parsing متكرر
-                      List<TextSpan>? cachedSpans;
-                      if (tafsir.tafsirText.isNotEmpty &&
-                          ctrl.selectedTafsir.isTafsir) {
-                        cachedSpans = _parsedTafsirCache[ayah.ayahUQNumber];
-                        if (cachedSpans == null) {
-                          cachedSpans = tafsir.tafsirText
-                              .toFlutterText(widget.isDark)
-                              .map((e) => e is TextSpan ? e : const TextSpan())
-                              .toList()
-                              .cast<TextSpan>();
-                          _parsedTafsirCache[ayah.ayahUQNumber] = cachedSpans;
-                        }
-                      }
-
-                      return RepaintBoundary(
-                        child: _InlineAyahTafsirItem(
-                          ayah: ayah,
-                          tafsir: tafsir,
-                          surah: surah,
-                          isDark: widget.isDark,
-                          style: widget.style,
-                          tafsirCtrl: ctrl,
-                          pageIndex: widget.pageIndex,
-                          languageCode: widget.languageCode,
-                          bannerStyle: widget.bannerStyle,
-                          surahNameStyle: widget.surahNameStyle,
-                          onSurahBannerPress: widget.onSurahBannerPress,
-                          basmalaStyle: widget.basmalaStyle,
-                          audioStyle: widget.audioStyle,
-                          ayahDownloadManagerStyle:
-                              widget.ayahDownloadManagerStyle,
-                          ayahBookmarked: widget.ayahBookmarked,
-                          isAyahBookmarked: widget.isAyahBookmarked,
-                          showAyahBookmarkedIcon: widget.showAyahBookmarkedIcon,
-                          bookmarksColor: widget.bookmarksColor,
-                          withOptionsBar: widget.withOptionsBar,
-                          showAyahNumber: widget.showAyahNumber,
-                          cachedTafsirSpans: cachedSpans,
-                        ),
+                        },
                       );
                     },
                   );
@@ -374,10 +403,12 @@ class _InlineTafsirHeader extends StatelessWidget {
       ),
       child: Row(
         children: [
-          ChangeTafsirDialog(
-              tafsirStyle: TafsirTheme.of(context)?.style ??
-                  TafsirStyle.defaults(isDark: isDark, context: context),
-              isDark: isDark),
+          GetBuilder<TafsirCtrl>(
+              id: 'actualTafsirContent',
+              builder: (_) => ChangeTafsirDialog(
+                  tafsirStyle: TafsirTheme.of(context)?.style ??
+                      TafsirStyle.defaults(isDark: isDark, context: context),
+                  isDark: isDark)),
           const Spacer(),
           style.fontSizeWidget ??
               fontSizeDropDown(
@@ -415,7 +446,9 @@ class _InlineAyahTafsirItem extends StatelessWidget {
     this.bookmarksColor,
     this.withOptionsBar = true,
     this.showAyahNumber = false,
-    this.cachedTafsirSpans,
+    this.translation,
+    required this.bookmarksSet,
+    required this.language,
   });
 
   final AyahModel ayah;
@@ -438,7 +471,9 @@ class _InlineAyahTafsirItem extends StatelessWidget {
   final Color? bookmarksColor;
   final bool? withOptionsBar;
   final bool? showAyahNumber;
-  final List<TextSpan>? cachedTafsirSpans;
+  final TranslationModel? translation;
+  final Set<int> bookmarksSet;
+  final String language;
 
   @override
   Widget build(BuildContext context) {
@@ -458,8 +493,11 @@ class _InlineAyahTafsirItem extends StatelessWidget {
           0xAA00CD00,
         ];
 
-    final language =
-        tafsirCtrl.tafsirAndTranslationsItems[tafsirCtrl.radioValue.value].name;
+    final int ayahUQNum = ayah.ayahUQNumber;
+    final hasBookmark = isAyahBookmarked != null
+        ? isAyahBookmarked!(ayah)
+        : (ayahBookmarked.contains(ayahUQNum) ||
+            bookmarksSet.contains(ayahUQNum));
 
     return Container(
       padding: style.ayahPadding ??
@@ -510,144 +548,138 @@ class _InlineAyahTafsirItem extends StatelessWidget {
 
           if (withOptionsBar == true)
             (style.optionsBarWidget?.call(ayah, surah, pageIndex)) ??
-                GetBuilder<BookmarksCtrl>(
-                  id: 'bookmarks',
-                  builder: (bookmarksCtrl) {
-                    final bookmarksSet = bookmarksCtrl.bookmarksAyahsSet;
-                    final int ayahUQNum = ayah.ayahUQNumber;
-                    final hasBookmark = isAyahBookmarked != null
-                        ? isAyahBookmarked!(ayah)
-                        : (ayahBookmarked.contains(ayahUQNum) ||
-                            bookmarksSet.contains(ayahUQNum));
-
-                    return Container(
-                      width: double.infinity,
-                      margin: const EdgeInsets.only(bottom: 8),
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: style.optionsBarBackgroundColor ??
-                            Theme.of(context)
-                                .colorScheme
-                                .primary
-                                .withValues(alpha: .1),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
+                Container(
+                  width: double.infinity,
+                  margin: const EdgeInsets.only(bottom: 8),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: style.optionsBarBackgroundColor ??
+                        Theme.of(context)
+                            .colorScheme
+                            .primary
+                            .withValues(alpha: .1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      (hasBookmark && showAyahBookmarkedIcon)
+                          ? Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 4.0),
+                              child: SvgPicture.asset(
+                                AssetsPath.assets.ayahBookmarked,
+                                height: 30,
+                                width: 30,
+                              ),
+                            )
+                          : Text(
+                              '${ayah.ayahNumber}'
+                                  .convertEnglishNumbersToArabic(
+                                      ayah.ayahNumber.toString()),
+                              style: TextStyle(
+                                fontFamily: 'ayahNumber',
+                                fontSize: (fontSize + 5),
+                                height: 1.5,
+                                package: 'quran_library',
+                                color: style.ayahNumberColor ??
+                                    Theme.of(context).colorScheme.primary,
+                              ),
+                            ),
+                      const Spacer(),
+                      Row(
                         children: [
-                          (hasBookmark && showAyahBookmarkedIcon)
-                              ? Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 4.0),
-                                  child: SvgPicture.asset(
-                                    AssetsPath.assets.ayahBookmarked,
-                                    height: 30,
-                                    width: 30,
-                                  ),
-                                )
-                              : Text(
-                                  '${ayah.ayahNumber}'
-                                      .convertEnglishNumbersToArabic(
-                                          ayah.ayahNumber.toString()),
-                                  style: TextStyle(
-                                    fontFamily: 'ayahNumber',
-                                    fontSize: (fontSize + 5),
-                                    height: 1.5,
-                                    package: 'quran_library',
-                                    color: style.ayahNumberColor ??
-                                        Theme.of(context).colorScheme.primary,
-                                  ),
-                                ),
-                          const Spacer(),
-                          Row(
-                            children: [
-                              GestureDetector(
-                                onTap: () {
-                                  AudioCtrl.instance.playAyah(
-                                    context,
-                                    ayah.ayahUQNumber,
-                                    playSingleAyah: true,
-                                    ayahAudioStyle: sAudio,
-                                    ayahDownloadManagerStyle: sDownloadManager,
-                                    isDarkMode: isDark,
-                                  );
-                                  log('Second Menu Child Tapped: ${ayah.ayahUQNumber}');
-                                },
-                                child: Icon(
-                                  style.playIconData,
-                                  color: style.playIconColor,
-                                  size: style.iconSize,
-                                ),
-                              ),
-                              SizedBox(
-                                  width: style.iconHorizontalPadding ?? 4.0),
-                              GestureDetector(
-                                onTap: () {
-                                  AudioCtrl.instance.playAyah(
-                                    context,
-                                    ayah.ayahUQNumber,
-                                    playSingleAyah: false,
-                                    ayahAudioStyle: sAudio,
-                                    ayahDownloadManagerStyle: sDownloadManager,
-                                    isDarkMode: isDark,
-                                  );
-                                  log('Second Menu Child Tapped: ${ayah.ayahUQNumber}');
-                                },
-                                child: Icon(
-                                  style.playAllIconData,
-                                  color: style.playAllIconColor,
-                                  size: style.iconSize,
-                                ),
-                              ),
-                              SizedBox(
-                                  width: style.iconHorizontalPadding ?? 4.0),
-                              GestureDetector(
-                                onTap: () {
-                                  Clipboard.setData(
-                                      ClipboardData(text: ayah.text));
-                                },
-                                child: Icon(
-                                  style.copyIconData,
-                                  color: style.copyIconColor,
-                                  size: style.iconSize,
-                                ),
-                              ),
-                              SizedBox(
-                                  width: style.iconHorizontalPadding ?? 4.0),
+                          GestureDetector(
+                            onTap: () {
+                              AudioCtrl.instance.playAyah(
+                                context,
+                                ayah.ayahUQNumber,
+                                playSingleAyah: true,
+                                ayahAudioStyle: sAudio,
+                                ayahDownloadManagerStyle: sDownloadManager,
+                                isDarkMode: isDark,
+                              );
+                              log('Second Menu Child Tapped: ${ayah.ayahUQNumber}');
+                            },
+                            child: Icon(
+                              style.playIconData,
+                              color: style.playIconColor,
+                              size: style.iconSize,
+                            ),
+                          ),
+                          SizedBox(width: style.iconHorizontalPadding ?? 4.0),
+                          GestureDetector(
+                            onTap: () {
+                              AudioCtrl.instance.playAyah(
+                                context,
+                                ayah.ayahUQNumber,
+                                playSingleAyah: false,
+                                ayahAudioStyle: sAudio,
+                                ayahDownloadManagerStyle: sDownloadManager,
+                                isDarkMode: isDark,
+                              );
+                              log('Second Menu Child Tapped: ${ayah.ayahUQNumber}');
+                            },
+                            child: Icon(
+                              style.playAllIconData,
+                              color: style.playAllIconColor,
+                              size: style.iconSize,
+                            ),
+                          ),
+                          SizedBox(width: style.iconHorizontalPadding ?? 4.0),
+                          GestureDetector(
+                            onTap: () {
+                              Clipboard.setData(ClipboardData(text: ayah.text));
+                            },
+                            child: Icon(
+                              style.copyIconData,
+                              color: style.copyIconColor,
+                              size: style.iconSize,
+                            ),
+                          ),
+                          SizedBox(width: style.iconHorizontalPadding ?? 4.0),
 
-                              // أزرار العلامات المرجعية
+                          // أزرار العلامات المرجعية
 
-                              for (final colorCode in colors) ...{
-                                Padding(
-                                  padding: EdgeInsets.symmetric(
-                                    horizontal:
-                                        style.iconHorizontalPadding ?? 4.0,
-                                  ),
-                                  child: GestureDetector(
-                                    onTap: () {
-                                      BookmarksCtrl.instance.saveBookmark(
-                                        surahName: surah.arabicName,
-                                        ayahNumber: ayah.ayahNumber,
-                                        ayahId: ayah.ayahUQNumber,
-                                        page: ayah.page,
-                                        colorCode: colorCode,
+                          for (final colorCode in colors) ...{
+                            Padding(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: style.iconHorizontalPadding ?? 4.0,
+                              ),
+                              child: GestureDetector(
+                                onTap: () {
+                                  final bmCtrl = BookmarksCtrl.instance;
+                                  final existing = bmCtrl.bookmarks[colorCode]
+                                      ?.cast<BookmarkModel?>()
+                                      .firstWhere(
+                                        (b) => b!.ayahId == ayah.ayahUQNumber,
+                                        orElse: () => null,
                                       );
-                                    },
-                                    child: Icon(
-                                      style.bookmarkIconData,
-                                      color: Color(colorCode),
-                                      size: style.iconSize,
-                                    ),
-                                  ),
+                                  if (existing != null) {
+                                    bmCtrl.removeBookmark(existing.id);
+                                  } else {
+                                    bmCtrl.saveBookmark(
+                                      surahName: surah.arabicName,
+                                      ayahNumber: ayah.ayahNumber,
+                                      ayahId: ayah.ayahUQNumber,
+                                      page: ayah.page,
+                                      colorCode: colorCode,
+                                    );
+                                  }
+                                },
+                                child: Icon(
+                                  style.bookmarkIconData,
+                                  color: Color(colorCode),
+                                  size: style.iconSize,
                                 ),
-                              }
-                            ],
-                          )
+                              ),
+                            ),
+                          }
                         ],
-                      ),
-                    );
-                  },
+                      )
+                    ],
+                  ),
                 ),
           // نص الآية
           GetSingleAyah(
@@ -678,67 +710,239 @@ class _InlineAyahTafsirItem extends StatelessWidget {
               borderRadius: BorderRadius.circular(
                   style.tafsirBackgroundBorderRadius ?? 12.0),
             ),
-            child: tafsir.tafsirText.isNotEmpty
-                ? ReadMoreLess(
-                    text: isTafsir
-                        ? (cachedTafsirSpans ??
-                            tafsir.tafsirText
-                                .toFlutterText(isDark)
-                                .map(
-                                    (e) => e is TextSpan ? e : const TextSpan())
-                                .toList()
-                                .cast<TextSpan>())
-                        : [
-                            TextSpan(
-                              text: tafsir.tafsirText,
-                              style: TextStyle(
-                                color: style.tafsirTextColor ??
-                                    (isDark
-                                        ? Colors.grey.shade300
-                                        : Colors.grey.shade800),
-                                fontSize: fontSize,
-                                height: 1.5,
-                              ),
-                            ),
-                          ],
-                    maxLines: style.tafsirMaxLines ?? 4,
-                    collapsedHeight: style.tafsirCollapsedHeight ?? 80,
-                    readMoreText: style.readMoreText ?? 'اقرأ المزيد',
-                    readLessText: style.readLessText ?? 'اقرأ أقل',
-                    textStyle: TextStyle(
-                      color: style.tafsirTextColor ??
-                          (isDark
-                              ? Colors.grey.shade300
-                              : Colors.grey.shade800),
-                      fontSize: fontSize,
-                      height: 1.5,
-                    ),
-                    textDirection: context.alignmentLayoutWPassLang(
-                        language, TextDirection.rtl, TextDirection.ltr),
-                    textAlign: TextAlign.justify,
-                    buttonTextStyle: style.readMoreTextStyle ??
-                        TextStyle(
-                          color: style.readMoreButtonColor ??
-                              Theme.of(context).colorScheme.primary,
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
-                        ),
-                    iconColor: style.readMoreButtonColor ??
-                        Theme.of(context).colorScheme.primary,
-                  )
-                : Text(
-                    languageCode == 'ar'
-                        ? 'لا يوجد تفسير متاح'
-                        : 'No tafsir available',
-                    style: TextStyle(
-                      color:
-                          isDark ? Colors.grey.shade500 : Colors.grey.shade500,
-                      fontSize: 14,
-                      fontStyle: FontStyle.italic,
-                    ),
-                  ),
+            child: _buildTafsirOrTranslationContent(
+              context: context,
+              isTafsir: isTafsir,
+              fontSize: fontSize,
+              language: language,
+            ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildTafsirOrTranslationContent({
+    required BuildContext context,
+    required bool isTafsir,
+    required double fontSize,
+    required String language,
+  }) {
+    final rawText = isTafsir ? tafsir.tafsirText : translation?.text;
+    final hasContent = rawText != null && rawText.isNotEmpty;
+
+    if (!hasContent) {
+      return Text(
+        languageCode == 'ar' ? 'لا يوجد تفسير متاح' : 'No tafsir available',
+        style: TextStyle(
+          color: isDark ? Colors.grey.shade500 : Colors.grey.shade500,
+          fontSize: 14,
+          fontStyle: FontStyle.italic,
+        ),
+      );
+    }
+
+    final textColor = style.tafsirTextColor ??
+        (isDark ? Colors.grey.shade300 : Colors.grey.shade800);
+
+    return _ExpandableTafsirText(
+      rawText: rawText,
+      isDark: isDark,
+      fontSize: fontSize,
+      textColor: textColor,
+      textDirection: context.alignmentLayoutWPassLang(
+          language, TextDirection.rtl, TextDirection.ltr),
+      maxLines: style.tafsirMaxLines ?? 4,
+      readMoreText: style.readMoreText ?? 'اقرأ المزيد',
+      readLessText: style.readLessText ?? 'اقرأ أقل',
+      readMoreButtonColor: style.readMoreButtonColor,
+      readMoreTextStyle: style.readMoreTextStyle,
+      translation: !isTafsir ? translation : null,
+    );
+  }
+}
+
+/// ويدجت عرض التفسير/الترجمة بأداء عالي:
+/// - في الوضع المطوي: يعرض نص عادي مُجرّد من HTML (بدون parsing ثقيل)
+/// - عند الضغط على "اقرأ المزيد": يحلّل HTML ويعرض النص المنسّق كاملاً
+/// هذا يتجنب أعباء toFlutterText() و TextPainter.layout() للنصوص الطويلة
+class _ExpandableTafsirText extends StatefulWidget {
+  const _ExpandableTafsirText({
+    required this.rawText,
+    required this.isDark,
+    required this.fontSize,
+    required this.textColor,
+    required this.textDirection,
+    this.maxLines = 4,
+    this.readMoreText = 'اقرأ المزيد',
+    this.readLessText = 'اقرأ أقل',
+    this.readMoreButtonColor,
+    this.readMoreTextStyle,
+    this.translation,
+  });
+
+  final String rawText;
+  final bool isDark;
+  final double fontSize;
+  final Color textColor;
+  final TextDirection textDirection;
+  final int maxLines;
+  final String readMoreText;
+  final String readLessText;
+  final Color? readMoreButtonColor;
+  final TextStyle? readMoreTextStyle;
+  final TranslationModel? translation;
+
+  @override
+  State<_ExpandableTafsirText> createState() => _ExpandableTafsirTextState();
+}
+
+class _ExpandableTafsirTextState extends State<_ExpandableTafsirText> {
+  bool _expanded = false;
+  List<TextSpan>? _parsedSpans;
+  String? _strippedText;
+
+  static final _htmlTagRegex = RegExp(r'<[^>]*>');
+  static final _multiSpaceRegex = RegExp(r'\s+');
+
+  String get _stripped {
+    return _strippedText ??= widget.rawText
+        .replaceAll(_htmlTagRegex, ' ')
+        .replaceAll(_multiSpaceRegex, ' ')
+        .trim();
+  }
+
+  List<TextSpan> _getFullSpans() {
+    if (_parsedSpans != null) return _parsedSpans!;
+    var spans = widget.rawText
+        .toFlutterText(widget.isDark)
+        .map((e) => e is TextSpan ? e : const TextSpan())
+        .toList()
+        .cast<TextSpan>();
+    if (widget.translation != null) {
+      final footnotes = widget.translation!.orderedFootnotesWithNumbers;
+      if (footnotes.isNotEmpty) {
+        final footnoteSpans = <TextSpan>[
+          const TextSpan(text: '\n\n'),
+          TextSpan(
+            text: 'الحواشي:\n',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: widget.fontSize * 0.95,
+              color: widget.textColor,
+            ),
+          ),
+        ];
+        for (final footnoteEntry in footnotes) {
+          final number = footnoteEntry.key;
+          final footnoteData = footnoteEntry.value;
+          footnoteSpans.add(TextSpan(
+            children: [
+              TextSpan(
+                text: '($number) ',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: widget.fontSize * 0.9,
+                  color: widget.textColor,
+                ),
+              ),
+              TextSpan(
+                text: '${footnoteData.value}\n\n',
+                style: TextStyle(
+                  fontSize: widget.fontSize * 0.85,
+                  color: widget.textColor,
+                  height: 1.4,
+                ),
+              ),
+            ],
+          ));
+        }
+        spans = [...spans, ...footnoteSpans];
+      }
+    }
+    _parsedSpans = spans;
+    return spans;
+  }
+
+  @override
+  void didUpdateWidget(covariant _ExpandableTafsirText oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.rawText != widget.rawText ||
+        oldWidget.isDark != widget.isDark ||
+        oldWidget.translation != widget.translation) {
+      _parsedSpans = null;
+      _strippedText = null;
+      _expanded = false;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final buttonColor =
+        widget.readMoreButtonColor ?? Theme.of(context).colorScheme.primary;
+    final buttonStyle = widget.readMoreTextStyle ??
+        TextStyle(
+          color: buttonColor,
+          fontSize: 13,
+          fontWeight: FontWeight.w600,
+        );
+
+    final textStyle = TextStyle(
+      color: widget.textColor,
+      fontSize: widget.fontSize,
+      height: 1.5,
+    );
+
+    if (_expanded) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text.rich(
+            TextSpan(children: _getFullSpans(), style: textStyle),
+            textDirection: widget.textDirection,
+            textAlign: TextAlign.justify,
+          ),
+          _buildToggleButton(widget.readLessText, buttonStyle, buttonColor,
+              Icons.keyboard_arrow_up),
+        ],
+      );
+    }
+
+    // الوضع المطوي: نص عادي مُجرّد — بدون HTML parsing
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          _stripped,
+          maxLines: widget.maxLines,
+          overflow: TextOverflow.ellipsis,
+          textDirection: widget.textDirection,
+          textAlign: TextAlign.justify,
+          style: textStyle,
+        ),
+        _buildToggleButton(widget.readMoreText, buttonStyle, buttonColor,
+            Icons.keyboard_arrow_down),
+      ],
+    );
+  }
+
+  Widget _buildToggleButton(
+    String text,
+    TextStyle buttonStyle,
+    Color buttonColor,
+    IconData icon,
+  ) {
+    return GestureDetector(
+      onTap: () => setState(() => _expanded = !_expanded),
+      child: Padding(
+        padding: const EdgeInsets.only(top: 4),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(text, style: buttonStyle),
+            Icon(icon, color: buttonColor, size: 18),
+          ],
+        ),
       ),
     );
   }

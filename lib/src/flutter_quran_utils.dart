@@ -30,7 +30,9 @@ class QuranLibrary {
     if (_isInitialized) return;
 
     await GetStorage.init();
-    Get.put(InternetConnectionService(), permanent: true);
+    final connectivityService = InternetConnectionService();
+    await connectivityService.init();
+    Get.put(connectivityService, permanent: true);
     Get.put(InternetConnectionController(), permanent: true);
 
     // تهيئة backend الصوت للويندوز قبل إنشاء أي AudioPlayer

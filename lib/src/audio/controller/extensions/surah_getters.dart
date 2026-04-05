@@ -69,9 +69,7 @@ extension SurahGetters on AudioCtrl {
         .isSurahDownloadedByNumber(state.currentAudioListSurahNum.value)
         .value;
     // إذا لم تكن السورة محمّلة وتبين عدم وجود اتصال، لا نحاول تحميل الشبكة
-    if (!isDownloaded &&
-        InternetConnectionController.instance.connectionStatus.value !=
-            ConnectivityStatus.connected) {
+    if (!isDownloaded && !InternetConnectionController.instance.isConnected) {
       log('Skipped setting audio source: offline and file not downloaded',
           name: 'AudioCtrl');
       return;

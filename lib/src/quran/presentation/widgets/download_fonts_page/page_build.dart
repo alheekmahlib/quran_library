@@ -94,14 +94,10 @@ class PageBuild extends StatelessWidget {
               return SurahHeaderWidget(
                 b.surahNumber,
                 bannerStyle: bannerStyle ??
-                    BannerStyle().copyWith(
-                      bannerSvgHeight: 35.w,
-                    ),
+                    BannerStyle.downloadFonts(isDark: isDark, context: context),
                 surahNameStyle: surahNameStyle ??
-                    SurahNameStyle(
-                      surahNameSize: 35.w,
-                      surahNameColor: AppColors.getTextColor(isDark),
-                    ),
+                    SurahNameStyle.downloadFonts(
+                        isDark: isDark, context: context),
                 onSurahBannerPress: onSurahBannerPress,
                 isDark: isDark,
               );
@@ -111,11 +107,8 @@ class PageBuild extends StatelessWidget {
               return BasmallahWidget(
                 surahNumber: b.surahNumber,
                 basmalaStyle: basmalaStyle ??
-                    BasmalaStyle(
-                      basmalaColor: AppColors.getTextColor(isDark),
-                      basmalaFontSize: 23.0.w,
-                      verticalPadding: 0.0,
-                    ),
+                    BasmalaStyle.downloadFonts(
+                        isDark: isDark, context: context),
               );
             }
 

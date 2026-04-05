@@ -1,3 +1,13 @@
+## 3.2.2
+
+* **ADD:**
+	* `selectedWordsRange` to `GetSingleAyah`
+
+* **FIX:**
+	* Surah audio last listen.
+	* Check internet connection.
+	* Fix screen `AyahWithTafsirInline`.
+
 ## 3.2.0
 
 * **ADD:**

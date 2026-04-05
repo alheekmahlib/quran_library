@@ -35,6 +35,10 @@ class GetSingleAyah extends StatelessWidget {
   /// لتحديد كلمة برمجياً من الخارج. عند تمريره يُتجاهل التحديد المحلي.
   final WordRef? externalSelectedWordRef;
 
+  /// نطاق كلمات محدّدة (شامل). مثال: `(fromWord: 1, toWord: 3)` يُظلل
+  /// الكلمات 1 و2 و3. يأخذ أولوية على [externalSelectedWordRef].
+  final ({int fromWord, int toWord})? selectedWordsRange;
+
   /// لإظهار أيقونة بجانب الآية.
   final bool? showAyahNumber;
 
@@ -64,6 +68,7 @@ class GetSingleAyah extends StatelessWidget {
     this.onWordTap,
     this.selectedWordColor,
     this.externalSelectedWordRef,
+    this.selectedWordsRange,
     this.showAyahNumber = true,
     this.textHeight,
   });
@@ -262,7 +267,24 @@ class GetSingleAyah extends StatelessWidget {
     int pageNumber,
     List<QpcV4WordSegment> segments,
   ) {
-    // تهيئة الكلمة المحدّدة
+    // نطاق خارجي يأخذ أولوية → لا حاجة لحالة محلية
+    if (selectedWordsRange != null) {
+      return LayoutBuilder(
+        builder: (ctx, constraints) {
+          final fs =
+              fontSize ?? PageFontSizeHelper.getFontSize(pageNumber - 1, ctx);
+          return _buildSelectableRichText(
+            context: context,
+            segments: segments,
+            fontSize: fs,
+            pageNumber: pageNumber,
+            selectedWord: null,
+          );
+        },
+      );
+    }
+
+    // تهيئة الكلمة المحدّدة (وضع كلمة واحدة)
     if (externalSelectedWordRef != null) {
       _localSelectedWord.value = externalSelectedWordRef;
     } else if (_localSelectedWord.value == null && segments.isNotEmpty) {
@@ -307,8 +329,10 @@ class GetSingleAyah extends StatelessWidget {
     final effectiveColor = selectedWordColor ??
         Theme.of(context).colorScheme.primary.withValues(alpha: 0.25);
 
-    // حساب نطاق أحرف الكلمة المحدّدة لرسم التظليل عبر CustomPaint
-    TextSelection? wordSelectionRange;
+    final range = selectedWordsRange;
+
+    // جمع نطاقات أحرف الكلمات المحدّدة لرسم التظليل عبر CustomPaint
+    final List<TextSelection> highlightRanges = [];
     int charOffset = 0;
 
     final spans = List.generate(segments.length, (i) {
@@ -327,14 +351,22 @@ class GetSingleAyah extends StatelessWidget {
         pageNumber: pageNumber,
       );
 
-      // حساب عدد أحرف هذا الـ span لتحديد نطاق الكلمة المحدّدة
       final spanCharCount = _countCharsInSpan(span);
-      if (selectedWord == ref) {
-        // نطاق الـ glyphs فقط (بدون tail)
-        wordSelectionRange = TextSelection(
+
+      // تحديد ما إذا كانت هذه الكلمة ضمن النطاق أو الكلمة الواحدة
+      final bool isSelected;
+      if (range != null) {
+        isSelected =
+            seg.wordNumber >= range.fromWord && seg.wordNumber <= range.toWord;
+      } else {
+        isSelected = selectedWord == ref;
+      }
+
+      if (isSelected) {
+        highlightRanges.add(TextSelection(
           baseOffset: charOffset,
           extentOffset: charOffset + seg.glyphs.length,
-        );
+        ));
       }
       charOffset += spanCharCount;
 
@@ -350,11 +382,12 @@ class GetSingleAyah extends StatelessWidget {
       text: TextSpan(children: spans),
     );
 
-    // لف بـ _AyahSelectionWidget لرسم تظليل الكلمة المحدّدة بـ CustomPaint
-    if (wordSelectionRange != null) {
+    // لف بـ CustomPaint لرسم تظليل الكلمات المحدّدة
+    if (highlightRanges.isNotEmpty) {
       return _SingleAyahWordHighlight(
-        wordSelectionRange: wordSelectionRange!,
+        wordSelectionRanges: highlightRanges,
         highlightColor: effectiveColor,
+        isContiguous: range != null,
         child: richText,
       );
     }
@@ -444,22 +477,27 @@ class GetSingleAyah extends StatelessWidget {
   }
 }
 
-/// ويدجت رسم محلي لتظليل الكلمة المحدّدة — معزول عن [_AyahSelectionWidget]
+/// ويدجت رسم محلي لتظليل الكلمات المحدّدة — معزول عن [_AyahSelectionWidget]
 class _SingleAyahWordHighlight extends SingleChildRenderObjectWidget {
-  final TextSelection wordSelectionRange;
+  final List<TextSelection> wordSelectionRanges;
   final Color highlightColor;
 
+  /// عند `true` يُرسم النطاق كشريط متصل مع borderRadius على أول/آخر حافة فقط.
+  final bool isContiguous;
+
   const _SingleAyahWordHighlight({
-    required this.wordSelectionRange,
+    required this.wordSelectionRanges,
     required this.highlightColor,
+    this.isContiguous = false,
     required super.child,
   });
 
   @override
   RenderObject createRenderObject(BuildContext context) {
     return _SingleAyahWordHighlightRenderBox(
-      wordRange: wordSelectionRange,
+      wordRanges: wordSelectionRanges,
       highlightColor: highlightColor,
+      isContiguous: isContiguous,
     );
   }
 
@@ -467,22 +505,25 @@ class _SingleAyahWordHighlight extends SingleChildRenderObjectWidget {
   void updateRenderObject(
       BuildContext context, _SingleAyahWordHighlightRenderBox renderObject) {
     renderObject
-      ..wordRange = wordSelectionRange
-      ..highlightColor = highlightColor;
+      ..wordRanges = wordSelectionRanges
+      ..highlightColor = highlightColor
+      ..isContiguous = isContiguous;
   }
 }
 
 class _SingleAyahWordHighlightRenderBox extends RenderProxyBox {
   _SingleAyahWordHighlightRenderBox({
-    required TextSelection wordRange,
+    required List<TextSelection> wordRanges,
     required Color highlightColor,
-  })  : _wordRange = wordRange,
-        _highlightColor = highlightColor;
+    required bool isContiguous,
+  })  : _wordRanges = wordRanges,
+        _highlightColor = highlightColor,
+        _isContiguous = isContiguous;
 
-  TextSelection _wordRange;
-  set wordRange(TextSelection value) {
-    if (_wordRange == value) return;
-    _wordRange = value;
+  List<TextSelection> _wordRanges;
+  set wordRanges(List<TextSelection> value) {
+    if (listEquals(_wordRanges, value)) return;
+    _wordRanges = value;
     markNeedsPaint();
   }
 
@@ -493,54 +534,156 @@ class _SingleAyahWordHighlightRenderBox extends RenderProxyBox {
     markNeedsPaint();
   }
 
+  bool _isContiguous;
+  set isContiguous(bool value) {
+    if (_isContiguous == value) return;
+    _isContiguous = value;
+    markNeedsPaint();
+  }
+
+  static const _radius = Radius.circular(16);
+  static const _padding =
+      EdgeInsets.only(left: 4, right: 4, top: 0, bottom: -6);
+
   @override
   void paint(PaintingContext context, Offset offset) {
-    if (child is RenderParagraph) {
+    if (child is RenderParagraph && _wordRanges.isNotEmpty) {
       final paragraph = child! as RenderParagraph;
-      final boxes = paragraph.getBoxesForSelection(
-        _wordRange,
-        boxHeightStyle: BoxHeightStyle.max,
-      );
-      if (boxes.isNotEmpty) {
-        final paint = Paint()..color = _highlightColor;
-        const padding = EdgeInsets.only(left: 4, right: 4, top: 0, bottom: -6);
+      final paint = Paint()..color = _highlightColor;
 
-        // دمج المستطيلات على نفس السطر
-        final mergedRects = <Rect>[];
-        Rect? current;
-        double? currentTop;
-        const lineTolerance = 2.0;
-
-        for (final box in boxes) {
-          final rect = box.toRect();
-          if (current == null) {
-            current = rect;
-            currentTop = rect.top;
-          } else if ((rect.top - currentTop!).abs() < lineTolerance) {
-            current = Rect.fromLTRB(
-              math.min(current.left, rect.left),
-              math.min(current.top, rect.top),
-              math.max(current.right, rect.right),
-              math.max(current.bottom, rect.bottom),
-            );
-          } else {
-            mergedRects.add(current);
-            current = rect;
-            currentTop = rect.top;
-          }
-        }
-        if (current != null) mergedRects.add(current);
-
-        for (final rect in mergedRects) {
-          final padded = padding.inflateRect(rect).shift(offset);
-          context.canvas.drawRRect(
-            RRect.fromRectAndRadius(padded, const Radius.circular(16)),
-            paint,
-          );
-        }
+      if (_isContiguous) {
+        _paintContiguous(paragraph, context, offset, paint);
+      } else {
+        _paintIndividual(paragraph, context, offset, paint);
       }
     }
     super.paint(context, offset);
+  }
+
+  /// رسم نطاق متصل — كل سطر مستطيل واحد، borderRadius على الحواف الخارجية فقط.
+  void _paintContiguous(
+    RenderParagraph paragraph,
+    PaintingContext context,
+    Offset offset,
+    Paint paint,
+  ) {
+    // جمع كل boxes من كل النطاقات في قائمة واحدة
+    final allBoxes = <TextBox>[];
+    for (final range in _wordRanges) {
+      allBoxes.addAll(paragraph.getBoxesForSelection(
+        range,
+        boxHeightStyle: BoxHeightStyle.max,
+      ));
+    }
+    if (allBoxes.isEmpty) return;
+
+    // دمج المستطيلات على نفس السطر
+    final lineRects = <Rect>[];
+    Rect? current;
+    double? currentTop;
+    const lineTolerance = 2.0;
+
+    for (final box in allBoxes) {
+      final rect = box.toRect();
+      if (current == null) {
+        current = rect;
+        currentTop = rect.top;
+      } else if ((rect.top - currentTop!).abs() < lineTolerance) {
+        current = Rect.fromLTRB(
+          math.min(current.left, rect.left),
+          math.min(current.top, rect.top),
+          math.max(current.right, rect.right),
+          math.max(current.bottom, rect.bottom),
+        );
+      } else {
+        lineRects.add(current);
+        current = rect;
+        currentTop = rect.top;
+      }
+    }
+    if (current != null) lineRects.add(current);
+
+    // رسم كل سطر: borderRadius على الحواف الخارجية فقط
+    for (int i = 0; i < lineRects.length; i++) {
+      final padded = _padding.inflateRect(lineRects[i]).shift(offset);
+      final bool isFirst = i == 0;
+      final bool isLast = i == lineRects.length - 1;
+
+      // النص RTL: أول سطر حوافه اليمنى مستديرة، آخر سطر حوافه اليسرى
+      // لسطر واحد: كل الحواف مستديرة
+      final RRect rRect;
+      if (lineRects.length == 1) {
+        rRect = RRect.fromRectAndRadius(padded, _radius);
+      } else if (isFirst) {
+        // أول سطر في RTL: حواف يمنى مستديرة (topRight, bottomRight)
+        rRect = RRect.fromRectAndCorners(
+          padded,
+          topRight: _radius,
+          bottomRight: _radius,
+        );
+      } else if (isLast) {
+        // آخر سطر في RTL: حواف يسرى مستديرة (topLeft, bottomLeft)
+        rRect = RRect.fromRectAndCorners(
+          padded,
+          topLeft: _radius,
+          bottomLeft: _radius,
+        );
+      } else {
+        // أسطر وسطى: بدون borderRadius
+        rRect = RRect.fromRectAndRadius(padded, Radius.zero);
+      }
+
+      context.canvas.drawRRect(rRect, paint);
+    }
+  }
+
+  /// رسم كل كلمة بشكل منفصل مع borderRadius على كل مستطيل.
+  void _paintIndividual(
+    RenderParagraph paragraph,
+    PaintingContext context,
+    Offset offset,
+    Paint paint,
+  ) {
+    for (final range in _wordRanges) {
+      final boxes = paragraph.getBoxesForSelection(
+        range,
+        boxHeightStyle: BoxHeightStyle.max,
+      );
+      if (boxes.isEmpty) continue;
+
+      final mergedRects = <Rect>[];
+      Rect? current;
+      double? currentTop;
+      const lineTolerance = 2.0;
+
+      for (final box in boxes) {
+        final rect = box.toRect();
+        if (current == null) {
+          current = rect;
+          currentTop = rect.top;
+        } else if ((rect.top - currentTop!).abs() < lineTolerance) {
+          current = Rect.fromLTRB(
+            math.min(current.left, rect.left),
+            math.min(current.top, rect.top),
+            math.max(current.right, rect.right),
+            math.max(current.bottom, rect.bottom),
+          );
+        } else {
+          mergedRects.add(current);
+          current = rect;
+          currentTop = rect.top;
+        }
+      }
+      if (current != null) mergedRects.add(current);
+
+      for (final rect in mergedRects) {
+        final padded = _padding.inflateRect(rect).shift(offset);
+        context.canvas.drawRRect(
+          RRect.fromRectAndRadius(padded, _radius),
+          paint,
+        );
+      }
+    }
   }
 }
 

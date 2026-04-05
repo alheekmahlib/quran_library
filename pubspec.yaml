@@ -34,12 +34,12 @@ dependencies:
 # But note that it works and fits on mobile size devices
 # Additional Screen Sizes will be supported later
 platforms:
-  # linux
-  ? windows
-  ? web
-  ? android
-  ? ios
-  ? macos
+  android:
+  ios:
+  linux:
+  macos:
+  web:
+  windows:
 
 dev_dependencies:
   flutter_lints: ^6.0.0

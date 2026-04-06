@@ -130,7 +130,7 @@ In the `pubspec.yaml` of your flutter project, add the following dependency:
 ```yaml
 dependencies:
   ...
-  quran_library: ^3.2.2
+  quran_library: ^3.2.2+2
 ```
 
 Import it:
@@ -890,3 +890,5 @@ QuranLibrary().naskhStyle;
 MIT for code. QCF fonts are provided via Quranic Universal Library (QUL). Ensure you comply with QUL terms (and any upstream KFGQPC terms) when distributing applications that include or bundle these assets.
 
 Read more about the license [here](LICENSE).
+
+For additional terms regarding QCF fonts and QUL resources, see [NOTICE](NOTICE).

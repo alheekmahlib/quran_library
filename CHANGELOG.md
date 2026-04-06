@@ -1,3 +1,11 @@
+## 3.2.2+2
+
+* **ADD:**
+	* Notice to README.
+
+* **FIX:**
+	* pub.dev point.
+
 ## 3.2.2
 
 * **ADD:**

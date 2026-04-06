@@ -24,7 +24,7 @@ dependencies:
   html: ^0.15.6
   just_audio: ^0.10.5
   just_audio_media_kit: ^2.1.0
-  media_kit_libs_windows_audio: ^1.0.9
+  # media_kit_libs_windows_audio: ^1.0.9  # Commented out for WASM compatibility
   path: ^1.9.1
   path_provider: ^2.1.5
   rxdart: ^0.28.0

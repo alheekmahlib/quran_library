@@ -65,6 +65,7 @@ class QuranPagesScreen extends StatelessWidget {
     this.snackBarStyle,
     this.ayahMenuStyle,
     this.bookmarksTabStyle,
+    this.wordInfoBottomSheetStyle,
   }) : assert(
           (page != null && startPage == null && endPage == null) ||
               (page == null && (startPage != null || endPage != null)),
@@ -164,6 +165,11 @@ class QuranPagesScreen extends StatelessWidget {
   ///
   /// [bookmarksTabStyle] Bookmarks tab style customization for the Quran
   final BookmarksTabStyle? bookmarksTabStyle;
+
+  /// تخصيص نمط تبويب معلومات الكلمة الخاص بالمصحف
+  ///
+  /// [wordInfoBottomSheetStyle] Word info bottom sheet style customization for the Quran
+  final WordInfoBottomSheetStyle? wordInfoBottomSheetStyle;
 
   // ——— تحديد صفحة واحدة أو نطاق صفحات ———
   final int? page; // 1..604
@@ -288,6 +294,9 @@ class QuranPagesScreen extends StatelessWidget {
               TopBottomQuranStyle.defaults(isDark: isDark, context: context),
           ayahDownloadManagerStyle: ayahDownloadManagerStyle ??
               AyahDownloadManagerStyle.defaults(
+                  isDark: isDark, context: context),
+          wordInfoBottomSheetStyle: wordInfoBottomSheetStyle ??
+              WordInfoBottomSheetStyle.defaults(
                   isDark: isDark, context: context),
           child: Scaffold(
             resizeToAvoidBottomInset: false,

@@ -77,8 +77,8 @@ class QuranLibraryTheme extends StatelessWidget {
                                     QuranTafsirSideTheme(style: s, child: c),
                                 _wrapIfNotNull(
                                   wordInfoBottomSheetStyle,
-                                  (s, c) =>
-                                      WordInfoDialogTheme(style: s, child: c),
+                                  (s, c) => WordInfoBottomSheetTheme(
+                                      style: s, child: c),
                                   child,
                                 ),
                               ),
@@ -180,19 +180,19 @@ class TajweedMenuTheme extends InheritedWidget {
 }
 
 /// مزود نمط حوار معلومات الكلمة (Word Info)
-class WordInfoDialogTheme extends InheritedWidget {
+class WordInfoBottomSheetTheme extends InheritedWidget {
   final WordInfoBottomSheetStyle style;
-  const WordInfoDialogTheme({
+  const WordInfoBottomSheetTheme({
     super.key,
     required this.style,
     required super.child,
   });
 
-  static WordInfoDialogTheme? of(BuildContext context) =>
-      context.dependOnInheritedWidgetOfExactType<WordInfoDialogTheme>();
+  static WordInfoBottomSheetTheme? of(BuildContext context) =>
+      context.dependOnInheritedWidgetOfExactType<WordInfoBottomSheetTheme>();
 
   @override
-  bool updateShouldNotify(covariant WordInfoDialogTheme oldWidget) =>
+  bool updateShouldNotify(covariant WordInfoBottomSheetTheme oldWidget) =>
       style != oldWidget.style;
 }
 

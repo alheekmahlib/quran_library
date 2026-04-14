@@ -137,12 +137,70 @@ class _QuranTopBar extends StatelessWidget {
                     languageCode: languageCode,
                     isFontsLocal: isFontsLocal,
                     isDark: isDark,
-                  )
+                  ),
+                IconButton(
+                  icon: Icon(
+                    Icons.search,
+                    color: defaults.iconColor ?? Theme.of(context).colorScheme.primary,
+                  ),
+                  onPressed: () {
+                    QuranCtrl.instance.searchFocusNode.requestFocus();
+                    _showSearchDialog(context, defaults);
+                  },
+                ),
               ],
             )
           ],
         ),
       ),
+    );
+  }
+
+  void _showSearchDialog(BuildContext context, QuranTopBarStyle defaults) {
+    final searchTabStyle = SearchTabTheme.of(context)?.style ??
+        SearchTabStyle.defaults(isDark: isDark, context: context);
+
+    showDialog(
+      context: context,
+      useSafeArea: true,
+      builder: (context) {
+        return Dialog.fullscreen(
+          backgroundColor: backgroundColor ??
+              defaults.backgroundColor ??
+              AppColors.getBackgroundColor(isDark),
+          child: Scaffold(
+            backgroundColor: Colors.transparent,
+            appBar: AppBar(
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              iconTheme: IconThemeData(
+                color: defaults.iconColor ?? Theme.of(context).colorScheme.primary,
+              ),
+              title: Text(
+                'البحث في المصحف',
+                style: QuranLibrary().cairoStyle.copyWith(
+                   color: defaults.textColor ?? AppColors.getTextColor(isDark),
+                   fontSize: 18,
+                   fontWeight: FontWeight.bold,
+                ),
+              ),
+              centerTitle: true,
+              leading: IconButton(
+                icon: const Icon(Icons.close),
+                onPressed: () => Navigator.pop(context),
+              ),
+            ),
+            body: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: _SearchTab(
+                isDark: isDark,
+                languageCode: languageCode,
+                style: searchTabStyle,
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -227,7 +285,7 @@ class _MenuBottomSheet extends StatelessWidget {
         style.accentColor ?? Theme.of(context).colorScheme.primary;
 
     return DefaultTabController(
-      length: isSingleSurah ? 2 : 3,
+      length: isSingleSurah ? 1 : 2,
       child: SafeArea(
         top: false,
         child: Container(
@@ -276,7 +334,6 @@ class _MenuBottomSheet extends StatelessWidget {
                   tabs: [
                     if (!isSingleSurah)
                       Tab(text: style.tabIndexLabel ?? 'الفهرس'),
-                    Tab(text: style.tabSearchLabel ?? 'البحث'),
                     Tab(text: style.tabBookmarksLabel ?? 'الفواصل'),
                   ],
                 ),
@@ -291,11 +348,6 @@ class _MenuBottomSheet extends StatelessWidget {
                         languageCode: languageCode,
                         style: indexTabStyle,
                       ),
-                    _SearchTab(
-                      isDark: isDark,
-                      languageCode: languageCode,
-                      style: searchTabStyle,
-                    ),
                     _BookmarksTab(
                       isDark: isDark,
                       languageCode: languageCode,

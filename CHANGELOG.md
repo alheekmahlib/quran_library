@@ -1,8 +1,5 @@
 ## 3.2.3
 
-* **ADD:**
-  * Notice to README.
-
 * **FIX:**
   * Jumping to the highlighted Ayas not works #41.
 

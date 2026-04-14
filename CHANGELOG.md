@@ -1,10 +1,15 @@
-## 3.2.2+3
+## 3.2.3
 
 * **ADD:**
   * Notice to README.
 
 * **FIX:**
-  * pub.dev point.
+  * Jumping to the highlighted Ayas not works #41.
+
+## 3.2.2+3
+
+* **ADD:**
+  * Notice to README.
 
 ## 3.2.2
 

@@ -266,6 +266,7 @@ class QuranPagesScreen extends StatelessWidget {
     return PopScope(
       onPopInvokedWithResult: (b, _) async {
         QuranCtrl.instance.state.isShowMenu.value = false;
+        QuranCtrl.instance.unregisterLocalPageController();
       },
       child: ScaleKitBuilder(
         designWidth: 375,
@@ -372,6 +373,9 @@ class QuranPagesScreen extends StatelessWidget {
                   if (withPageView) {
                     // PageView محلي على النطاق فقط
                     final controller = PageController(initialPage: 0);
+                    // تسجيل المتحكم المحلي لدعم التنقل من الفواصل وغيرها
+                    quranCtrl.registerLocalPageController(
+                        controller, startIndex, count);
                     body = PageView.builder(
                       itemCount: count,
                       controller: controller,

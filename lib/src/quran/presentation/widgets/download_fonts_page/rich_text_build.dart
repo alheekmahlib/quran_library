@@ -527,7 +527,7 @@ class _AyahSelectionRenderBox extends RenderProxyBox {
     List<TextSelection> ranges,
     Paint bgPaint,
   ) {
-    const padding = EdgeInsets.only(left: 4, right: 4, top: 0, bottom: -6);
+    const padding = EdgeInsets.only(right: 4, top: 0, bottom: -6);
 
     for (final range in ranges) {
       final boxes = paragraph.getBoxesForSelection(

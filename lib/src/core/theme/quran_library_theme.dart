@@ -16,6 +16,7 @@ class QuranLibraryTheme extends StatelessWidget {
   final DisplayModeBarStyle? displayModeBarStyle;
   final AyahTafsirInlineStyle? ayahTafsirInlineStyle;
   final QuranTafsirSideStyle? quranTafsirSideStyle;
+  final WordInfoBottomSheetStyle? wordInfoBottomSheetStyle;
   final Widget child;
 
   const QuranLibraryTheme({
@@ -34,6 +35,7 @@ class QuranLibraryTheme extends StatelessWidget {
     this.displayModeBarStyle,
     this.ayahTafsirInlineStyle,
     this.quranTafsirSideStyle,
+    required this.wordInfoBottomSheetStyle,
     required this.child,
   });
 
@@ -73,7 +75,12 @@ class QuranLibraryTheme extends StatelessWidget {
                                 quranTafsirSideStyle,
                                 (s, c) =>
                                     QuranTafsirSideTheme(style: s, child: c),
-                                child,
+                                _wrapIfNotNull(
+                                  wordInfoBottomSheetStyle,
+                                  (s, c) => WordInfoBottomSheetTheme(
+                                      style: s, child: c),
+                                  child,
+                                ),
                               ),
                             ),
                           ),
@@ -173,19 +180,19 @@ class TajweedMenuTheme extends InheritedWidget {
 }
 
 /// مزود نمط حوار معلومات الكلمة (Word Info)
-class WordInfoDialogTheme extends InheritedWidget {
+class WordInfoBottomSheetTheme extends InheritedWidget {
   final WordInfoBottomSheetStyle style;
-  const WordInfoDialogTheme({
+  const WordInfoBottomSheetTheme({
     super.key,
     required this.style,
     required super.child,
   });
 
-  static WordInfoDialogTheme? of(BuildContext context) =>
-      context.dependOnInheritedWidgetOfExactType<WordInfoDialogTheme>();
+  static WordInfoBottomSheetTheme? of(BuildContext context) =>
+      context.dependOnInheritedWidgetOfExactType<WordInfoBottomSheetTheme>();
 
   @override
-  bool updateShouldNotify(covariant WordInfoDialogTheme oldWidget) =>
+  bool updateShouldNotify(covariant WordInfoBottomSheetTheme oldWidget) =>
       style != oldWidget.style;
 }
 

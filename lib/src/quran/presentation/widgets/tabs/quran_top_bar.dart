@@ -80,7 +80,7 @@ class _QuranTopBar extends StatelessWidget {
                   _showMenuBottomSheet(context, defaults);
                 },
               ),
-            if ((defaults.showMenuButton ?? true) &&
+            if ((defaults.showTajweedButton ?? true) &&
                 (QuranCtrl.instance.state.fontsSelected.value == 0))
               IconButton(
                 icon: SvgPicture.asset(
@@ -129,8 +129,8 @@ class _QuranTopBar extends StatelessWidget {
                       }
                     },
                   ),
-                if ((defaults.showFontsButton ?? true) && (!isSingleSurah!) ||
-                    (isPagesView!))
+                if ((defaults.showFontsButton ?? true) &&
+                    (!isSingleSurah! || isPagesView!))
                   FontsDownloadDialog(
                     downloadFontsDialogStyle: downloadFontsDialogStyle ??
                         DownloadFontsDialogStyle.defaults(isDark, context),
@@ -141,7 +141,8 @@ class _QuranTopBar extends StatelessWidget {
                 IconButton(
                   icon: Icon(
                     Icons.search,
-                    color: defaults.iconColor ?? Theme.of(context).colorScheme.primary,
+                    color: defaults.iconColor ??
+                        Theme.of(context).colorScheme.primary,
                   ),
                   onPressed: () {
                     QuranCtrl.instance.searchFocusNode.requestFocus();
@@ -174,15 +175,17 @@ class _QuranTopBar extends StatelessWidget {
               backgroundColor: Colors.transparent,
               elevation: 0,
               iconTheme: IconThemeData(
-                color: defaults.iconColor ?? Theme.of(context).colorScheme.primary,
+                color:
+                    defaults.iconColor ?? Theme.of(context).colorScheme.primary,
               ),
               title: Text(
                 'البحث في المصحف',
                 style: QuranLibrary().cairoStyle.copyWith(
-                   color: defaults.textColor ?? AppColors.getTextColor(isDark),
-                   fontSize: 18,
-                   fontWeight: FontWeight.bold,
-                ),
+                      color:
+                          defaults.textColor ?? AppColors.getTextColor(isDark),
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
               ),
               centerTitle: true,
               leading: IconButton(

@@ -107,6 +107,7 @@ part 'src/quran/presentation/widgets/display_modes/quran_with_tafsir_side.dart';
 part 'src/quran/presentation/widgets/display_modes/single_scrollable_page.dart';
 part 'src/quran/presentation/widgets/download_fonts_page/custom_span.dart';
 part 'src/quran/presentation/widgets/download_fonts_page/page_build.dart';
+part 'src/quran/presentation/widgets/download_fonts_page/qpc_v4_flowing_text.dart';
 part 'src/quran/presentation/widgets/download_fonts_page/quran_fonts_page.dart';
 part 'src/quran/presentation/widgets/download_fonts_page/rich_text_build.dart';
 part 'src/quran/presentation/widgets/fonts_download_dialog.dart';
@@ -121,8 +122,6 @@ part 'src/quran/presentation/widgets/tabs/quran_or_ten_recitations_tab_bar.dart'
 part 'src/quran/presentation/widgets/tabs/quran_top_bar.dart';
 part 'src/quran/presentation/widgets/tabs/search_tab_widget.dart';
 part 'src/quran/presentation/widgets/tajweed_menu_widget.dart';
-part 'src/quran/presentation/widgets/text_scale_page/text_scale_page.dart';
-part 'src/quran/presentation/widgets/text_scale_page/text_scale_rich_text_build.dart';
 part 'src/quran/presentation/widgets/top_bottom_widget/build_bottom_section.dart';
 part 'src/quran/presentation/widgets/top_bottom_widget/build_top_section.dart';
 part 'src/quran/presentation/widgets/top_bottom_widget/top_and_bottom_widget.dart';

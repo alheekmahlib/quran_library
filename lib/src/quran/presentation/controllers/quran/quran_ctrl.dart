@@ -364,6 +364,61 @@ class QuranCtrl extends GetxController {
     return getQpcV4BlocksForPageSync(pageNumber);
   }
 
+  /// يعيد كتل العرض المتدفق (flowing) لصفحة — تجمّع segments حسب الآية.
+  /// تُستخدم في وضع التكبير حيث لا نحتاج لتحديد موقع كل كلمة.
+  List<QpcV4RenderBlock> getQpcFlowBlocksForPage(int pageNumber) {
+    final lineBlocks = getQpcLayoutBlocksForPageSync(pageNumber);
+    if (lineBlocks.isEmpty) return const [];
+
+    final result = <QpcV4RenderBlock>[];
+    final ayahSegmentsMap = <int, List<QpcV4WordSegment>>{};
+    final ayahOrder = <int>[];
+
+    for (final block in lineBlocks) {
+      if (block is QpcV4SurahHeaderBlock || block is QpcV4BasmallahBlock) {
+        // تفريغ الآيات المجمّعة قبل إضافة الهيدر/البسملة
+        for (final uq in ayahOrder) {
+          final segs = ayahSegmentsMap[uq]!;
+          final first = segs.first;
+          result.add(QpcV4AyahFlowBlock(
+            ayahUq: uq,
+            surahNumber: first.surahNumber,
+            ayahNumber: first.ayahNumber,
+            segments: segs,
+          ));
+        }
+        ayahSegmentsMap.clear();
+        ayahOrder.clear();
+        result.add(block);
+        continue;
+      }
+
+      if (block is QpcV4AyahLineBlock) {
+        for (final seg in block.segments) {
+          if (!ayahSegmentsMap.containsKey(seg.ayahUq)) {
+            ayahSegmentsMap[seg.ayahUq] = [];
+            ayahOrder.add(seg.ayahUq);
+          }
+          ayahSegmentsMap[seg.ayahUq]!.add(seg);
+        }
+      }
+    }
+
+    // تفريغ الآيات المتبقية
+    for (final uq in ayahOrder) {
+      final segs = ayahSegmentsMap[uq]!;
+      final first = segs.first;
+      result.add(QpcV4AyahFlowBlock(
+        ayahUq: uq,
+        surahNumber: first.surahNumber,
+        ayahNumber: first.ayahNumber,
+        segments: segs,
+      ));
+    }
+
+    return result;
+  }
+
   Future<void> prewarmQpcV4Pages(int pageIndex) async {
     if (!isQpcV4Enabled) return;
     await _ensureQpcV4AssetsLoaded();
@@ -798,14 +853,6 @@ class QuranCtrl extends GetxController {
   void clearSelection() {
     selectedAyahsByUnequeNumber.clear();
     update();
-  }
-
-  Widget textScale(dynamic widget1, dynamic widget2) {
-    if (state.scaleFactor.value <= 1.3) {
-      return widget1;
-    } else {
-      return widget2;
-    }
   }
 
   void updateTextScale(ScaleUpdateDetails details) {

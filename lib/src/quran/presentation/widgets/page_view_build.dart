@@ -85,81 +85,49 @@ class PageViewBuild extends StatelessWidget {
     return GetBuilder<QuranCtrl>(
       id: '_pageViewBuild',
       init: QuranCtrl.instance,
-      builder: (quranCtrl) => quranCtrl.textScale(
-        (quranCtrl.state.allAyahs.isEmpty ||
-                quranCtrl.surahs.isEmpty ||
-                quranCtrl.state.pages.isEmpty)
-            ? Center(
-                child:
-                    circularProgressWidget ?? const CircularProgressIndicator())
-            : Align(
-                alignment: Alignment.topCenter,
-                child: TopAndBottomWidget(
-                  pageIndex: pageIndex,
-                  languageCode: languageCode,
-                  isRight: pageIndex.isEven ? true : false,
-                  child: _QuranFontsPage(
-                    context: userContext,
-                    pageIndex: pageIndex,
-                    bookmarkList: bookmarkList,
-                    textColor: ayahSelectedFontColor ?? textColor,
-                    ayahIconColor: ayahIconColor,
-                    showAyahBookmarkedIcon: showAyahBookmarkedIcon,
-                    bookmarks: bookmarksMap,
-                    onAyahLongPress: onAyahLongPress,
-                    bookmarksColor: bookmarksColor,
-                    surahNameStyle: surahNameStyle,
-                    bannerStyle: bannerStyle,
-                    basmalaStyle: basmalaStyle,
-                    onSurahBannerPress: onSurahBannerPress,
-                    surahNumber: surahNumber,
-                    bookmarksAyahs: bookmarksAyahSet.toList(),
-                    ayahSelectedBackgroundColor: ayahSelectedBackgroundColor,
-                    isDark: isDark,
-                    circularProgressWidget: circularProgressWidget,
-                    isFontsLocal: isFontsLocal,
-                    fontsName: fontsName,
-                    ayahBookmarked: ayahBookmarked!,
-                    isAyahBookmarked: isAyahBookmarked,
-                    onPagePress: onPagePress,
-                  ),
-                )),
-        (quranCtrl.state.allAyahs.isEmpty ||
-                quranCtrl.surahs.isEmpty ||
-                quranCtrl.state.pages.isEmpty)
-            ? Center(
-                child:
-                    circularProgressWidget ?? const CircularProgressIndicator())
-            : TopAndBottomWidget(
-                pageIndex: pageIndex,
-                languageCode: languageCode,
-                isRight: pageIndex.isEven ? true : false,
-                child: _QuranTextScale(
-                  context: userContext,
-                  pageIndex: pageIndex,
-                  bookmarkList: bookmarkList,
-                  textColor: ayahSelectedFontColor ?? textColor,
-                  ayahIconColor: ayahIconColor,
-                  showAyahBookmarkedIcon: showAyahBookmarkedIcon,
-                  bookmarks: bookmarksMap,
-                  onAyahLongPress: onAyahLongPress,
-                  bookmarksColor: bookmarksColor,
-                  surahNameStyle: surahNameStyle,
-                  bannerStyle: bannerStyle,
-                  basmalaStyle: basmalaStyle,
-                  onSurahBannerPress: onSurahBannerPress,
-                  surahNumber: surahNumber,
-                  bookmarksAyahs: bookmarksAyahSet.toList(),
-                  ayahSelectedBackgroundColor: ayahSelectedBackgroundColor,
-                  onPagePress: onPagePress,
-                  languageCode: languageCode,
-                  isDark: isDark,
-                  circularProgressWidget: circularProgressWidget,
-                  ayahBookmarked: ayahBookmarked!,
-                  isAyahBookmarked: isAyahBookmarked,
-                ),
-              ),
-      ),
+      builder: (quranCtrl) {
+        if (quranCtrl.state.allAyahs.isEmpty ||
+            quranCtrl.surahs.isEmpty ||
+            quranCtrl.state.pages.isEmpty) {
+          return Center(
+            child: circularProgressWidget ?? const CircularProgressIndicator(),
+          );
+        }
+
+        return Align(
+          alignment: Alignment.topCenter,
+          child: TopAndBottomWidget(
+            pageIndex: pageIndex,
+            languageCode: languageCode,
+            isRight: pageIndex.isEven,
+            child: _QuranFontsPage(
+              context: userContext,
+              pageIndex: pageIndex,
+              bookmarkList: bookmarkList,
+              textColor: ayahSelectedFontColor ?? textColor,
+              ayahIconColor: ayahIconColor,
+              showAyahBookmarkedIcon: showAyahBookmarkedIcon,
+              bookmarks: bookmarksMap,
+              onAyahLongPress: onAyahLongPress,
+              bookmarksColor: bookmarksColor,
+              surahNameStyle: surahNameStyle,
+              bannerStyle: bannerStyle,
+              basmalaStyle: basmalaStyle,
+              onSurahBannerPress: onSurahBannerPress,
+              surahNumber: surahNumber,
+              bookmarksAyahs: bookmarksAyahSet.toList(),
+              ayahSelectedBackgroundColor: ayahSelectedBackgroundColor,
+              isDark: isDark,
+              circularProgressWidget: circularProgressWidget,
+              isFontsLocal: isFontsLocal,
+              fontsName: fontsName,
+              ayahBookmarked: ayahBookmarked!,
+              isAyahBookmarked: isAyahBookmarked,
+              onPagePress: onPagePress,
+            ),
+          ),
+        );
+      },
     );
   }
 }

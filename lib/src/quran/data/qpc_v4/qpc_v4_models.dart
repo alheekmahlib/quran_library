@@ -147,3 +147,19 @@ class QpcV4AyahLineBlock extends QpcV4RenderBlock {
     required this.segments,
   });
 }
+
+/// كتلة تمثّل آية كاملة بكل كلماتها — تُستخدم في وضع التكبير (flowing text)
+/// حيث يتولّى RichText التفاف النص تلقائيًا بدلاً من تحديد موقع كل كلمة.
+class QpcV4AyahFlowBlock extends QpcV4RenderBlock {
+  final int ayahUq;
+  final int surahNumber;
+  final int ayahNumber;
+  final List<QpcV4WordSegment> segments;
+
+  const QpcV4AyahFlowBlock({
+    required this.ayahUq,
+    required this.surahNumber,
+    required this.ayahNumber,
+    required this.segments,
+  });
+}

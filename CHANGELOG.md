@@ -2,6 +2,11 @@
 
 * **FIX:**
   * Jumping to the highlighted Ayas not works #41.
+  * Merge text_scale_page with download_fonts_page using QPC V4 font.
+
+* **DELETE:**
+  * text_scale_page/text_scale_page.dart.
+  * text_scale_page/text_scale_rich_text_build.dart.
 
 ## 3.2.2+3
 

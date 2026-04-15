@@ -1,7 +1,7 @@
 name: quran_library
 description: "An integrated package for displaying the Holy Qur’an identical to
   the Medina Quran with the narration of Hafs on the authority of Asim."
-version: 3.2.2+2
+version: 3.2.2+3
 homepage: https://github.com/alheekmahlib/quran_library
 documentation: https://alheekmahlib.github.io/quran_library_web/
 
@@ -24,7 +24,7 @@ dependencies:
   html: ^0.15.6
   just_audio: ^0.10.5
   just_audio_media_kit: ^2.1.0
-  media_kit_libs_windows_audio: ^1.0.9
+  # media_kit_libs_windows_audio: ^1.0.9  # Commented out for WASM compatibility
   path: ^1.9.1
   path_provider: ^2.1.5
   rxdart: ^0.28.0
@@ -42,9 +42,10 @@ platforms:
   windows:
 
 dev_dependencies:
-  flutter_lints: ^6.0.0
   flutter_test:
     sdk: flutter
+
+flutter_lints: ^6.0.0
 
 package_rename_config:
   android:

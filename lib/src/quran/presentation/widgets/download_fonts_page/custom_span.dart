@@ -54,7 +54,7 @@ TextSpan _qpcV4SpanSegment({
     package: fontPackageOverride,
     fontSize: fontSize,
     height: 2.2,
-    wordSpacing: usePaintColoring ? -2 : 0,
+    // wordSpacing: 50,
     color: textColor ?? AppColors.getTextColor(isDark),
   );
 

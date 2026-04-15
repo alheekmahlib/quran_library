@@ -185,7 +185,7 @@ class QuranPages extends StatelessWidget {
         // },
         // page: 6,
         startPage: 6,
-        endPage: 11, // النطاق شامل
+        endPage: 60, // النطاق شامل
         // highlightedAyahNumbersInPages: [
         //   (
         //     start: 3,

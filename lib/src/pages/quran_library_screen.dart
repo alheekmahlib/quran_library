@@ -69,6 +69,7 @@ class QuranLibraryScreen extends StatelessWidget {
     this.displayModeBarStyle,
     this.ayahTafsirInlineStyle,
     this.quranTafsirSideStyle,
+    this.wordInfoBottomSheetStyle,
   });
 
   /// إذا قمت بإضافة شريط التطبيقات هنا فإنه سيحل محل شريط التطبيقات الافتراضية [appBar]
@@ -338,6 +339,11 @@ class QuranLibraryScreen extends StatelessWidget {
   /// [quranTafsirSideStyle] Style customization for the quran-with-tafsir-side display mode
   final QuranTafsirSideStyle? quranTafsirSideStyle;
 
+  /// نمط تخصيص معلومات الكلمة
+  ///
+  /// [wordInfoBottomSheetStyle] Style customization for the word info bottom sheet display mode
+  final WordInfoBottomSheetStyle? wordInfoBottomSheetStyle;
+
   @override
   Widget build(BuildContext context) {
     // تحديث رابط أيقونة التطبيق إذا تم تمريره / Update app icon URL if provided
@@ -402,6 +408,9 @@ class QuranLibraryScreen extends StatelessWidget {
                     isDark: isDark, context: context),
             quranTafsirSideStyle: quranTafsirSideStyle ??
                 QuranTafsirSideStyle.defaults(isDark: isDark, context: context),
+            wordInfoBottomSheetStyle: wordInfoBottomSheetStyle ??
+                WordInfoBottomSheetStyle.defaults(
+                    isDark: isDark, context: context),
             child: GetBuilder<QuranCtrl>(
               builder: (quranCtrl) {
                 // تهيئة خاملة لخطوط الصفحات المجاورة حول الصفحة الحالية بعد أول إطار

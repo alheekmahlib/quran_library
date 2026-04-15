@@ -50,6 +50,7 @@ class SurahDisplayScreen extends StatelessWidget {
     this.downloadFontsDialogStyle,
     this.isFontsLocal = false,
     this.enableWordSelection = true,
+    this.wordInfoBottomSheetStyle,
   });
 
   /// رقم السورة المراد عرضها (1-114)
@@ -237,6 +238,11 @@ class SurahDisplayScreen extends StatelessWidget {
   /// [enableWordSelection] Enable or disable word selection and word info bottom sheet on tap
   final bool enableWordSelection;
 
+  /// نمط تخصيص معلومات الكلمة
+  ///
+  /// [wordInfoBottomSheetStyle] Style customization for the word info bottom sheet display mode
+  final WordInfoBottomSheetStyle? wordInfoBottomSheetStyle;
+
   @override
   Widget build(BuildContext context) {
     final quranCtrl = QuranCtrl.instance;
@@ -295,6 +301,9 @@ class SurahDisplayScreen extends StatelessWidget {
               TopBottomQuranStyle.defaults(isDark: isDark, context: context),
           ayahDownloadManagerStyle: ayahDownloadManagerStyle ??
               AyahDownloadManagerStyle.defaults(
+                  isDark: isDark, context: context),
+          wordInfoBottomSheetStyle: wordInfoBottomSheetStyle ??
+              WordInfoBottomSheetStyle.defaults(
                   isDark: isDark, context: context),
           child: GetBuilder<SurahCtrl>(
             init: SurahCtrl.instance,

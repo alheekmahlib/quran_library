@@ -1,131 +1,133 @@
-## 3.2.2+2
-
-* **ADD:**
-	* Notice to README.
+## 3.2.3
 
 * **FIX:**
-	* pub.dev point.
+  * Jumping to the highlighted Ayas not works #41.
+
+## 3.2.2+3
+
+* **ADD:**
+  * Notice to README.
 
 ## 3.2.2
 
 * **ADD:**
-	* `selectedWordsRange` to `GetSingleAyah`
+  * `selectedWordsRange` to `GetSingleAyah`
 
 * **FIX:**
-	* Surah audio last listen.
-	* Check internet connection.
-	* Fix screen `AyahWithTafsirInline`.
+  * Surah audio last listen.
+  * Check internet connection.
+  * Fix screen `AyahWithTafsirInline`.
 
 ## 3.2.0
 
 * **ADD:**
-	* Multiple display modes for Quran pages:
-		* **Default** – the original swipeable PageView.
-		* **Single Scrollable** – vertically scrollable page with horizontal swipe.
-		* **Dual Page** – two pages side-by-side (large screens / landscape).
-		* **Quran + Tafsir Side** – Quran page beside a tafsir panel (landscape).
-		* **Ayah with Inline Tafsir** – each ayah followed by its tafsir text (portrait & landscape).
-	* `DisplayModeBar` widget that appears/hides with the control overlay on screen tap.
-	* Display mode persisted via `GetStorage` (remembers the last chosen mode).
-	* Three new customizable style classes: `DisplayModeBarStyle`, `AyahTafsirInlineStyle`, `QuranTafsirSideStyle`.
-	* Corresponding `InheritedWidget` theme providers: `DisplayModeBarTheme`, `AyahTafsirInlineTheme`, `QuranTafsirSideTheme`.
-	* New optional parameters on `QuranLibraryScreen`: `displayModeBarStyle`, `ayahTafsirInlineStyle`, `quranTafsirSideStyle`.
-	* Word-by-word audio playback (single word & full ayah words).
-	* Add showAyahNumber parameter to GetSingleAyah widget #34.
+  * Multiple display modes for Quran pages:
+    * **Default** – the original swipeable PageView.
+    * **Single Scrollable** – vertically scrollable page with horizontal swipe.
+    * **Dual Page** – two pages side-by-side (large screens / landscape).
+    * **Quran + Tafsir Side** – Quran page beside a tafsir panel (landscape).
+    * **Ayah with Inline Tafsir** – each ayah followed by its tafsir text (portrait & landscape).
+  * `DisplayModeBar` widget that appears/hides with the control overlay on screen tap.
+  * Display mode persisted via `GetStorage` (remembers the last chosen mode).
+  * Three new customizable style classes: `DisplayModeBarStyle`, `AyahTafsirInlineStyle`, `QuranTafsirSideStyle`.
+  * Corresponding `InheritedWidget` theme providers: `DisplayModeBarTheme`, `AyahTafsirInlineTheme`, `QuranTafsirSideTheme`.
+  * New optional parameters on `QuranLibraryScreen`: `displayModeBarStyle`, `ayahTafsirInlineStyle`, `quranTafsirSideStyle`.
+  * Word-by-word audio playback (single word & full ayah words).
+  * Add showAyahNumber parameter to GetSingleAyah widget #34.
 
 * **FIX:**
-	* Make the library support `useMaterial3`.
-	* Fix some styles.
-	* jump to Hizb.
-	* Fixed page jump to page 1 when switching display modes — now preserves current page.
-	* Fixed `viewportFraction: 0.5` applied to non-default display modes on web/desktop (dual pages shown incorrectly).
-	* Fixed `RenderFlex unbounded height` crash in `SingleScrollablePage` when `PageViewBuild` contains a `Column` with `Flexible` inside `SingleChildScrollView`.
+  * Make the library support `useMaterial3`.
+  * Fix some styles.
+  * jump to Hizb.
+  * Fixed page jump to page 1 when switching display modes — now preserves current page.
+  * Fixed `viewportFraction: 0.5` applied to non-default display modes on web/desktop (dual pages shown incorrectly).
+  * Fixed `RenderFlex unbounded height` crash in `SingleScrollablePage` when `PageViewBuild` contains a `Column` with `Flexible` inside `SingleChildScrollView`.
 
 ## 3.1.0
 
 * **ADD:**
-	* Word-by-word audio playback (single word & full ayah words).
-	* `QuranLibrary.initWordAudio()` to enable word audio feature.
-	* `playWordAudio()` / `playWordAudioByNumbers()` to play a single word.
-	* `playAyahWordsAudio()` / `playAyahWordsAudioByNumbers()` to play all words of an ayah sequentially.
-	* `stopWordAudio()` to stop word audio playback.
-	* `getAyahWordCount()` to get the number of words in an ayah.
-	* Audio buttons in Word Info bottom sheet (play word / play ayah words).
-	* State getters: `isWordAudioPlaying`, `isWordAudioLoading`, `isPlayingAyahWords`, `currentPlayingWordRef`.
-	* Optional `isAyahBookmarked(AyahModel)` callback to determine bookmark state dynamically (overrides `ayahBookmarked` and internal bookmarks UI).
-	* `customChildBuilder(BuildContext context, int pageIndex)` in `TopBottomQuranStyle` to build a dynamic top widget per page.
+  * Word-by-word audio playback (single word & full ayah words).
+  * `QuranLibrary.initWordAudio()` to enable word audio feature.
+  * `playWordAudio()` / `playWordAudioByNumbers()` to play a single word.
+  * `playAyahWordsAudio()` / `playAyahWordsAudioByNumbers()` to play all words of an ayah sequentially.
+  * `stopWordAudio()` to stop word audio playback.
+  * `getAyahWordCount()` to get the number of words in an ayah.
+  * Audio buttons in Word Info bottom sheet (play word / play ayah words).
+  * State getters: `isWordAudioPlaying`, `isWordAudioLoading`, `isPlayingAyahWords`, `currentPlayingWordRef`.
+  * Optional `isAyahBookmarked(AyahModel)` callback to determine bookmark state dynamically (overrides `ayahBookmarked` and internal bookmarks UI).
+  * `customChildBuilder(BuildContext context, int pageIndex)` in `TopBottomQuranStyle` to build a dynamic top widget per page.
 
 * **FIX:**
-	* Fix add `customMenuItems` in `AyahMenuStyle`.
-	* Tajweed rules list.
-	* jump to Hizb.
-	
+  * Fix add `customMenuItems` in `AyahMenuStyle`.
+  * Tajweed rules list.
+  * jump to Hizb.
+
 ## 3.0.1
 
 * **ADD:**
-	* Tajweed fonts (hafs).
-	* Word-level interaction support for QPC v4 (clickable words).
-	* Word Info bottom sheet with on-demand download.
-	* New Word Info providers: Recitations, Tasreef, and Eerab.
-	* Optional Tajweed (ayah-level) tab inside Tafsir bottom sheet with on-demand download.
-	* Add indicatorPadding to QuranTopBarStyle #30.
+  * Tajweed fonts (hafs).
+  * Word-level interaction support for QPC v4 (clickable words).
+  * Word Info bottom sheet with on-demand download.
+  * New Word Info providers: Recitations, Tasreef, and Eerab.
+  * Optional Tajweed (ayah-level) tab inside Tafsir bottom sheet with on-demand download.
+  * Add indicatorPadding to QuranTopBarStyle #30.
 
 * **FIX:**
-	* Restructuring the code for downloading fonts.
-	* Surah number resolution in Tafsir/Tajweed view when using downloaded fonts.
-	* Auto-open download UI when switching to Recitations tab and data is missing.
-	* Fix adding custom app logo by appIconPathForPlayAudioInBackground.
+  * Restructuring the code for downloading fonts.
+  * Surah number resolution in Tafsir/Tajweed view when using downloaded fonts.
+  * Auto-open download UI when switching to Recitations tab and data is missing.
+  * Fix adding custom app logo by appIconPathForPlayAudioInBackground.
 
 * **DELETE:**
-	* Unused parameters.
-	* default fonts.
+  * Unused parameters.
+  * default fonts.
 
 ## 2.3.6
 
 * **FIX:**
-	* Ayah highlights display for tablets & iPad.
+  * Ayah highlights display for tablets & iPad.
 
 ## 2.3.5
 
 * **FIX:**
-	* Make the `viewportFraction` display two pages of the Quran on desktop, web, and landscape display for tablets & iPad.
+  * Make the `viewportFraction` display two pages of the Quran on desktop, web, and landscape display for tablets & iPad.
 
 ## 2.3.3
 
 * **FIX:**
-	* Organize code in `SurahDisplayScreen`.
-	* Organize code in `QuranPagesScreen`.
+  * Organize code in `SurahDisplayScreen`.
+  * Organize code in `QuranPagesScreen`.
 
 ## 2.3.2
 
 * **DELETE:**
-	* Delete flutter_sliding_panel package and replace it with AnimatedSize and AnimatedCrossFade.
+  * Delete flutter_sliding_panel package and replace it with AnimatedSize and AnimatedCrossFade.
 * **ADD:**
-	* Add Kashida to Tafsir & Surah info text.
-	* Add `svgBannerColor` to `BannerStyle` to change SVG banner color.
-	* Add possibility of deleting the Tafsir or translation that was previously downloaded by `deleteTafsirOrTranslation(int itemIndex)`.
+  * Add Kashida to Tafsir & Surah info text.
+  * Add `svgBannerColor` to `BannerStyle` to change SVG banner color.
+  * Add possibility of deleting the Tafsir or translation that was previously downloaded by `deleteTafsirOrTranslation(int itemIndex)`.
 * **FIX:**
-	* Prepare fonts if fonts is local.
-	* Dark mode issue in Ayah audio download manager.
-	* Custom Tafsir Performance.
-	* Download Tafsir & translation icon color in dark mode.
-	* Surah last listen.
+  * Prepare fonts if fonts is local.
+  * Dark mode issue in Ayah audio download manager.
+  * Custom Tafsir Performance.
+  * Download Tafsir & translation icon color in dark mode.
+  * Surah last listen.
 
 ## 2.3.1
 
 * **CHANGES:**
-	* Surah name shape.
-	* Ayah icon shape.
+  * Surah name shape.
+  * Ayah icon shape.
 * **FIX:**
-	* Separating the playing of Ayahs from the playing of Surahs.
-	* Audio widget width.
-	* Surah skip to previous color.
+  * Separating the playing of Ayahs from the playing of Surahs.
+  * Audio widget width.
+  * Surah skip to previous color.
 
 ## 2.3.0
 
 * **BREAKING FIX:**
-	`Ayah 19 in Surah 24.`
-	`Ayah 28 in Surah 19.`
+ `Ayah 19 in Surah 24.`
+ `Ayah 28 in Surah 19.`
 
 ## 2.2.6
 
@@ -137,10 +139,10 @@
 ## 2.2.5
 
 * **Fix: Replace unsupported** `Dialog(constraints: ...)` **with**
-	`Dialog(child: ConstrainedBox(...))` **to support older Flutter SDKs. Files:**
-	`lib/src/tafsir/widgets/change_tafsir.dart`,
-	`lib/src/audio/surah_audio/widgets/surah_change_reader.dart`,
-	`lib/src/audio/widgets/ayah_change_reader.dart`.
+ `Dialog(child: ConstrainedBox(...))` **to support older Flutter SDKs. Files:**
+ `lib/src/tafsir/widgets/change_tafsir.dart`,
+ `lib/src/audio/surah_audio/widgets/surah_change_reader.dart`,
+ `lib/src/audio/widgets/ayah_change_reader.dart`.
 
 ## 2.2.4+1
 
@@ -214,9 +216,9 @@
 
 * **Add `QuranPagesScreen` to display a single page or a range of pages.**
 * **Add programmatic ayah highlighting by:**
-	* Surah + Ayah numbers (`highlightedAyahNumbersBySurah`)
-	* Page range + ayah numbers (`highlightedAyahNumbersInPages`)
-	* Direct UQ list (`highlightedAyahs`) for advanced users
+  * Surah + Ayah numbers (`highlightedAyahNumbersBySurah`)
+  * Page range + ayah numbers (`highlightedAyahNumbersInPages`)
+  * Direct UQ list (`highlightedAyahs`) for advanced users
 * **Optional multi-select mode for ayah selection (long-press to add/remove without clearing).**
 * **Update README with usage examples for partial pages and highlighting.**
 * **Library UI redesign**
@@ -316,24 +318,24 @@
 
 ## 1.3.2
 
-*   **Fix Surah serach method**
-*   **Add Surah serach result**
-*   **View two pages instead of one page, for the desktop**
+* **Fix Surah serach method**
+* **Add Surah serach result**
+* **View two pages instead of one page, for the desktop**
 
 ## 1.3.1
 
-*   **Fix page number**
+* **Fix page number**
 
 ## 1.3.0
 
-*   **Restructure `lib` folder**
-*   **Improvements to `quran.dart`**
-*   **Improvements to GetX usage**
-*   **Improvements to Extensions**
-*   **Improve handling of assets and fonts**
-*   **Apply SOLID principles**
-*   **Add documentation comments**
-*   **Fix Ayah menu dialog**
+* **Restructure `lib` folder**
+* **Improvements to `quran.dart`**
+* **Improvements to GetX usage**
+* **Improvements to Extensions**
+* **Improve handling of assets and fonts**
+* **Apply SOLID principles**
+* **Add documentation comments**
+* **Fix Ayah menu dialog**
 
 ## 1.2.7
 

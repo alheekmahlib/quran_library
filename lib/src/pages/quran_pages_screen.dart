@@ -65,6 +65,7 @@ class QuranPagesScreen extends StatelessWidget {
     this.snackBarStyle,
     this.ayahMenuStyle,
     this.bookmarksTabStyle,
+    this.wordInfoBottomSheetStyle,
   }) : assert(
           (page != null && startPage == null && endPage == null) ||
               (page == null && (startPage != null || endPage != null)),
@@ -165,6 +166,11 @@ class QuranPagesScreen extends StatelessWidget {
   /// [bookmarksTabStyle] Bookmarks tab style customization for the Quran
   final BookmarksTabStyle? bookmarksTabStyle;
 
+  /// تخصيص نمط تبويب معلومات الكلمة الخاص بالمصحف
+  ///
+  /// [wordInfoBottomSheetStyle] Word info bottom sheet style customization for the Quran
+  final WordInfoBottomSheetStyle? wordInfoBottomSheetStyle;
+
   // ——— تحديد صفحة واحدة أو نطاق صفحات ———
   final int? page; // 1..604
   final int? startPage; // 1..604
@@ -260,6 +266,7 @@ class QuranPagesScreen extends StatelessWidget {
     return PopScope(
       onPopInvokedWithResult: (b, _) async {
         QuranCtrl.instance.state.isShowMenu.value = false;
+        QuranCtrl.instance.unregisterLocalPageController();
       },
       child: ScaleKitBuilder(
         designWidth: 375,
@@ -288,6 +295,9 @@ class QuranPagesScreen extends StatelessWidget {
               TopBottomQuranStyle.defaults(isDark: isDark, context: context),
           ayahDownloadManagerStyle: ayahDownloadManagerStyle ??
               AyahDownloadManagerStyle.defaults(
+                  isDark: isDark, context: context),
+          wordInfoBottomSheetStyle: wordInfoBottomSheetStyle ??
+              WordInfoBottomSheetStyle.defaults(
                   isDark: isDark, context: context),
           child: Scaffold(
             resizeToAvoidBottomInset: false,
@@ -363,6 +373,9 @@ class QuranPagesScreen extends StatelessWidget {
                   if (withPageView) {
                     // PageView محلي على النطاق فقط
                     final controller = PageController(initialPage: 0);
+                    // تسجيل المتحكم المحلي لدعم التنقل من الفواصل وغيرها
+                    quranCtrl.registerLocalPageController(
+                        controller, startIndex, count);
                     body = PageView.builder(
                       itemCount: count,
                       controller: controller,

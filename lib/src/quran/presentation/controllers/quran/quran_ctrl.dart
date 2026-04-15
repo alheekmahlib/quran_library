@@ -65,6 +65,26 @@ class QuranCtrl extends GetxController {
   // PreloadPageController الداخلي
   PreloadPageController? _pageController;
 
+  // متحكم صفحات محلي لشاشة QuranPagesScreen (نطاق محدود من الصفحات)
+  PageController? _localPagesController;
+  int _localPagesOffset = 0;
+  int _localPagesCount = 0;
+
+  /// تسجيل متحكم صفحات محلي مع إزاحة البداية وعدد الصفحات
+  void registerLocalPageController(
+      PageController controller, int startOffset, int count) {
+    _localPagesController = controller;
+    _localPagesOffset = startOffset;
+    _localPagesCount = count;
+  }
+
+  /// إلغاء تسجيل متحكم الصفحات المحلي
+  void unregisterLocalPageController() {
+    _localPagesController = null;
+    _localPagesOffset = 0;
+    _localPagesCount = 0;
+  }
+
   // late QuranSearch quranSearch;
 
   // final bool _scrollListenerAttached = false;
@@ -518,6 +538,16 @@ class QuranCtrl extends GetxController {
   // Explanation: Improved navigation for smoother scrolling
   void jumpToPage(int page) {
     state.currentPageNumber.value = page + 1;
+    // تحقق من المتحكم المحلي أولاً (QuranPagesScreen)
+    if (_localPagesController != null && _localPagesController!.hasClients) {
+      final localIndex = page - _localPagesOffset;
+      if (localIndex >= 0 && localIndex < _localPagesCount) {
+        log('Jumping to local page: $localIndex (global: $page)',
+            name: 'QuranCtrl');
+        _localPagesController!.jumpToPage(localIndex);
+        return;
+      }
+    }
     if (quranPagesController.hasClients) {
       log('Jumping to page: $page', name: 'QuranCtrl');
       quranPagesController.jumpToPage(

@@ -11,7 +11,7 @@ Future<void> showWordInfoBottomSheet({
   ctrl.setSelectedKind(initialKind);
 
   final WordInfoBottomSheetStyle defaults = wordInfoStyle ??
-      WordInfoDialogTheme.of(context)?.style ??
+      WordInfoBottomSheetTheme.of(context)?.style ??
       WordInfoBottomSheetStyle.defaults(isDark: isDark, context: context);
   final size = MediaQuery.sizeOf(context);
   // final maxHFactor = (defaults.maxHeightFactor ?? 0.9).clamp(0.0, 1.0);
@@ -36,8 +36,7 @@ Future<void> showWordInfoBottomSheet({
         initialKind: initialKind,
         ctrl: ctrl,
         isDark: isDark,
-        defaults: wordInfoStyle ??
-            WordInfoBottomSheetStyle.defaults(isDark: isDark, context: context),
+        defaults: defaults,
       );
     },
   );

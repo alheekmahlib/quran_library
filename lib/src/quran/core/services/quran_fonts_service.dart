@@ -190,7 +190,7 @@ class QuranFontsService {
         if (cacheDir != null) {
           final cachedFile = File('${cacheDir.path}/$familyName.ttf');
           if (cachedFile.existsSync()) {
-            fontBytes = await cachedFile.readAsBytes();
+            fontBytes = Uint8List.fromList(await cachedFile.readAsBytes());
           } else {
             fontBytes = await _decompressFromAsset(page);
             try {

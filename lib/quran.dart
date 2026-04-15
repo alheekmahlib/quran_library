@@ -1,7 +1,6 @@
 import 'dart:async' show Completer, StreamSubscription, Timer;
 import 'dart:convert' show jsonDecode, jsonEncode;
 import 'dart:developer' show log;
-import 'dart:io' show File, Platform, Directory;
 import 'dart:math' as math show max, min;
 import 'dart:ui';
 
@@ -21,11 +20,11 @@ import 'package:get/get.dart' hide Response;
 import 'package:get_storage/get_storage.dart';
 import 'package:html/dom.dart' as dom;
 import 'package:html/parser.dart' as html_parser;
-import 'package:path_provider/path_provider.dart';
 import 'package:preload_page_view/preload_page_view.dart'
     hide PageScrollPhysics, PageMetrics;
 
 import 'src/audio/audio.dart';
+import 'src/core/platform/io_helpers.dart';
 import 'src/core/utils/app_colors.dart';
 import 'src/core/utils/ui_helper.dart';
 import 'src/core/widgets/download_button_widget.dart';

@@ -76,14 +76,15 @@ class FullQuran extends StatelessWidget {
     return QuranLibraryScreen(
       parentContext: context,
       isDark: false,
-      showAyahBookmarkedIcon: true,
+      isShowTabBar: true,
+      isFontsLocal: false,
       useDefaultAppBar: true,
+      enableWordSelection: true,
+      isShowDisplayModeBar: true,
+      showAyahBookmarkedIcon: true,
       appLanguageCode: 'ar',
       // appIconPathForPlayAudioInBackground:
       //     'assets/images/quran_library_logo.png',
-      isShowTabBar: true,
-      isFontsLocal: false,
-      enableWordSelection: true,
       // isAyahBookmarked: (ayah) =>
       //     ayah.ayahUQNumber == 12 && ayah.surahNumber == 2,
       ayahMenuStyle:

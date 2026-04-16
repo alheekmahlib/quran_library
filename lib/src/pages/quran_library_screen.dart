@@ -880,7 +880,7 @@ class _ControlWidget extends StatelessWidget {
                         : const SizedBox.shrink(),
                     // شريط اختيار وضع العرض - يظهر على الجانب
                     // Display mode selector bar - appears on the side
-                    if (!isShowDisplayModeBar!)
+                    if (isShowDisplayModeBar!)
                       Positioned(
                         right: 8,
                         top: 0,

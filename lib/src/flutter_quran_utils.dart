@@ -49,6 +49,7 @@ class QuranLibrary {
 
     /// Initialize SurahAudioController
     QuranCtrl.instance;
+    Get.lazyPut(() => AutoScrollCtrl(), fenix: true);
     await _initTafsir();
 
     quranCtrl.state.isFontDownloaded.value =

@@ -150,8 +150,81 @@ class _QuranFontsPage extends StatelessWidget {
           const Center(child: CircularProgressIndicator.adaptive());
     }
 
+    // تجميع الآيات المتتالية في مجموعات — كل مجموعة تُعرض في RichText واحد
+    final children = <Widget>[];
+    var pendingSegments = <QpcV4WordSegment>[];
+
+    void flushPending() {
+      if (pendingSegments.isEmpty) return;
+      children.add(
+        QpcV4FlowingText(
+          pageIndex: pageIndex,
+          segments: List.of(pendingSegments),
+          textColor: textColor,
+          isDark: isDark,
+          bookmarks: bookmarks,
+          onAyahLongPress: onAyahLongPress,
+          bookmarkList: bookmarkList,
+          ayahIconColor: ayahIconColor,
+          showAyahBookmarkedIcon: showAyahBookmarkedIcon,
+          bookmarksAyahs: bookmarksAyahs,
+          bookmarksColor: bookmarksColor,
+          ayahSelectedBackgroundColor: ayahSelectedBackgroundColor,
+          isFontsLocal: isFontsLocal ?? false,
+          fontsName: fontsName ?? '',
+          ayahBookmarked: ayahBookmarked,
+          isAyahBookmarked: isAyahBookmarked,
+          onPagePress: onPagePress,
+        ),
+      );
+      pendingSegments = [];
+    }
+
+    for (final block in blocks) {
+      if (block is QpcV4SurahHeaderBlock) {
+        flushPending();
+        children.add(
+          SurahHeaderWidget(
+            block.surahNumber,
+            bannerStyle: bannerStyle ?? BannerStyle.textScale(isDark: isDark),
+            surahNameStyle: surahNameStyle ??
+                SurahNameStyle(
+                  surahNameSize: 24.sp,
+                  surahNameColor: isDark ? Colors.white : Colors.black,
+                ),
+            onSurahBannerPress: onSurahBannerPress,
+            isDark: isDark,
+          ),
+        );
+      } else if (block is QpcV4BasmallahBlock) {
+        flushPending();
+        children.add(
+          Padding(
+            padding: const EdgeInsets.only(bottom: 8.0),
+            child: BasmallahWidget(
+              surahNumber: block.surahNumber,
+              basmalaStyle: basmalaStyle ??
+                  BasmalaStyle(
+                    basmalaColor: isDark ? Colors.white : Colors.black,
+                    basmalaFontSize: 50.0,
+                  ),
+            ),
+          ),
+        );
+      } else if (block is QpcV4AyahFlowBlock) {
+        pendingSegments.addAll(block.segments);
+      }
+    }
+    flushPending();
+
     return GestureDetector(
       onTap: () {
+        // أثناء السكرول التلقائي: إيقاف/استئناف مع إظهار/إخفاء عناصر التحكم
+        final autoScroll = AutoScrollCtrl.instance;
+        if (autoScroll.state.isActive.value) {
+          autoScroll.togglePause();
+          return;
+        }
         if (onPagePress != null) onPagePress!();
         quranCtrl.showControlToggle();
         quranCtrl.clearSelection();
@@ -160,57 +233,7 @@ class _QuranFontsPage extends StatelessWidget {
       child: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
-          children: [
-            for (final block in blocks)
-              if (block is QpcV4SurahHeaderBlock)
-                SurahHeaderWidget(
-                  block.surahNumber,
-                  bannerStyle:
-                      bannerStyle ?? BannerStyle.textScale(isDark: isDark),
-                  surahNameStyle: surahNameStyle ??
-                      SurahNameStyle(
-                        surahNameSize: 24.sp,
-                        surahNameColor: isDark ? Colors.white : Colors.black,
-                      ),
-                  onSurahBannerPress: onSurahBannerPress,
-                  isDark: isDark,
-                )
-              else if (block is QpcV4BasmallahBlock)
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 8.0),
-                  child: BasmallahWidget(
-                    surahNumber: block.surahNumber,
-                    basmalaStyle: basmalaStyle ??
-                        BasmalaStyle(
-                          basmalaColor: isDark ? Colors.white : Colors.black,
-                          basmalaFontSize: 50.0,
-                        ),
-                  ),
-                )
-              else if (block is QpcV4AyahFlowBlock)
-                QpcV4FlowingText(
-                  pageIndex: pageIndex,
-                  segments: block.segments,
-                  ayahUq: block.ayahUq,
-                  ayahNumber: block.ayahNumber,
-                  surahNumber: block.surahNumber,
-                  textColor: textColor,
-                  isDark: isDark,
-                  bookmarks: bookmarks,
-                  onAyahLongPress: onAyahLongPress,
-                  bookmarkList: bookmarkList,
-                  ayahIconColor: ayahIconColor,
-                  showAyahBookmarkedIcon: showAyahBookmarkedIcon,
-                  bookmarksAyahs: bookmarksAyahs,
-                  bookmarksColor: bookmarksColor,
-                  ayahSelectedBackgroundColor: ayahSelectedBackgroundColor,
-                  isFontsLocal: isFontsLocal ?? false,
-                  fontsName: fontsName ?? '',
-                  ayahBookmarked: ayahBookmarked,
-                  isAyahBookmarked: isAyahBookmarked,
-                  onPagePress: onPagePress,
-                ),
-          ],
+          children: children,
         ),
       ),
     );

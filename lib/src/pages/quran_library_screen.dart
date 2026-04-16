@@ -461,6 +461,39 @@ class QuranLibraryScreen extends StatelessWidget {
                               }
                             },
                             child: Obx(() {
+                              // تحقق من تفعيل السكرول التلقائي أولاً
+                              if (AutoScrollCtrl
+                                  .instance.state.isActive.value) {
+                                return AutoScrollPageView(
+                                  quranCtrl: quranCtrl,
+                                  autoScrollCtrl: AutoScrollCtrl.instance,
+                                  isDark: isDark,
+                                  languageCode: languageCode,
+                                  onPagePress: onPagePress,
+                                  circularProgressWidget:
+                                      circularProgressWidget,
+                                  bookmarkList: bookmarkList,
+                                  ayahSelectedFontColor: ayahSelectedFontColor,
+                                  textColor: textColor,
+                                  ayahIconColor: ayahIconColor,
+                                  showAyahBookmarkedIcon:
+                                      showAyahBookmarkedIcon,
+                                  onAyahLongPress: onAyahLongPress,
+                                  bookmarksColor: bookmarksColor,
+                                  surahNameStyle: surahNameStyle,
+                                  bannerStyle: bannerStyle,
+                                  basmalaStyle: basmalaStyle,
+                                  onSurahBannerPress: onSurahBannerPress,
+                                  surahNumber: surahNumber,
+                                  ayahSelectedBackgroundColor:
+                                      ayahSelectedBackgroundColor,
+                                  fontsName: fontsName,
+                                  ayahBookmarked: ayahBookmarked,
+                                  isAyahBookmarked: isAyahBookmarked,
+                                  parentContext: parentContext,
+                                  isFontsLocal: isFontsLocal,
+                                );
+                              }
                               final mode = quranCtrl.state.displayMode.value;
                               switch (mode) {
                                 case QuranDisplayMode.singleScrollable:
@@ -776,77 +809,87 @@ class _ControlWidget extends StatelessWidget {
     return GetBuilder<QuranCtrl>(
       id: 'isShowControl',
       builder: (quranCtrl) {
-        final visible = quranCtrl.isShowControl.value;
-        return RepaintBoundary(
-          child: IgnorePointer(
-            ignoring: !visible,
-            child: AnimatedOpacity(
-              opacity: visible ? 1.0 : 0.0,
-              duration: const Duration(milliseconds: 150),
-              curve: Curves.easeInOut,
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  // السلايدر السفلي - يظهر من الأسفل للأعلى
-                  // Bottom slider - appears from bottom to top
-                  isShowAudioSlider!
-                      ? AyahsAudioWidget(
-                          style: ayahStyle ??
-                              AyahAudioStyle.defaults(
-                                  isDark: isDark, context: context),
+        return Obx(() {
+          final visible = quranCtrl.isShowControl.value;
+          // إخفاء كل عناصر التحكم أثناء السكرول التلقائي النشط (غير المتوقف)
+          final autoScroll = AutoScrollCtrl.instance;
+          final isAutoScrollRunning = autoScroll.state.isActive.value &&
+              !autoScroll.state.isPaused.value;
+          final shouldShow = visible && !isAutoScrollRunning;
+
+          return RepaintBoundary(
+            child: IgnorePointer(
+              ignoring: !shouldShow,
+              child: AnimatedOpacity(
+                opacity: shouldShow ? 1.0 : 0.0,
+                duration: const Duration(milliseconds: 150),
+                curve: Curves.easeInOut,
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    // السلايدر السفلي - يظهر من الأسفل للأعلى
+                    // Bottom slider - appears from bottom to top
+                    isShowAudioSlider!
+                        ? AyahsAudioWidget(
+                            style: ayahStyle ??
+                                AyahAudioStyle.defaults(
+                                    isDark: isDark, context: context),
+                            isDark: isDark,
+                            languageCode: languageCode,
+                            downloadManagerStyle: ayahDownloadManagerStyle,
+                          )
+                        : const SizedBox.shrink(),
+                    kIsWeb
+                        ? JumpingPageControllerWidget(
+                            backgroundColor: backgroundColor,
+                            isDark: isDark,
+                            textColor: textColor,
+                            quranCtrl: quranCtrl,
+                          )
+                        : const SizedBox.shrink(),
+                    appBar == null && useDefaultAppBar && visible
+                        ? _QuranTopBar(
+                            languageCode,
+                            isDark,
+                            style: surahStyle ?? SurahAudioStyle(),
+                            backgroundColor: backgroundColor,
+                            downloadFontsDialogStyle: downloadFontsDialogStyle,
+                            isFontsLocal: isFontsLocal,
+                          )
+                        : const SizedBox.shrink(),
+                    isShowTabBar!
+                        ? Positioned(
+                            top: 70,
+                            child: QuranOrTenRecitationsTabBar(
+                                bgColor: backgroundColor ??
+                                    AppColors.getBackgroundColor(isDark),
+                                defaults: topBarStyle ??
+                                    QuranTopBarStyle.defaults(
+                                        context: context, isDark: isDark),
+                                isDark: isDark),
+                          )
+                        : const SizedBox.shrink(),
+                    // شريط اختيار وضع العرض - يظهر على الجانب
+                    // Display mode selector bar - appears on the side
+                    Positioned(
+                      right: 8,
+                      top: 0,
+                      bottom: 0,
+                      child: Center(
+                        child: DisplayModeBar(
                           isDark: isDark,
                           languageCode: languageCode,
-                          downloadManagerStyle: ayahDownloadManagerStyle,
-                        )
-                      : const SizedBox.shrink(),
-                  kIsWeb
-                      ? JumpingPageControllerWidget(
-                          backgroundColor: backgroundColor,
-                          isDark: isDark,
-                          textColor: textColor,
-                          quranCtrl: quranCtrl,
-                        )
-                      : const SizedBox.shrink(),
-                  appBar == null && useDefaultAppBar && visible
-                      ? _QuranTopBar(
-                          languageCode,
-                          isDark,
-                          style: surahStyle ?? SurahAudioStyle(),
-                          backgroundColor: backgroundColor,
-                          downloadFontsDialogStyle: downloadFontsDialogStyle,
-                          isFontsLocal: isFontsLocal,
-                        )
-                      : const SizedBox.shrink(),
-                  isShowTabBar!
-                      ? Positioned(
-                          top: 70,
-                          child: QuranOrTenRecitationsTabBar(
-                              bgColor: backgroundColor ??
-                                  AppColors.getBackgroundColor(isDark),
-                              defaults: topBarStyle ??
-                                  QuranTopBarStyle.defaults(
-                                      context: context, isDark: isDark),
-                              isDark: isDark),
-                        )
-                      : const SizedBox.shrink(),
-                  // شريط اختيار وضع العرض - يظهر على الجانب
-                  // Display mode selector bar - appears on the side
-                  Positioned(
-                    right: 8,
-                    top: 0,
-                    bottom: 0,
-                    child: Center(
-                      child: DisplayModeBar(
-                        isDark: isDark,
-                        languageCode: languageCode,
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                    // شريط التحكم بسرعة السكرول التلقائي — يبقى ظاهرًا بشكل مستقل
+                    AutoScrollSpeedSlider(isDark: isDark),
+                  ],
+                ),
               ),
             ),
-          ),
-        );
+          );
+        });
       },
     );
   }

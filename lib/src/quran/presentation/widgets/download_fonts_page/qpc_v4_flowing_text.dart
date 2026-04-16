@@ -1,15 +1,13 @@
 part of '/quran.dart';
 
-/// ويدجت لعرض آية واحدة بخط QPC V4 بتدفق حر (wrapping تلقائي).
+/// ويدجت لعرض مجموعة آيات بخط QPC V4 بتدفق حر (wrapping تلقائي).
 /// يُستخدم في وضع التكبير (scaleFactor > 1.3) حيث لا نحتاج لتحديد موقع كل كلمة.
+/// يستقبل segments من عدة آيات متتالية ويعرضها في RichText واحد.
 class QpcV4FlowingText extends StatefulWidget {
   const QpcV4FlowingText({
     super.key,
     required this.pageIndex,
     required this.segments,
-    required this.ayahUq,
-    required this.ayahNumber,
-    required this.surahNumber,
     required this.textColor,
     required this.isDark,
     required this.bookmarks,
@@ -29,9 +27,6 @@ class QpcV4FlowingText extends StatefulWidget {
 
   final int pageIndex;
   final List<QpcV4WordSegment> segments;
-  final int ayahUq;
-  final int ayahNumber;
-  final int surahNumber;
   final Color? textColor;
   final bool isDark;
   final Map<int, List<BookmarkModel>> bookmarks;
@@ -65,9 +60,11 @@ class _QpcV4FlowingTextState extends State<QpcV4FlowingText> {
     final abHash = Object.hashAll(widget.ayahBookmarked);
     final overrideHash = widget.isAyahBookmarked == null
         ? 0
-        : Object.hash(
-            widget.ayahUq,
-            widget.isAyahBookmarked!(quranCtrl.getAyahByUq(widget.ayahUq)),
+        : Object.hashAll(
+            widget.segments.map((s) => Object.hash(
+                  s.ayahUq,
+                  widget.isAyahBookmarked!(quranCtrl.getAyahByUq(s.ayahUq)),
+                )),
           );
     final isDarkHash = widget.isDark.hashCode;
     final tajweedHash = quranCtrl.state.isTajweedEnabled.value.hashCode;
@@ -106,7 +103,7 @@ class _QpcV4FlowingTextState extends State<QpcV4FlowingText> {
           if (isTenRecitations &&
               !withTajweed &&
               wordInfoCtrl.isKindAvailable(WordInfoKind.recitations)) {
-            final surahs = {widget.surahNumber};
+            final surahs = widget.segments.map((s) => s.surahNumber).toSet();
             WidgetsBinding.instance.addPostFrameCallback((_) {
               wordInfoCtrl.prewarmRecitationsSurahs(surahs);
             });
@@ -248,7 +245,7 @@ class _QpcV4FlowingTextState extends State<QpcV4FlowingText> {
 
     return RichText(
       textDirection: TextDirection.rtl,
-      textAlign: TextAlign.center,
+      textAlign: TextAlign.justify,
       softWrap: true,
       overflow: TextOverflow.visible,
       maxLines: null,

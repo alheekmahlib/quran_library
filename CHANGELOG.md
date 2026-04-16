@@ -1,3 +1,9 @@
+## 3.2.4
+
+* **ADD:**
+  * Auto-Scroll Feature.
+  * Reader Ali Jaber for Ayahs & Surahs.
+
 ## 3.2.3
 
 * **FIX:**

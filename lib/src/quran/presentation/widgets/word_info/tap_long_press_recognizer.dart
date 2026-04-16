@@ -85,6 +85,13 @@ class TapLongPressRecognizer extends TapGestureRecognizer {
 
     // بعد الضغط المطوّل لا نمسح التحديد — toggleAyahSelection عمل update بالفعل
     if (!wasLongHold) {
+      // أثناء السكرول التلقائي: إيقاف/استئناف مع إظهار/إخفاء عناصر التحكم
+      final autoScroll = AutoScrollCtrl.instance;
+      if (autoScroll.state.isActive.value) {
+        autoScroll.togglePause();
+        return;
+      }
+
       if (onQuickTapCallback != null) {
         onQuickTapCallback!();
       } else {

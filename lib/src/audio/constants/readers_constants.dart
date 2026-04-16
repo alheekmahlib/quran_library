@@ -90,6 +90,12 @@ class ReadersConstants {
       readerNamePath: 'Yasser_Ad-Dussary_128kbps',
       url: ayahs2ndSource,
     ),
+    const ReaderInfo(
+      index: 11,
+      name: 'علي جابر',
+      readerNamePath: 'Ali_Jaber_64kbps',
+      url: ayahs2ndSource,
+    ),
   ];
 
   static final List<ReaderInfo> surahReaderInfo = [
@@ -212,6 +218,12 @@ class ReadersConstants {
       name: 'ياسر الدوسري - مجود',
       readerNamePath: 'yasser/',
       url: surahUrl5,
+    ),
+    const ReaderInfo(
+      index: 20,
+      name: 'علي جابر',
+      readerNamePath: 'ali_jaber/',
+      url: surahUrl1,
     ),
   ];
 }

@@ -70,6 +70,7 @@ class QuranLibraryScreen extends StatelessWidget {
     this.ayahTafsirInlineStyle,
     this.quranTafsirSideStyle,
     this.wordInfoBottomSheetStyle,
+    this.isShowDisplayModeBar = true,
   });
 
   /// إذا قمت بإضافة شريط التطبيقات هنا فإنه سيحل محل شريط التطبيقات الافتراضية [appBar]
@@ -343,6 +344,11 @@ class QuranLibraryScreen extends StatelessWidget {
   ///
   /// [wordInfoBottomSheetStyle] Style customization for the word info bottom sheet display mode
   final WordInfoBottomSheetStyle? wordInfoBottomSheetStyle;
+
+  /// نمط تخصيص معلومات الكلمة
+  ///
+  /// [isShowDisplayModeBar] To specify whether to show the display mode bar or not
+  final bool? isShowDisplayModeBar;
 
   @override
   Widget build(BuildContext context) {
@@ -649,6 +655,7 @@ class QuranLibraryScreen extends StatelessWidget {
                           isFontsLocal: isFontsLocal,
                           isShowTabBar: isShowTabBar,
                           topBarStyle: topBarStyle,
+                          isShowDisplayModeBar: isShowDisplayModeBar,
                         ),
                       ],
                     ),
@@ -787,6 +794,7 @@ class _ControlWidget extends StatelessWidget {
     required this.isFontsLocal,
     required this.isShowTabBar,
     required this.topBarStyle,
+    required this.isShowDisplayModeBar,
   });
 
   final bool? isShowAudioSlider;
@@ -802,6 +810,7 @@ class _ControlWidget extends StatelessWidget {
   final DownloadFontsDialogStyle? downloadFontsDialogStyle;
   final bool? isFontsLocal;
   final bool? isShowTabBar;
+  final bool? isShowDisplayModeBar;
   final QuranTopBarStyle? topBarStyle;
 
   @override
@@ -871,17 +880,18 @@ class _ControlWidget extends StatelessWidget {
                         : const SizedBox.shrink(),
                     // شريط اختيار وضع العرض - يظهر على الجانب
                     // Display mode selector bar - appears on the side
-                    Positioned(
-                      right: 8,
-                      top: 0,
-                      bottom: 0,
-                      child: Center(
-                        child: DisplayModeBar(
-                          isDark: isDark,
-                          languageCode: languageCode,
+                    if (!isShowDisplayModeBar!)
+                      Positioned(
+                        right: 8,
+                        top: 0,
+                        bottom: 0,
+                        child: Center(
+                          child: DisplayModeBar(
+                            isDark: isDark,
+                            languageCode: languageCode,
+                          ),
                         ),
                       ),
-                    ),
                     // شريط التحكم بسرعة السكرول التلقائي — يبقى ظاهرًا بشكل مستقل
                     AutoScrollSpeedSlider(isDark: isDark),
                   ],

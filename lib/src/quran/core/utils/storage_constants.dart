@@ -23,6 +23,11 @@ class _StorageConstants {
   /// Display Mode
   final String displayMode = 'DISPLAY_MODE';
 
+  /// Auto Scroll
+  final String autoScrollSpeed = 'AUTO_SCROLL_SPEED';
+  final String autoScrollStopCondition = 'AUTO_SCROLL_STOP_CONDITION';
+  final String autoScrollPageCount = 'AUTO_SCROLL_PAGE_COUNT';
+
   ///Singleton factory
   static final _StorageConstants _instance = _StorageConstants._internal();
 

@@ -96,6 +96,12 @@ class FontsDownloadWidget extends StatelessWidget {
               downloadFontsDialogStyle: downloadFontsDialogStyle,
               textColor: textColor,
               accent: accent),
+          AutoScrollSettingsWidget(
+            isDark: isDark,
+            accent: accent,
+            outlineColor: outlineColor,
+            textColor: textColor,
+          ),
         ],
       ),
     );

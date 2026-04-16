@@ -100,6 +100,51 @@ class _QuranTopBar extends StatelessWidget {
             const Spacer(),
             Row(
               children: [
+                if (defaults.showAutoScrollButton ?? true)
+                  Obx(() {
+                    final isAutoScrollActive =
+                        AutoScrollCtrl.instance.state.isActive.value;
+                    return QuranCtrl.instance.state.displayMode.value ==
+                            QuranDisplayMode.defaultMode
+                        ? IconButton(
+                            icon: SvgPicture.asset(
+                                defaults.autoScrollIconPath ??
+                                    AssetsPath.assets.arrowDown,
+                                height: defaults.iconSize,
+                                colorFilter: ColorFilter.mode(
+                                    isAutoScrollActive
+                                        ? (defaults.iconColor ??
+                                            Theme.of(context)
+                                                .colorScheme
+                                                .primary)
+                                        : (defaults.iconColor ??
+                                                Theme.of(context)
+                                                    .colorScheme
+                                                    .primary)
+                                            .withValues(alpha: 0.5),
+                                    BlendMode.srcIn)),
+                            //   Icon(
+                            //   Icons.speed,
+                            //   size: defaults.iconSize ?? 22,
+                            //   color: isAutoScrollActive
+                            //       ? (defaults.accentColor ??
+                            //           Theme.of(context).colorScheme.primary)
+                            //       : (defaults.iconColor ??
+                            //           Theme.of(context).colorScheme.primary),
+                            // ),
+                            onPressed: () {
+                              final ctrl = AutoScrollCtrl.instance;
+                              if (ctrl.state.isActive.value) {
+                                ctrl.stopAutoScroll();
+                              } else {
+                                final currentPage = QuranCtrl
+                                    .instance.state.currentPageNumber.value;
+                                ctrl.startAutoScroll(currentPage);
+                              }
+                            },
+                          )
+                        : const SizedBox.shrink();
+                  }),
                 if (defaults.showAudioButton ?? true)
                   IconButton(
                     icon: SvgPicture.asset(

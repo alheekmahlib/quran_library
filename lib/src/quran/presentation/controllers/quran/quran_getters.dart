@@ -95,10 +95,10 @@ extension QuranGetters on QuranCtrl {
     await selectRecitation(QuranRecitation.fromIndex(fontIndex));
   }
 
-  List<int> get _topOfThePageIndex => [
-        435,
-        583,
-      ];
+  // List<int> get _topOfThePageIndex => [
+  //       435,
+  //       583,
+  //     ];
 
   /// Returns a list of lists of AyahModel, where each sublist contains Ayahs
   /// that are separated by a Basmalah, for the given page index.

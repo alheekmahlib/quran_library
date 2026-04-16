@@ -24,6 +24,7 @@ class QuranTopBarStyle {
   final String? audioIconPath;
   final String? optionsIconPath;
   final String? tajweedIconPath;
+  final String? autoScrollIconPath;
   final double? iconSize;
   final Color? iconColor; // overrides textColor for icons if provided
 
@@ -45,6 +46,7 @@ class QuranTopBarStyle {
   final bool? showFontsButton;
   final bool? showBackButton;
   final bool? showTajweedButton;
+  final bool? showAutoScrollButton;
 
   // Custom widgets to add to the top bar
   final List<Widget>? customTopBarWidgets;
@@ -85,7 +87,9 @@ class QuranTopBarStyle {
     this.optionsIconPath,
     this.customTopBarWidgets,
     this.tajweedIconPath,
+    this.autoScrollIconPath,
     this.showTajweedButton,
+    this.showAutoScrollButton,
     this.quranTabText,
     this.tenRecitationsTabText,
     this.tabLabelStyle,
@@ -123,6 +127,8 @@ class QuranTopBarStyle {
     List<Widget>? customTopBarWidgets,
     String? tajweedIconPath,
     bool? showTajweedButton,
+    String? autoScrollIconPath,
+    bool? showAutoScrollButton,
     String? quranTabText,
     String? tenRecitationsTabText,
     TextStyle? tabLabelStyle,
@@ -160,11 +166,13 @@ class QuranTopBarStyle {
         customTopBarWidgets: customTopBarWidgets ?? this.customTopBarWidgets,
         tajweedIconPath: tajweedIconPath ?? this.tajweedIconPath,
         showTajweedButton: showTajweedButton ?? this.showTajweedButton,
+        showAutoScrollButton: showAutoScrollButton ?? this.showAutoScrollButton,
         quranTabText: quranTabText ?? this.quranTabText,
         tenRecitationsTabText:
             tenRecitationsTabText ?? this.tenRecitationsTabText,
         tabLabelStyle: tabLabelStyle ?? this.tabLabelStyle,
         indicatorPadding: indicatorPadding ?? this.indicatorPadding,
+        autoScrollIconPath: autoScrollIconPath ?? this.autoScrollIconPath,
       );
 
   /// Provide sensible defaults based on theme (isDark)
@@ -203,7 +211,9 @@ class QuranTopBarStyle {
       optionsIconPath: AssetsPath.assets.options,
       customTopBarWidgets: null,
       tajweedIconPath: AssetsPath.assets.exclamation,
+      autoScrollIconPath: AssetsPath.assets.arrowDown,
       showTajweedButton: true,
+      showAutoScrollButton: true,
       quranTabText: 'القرآن الكريم',
       tenRecitationsTabText: 'القراءات العشر',
       tabLabelStyle: TextStyle(

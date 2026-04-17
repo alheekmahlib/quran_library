@@ -11,16 +11,60 @@ class AutoScrollSettingsWidget extends StatelessWidget {
     required this.accent,
     required this.outlineColor,
     required this.textColor,
+    this.autoScrollStyle,
   });
 
   final bool isDark;
   final Color accent;
   final Color outlineColor;
   final Color textColor;
+  final AutoScrollStyle? autoScrollStyle;
 
   @override
   Widget build(BuildContext context) {
     final autoScrollCtrl = AutoScrollCtrl.instance;
+    final style = autoScrollStyle ?? AutoScrollTheme.of(context)?.style;
+
+    // ─── Resolve texts ──────────────────────────────────────────
+    final titleText = style?.settingsTitleText ?? 'السكرول التلقائي';
+    final stopLabel = style?.stopConditionLabelText ?? 'التوقف عند:';
+    final pageCountLabel = style?.pageCountLabelText ?? 'عدد الصفحات:';
+    final speedLabel = style?.speedLabelText ?? 'السرعة:';
+    final slowText = style?.slowLabelText ?? 'بطيء';
+    final fastText = style?.fastLabelText ?? 'سريع';
+
+    // ─── Resolve styles ─────────────────────────────────────────
+    final titleStyle = style?.settingsTitleStyle ??
+        TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.w700,
+          fontFamily: 'cairo',
+          color: style?.textColor ?? textColor,
+          package: 'quran_library',
+        );
+    final subLabelStyle = style?.settingsSubLabelStyle ??
+        TextStyle(
+          fontSize: 13,
+          fontFamily: 'cairo',
+          color: (style?.textColor ?? textColor).withValues(alpha: .7),
+          package: 'quran_library',
+        );
+    final resolvedChipBorderRadius = style?.chipBorderRadius ?? 10;
+    final resolvedChipSelectedBg = style?.chipSelectedBackgroundColor ??
+        AppColors.getBackgroundColor(isDark);
+    final resolvedChipUnselectedBg = style?.chipUnselectedBackgroundColor ??
+        AppColors.getBackgroundColor(isDark);
+    final resolvedChipSelectedBorder = style?.chipSelectedBorderColor ?? accent;
+    final resolvedChipUnselectedBorder =
+        style?.chipUnselectedBorderColor ?? outlineColor;
+    final resolvedPageCountBtnColor = style?.pageCountButtonColor ?? accent;
+    final hintStyle = style?.sliderHintStyle ??
+        TextStyle(
+          fontSize: 11,
+          fontFamily: 'cairo',
+          color: (style?.textColor ?? textColor).withValues(alpha: .5),
+          package: 'quran_library',
+        );
 
     return Obx(() {
       final selectedCondition = autoScrollCtrl.state.stopCondition.value;
@@ -45,27 +89,16 @@ class AutoScrollSettingsWidget extends StatelessWidget {
             // العنوان
             Center(
               child: Text(
-                'السكرول التلقائي',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
-                  fontFamily: 'cairo',
-                  color: textColor,
-                  package: 'quran_library',
-                ),
+                titleText,
+                style: titleStyle,
               ),
             ),
             const SizedBox(height: 10),
 
             // شرط التوقف
             Text(
-              'التوقف عند:',
-              style: TextStyle(
-                fontSize: 13,
-                fontFamily: 'cairo',
-                color: textColor.withValues(alpha: .7),
-                package: 'quran_library',
-              ),
+              stopLabel,
+              style: subLabelStyle,
             ),
             const SizedBox(height: 6),
             Wrap(
@@ -73,31 +106,42 @@ class AutoScrollSettingsWidget extends StatelessWidget {
               runSpacing: 4,
               children: AutoScrollStopCondition.values.map((condition) {
                 final isSelected = selectedCondition == condition;
+                final chipLabel =
+                    style?.stopConditionLabels?[condition] ?? condition.labelAr;
+                final chipStyle = style?.chipTextStyle != null
+                    ? style!.chipTextStyle!.copyWith(
+                        color: isSelected
+                            ? accent
+                            : (style.textColor ?? textColor),
+                        fontWeight:
+                            isSelected ? FontWeight.w700 : FontWeight.normal,
+                      )
+                    : TextStyle(
+                        fontSize: 12,
+                        fontFamily: 'cairo',
+                        color: isSelected ? accent : textColor,
+                        fontWeight:
+                            isSelected ? FontWeight.w700 : FontWeight.normal,
+                        package: 'quran_library',
+                      );
                 return ChoiceChip(
                   elevation: 0,
                   pressElevation: 0,
                   selectedShadowColor: Colors.transparent,
                   shadowColor: Colors.transparent,
-                  label: Text(
-                    condition.labelAr,
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontFamily: 'cairo',
-                      color: isSelected ? accent : textColor,
-                      fontWeight:
-                          isSelected ? FontWeight.w700 : FontWeight.normal,
-                      package: 'quran_library',
-                    ),
-                  ),
+                  label: Text(chipLabel, style: chipStyle),
                   selected: isSelected,
-                  selectedColor: AppColors.getBackgroundColor(isDark),
-                  backgroundColor: AppColors.getBackgroundColor(isDark),
+                  selectedColor: resolvedChipSelectedBg,
+                  backgroundColor: resolvedChipUnselectedBg,
                   side: BorderSide(
-                    color: isSelected ? accent : outlineColor,
+                    color: isSelected
+                        ? resolvedChipSelectedBorder
+                        : resolvedChipUnselectedBorder,
                     width: isSelected ? 1.5 : 1,
                   ),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius:
+                        BorderRadius.circular(resolvedChipBorderRadius),
                   ),
                   onSelected: (_) {
                     autoScrollCtrl.updateStopCondition(condition);
@@ -116,18 +160,13 @@ class AutoScrollSettingsWidget extends StatelessWidget {
                       child: Row(
                         children: [
                           Text(
-                            'عدد الصفحات:',
-                            style: TextStyle(
-                              fontSize: 13,
-                              fontFamily: 'cairo',
-                              color: textColor.withValues(alpha: .7),
-                              package: 'quran_library',
-                            ),
+                            pageCountLabel,
+                            style: subLabelStyle,
                           ),
                           const SizedBox(width: 8),
                           _PageCountButton(
                             icon: Icons.remove,
-                            color: accent,
+                            color: resolvedPageCountBtnColor,
                             onTap: () {
                               if (pageCount > 1) {
                                 autoScrollCtrl
@@ -140,18 +179,19 @@ class AutoScrollSettingsWidget extends StatelessWidget {
                                 const EdgeInsets.symmetric(horizontal: 12.0),
                             child: Text(
                               '$pageCount'.convertNumbersAccordingToLang(),
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w700,
-                                fontFamily: 'cairo',
-                                color: accent,
-                                package: 'quran_library',
-                              ),
+                              style: style?.pageCountValueStyle ??
+                                  TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w700,
+                                    fontFamily: 'cairo',
+                                    color: accent,
+                                    package: 'quran_library',
+                                  ),
                             ),
                           ),
                           _PageCountButton(
                             icon: Icons.add,
-                            color: accent,
+                            color: resolvedPageCountBtnColor,
                             onTap: () {
                               if (pageCount < 604) {
                                 autoScrollCtrl
@@ -170,32 +210,29 @@ class AutoScrollSettingsWidget extends StatelessWidget {
             Row(
               children: [
                 Text(
-                  'السرعة:',
-                  style: TextStyle(
-                    fontSize: 13,
-                    fontFamily: 'cairo',
-                    color: textColor.withValues(alpha: .7),
-                    package: 'quran_library',
-                  ),
+                  speedLabel,
+                  style: subLabelStyle,
                 ),
                 const SizedBox(width: 4),
                 Text(
                   speed.toStringAsFixed(1),
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w700,
-                    fontFamily: 'cairo',
-                    color: accent,
-                    package: 'quran_library',
-                  ),
+                  style: style?.speedLabelStyle ??
+                      TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                        fontFamily: 'cairo',
+                        color: accent,
+                        package: 'quran_library',
+                      ),
                 ),
               ],
             ),
             SliderTheme(
               data: SliderThemeData(
-                activeTrackColor: accent,
-                inactiveTrackColor: accent.withValues(alpha: .2),
-                thumbColor: accent,
+                activeTrackColor: style?.sliderActiveColor ?? accent,
+                inactiveTrackColor:
+                    style?.sliderInactiveColor ?? accent.withValues(alpha: .2),
+                thumbColor: style?.sliderThumbColor ?? accent,
                 trackHeight: 3,
                 thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 7),
                 overlayShape: const RoundSliderOverlayShape(overlayRadius: 14),
@@ -213,24 +250,8 @@ class AutoScrollSettingsWidget extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    'بطيء',
-                    style: TextStyle(
-                      fontSize: 11,
-                      fontFamily: 'cairo',
-                      color: textColor.withValues(alpha: .5),
-                      package: 'quran_library',
-                    ),
-                  ),
-                  Text(
-                    'سريع',
-                    style: TextStyle(
-                      fontSize: 11,
-                      fontFamily: 'cairo',
-                      color: textColor.withValues(alpha: .5),
-                      package: 'quran_library',
-                    ),
-                  ),
+                  Text(slowText, style: hintStyle),
+                  Text(fastText, style: hintStyle),
                 ],
               ),
             ),

@@ -17,6 +17,62 @@ class AutoScrollStyle {
   final TextStyle? labelStyle;
   final TextStyle? speedLabelStyle;
 
+  // ─── Settings texts ───────────────────────────────────────────
+  /// عنوان قسم الإعدادات (افتراضي: 'السكرول التلقائي')
+  final String? settingsTitleText;
+
+  /// نص تسمية شرط التوقف (افتراضي: 'التوقف عند:')
+  final String? stopConditionLabelText;
+
+  /// نص تسمية عدد الصفحات (افتراضي: 'عدد الصفحات:')
+  final String? pageCountLabelText;
+
+  /// نص تسمية السرعة (افتراضي: 'السرعة:')
+  final String? speedLabelText;
+
+  /// نص تسمية "بطيء" (افتراضي: 'بطيء')
+  final String? slowLabelText;
+
+  /// نص تسمية "سريع" (افتراضي: 'سريع')
+  final String? fastLabelText;
+
+  /// أسماء شروط التوقف المخصصة (ترتيب: nextHizb, nextJuz, pageCount, manual)
+  final Map<AutoScrollStopCondition, String>? stopConditionLabels;
+
+  // ─── Settings styles ──────────────────────────────────────────
+  /// نمط العنوان الرئيسي
+  final TextStyle? settingsTitleStyle;
+
+  /// نمط التسميات الفرعية (التوقف عند، عدد الصفحات، السرعة)
+  final TextStyle? settingsSubLabelStyle;
+
+  /// نمط نصوص الـ Chips
+  final TextStyle? chipTextStyle;
+
+  /// نمط نص عداد الصفحات
+  final TextStyle? pageCountValueStyle;
+
+  /// نمط نصوص بطيء/سريع
+  final TextStyle? sliderHintStyle;
+
+  /// لون حدود الـ Chip المحدد
+  final Color? chipSelectedBorderColor;
+
+  /// لون حدود الـ Chip غير المحدد
+  final Color? chipUnselectedBorderColor;
+
+  /// نصف قطر حواف الـ Chip
+  final double? chipBorderRadius;
+
+  /// لون خلفية الـ Chip المحدد
+  final Color? chipSelectedBackgroundColor;
+
+  /// لون خلفية الـ Chip غير المحدد
+  final Color? chipUnselectedBackgroundColor;
+
+  /// لون أزرار +/- لعداد الصفحات
+  final Color? pageCountButtonColor;
+
   const AutoScrollStyle({
     this.sliderActiveColor,
     this.sliderInactiveColor,
@@ -30,6 +86,24 @@ class AutoScrollStyle {
     this.borderRadius,
     this.labelStyle,
     this.speedLabelStyle,
+    this.settingsTitleText,
+    this.stopConditionLabelText,
+    this.pageCountLabelText,
+    this.speedLabelText,
+    this.slowLabelText,
+    this.fastLabelText,
+    this.stopConditionLabels,
+    this.settingsTitleStyle,
+    this.settingsSubLabelStyle,
+    this.chipTextStyle,
+    this.pageCountValueStyle,
+    this.sliderHintStyle,
+    this.chipSelectedBorderColor,
+    this.chipUnselectedBorderColor,
+    this.chipBorderRadius,
+    this.chipSelectedBackgroundColor,
+    this.chipUnselectedBackgroundColor,
+    this.pageCountButtonColor,
   });
 
   factory AutoScrollStyle.defaults(

@@ -151,8 +151,10 @@ class DualPageView extends StatelessWidget {
 
   /// إنشاء PageController بـ viewportFraction = 0.5 لعرض صفحتين
   PreloadPageController _getDualPageController(BuildContext context) {
-    final currentIndex =
+    var currentIndex =
         (quranCtrl.state.currentPageNumber.value - 1).clamp(0, 603);
+    // محاذاة الفهرس إلى رقم زوجي لعرض الزوج الصحيح من صفحات المصحف
+    currentIndex = currentIndex - (currentIndex % 2);
 
     // تحقق مما إذا كان الـ controller الحالي يستخدم viewportFraction 0.5
     if (quranCtrl.quranPagesController.hasClients &&

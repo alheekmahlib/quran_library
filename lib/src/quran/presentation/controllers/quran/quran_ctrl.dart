@@ -592,26 +592,32 @@ class QuranCtrl extends GetxController {
   // شرح: تحسين التنقل للحصول على سكرول أكثر سلاسة
   // Explanation: Improved navigation for smoother scrolling
   void jumpToPage(int page) {
+    // في وضع الصفحتين (viewportFraction < 1): محاذاة الفهرس إلى رقم زوجي
+    // لضمان عرض الزوج الصحيح (1-2, 3-4, 5-6, ...).
+    final isDual = quranPagesController.viewportFraction < 1.0;
+    final targetPage = isDual ? page - (page % 2) : page;
     state.currentPageNumber.value = page + 1;
     // تحقق من المتحكم المحلي أولاً (QuranPagesScreen)
     if (_localPagesController != null && _localPagesController!.hasClients) {
-      final localIndex = page - _localPagesOffset;
+      final localIndex = targetPage - _localPagesOffset;
       if (localIndex >= 0 && localIndex < _localPagesCount) {
-        log('Jumping to local page: $localIndex (global: $page)',
+        log('Jumping to local page: $localIndex (global: $targetPage)',
             name: 'QuranCtrl');
         _localPagesController!.jumpToPage(localIndex);
         return;
       }
     }
     if (quranPagesController.hasClients) {
-      log('Jumping to page: $page', name: 'QuranCtrl');
+      log('Jumping to page: $targetPage (requested: $page, isDual: $isDual)',
+          name: 'QuranCtrl');
       quranPagesController.jumpToPage(
-        page,
+        targetPage,
       );
     } else {
-      log('Creating new PageController for page: $page', name: 'QuranCtrl');
+      log('Creating new PageController for page: $targetPage',
+          name: 'QuranCtrl');
       quranPagesController = PreloadPageController(
-        initialPage: page,
+        initialPage: targetPage,
         keepPage: true,
         viewportFraction: 1.0,
       );
@@ -622,11 +628,13 @@ class QuranCtrl extends GetxController {
   // Explanation: Improved navigation for smoother scrolling
   void animateToPage(int page) {
     if (quranPagesController.hasClients) {
-      log('Animating to page: $page', name: 'QuranCtrl');
-      // استخدام animateToPage بدلاً من jumpToPage للحصول على انتقال أكثر سلاسة
-      // Use animateToPage instead of jumpToPage for smoother transition
+      // في وضع الصفحتين: محاذاة الفهرس إلى رقم زوجي لعرض الزوج الصحيح
+      final isDual = quranPagesController.viewportFraction < 1.0;
+      final targetPage = isDual ? page - (page % 2) : page;
+      log('Animating to page: $targetPage (requested: $page, isDual: $isDual)',
+          name: 'QuranCtrl');
       quranPagesController.animateToPage(
-        page,
+        targetPage,
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
       );
@@ -677,6 +685,10 @@ class QuranCtrl extends GetxController {
         currentIndex = savedPage - 1;
       }
       currentIndex = currentIndex.clamp(0, 603);
+      // في وضع الصفحتين: محاذاة الفهرس إلى رقم زوجي لعرض الزوج الصحيح
+      if (targetFraction < 1.0) {
+        currentIndex = currentIndex - (currentIndex % 2);
+      }
       log('Creating new PageController with initialPage: $currentIndex',
           name: 'QuranCtrl');
 

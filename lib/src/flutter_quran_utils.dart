@@ -15,19 +15,47 @@ part of '/quran.dart';
 ///
 /// Note: Ensure that you have the necessary dependencies and configurations
 /// set up in your Flutter project to use this class effectively.
+
+/// A callback type for custom number conversion.
+///
+/// [text] is the original string containing numbers to convert.
+/// [languageCode] is the optional language code for the target numeral system.
+///
+/// Example:
+/// ```dart
+/// await QuranLibrary.init(
+///   numberConverter: (text, {languageCode}) {
+///     return myCustomNumberConvert(text, lang: languageCode);
+///   },
+/// );
+/// ```
+typedef NumberConverterCallback = String Function(
+  String text, {
+  String? languageCode,
+});
+
 class QuranLibrary {
   // Cache for frequently accessed data
   static final Map<String, dynamic> _cache = {};
   static bool _isInitialized = false;
 
+  /// Optional custom number converter callback.
+  ///
+  /// When set, [convertNumbersAccordingToLang] will delegate to this callback
+  /// instead of using the built-in conversion logic.
+  static NumberConverterCallback? customNumberConverter;
+
   /// [init] تقوم بتهيئة القرآن ويجب استدعاؤها قبل البدء في استخدام الحزمة
   ///
   /// [init] initializes the FlutterQuran,
   /// and must be called before starting using the package
-  static Future<void> init(
-      {Map<int, List<BookmarkModel>>? userBookmarks,
-      bool overwriteBookmarks = false}) async {
+  static Future<void> init({
+    Map<int, List<BookmarkModel>>? userBookmarks,
+    bool overwriteBookmarks = false,
+    NumberConverterCallback? numberConverter,
+  }) async {
     if (_isInitialized) return;
+    customNumberConverter = numberConverter;
 
     await GetStorage.init();
     final connectivityService = InternetConnectionService();

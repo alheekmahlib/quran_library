@@ -3,6 +3,7 @@
 * **ADD:**
   * Auto-Scroll Feature.
   * Reader Ali Jaber for Ayahs & Surahs.
+  * custom number converter.
 
 * **FIX:**
   * Fix jumpToPage in dual page view.

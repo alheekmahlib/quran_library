@@ -9,10 +9,12 @@ class AutoScrollSpeedSlider extends StatelessWidget {
     super.key,
     required this.isDark,
     required this.autoScrollStyle,
+    required this.languageCode,
   });
 
   final bool isDark;
   final AutoScrollStyle autoScrollStyle;
+  final String languageCode;
 
   @override
   Widget build(BuildContext context) {
@@ -95,7 +97,8 @@ class AutoScrollSpeedSlider extends StatelessWidget {
                 SizedBox(
                   width: 36,
                   child: Text(
-                    speed.toStringAsFixed(1),
+                    speed.toStringAsFixed(1).convertNumbersAccordingToLang(
+                        languageCode: languageCode),
                     textAlign: TextAlign.center,
                     style: style.speedLabelStyle ??
                         TextStyle(

@@ -905,10 +905,12 @@ class _ControlWidget extends StatelessWidget {
                       ),
                     // شريط التحكم بسرعة السكرول التلقائي — يبقى ظاهرًا بشكل مستقل
                     AutoScrollSpeedSlider(
-                        isDark: isDark,
-                        autoScrollStyle: autoScrollStyle ??
-                            AutoScrollStyle.defaults(
-                                isDark: isDark, context: context)),
+                      isDark: isDark,
+                      autoScrollStyle: autoScrollStyle ??
+                          AutoScrollStyle.defaults(
+                              isDark: isDark, context: context),
+                      languageCode: languageCode,
+                    ),
                   ],
                 ),
               ),

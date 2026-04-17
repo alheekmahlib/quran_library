@@ -56,7 +56,7 @@ class QuranFontsService {
   static String _assetPath(int page) {
     final padded = page.toString().padLeft(3, '0');
     return 'packages/quran_library/assets/fonts/quran_fonts_qfc4/'
-        'QCF4_tajweed_$padded.ttf.gz';
+        'QCF4${padded}_COLOR-Regular.ttf.gz';
   }
 
   // ---------------------------------------------------------------------------

@@ -289,7 +289,7 @@ class DownloadedAndDeleteWidget extends StatelessWidget {
             // إذا لم يكن هذا العنصر هو الجاري تحميله حاليًا، أظهر زر تحميل/إعادة
             return SizedBox(
               height: 30,
-              width: 60,
+              width: 50,
               child: FilledButton(
                 onPressed: isDownloading
                     ? null

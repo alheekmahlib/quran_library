@@ -106,6 +106,79 @@ class AutoScrollStyle {
     this.pageCountButtonColor,
   });
 
+  AutoScrollStyle copyWith({
+    Color? sliderActiveColor,
+    Color? sliderInactiveColor,
+    Color? sliderThumbColor,
+    Color? overlayBackgroundColor,
+    Color? iconColor,
+    Color? activeIconColor,
+    Color? textColor,
+    Color? chipSelectedColor,
+    Color? chipUnselectedColor,
+    double? borderRadius,
+    TextStyle? labelStyle,
+    TextStyle? speedLabelStyle,
+    String? settingsTitleText,
+    String? stopConditionLabelText,
+    String? pageCountLabelText,
+    String? speedLabelText,
+    String? slowLabelText,
+    String? fastLabelText,
+    Map<AutoScrollStopCondition, String>? stopConditionLabels,
+    TextStyle? settingsTitleStyle,
+    TextStyle? settingsSubLabelStyle,
+    TextStyle? chipTextStyle,
+    TextStyle? pageCountValueStyle,
+    TextStyle? sliderHintStyle,
+    Color? chipSelectedBorderColor,
+    Color? chipUnselectedBorderColor,
+    double? chipBorderRadius,
+    Color? chipSelectedBackgroundColor,
+    Color? chipUnselectedBackgroundColor,
+    Color? pageCountButtonColor,
+  }) {
+    return AutoScrollStyle(
+      sliderActiveColor: sliderActiveColor ?? this.sliderActiveColor,
+      sliderInactiveColor: sliderInactiveColor ?? this.sliderInactiveColor,
+      sliderThumbColor: sliderThumbColor ?? this.sliderThumbColor,
+      overlayBackgroundColor:
+          overlayBackgroundColor ?? this.overlayBackgroundColor,
+      iconColor: iconColor ?? this.iconColor,
+      activeIconColor: activeIconColor ?? this.activeIconColor,
+      textColor: textColor ?? this.textColor,
+      chipSelectedColor: chipSelectedColor ?? this.chipSelectedColor,
+      chipUnselectedColor: chipUnselectedColor ?? this.chipUnselectedColor,
+      borderRadius: borderRadius ?? this.borderRadius,
+      labelStyle: labelStyle ?? this.labelStyle,
+      speedLabelStyle: speedLabelStyle ?? this.speedLabelStyle,
+      settingsTitleText: settingsTitleText ?? this.settingsTitleText,
+      stopConditionLabelText:
+          stopConditionLabelText ?? this.stopConditionLabelText,
+      pageCountLabelText: pageCountLabelText ?? this.pageCountLabelText,
+      speedLabelText: speedLabelText ?? this.speedLabelText,
+      slowLabelText: slowLabelText ?? this.slowLabelText,
+      fastLabelText: fastLabelText ?? this.fastLabelText,
+      stopConditionLabels: stopConditionLabels ?? this.stopConditionLabels,
+      settingsTitleStyle: settingsTitleStyle ?? this.settingsTitleStyle,
+      settingsSubLabelStyle:
+          settingsSubLabelStyle ?? this.settingsSubLabelStyle,
+      chipTextStyle: chipTextStyle ?? this.chipTextStyle,
+      pageCountValueStyle: pageCountValueStyle ?? this.pageCountValueStyle,
+      sliderHintStyle: sliderHintStyle ?? this.sliderHintStyle,
+      chipSelectedBorderColor:
+          chipSelectedBorderColor ?? this.chipSelectedBorderColor,
+      chipUnselectedBorderColor:
+          chipUnselectedBorderColor ?? this.chipUnselectedBorderColor,
+      chipBorderRadius: chipBorderRadius ?? this.chipBorderRadius,
+      chipSelectedBackgroundColor:
+          chipSelectedBackgroundColor ?? this.chipSelectedBackgroundColor,
+      chipUnselectedBackgroundColor:
+          chipUnselectedBackgroundColor ?? this.chipUnselectedBackgroundColor,
+      pageCountButtonColor: pageCountButtonColor ?? this.pageCountButtonColor,
+    );
+  }
+
   factory AutoScrollStyle.defaults(
       {required bool isDark, required BuildContext context}) {
     final scheme = Theme.of(context).colorScheme;

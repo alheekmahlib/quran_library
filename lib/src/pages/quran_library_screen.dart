@@ -71,6 +71,7 @@ class QuranLibraryScreen extends StatelessWidget {
     this.quranTafsirSideStyle,
     this.wordInfoBottomSheetStyle,
     this.isShowDisplayModeBar = true,
+    this.autoScrollStyle,
   });
 
   /// إذا قمت بإضافة شريط التطبيقات هنا فإنه سيحل محل شريط التطبيقات الافتراضية [appBar]
@@ -347,6 +348,11 @@ class QuranLibraryScreen extends StatelessWidget {
 
   /// نمط تخصيص معلومات الكلمة
   ///
+  /// [autoScrollStyle] Style customization for the auto scroll feature
+  final AutoScrollStyle? autoScrollStyle;
+
+  /// نمط تخصيص شريط اختيار وضع العرض
+  ///
   /// [isShowDisplayModeBar] To specify whether to show the display mode bar or not
   final bool? isShowDisplayModeBar;
 
@@ -417,6 +423,8 @@ class QuranLibraryScreen extends StatelessWidget {
             wordInfoBottomSheetStyle: wordInfoBottomSheetStyle ??
                 WordInfoBottomSheetStyle.defaults(
                     isDark: isDark, context: context),
+            autoScrollStyle: autoScrollStyle ??
+                AutoScrollStyle.defaults(isDark: isDark, context: context),
             child: GetBuilder<QuranCtrl>(
               builder: (quranCtrl) {
                 // تهيئة خاملة لخطوط الصفحات المجاورة حول الصفحة الحالية بعد أول إطار
@@ -656,6 +664,7 @@ class QuranLibraryScreen extends StatelessWidget {
                           isShowTabBar: isShowTabBar,
                           topBarStyle: topBarStyle,
                           isShowDisplayModeBar: isShowDisplayModeBar,
+                          autoScrollStyle: autoScrollStyle,
                         ),
                       ],
                     ),
@@ -795,6 +804,7 @@ class _ControlWidget extends StatelessWidget {
     required this.isShowTabBar,
     required this.topBarStyle,
     required this.isShowDisplayModeBar,
+    required this.autoScrollStyle,
   });
 
   final bool? isShowAudioSlider;
@@ -812,6 +822,7 @@ class _ControlWidget extends StatelessWidget {
   final bool? isShowTabBar;
   final bool? isShowDisplayModeBar;
   final QuranTopBarStyle? topBarStyle;
+  final AutoScrollStyle? autoScrollStyle;
 
   @override
   Widget build(BuildContext context) {
@@ -893,7 +904,11 @@ class _ControlWidget extends StatelessWidget {
                         ),
                       ),
                     // شريط التحكم بسرعة السكرول التلقائي — يبقى ظاهرًا بشكل مستقل
-                    AutoScrollSpeedSlider(isDark: isDark),
+                    AutoScrollSpeedSlider(
+                        isDark: isDark,
+                        autoScrollStyle: autoScrollStyle ??
+                            AutoScrollStyle.defaults(
+                                isDark: isDark, context: context)),
                   ],
                 ),
               ),

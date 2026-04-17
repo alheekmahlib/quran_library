@@ -17,6 +17,7 @@ class QuranLibraryTheme extends StatelessWidget {
   final AyahTafsirInlineStyle? ayahTafsirInlineStyle;
   final QuranTafsirSideStyle? quranTafsirSideStyle;
   final WordInfoBottomSheetStyle? wordInfoBottomSheetStyle;
+  final AutoScrollStyle? autoScrollStyle;
   final Widget child;
 
   const QuranLibraryTheme({
@@ -35,7 +36,8 @@ class QuranLibraryTheme extends StatelessWidget {
     this.displayModeBarStyle,
     this.ayahTafsirInlineStyle,
     this.quranTafsirSideStyle,
-    required this.wordInfoBottomSheetStyle,
+    this.wordInfoBottomSheetStyle,
+    this.autoScrollStyle,
     required this.child,
   });
 
@@ -79,7 +81,12 @@ class QuranLibraryTheme extends StatelessWidget {
                                   wordInfoBottomSheetStyle,
                                   (s, c) => WordInfoBottomSheetTheme(
                                       style: s, child: c),
-                                  child,
+                                  _wrapIfNotNull(
+                                    autoScrollStyle,
+                                    (s, c) =>
+                                        AutoScrollTheme(style: s, child: c),
+                                    child,
+                                  ),
                                 ),
                               ),
                             ),

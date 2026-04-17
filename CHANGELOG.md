@@ -3,7 +3,6 @@
 * **ADD:**
   * Auto-Scroll Feature.
   * Reader Ali Jaber for Ayahs & Surahs.
-  * Reader Ali Jaber for Ayahs & Surahs.
 
 * **FIX:**
   * Fix jumpToPage in dual page view.

@@ -8,15 +8,17 @@ class AutoScrollSpeedSlider extends StatelessWidget {
   const AutoScrollSpeedSlider({
     super.key,
     required this.isDark,
+    required this.autoScrollStyle,
   });
 
   final bool isDark;
+  final AutoScrollStyle autoScrollStyle;
 
   @override
   Widget build(BuildContext context) {
     final autoScrollCtrl = AutoScrollCtrl.instance;
-    final style = AutoScrollTheme.of(context)?.style ??
-        AutoScrollStyle.defaults(isDark: isDark, context: context);
+    final style = AutoScrollTheme.of(context)?.style ?? autoScrollStyle;
+    AutoScrollStyle.defaults(isDark: isDark, context: context);
 
     return Obx(() {
       if (!autoScrollCtrl.state.isActive.value) {

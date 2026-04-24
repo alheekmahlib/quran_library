@@ -1,3 +1,8 @@
+## 4.0.1
+
+* **FIX:**
+  * Fix the Ayah shown in the Tafsir.
+
 ## 4.0.0
 
 * **BREAKING CHANGES:**

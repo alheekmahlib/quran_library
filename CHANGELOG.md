@@ -1,7 +1,7 @@
 ## 4.0.2
 
 * **FIX:**
-  * Prevent `saveLastPage(1)` from firing during PageView disposal — `onPageChanged(0)` was triggered as an artifact when unmounting `QuranLibraryScreen`, overwriting the last saved page.
+  * Prevent `AutoScrollCtrl.onClose()` from overwriting the last saved page when auto-scroll was never active. Previously, `stopAutoScroll()` would save page 1 (default) during route disposal, causing the reading progress to reset.
 
 ## 4.0.1
 

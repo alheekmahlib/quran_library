@@ -94,6 +94,9 @@ class AutoScrollCtrl extends GetxController with GetTickerProviderStateMixin {
     // حفظ الصفحة الحالية قبل الإيقاف
     final reachedPage = state.currentScrollPage.value;
 
+    // هل كان السكرول التلقائي فعّالاً؟
+    final wasActive = state.isActive.value;
+
     state.isActive.value = false;
     state.isPaused.value = false;
     _ticker?.stop();
@@ -101,7 +104,8 @@ class AutoScrollCtrl extends GetxController with GetTickerProviderStateMixin {
     _ticker = null;
 
     // تحديث صفحة QuranCtrl والانتقال إليها في الـ PageView الأفقي
-    if (reachedPage > 0) {
+    // لا تحفظ إذا لم يكن السكرول التلقائي فعّالاً (مثلاً عند onClose بدون تشغيل)
+    if (wasActive && reachedPage > 0) {
       final quranCtrl = QuranCtrl.instance;
       quranCtrl.state.currentPageNumber.value = reachedPage;
       quranCtrl.saveLastPage(reachedPage);

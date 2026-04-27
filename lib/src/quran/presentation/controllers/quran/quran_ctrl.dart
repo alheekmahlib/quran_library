@@ -587,9 +587,6 @@ class QuranCtrl extends GetxController {
     // كتابة فورية — GetStorage يحدّث الذاكرة لحظياً ويدير كتابة القرص تلقائياً بتأجيل 16ms.
     _quranRepository.saveLastPage(lastPage);
     log('Saved last page: $lastPage', name: 'QuranCtrl');
-    if (lastPage == 1) {
-      log('⚠️ saveLastPage(1) called from:\n${StackTrace.current}', name: 'QuranCtrl');
-    }
   }
 
   // شرح: تحسين التنقل للحصول على سكرول أكثر سلاسة

@@ -770,9 +770,6 @@ class QuranLibraryScreen extends StatelessWidget {
     // Run operations in background to avoid UI freeze
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!context.mounted) return;
-      // تجاهل أحداث disposal — يُطلق onPageChanged(0) عند إزالة الـ PageView
-      // Ignore disposal artifacts — fires onPageChanged(0) when PageView is unmounted
-      if (!quranCtrl.quranPagesController.hasClients) return;
       if (onPageChanged != null) {
         // لا تلمس الـ Overlay إذا كان المستخدم يدير الحدث بنفسه
         onPageChanged!(pageIndex);

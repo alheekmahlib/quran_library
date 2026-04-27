@@ -1,3 +1,8 @@
+## 4.0.2
+
+* **FIX:**
+  * Prevent `saveLastPage(1)` from firing during PageView disposal — `onPageChanged(0)` was triggered as an artifact when unmounting `QuranLibraryScreen`, overwriting the last saved page.
+
 ## 4.0.1
 
 * **FIX:**

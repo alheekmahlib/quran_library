@@ -33,7 +33,7 @@ class AudioCtrl extends GetxController {
     getAyahUQNumber(state._quranRepository.getLastPage() ?? 1);
 
     ever(QuranCtrl.instance.state.currentPageNumber, (pageNumber) {
-      getAyahUQNumber(pageNumber);
+      getAyahUQNumber(pageNumber - 1);
     });
 
     state.surahsPlayList = List.generate(114, (i) {

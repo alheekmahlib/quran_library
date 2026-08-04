@@ -50,7 +50,6 @@ class AyahDownloadManagerStyle {
   final Color? downloadBackground;
 
   final Color? backgroundColor;
-  final Color? surahNumberDecorationColor;
 
   final Widget? changeReaderWidget;
 
@@ -91,7 +90,6 @@ class AyahDownloadManagerStyle {
     this.countTextBuilder,
     this.backgroundColor,
     this.changeReaderWidget,
-    this.surahNumberDecorationColor,
   });
 
   AyahDownloadManagerStyle copyWith({
@@ -131,7 +129,6 @@ class AyahDownloadManagerStyle {
     Color? backgroundColor,
     Widget? changeReaderWidget,
     AyahCountTextBuilder? countTextBuilder,
-    Color? surahNumberDecorationColor,
   }) {
     return AyahDownloadManagerStyle(
       titleText: titleText ?? this.titleText,
@@ -171,8 +168,6 @@ class AyahDownloadManagerStyle {
       countTextBuilder: countTextBuilder ?? this.countTextBuilder,
       backgroundColor: backgroundColor ?? this.backgroundColor,
       changeReaderWidget: changeReaderWidget ?? this.changeReaderWidget,
-      surahNumberDecorationColor:
-          surahNumberDecorationColor ?? this.surahNumberDecorationColor,
     );
   }
 
@@ -257,7 +252,6 @@ class AyahDownloadManagerStyle {
       // Count text builder - يمكن تخصيصه لاحقًا
       countTextBuilder: null,
       changeReaderWidget: null,
-      surahNumberDecorationColor: Colors.teal.withValues(alpha: 0.6),
     );
   }
 }

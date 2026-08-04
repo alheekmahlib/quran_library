@@ -17,7 +17,11 @@ class AyahMenuDialog extends StatelessWidget {
     required this.position,
     required this.index,
     required this.pageIndex,
+    this.anotherMenuChild,
+    this.anotherMenuChildOnTap,
     required this.isDark,
+    this.secondMenuChild,
+    this.secondMenuChildOnTap,
     this.externalTafsirStyle,
     this.onDismiss,
   });
@@ -38,6 +42,10 @@ class AyahMenuDialog extends StatelessWidget {
   final Offset position;
   final int index;
   final int pageIndex;
+  final Widget? anotherMenuChild;
+  final Widget? secondMenuChild;
+  final void Function(AyahModel ayah)? anotherMenuChildOnTap;
+  final void Function(AyahModel ayah)? secondMenuChildOnTap;
   final BuildContext context;
   final bool isDark;
   final TafsirStyle? externalTafsirStyle;
@@ -52,7 +60,7 @@ class AyahMenuDialog extends StatelessWidget {
       onDismiss?.call();
     }
 
-    final themed = AyahLongClickTheme.of(rootContext)?.style;
+    final themed = AyahLongClickTheme.of(overlayContext)?.style;
     final s = themed ??
         AyahMenuStyle.defaults(isDark: isDark, context: overlayContext);
 
@@ -62,7 +70,7 @@ class AyahMenuDialog extends StatelessWidget {
 
     // محاولة الحصول على نمط مدير التحميل من الثيم أولاً / Try to get download manager style from theme first
     final themedDownloadManager =
-        AyahDownloadManagerTheme.of(rootContext)?.style;
+        AyahDownloadManagerTheme.of(overlayContext)?.style;
     final sDownloadManager = themedDownloadManager ??
         AyahDownloadManagerStyle.defaults(
             isDark: isDark, context: overlayContext);
@@ -73,22 +81,16 @@ class AyahMenuDialog extends StatelessWidget {
     final screenSize = MediaQuery.of(overlayContext).size;
     final padding = MediaQuery.of(overlayContext).padding;
 
-    // حساب عدد العناصر الفعلي بناءً على الأزرار المرئية / Count all visible items
-    int itemsCount = customMenuItems.length;
-    if (s.showPlayButton ?? true) itemsCount += 1;
-    if ((s.showPlayAllButton ?? true) && !kIsWeb) itemsCount += 1;
-    if (s.showTafsirButton ?? true) itemsCount += 1;
-    if (s.showCopyButton ?? true) itemsCount += 1;
-    if (s.showBookmarkButtons ?? true) {
-      itemsCount += (s.bookmarkColorCodes?.length ?? 3);
-    }
-    final iconSz = s.iconSize ?? 24.0;
-    final hPad = s.iconHorizontalPadding ?? 8.0;
-    double dialogWidth = (itemsCount * (iconSz + hPad * 2)) +
-        28; // أيقونة + تباعد + هوامش الحاوية
-    // تأكد من عدم تجاوز عرض الشاشة / Ensure dialog doesn't exceed screen width
-    final maxWidth = screenSize.width - padding.left - padding.right - 20;
-    if (dialogWidth > maxWidth) dialogWidth = maxWidth;
+    // حساب العرض الفعلي للحوار بناءً على المحتوى / Calculate actual dialog width based on content
+    int itemsCount = 5 +
+        customMenuItems
+            .length; // عدد الأيقونات الأساسية (3 ألوان + نسخ + تفسير) / Basic icons count
+    if (anotherMenuChild != null) itemsCount += 1;
+    if (secondMenuChild != null) itemsCount += 1;
+    if (customMenuItems.isNotEmpty) itemsCount += customMenuItems.length;
+    double dialogWidth = (itemsCount * 40) +
+        (itemsCount * 16) +
+        40; // عرض كل أيقونة + التباعد + الهوامش / Icon width + spacing + margins
     double dialogHeight = 80; // ارتفاع الحوار / Dialog height
 
     // حساب الموضع الأفقي مع التأكد من البقاء داخل الشاشة / Calculate horizontal position ensuring it stays within screen
@@ -122,6 +124,14 @@ class AyahMenuDialog extends StatelessWidget {
           dialogHeight -
           10; // هامش من الحافة السفلى / Bottom margin
     }
+    final bookmarkCount = (s.showBookmarkButtons ?? true)
+        ? (s.bookmarkColorCodes?.length ?? 3)
+        : 0;
+    itemsCount += bookmarkCount;
+    if (s.showCopyButton ?? true) itemsCount += 1;
+    if (s.showTafsirButton ?? true) itemsCount += 1;
+    // لا نعيد إضافة عناصر custom ثانيةً لتجنّب مضاعفة الحساب
+
     return Obx(
       () => QuranCtrl.instance.state.isShowMenu.value
           ? Positioned(
@@ -178,6 +188,38 @@ class AyahMenuDialog extends StatelessWidget {
                             ),
                           );
                         }
+                      }
+
+                      // عنصر إضافي أول (للتوافق مع الماضي)
+                      if (anotherMenuChild != null) {
+                        addDividerIfNeeded();
+                        widgets.add(
+                          GestureDetector(
+                            onTap: () {
+                              if (anotherMenuChildOnTap != null) {
+                                anotherMenuChildOnTap!(ayah!);
+                              }
+                              close();
+                            },
+                            child: anotherMenuChild!,
+                          ),
+                        );
+                      }
+
+                      // عنصر إضافي ثانٍ (للتوافق مع الماضي)
+                      if (secondMenuChild != null) {
+                        addDividerIfNeeded();
+                        widgets.add(
+                          GestureDetector(
+                            onTap: () {
+                              if (secondMenuChildOnTap != null) {
+                                secondMenuChildOnTap!(ayah!);
+                              }
+                              close();
+                            },
+                            child: secondMenuChild!,
+                          ),
+                        );
                       }
 
                       // زر تشغيل جميع الآيات
@@ -241,13 +283,44 @@ class AyahMenuDialog extends StatelessWidget {
                           GestureDetector(
                             onTap: () {
                               close();
+
                               showTafsirOnTap(
                                 context: rootContext,
                                 isDark: isDark,
-                                ayahNum: ayah!.ayahNumber,
+                                ayahNum: (QuranCtrl.instance.state.fontsSelected
+                                                .value ==
+                                            1 ||
+                                        QuranCtrl.instance.state.fontsSelected
+                                                .value ==
+                                            2 ||
+                                        QuranCtrl.instance.state.scaleFactor
+                                                .value >
+                                            1.3)
+                                    ? ayah!.ayahNumber
+                                    : ayah!.ayahNumber,
                                 pageIndex: pageIndex,
-                                ayahUQNum: ayah!.ayahUQNumber,
-                                ayahNumber: ayah!.ayahNumber,
+                                ayahUQNum: (QuranCtrl.instance.state
+                                                .fontsSelected.value ==
+                                            1 ||
+                                        QuranCtrl.instance.state.fontsSelected
+                                                .value ==
+                                            2 ||
+                                        QuranCtrl.instance.state.scaleFactor
+                                                .value >
+                                            1.3)
+                                    ? ayah!.ayahUQNumber
+                                    : ayah!.ayahUQNumber,
+                                ayahNumber: (QuranCtrl.instance.state
+                                                .fontsSelected.value ==
+                                            1 ||
+                                        QuranCtrl.instance.state.fontsSelected
+                                                .value ==
+                                            2 ||
+                                        QuranCtrl.instance.state.scaleFactor
+                                                .value >
+                                            1.3)
+                                    ? ayah!.ayahNumber
+                                    : ayah!.ayahNumber,
                                 externalTafsirStyle: externalTafsirStyle,
                               );
                             },
@@ -266,8 +339,20 @@ class AyahMenuDialog extends StatelessWidget {
                         widgets.add(
                           GestureDetector(
                             onTap: () {
-                              Clipboard.setData(
-                                  ClipboardData(text: ayah!.text));
+                              if (QuranCtrl
+                                      .instance.state.fontsSelected.value ==
+                                  1) {
+                                Clipboard.setData(
+                                    ClipboardData(text: ayah!.text));
+                              } else {
+                                Clipboard.setData(ClipboardData(
+                                    text: QuranCtrl.instance
+                                        .staticPages[ayah!.page - 1].ayahs
+                                        .firstWhere((element) =>
+                                            element.ayahUQNumber ==
+                                            ayah!.ayahUQNumber)
+                                        .text));
+                              }
                               close();
                             },
                             child: Icon(
@@ -295,15 +380,31 @@ class AyahMenuDialog extends StatelessWidget {
                               ),
                               child: GestureDetector(
                                 onTap: () {
-                                  BookmarksCtrl.instance.saveBookmark(
-                                    surahName: QuranCtrl.instance
-                                        .getSurahDataByAyah(ayah!)
-                                        .arabicName,
-                                    ayahNumber: ayah!.ayahNumber,
-                                    ayahId: ayah!.ayahUQNumber,
-                                    page: ayah!.page,
-                                    colorCode: colorCode,
-                                  );
+                                  if (QuranCtrl.instance.state.fontsSelected.value == 1 ||
+                                      QuranCtrl.instance.state.fontsSelected
+                                              .value ==
+                                          2 ||
+                                      QuranCtrl.instance.state.scaleFactor
+                                              .value >
+                                          1.3) {
+                                    BookmarksCtrl.instance.saveBookmark(
+                                      surahName: QuranCtrl.instance
+                                          .getSurahDataByAyah(ayah!)
+                                          .arabicName,
+                                      ayahNumber: ayah!.ayahNumber,
+                                      ayahId: ayah!.ayahUQNumber,
+                                      page: ayah!.page,
+                                      colorCode: colorCode,
+                                    );
+                                  } else {
+                                    BookmarksCtrl.instance.saveBookmark(
+                                      surahName: ayah!.arabicName!,
+                                      ayahNumber: ayah!.ayahNumber,
+                                      ayahId: ayah!.ayahUQNumber,
+                                      page: ayah!.page,
+                                      colorCode: colorCode,
+                                    );
+                                  }
                                   close();
                                 },
                                 child: Icon(
@@ -335,6 +436,10 @@ Future<void> showAyahMenuDialog({
   required Offset position,
   required int index,
   required int pageIndex,
+  Widget? anotherMenuChild,
+  void Function(AyahModel ayah)? anotherMenuChildOnTap,
+  Widget? secondMenuChild,
+  void Function(AyahModel ayah)? secondMenuChildOnTap,
   TafsirStyle? externalTafsirStyle,
 }) async {
   final ctrl = QuranCtrl.instance;
@@ -359,6 +464,10 @@ Future<void> showAyahMenuDialog({
               position: position,
               index: index,
               pageIndex: pageIndex,
+              anotherMenuChild: anotherMenuChild,
+              anotherMenuChildOnTap: anotherMenuChildOnTap,
+              secondMenuChild: secondMenuChild,
+              secondMenuChildOnTap: secondMenuChildOnTap,
               externalTafsirStyle: externalTafsirStyle,
               onDismiss: () {
                 ctrl.showControlToggle();

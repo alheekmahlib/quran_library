@@ -6,7 +6,6 @@ import 'package:quran_library/quran_library.dart';
 Future<void> main() async {
   await WidgetsFlutterBinding.ensureInitialized();
   await QuranLibrary.init();
-  QuranLibrary.initWordAudio();
   runApp(
     // DevicePreview(
     //   builder: (context) => const MyApp(),
@@ -76,26 +75,12 @@ class FullQuran extends StatelessWidget {
     return QuranLibraryScreen(
       parentContext: context,
       isDark: true,
-      isShowTabBar: true,
-      isFontsLocal: false,
-      useDefaultAppBar: true,
-      enableWordSelection: true,
-      isShowDisplayModeBar: true,
       showAyahBookmarkedIcon: true,
-      appLanguageCode: 'ar',
-      // appIconPathForPlayAudioInBackground:
-      //     'assets/images/quran_library_logo.png',
-      // isAyahBookmarked: (ayah) =>
-      //     ayah.ayahUQNumber == 12 && ayah.surahNumber == 2,
-      ayahMenuStyle:
-          AyahMenuStyle.defaults(isDark: false, context: context).copyWith(
-        customMenuItems: [
-          const Icon(Icons.share, size: 28, color: Colors.teal),
-        ],
-      ),
+      appLanguageCode: 'en',
       // ayahIconColor: Colors.teal,
       // backgroundColor: Colors.white,
       // textColor: Colors.black,
+      isFontsLocal: false,
       // tafsirStyle:
       //     TafsirStyle.defaults(isDark: false, context: context).copyWith(
       //   widthOfBottomSheet: 500,
@@ -134,10 +119,11 @@ class SingleSurah extends StatelessWidget {
   Widget build(BuildContext context) {
     return SurahDisplayScreen(
       parentContext: context,
-      surahNumber: 2,
+      surahNumber: 3,
       isDark: false,
       appLanguageCode: 'ar',
       useDefaultAppBar: true,
+      onPageChanged: (_) {},
     );
   }
 }
@@ -149,22 +135,12 @@ class SingleAyah extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
+    return const Center(
       child: GetSingleAyah(
-        surahNumber: 1,
-        ayahNumber: 2,
+        surahNumber: 114,
+        ayahNumber: 4,
         fontSize: 30,
         isBold: false,
-        islocalFont: false,
-        isDark: true,
-        textHeight: 1.5,
-        enabledTajweed: true,
-        enableWordSelection: true,
-        onWordTap: (ref) {
-          print(
-              'سورة: ${ref.surahNumber}, آية: ${ref.ayahNumber}, كلمة: ${ref.wordNumber}');
-        },
-        selectedWordColor: Colors.amber.withValues(alpha: 0.3),
       ),
     );
   }
@@ -186,7 +162,7 @@ class QuranPages extends StatelessWidget {
         // },
         // page: 6,
         startPage: 6,
-        endPage: 60, // النطاق شامل
+        endPage: 11, // النطاق شامل
         // highlightedAyahNumbersInPages: [
         //   (
         //     start: 3,

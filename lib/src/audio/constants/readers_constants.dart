@@ -9,7 +9,6 @@ class ReadersConstants {
   static const surahUrl3 = "https://server12.mp3quran.net/";
   static const surahUrl4 = "https://server6.mp3quran.net/";
   static const surahUrl5 = "https://server11.mp3quran.net/";
-  static const surahUrl6 = "https://audio-cdn.tarteel.ai/quran/surah/";
 
   /// قائمة القراء المخصصة (اختيارية) - يمكن للمستخدم تعيينها
   static List<ReaderInfo>? customAyahReaders;
@@ -90,26 +89,20 @@ class ReadersConstants {
       readerNamePath: 'Yasser_Ad-Dussary_128kbps',
       url: ayahs2ndSource,
     ),
-    const ReaderInfo(
-      index: 11,
-      name: 'علي جابر',
-      readerNamePath: 'Ali_Jaber_64kbps',
-      url: ayahs2ndSource,
-    ),
   ];
 
   static final List<ReaderInfo> surahReaderInfo = [
     const ReaderInfo(
       index: 0,
       name: 'عبد الباسط',
-      readerNamePath: 'abdulBasit/murattal/mp3/',
-      url: surahUrl6,
+      readerNamePath: 'abdul_basit_murattal/',
+      url: surahUrl1,
     ),
     const ReaderInfo(
       index: 1,
       name: 'محمد المنشاوي',
-      readerNamePath: 'minshawy/murattal/mp3/',
-      url: surahUrl6,
+      readerNamePath: 'muhammad_siddeeq_al-minshaawee/',
+      url: surahUrl1,
     ),
     const ReaderInfo(
       index: 2,
@@ -132,14 +125,14 @@ class ReadersConstants {
     const ReaderInfo(
       index: 5,
       name: 'سعود الشريم',
-      readerNamePath: 'saudAlShuraim/murattal/mp3/',
-      url: surahUrl6,
+      readerNamePath: 'sa3ood_al-shuraym/',
+      url: surahUrl1,
     ),
     const ReaderInfo(
       index: 6,
       name: 'سعد الغامدي',
-      readerNamePath: 'ghamadi/murattal/mp3/',
-      url: surahUrl6,
+      readerNamePath: 'sa3d_al-ghaamidi/complete/',
+      url: surahUrl1,
     ),
     const ReaderInfo(
       index: 7,
@@ -218,12 +211,6 @@ class ReadersConstants {
       name: 'ياسر الدوسري - مجود',
       readerNamePath: 'yasser/',
       url: surahUrl5,
-    ),
-    const ReaderInfo(
-      index: 20,
-      name: 'علي جابر',
-      readerNamePath: 'ali_jaber/',
-      url: surahUrl1,
     ),
   ];
 }

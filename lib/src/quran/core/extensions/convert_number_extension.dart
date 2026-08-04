@@ -52,12 +52,6 @@ extension ConvertNumberExtension on String {
   /// Returns a new string with the numeric characters converted to the specified
   /// language.
   String convertNumbersAccordingToLang({String? languageCode}) {
-    // Use custom converter if provided via QuranLibrary.init()
-    final custom = QuranLibrary.customNumberConverter;
-    if (custom != null) {
-      return custom(this, languageCode: languageCode);
-    }
-
     Map<String, Map<String, String>> numberSets = {
       'ar': {
         // Arabic

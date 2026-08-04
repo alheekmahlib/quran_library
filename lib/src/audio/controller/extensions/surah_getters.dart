@@ -49,11 +49,11 @@ extension SurahGetters on AudioCtrl {
 
   MediaItem get mediaItem => MediaItem(
         id: '${state.currentAudioListSurahNum.value}',
-        title: QuranCtrl.instance
+        title: QuranCtrl.instance.state
             .surahs[(state.currentAudioListSurahNum.value - 1)].arabicName,
         artist: ReadersConstants
             .activeSurahReaders[state.surahReaderIndex.value].name.tr,
-        artUri: state.cachedArtUri ?? Uri.parse(currentAppIconUrl),
+        artUri: state.cachedArtUri, // state.cachedArtUri,
       );
 
   Future<void> lastAudioSource() async {
@@ -69,7 +69,9 @@ extension SurahGetters on AudioCtrl {
         .isSurahDownloadedByNumber(state.currentAudioListSurahNum.value)
         .value;
     // إذا لم تكن السورة محمّلة وتبين عدم وجود اتصال، لا نحاول تحميل الشبكة
-    if (!isDownloaded && !InternetConnectionController.instance.isConnected) {
+    if (!isDownloaded &&
+        InternetConnectionController.instance.connectionStatus.value !=
+            ConnectivityStatus.connected) {
       log('Skipped setting audio source: offline and file not downloaded',
           name: 'AudioCtrl');
       return;

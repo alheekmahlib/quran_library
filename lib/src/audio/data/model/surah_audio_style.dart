@@ -179,22 +179,6 @@ class SurahAudioStyle {
   /// Custom "time container" color
   final Color? timeContainerColor;
 
-  /// نمط نص اسم القارئ في الزر
-  /// Text style for reader name in the title/button
-  final TextStyle? readerNameTextStyle;
-
-  /// نمط نص اسم القارئ في عناصر قائمة الحوار
-  /// Text style for reader name items in the dialog list
-  final TextStyle? dialogReaderItemTextStyle;
-
-  /// نمط نص عنوان ترويسة نافذة الحوار
-  /// Text style for dialog header title
-  final TextStyle? dialogHeaderTitleTextStyle;
-
-  /// ويدجت مخصص بدلاً من أيقونة السهم الافتراضية بجانب اسم القارئ
-  /// Custom widget to replace the default dropdown arrow icon next to reader name
-  final Widget? readerDropdownWidget;
-
   /// منشئ فئة SurahAudioStyle
   /// SurahAudioStyle class constructor
   SurahAudioStyle({
@@ -242,10 +226,6 @@ class SurahAudioStyle {
     this.downloadProgressColor,
     this.noInternetConnectionText,
     this.timeContainerColor,
-    this.readerNameTextStyle,
-    this.dialogReaderItemTextStyle,
-    this.dialogHeaderTitleTextStyle,
-    this.readerDropdownWidget,
   });
 
   SurahAudioStyle copyWith({
@@ -293,10 +273,6 @@ class SurahAudioStyle {
     Color? downloadProgressColor,
     String? noInternetConnectionText,
     Color? timeContainerColor,
-    TextStyle? readerNameTextStyle,
-    TextStyle? dialogReaderItemTextStyle,
-    TextStyle? dialogHeaderTitleTextStyle,
-    Widget? readerDropdownWidget,
   }) {
     return SurahAudioStyle(
       textColor: textColor ?? this.textColor,
@@ -357,12 +333,6 @@ class SurahAudioStyle {
       noInternetConnectionText:
           noInternetConnectionText ?? this.noInternetConnectionText,
       timeContainerColor: timeContainerColor ?? this.timeContainerColor,
-      readerNameTextStyle: readerNameTextStyle ?? this.readerNameTextStyle,
-      dialogReaderItemTextStyle:
-          dialogReaderItemTextStyle ?? this.dialogReaderItemTextStyle,
-      dialogHeaderTitleTextStyle:
-          dialogHeaderTitleTextStyle ?? this.dialogHeaderTitleTextStyle,
-      readerDropdownWidget: readerDropdownWidget ?? this.readerDropdownWidget,
     );
   }
 
@@ -395,7 +365,7 @@ class SurahAudioStyle {
 
       // خصائص نافذة اختيار القارئ
       dialogHeight: MediaQuery.of(context).size.height * 0.7,
-      dialogWidth: null,
+      dialogWidth: MediaQuery.of(context).size.width * 0.6,
       dialogHeaderTitleColor: onBg,
       dialogCloseIconColor: onBg,
       dialogHeaderBackgroundGradient: LinearGradient(
@@ -447,7 +417,6 @@ class SurahAudioStyle {
       downloadProgressColor: Colors.white,
       noInternetConnectionText: 'لا يوجد اتصال بالإنترنت',
       timeContainerColor: primary,
-      readerDropdownWidget: null,
     );
   }
 }

@@ -1,7 +1,7 @@
 part of '../../tafsir.dart';
 
 extension DownloadExtension on TafsirCtrl {
-  Future<bool> downloadFile(String path, String url, {String? fallbackUrl}) async {
+  Future<bool> downloadFile(String path, String url) async {
     Dio dio = Dio();
     cancelToken = CancelToken();
     try {
@@ -12,18 +12,16 @@ extension DownloadExtension on TafsirCtrl {
         progressString.value = "0";
         progress.value = 0;
 
-        try {
-          await _doDownload(dio, url, path);
-        } catch (e) {
-          if (e is DioException && e.type == DioExceptionType.cancel) rethrow;
-          if (fallbackUrl != null) {
-            log('GitHub download failed, trying GitLab fallback...');
-            cancelToken = CancelToken();
-            await _doDownload(dio, fallbackUrl, path);
-          } else {
-            rethrow;
-          }
-        }
+        await dio.download(url, path, onReceiveProgress: (rec, total) {
+          progressString.value =
+              ((rec / (total == -1 ? 50000000 : total)) * 100)
+                  .toStringAsFixed(0);
+          progress.value =
+              (rec / (total == -1 ? (total == -1 ? 50000000 : total) : total))
+                  .toDouble();
+          log('progress: ${progressString.value}');
+          log('Received: $rec, Total: $total');
+        }, cancelToken: cancelToken);
       } catch (e) {
         if (e is DioException && e.type == DioExceptionType.cancel) {
           log('Download canceled');
@@ -54,36 +52,5 @@ extension DownloadExtension on TafsirCtrl {
       log("Error isDownloading: $e");
     }
     return false;
-  }
-
-  Future<void> _doDownload(Dio dio, String url, String path) async {
-    await dio.download(url, path, onReceiveProgress: (rec, total) {
-      progressString.value =
-          ((rec / (total == -1 ? 50000000 : total)) * 100)
-              .toStringAsFixed(0);
-      progress.value =
-          (rec / (total == -1 ? (total == -1 ? 50000000 : total) : total))
-              .toDouble();
-      log('progress: ${progressString.value}');
-      log('Received: $rec, Total: $total');
-    }, cancelToken: cancelToken);
-
-    // إذا كان الملف مضغوطًا (gzip)، فك الضغط مرة واحدة واكتب النص كناتج.
-    try {
-      final file = File(path);
-      if (await file.exists()) {
-        final bytes = await file.readAsBytes();
-        final isGzip =
-            bytes.length >= 2 && bytes[0] == 0x1f && bytes[1] == 0x8b;
-        if (isGzip || url.toLowerCase().endsWith('.gz')) {
-          final text = GzipJsonAssetService.decodeGzipBytesToString(
-            Uint8List.fromList(bytes),
-          );
-          await file.writeAsString(text, flush: true);
-        }
-      }
-    } catch (e) {
-      log('Failed to decompress downloaded file: $e');
-    }
   }
 }

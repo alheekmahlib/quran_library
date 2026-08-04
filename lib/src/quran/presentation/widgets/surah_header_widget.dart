@@ -40,7 +40,9 @@ class SurahHeaderWidget extends StatelessWidget {
         child: Container(
           height: bannerStyle?.bannerImageHeight ?? 50.0,
           width: bannerStyle?.bannerImageWidth ?? double.infinity,
-          margin: const EdgeInsets.symmetric(vertical: 8.0),
+          margin: EdgeInsets.symmetric(
+              vertical: quranCtrl.state.fontsSelected.value == 1 ? 0.0 : 8.0),
+          padding: const EdgeInsets.symmetric(vertical: 0.0),
           decoration: BoxDecoration(
             image: DecorationImage(
                 image: AssetImage(bannerStyle!.bannerImagePath!),
@@ -53,8 +55,6 @@ class SurahHeaderWidget extends StatelessWidget {
               color: surahNameStyle?.surahNameColor ?? Colors.black,
               fontFamily: "surahName",
               fontSize: surahNameStyle?.surahNameSize,
-              fontFamilyFallback: const ["surahName"],
-              inherit: false,
               package: "quran_library",
             ),
             textAlign: TextAlign.center,
@@ -64,9 +64,8 @@ class SurahHeaderWidget extends StatelessWidget {
     } else {
       return Center(
         child: Padding(
-          padding: const EdgeInsets.symmetric(
-            vertical: 8.0,
-            // horizontal: 64.0,
+          padding: EdgeInsets.symmetric(
+            vertical: quranCtrl.state.fontsSelected.value == 1 ? 24.0 : 8.0,
           ),
           child: GestureDetector(
             onTap: () {
@@ -85,8 +84,8 @@ class SurahHeaderWidget extends StatelessWidget {
                 SvgPicture.asset(
                   bannerStyle?.bannerSvgPath ??
                       AssetsPath.assets.surahSvgBanner,
-                  width: bannerStyle?.bannerSvgWidth,
-                  height: bannerStyle?.bannerSvgHeight,
+                  width: bannerStyle?.bannerSvgWidth ?? 250.0,
+                  height: bannerStyle?.bannerSvgHeight ?? 160.0,
                   colorFilter: bannerStyle?.svgBannerColor != null
                       ? ColorFilter.mode(
                           bannerStyle!.svgBannerColor!,
@@ -116,8 +115,6 @@ class SurahHeaderWidget extends StatelessWidget {
                     fontFamily: "surahName",
                     fontSize: surahNameStyle?.surahNameSize ?? 120.0,
                     height: 1.3,
-                    fontFamilyFallback: const ["surahName"],
-                    inherit: false,
                     package: "quran_library",
                   ),
                   textAlign: TextAlign.center,

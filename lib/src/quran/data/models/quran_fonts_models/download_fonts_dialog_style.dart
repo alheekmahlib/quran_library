@@ -10,7 +10,6 @@ class DownloadFontsDialogStyle {
   final Color? backgroundColor;
 
   /// The text to be displayed as the title for the default font.
-  @Deprecated('استخدم recitationNames بدلًا من defaultFontText.')
   final String? defaultFontText;
 
   /// The color of the divider in the dialog. This can be null, in which case
@@ -18,15 +17,7 @@ class DownloadFontsDialogStyle {
   final Color? dividerColor;
 
   /// The text to be displayed as the title for the quran font.
-  @Deprecated('استخدم recitationNames بدلًا من downloadedFontsText.')
   final String? downloadedFontsText;
-
-  /// أسماء مخصّصة لقائمة القراءات/الخطوط.
-  ///
-  /// إذا تم تمرير هذه القائمة، فسيتم استخدام الاسم الموافق لترتيب
-  /// [QuranRecitation.values] عند العرض. إذا لم يوجد عنصر في القائمة للمؤشر
-  /// المطلوب، فسيتم الرجوع للاسم الافتراضي [QuranRecitation.arabicName].
-  final List<String>? recitationNames;
 
   /// The background color of the download button in the dialog.
   ///
@@ -138,7 +129,6 @@ class DownloadFontsDialogStyle {
   // final String? downloadedNotesTitle;
   // final String? withTajweedText;
   // final String? withoutTajweedText;
-  final String? tajweedOptionNames;
 
   /// A class representing the style for the download fonts dialog.
   ///
@@ -152,7 +142,6 @@ class DownloadFontsDialogStyle {
     this.defaultFontText,
     this.dividerColor,
     this.downloadedFontsText,
-    this.recitationNames,
     this.downloadButtonBackgroundColor,
     this.downloadingStyle,
     this.downloadingText,
@@ -170,7 +159,6 @@ class DownloadFontsDialogStyle {
     this.headerTitle,
     this.closeIconColor,
     this.backgroundGradient,
-    this.tajweedOptionNames,
   });
 
   /// Creates a copy of the current [DownloadFontsDialogStyle] instance with the
@@ -184,7 +172,6 @@ class DownloadFontsDialogStyle {
     String? defaultFontText,
     Color? dividerColor,
     String? downloadedFontsText,
-    List<String>? recitationNames,
     Color? downloadButtonBackgroundColor,
     TextStyle? downloadingStyle,
     String? downloadingText,
@@ -203,34 +190,32 @@ class DownloadFontsDialogStyle {
     String? headerTitle,
     Color? closeIconColor,
     Gradient? backgroundGradient,
-    String? tajweedOptionNames,
   }) {
     return DownloadFontsDialogStyle(
-        backgroundColor: backgroundColor ?? this.backgroundColor,
-        defaultFontText: defaultFontText ?? this.defaultFontText,
-        dividerColor: dividerColor ?? this.dividerColor,
-        downloadedFontsText: downloadedFontsText ?? this.downloadedFontsText,
-        recitationNames: recitationNames ?? this.recitationNames,
-        downloadButtonBackgroundColor:
-            downloadButtonBackgroundColor ?? this.downloadButtonBackgroundColor,
-        downloadingStyle: downloadingStyle ?? this.downloadingStyle,
-        downloadingText: downloadingText ?? this.downloadingText,
-        fontNameStyle: fontNameStyle ?? this.fontNameStyle,
-        iconColor: iconColor ?? this.iconColor,
-        iconSize: iconSize ?? this.iconSize,
-        iconWidget: iconWidget ?? this.iconWidget,
-        linearProgressBackgroundColor:
-            linearProgressBackgroundColor ?? this.linearProgressBackgroundColor,
-        linearProgressColor: linearProgressColor ?? this.linearProgressColor,
-        notes: notes ?? this.notes,
-        notesColor: notesColor ?? this.notesColor,
-        notesStyle: notesStyle ?? this.notesStyle,
-        titleColor: titleColor ?? this.titleColor,
-        titleStyle: titleStyle ?? this.titleStyle,
-        headerTitle: headerTitle ?? this.headerTitle,
-        closeIconColor: closeIconColor ?? this.closeIconColor,
-        backgroundGradient: backgroundGradient ?? this.backgroundGradient,
-        tajweedOptionNames: tajweedOptionNames ?? this.tajweedOptionNames);
+      backgroundColor: backgroundColor ?? this.backgroundColor,
+      defaultFontText: defaultFontText ?? this.defaultFontText,
+      dividerColor: dividerColor ?? this.dividerColor,
+      downloadedFontsText: downloadedFontsText ?? this.downloadedFontsText,
+      downloadButtonBackgroundColor:
+          downloadButtonBackgroundColor ?? this.downloadButtonBackgroundColor,
+      downloadingStyle: downloadingStyle ?? this.downloadingStyle,
+      downloadingText: downloadingText ?? this.downloadingText,
+      fontNameStyle: fontNameStyle ?? this.fontNameStyle,
+      iconColor: iconColor ?? this.iconColor,
+      iconSize: iconSize ?? this.iconSize,
+      iconWidget: iconWidget ?? this.iconWidget,
+      linearProgressBackgroundColor:
+          linearProgressBackgroundColor ?? this.linearProgressBackgroundColor,
+      linearProgressColor: linearProgressColor ?? this.linearProgressColor,
+      notes: notes ?? this.notes,
+      notesColor: notesColor ?? this.notesColor,
+      notesStyle: notesStyle ?? this.notesStyle,
+      titleColor: titleColor ?? this.titleColor,
+      titleStyle: titleStyle ?? this.titleStyle,
+      headerTitle: headerTitle ?? this.headerTitle,
+      closeIconColor: closeIconColor ?? this.closeIconColor,
+      backgroundGradient: backgroundGradient ?? this.backgroundGradient,
+    );
   }
 
   /// A method to create default styles for the download fonts dialog.
@@ -245,12 +230,12 @@ class DownloadFontsDialogStyle {
     return DownloadFontsDialogStyle(
       // لون خلفية النافذة الافتراضي
       backgroundColor: AppColors.getBackgroundColor(isDarkMode),
+      // نص الخط الافتراضي
+      defaultFontText: 'الخط الأساسي',
       // لون الفاصل الافتراضي
       dividerColor: primary,
-      // لا نضع أسماء افتراضية هنا: الواجهة ستستخدم QuranRecitation.arabicName.
-      defaultFontText: null,
-      downloadedFontsText: null,
-      recitationNames: null,
+      // نص خطوط القرآن المحملة الافتراضي
+      downloadedFontsText: 'خط المصحف',
       // لون خلفية زر التحميل الافتراضي
       downloadButtonBackgroundColor: primary,
       // نص التحميل الافتراضي
@@ -309,7 +294,6 @@ class DownloadFontsDialogStyle {
         fontFamily: 'cairo',
         package: 'quran_library',
       ),
-      tajweedOptionNames: 'مع التجويد',
     );
   }
 }

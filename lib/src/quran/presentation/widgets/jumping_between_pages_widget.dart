@@ -32,14 +32,12 @@ class JumpingPageControllerWidget extends StatelessWidget {
               iconColor: textColor ?? AppColors.getTextColor(isDark),
               iconData: Icons.arrow_back_ios_new,
               onPressed: () {
-                final controller = quranCtrl.quranPagesController;
-                if (!controller.hasClients) return;
-                final currentIndex = controller.page?.round() ?? 0;
-                // وضع الصفحتين (viewportFraction < 1): نقفز بمقدار 2
-                final step = controller.viewportFraction < 1.0 ? 2 : 1;
-                final target = currentIndex - step;
-                if (target >= 0) {
-                  quranCtrl.animateToPage(target);
+                // الانتقال للصفحة السابقة
+                // currentPageNumber يبدأ من 1، و animateToPage يتوقع index يبدأ من 0
+                // الصفحة السابقة = currentPageNumber - 2 (كـ index)
+                final currentPage = quranCtrl.state.currentPageNumber.value;
+                if (currentPage > 1) {
+                  quranCtrl.animateToPage(currentPage - 2);
                 }
               },
             ),
@@ -51,14 +49,12 @@ class JumpingPageControllerWidget extends StatelessWidget {
               iconColor: textColor ?? AppColors.getTextColor(isDark),
               iconData: Icons.arrow_forward_ios_outlined,
               onPressed: () {
-                final controller = quranCtrl.quranPagesController;
-                if (!controller.hasClients) return;
-                final currentIndex = controller.page?.round() ?? 0;
-                // وضع الصفحتين (viewportFraction < 1): نقفز بمقدار 2
-                final step = controller.viewportFraction < 1.0 ? 2 : 1;
-                final target = currentIndex + step;
-                if (target <= 603) {
-                  quranCtrl.animateToPage(target);
+                // الانتقال للصفحة التالية
+                // currentPageNumber يبدأ من 1، و animateToPage يتوقع index يبدأ من 0
+                // الصفحة التالية = currentPageNumber (كـ index)
+                final currentPage = quranCtrl.state.currentPageNumber.value;
+                if (currentPage < 604) {
+                  quranCtrl.animateToPage(currentPage);
                 }
               },
             ),

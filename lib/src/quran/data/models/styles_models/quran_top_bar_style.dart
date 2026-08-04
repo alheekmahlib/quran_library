@@ -23,8 +23,6 @@ class QuranTopBarStyle {
   final String? backIconPath;
   final String? audioIconPath;
   final String? optionsIconPath;
-  final String? tajweedIconPath;
-  final String? autoScrollIconPath;
   final double? iconSize;
   final Color? iconColor; // overrides textColor for icons if provided
 
@@ -45,17 +43,9 @@ class QuranTopBarStyle {
   final bool? showAudioButton;
   final bool? showFontsButton;
   final bool? showBackButton;
-  final bool? showTajweedButton;
-  final bool? showAutoScrollButton;
 
   // Custom widgets to add to the top bar
   final List<Widget>? customTopBarWidgets;
-
-  final String? quranTabText;
-  final String? tenRecitationsTabText;
-
-  final TextStyle? tabLabelStyle;
-  final EdgeInsetsGeometry? indicatorPadding;
 
   const QuranTopBarStyle({
     this.showBackButton,
@@ -86,14 +76,6 @@ class QuranTopBarStyle {
     this.showFontsButton,
     this.optionsIconPath,
     this.customTopBarWidgets,
-    this.tajweedIconPath,
-    this.autoScrollIconPath,
-    this.showTajweedButton,
-    this.showAutoScrollButton,
-    this.quranTabText,
-    this.tenRecitationsTabText,
-    this.tabLabelStyle,
-    this.indicatorPadding,
   });
 
   QuranTopBarStyle copyWith({
@@ -125,14 +107,6 @@ class QuranTopBarStyle {
     bool? showBackButton,
     String? optionsIconPath,
     List<Widget>? customTopBarWidgets,
-    String? tajweedIconPath,
-    bool? showTajweedButton,
-    String? autoScrollIconPath,
-    bool? showAutoScrollButton,
-    String? quranTabText,
-    String? tenRecitationsTabText,
-    TextStyle? tabLabelStyle,
-    EdgeInsetsGeometry? indicatorPadding,
   }) =>
       QuranTopBarStyle(
         backIconPath: backIconPath ?? this.backIconPath,
@@ -164,15 +138,6 @@ class QuranTopBarStyle {
         showBackButton: showBackButton ?? this.showBackButton,
         optionsIconPath: optionsIconPath ?? this.optionsIconPath,
         customTopBarWidgets: customTopBarWidgets ?? this.customTopBarWidgets,
-        tajweedIconPath: tajweedIconPath ?? this.tajweedIconPath,
-        showTajweedButton: showTajweedButton ?? this.showTajweedButton,
-        showAutoScrollButton: showAutoScrollButton ?? this.showAutoScrollButton,
-        quranTabText: quranTabText ?? this.quranTabText,
-        tenRecitationsTabText:
-            tenRecitationsTabText ?? this.tenRecitationsTabText,
-        tabLabelStyle: tabLabelStyle ?? this.tabLabelStyle,
-        indicatorPadding: indicatorPadding ?? this.indicatorPadding,
-        autoScrollIconPath: autoScrollIconPath ?? this.autoScrollIconPath,
       );
 
   /// Provide sensible defaults based on theme (isDark)
@@ -210,21 +175,6 @@ class QuranTopBarStyle {
       showBackButton: false,
       optionsIconPath: AssetsPath.assets.options,
       customTopBarWidgets: null,
-      tajweedIconPath: AssetsPath.assets.exclamation,
-      autoScrollIconPath: AssetsPath.assets.arrowDown,
-      showTajweedButton: true,
-      showAutoScrollButton: true,
-      quranTabText: 'القرآن الكريم',
-      tenRecitationsTabText: 'القراءات العشر',
-      tabLabelStyle: TextStyle(
-        fontSize: 12,
-        fontWeight: FontWeight.w700,
-        height: 1.3,
-        color: AppColors.getTextColor(isDark),
-        fontFamily: 'cairo',
-        package: 'quran_library',
-      ),
-      indicatorPadding: const EdgeInsets.all(4),
     );
   }
 }

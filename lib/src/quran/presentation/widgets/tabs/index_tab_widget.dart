@@ -29,7 +29,6 @@ class _IndexTab extends StatelessWidget {
                   BorderRadius.circular((style.tabBarRadius ?? 12).toDouble()),
             ),
             child: TabBar(
-              indicatorSize: TabBarIndicatorSize.tab,
               indicator: BoxDecoration(
                 color: accentColor,
                 borderRadius: BorderRadius.circular(
@@ -149,11 +148,10 @@ class _SurahsList extends StatelessWidget {
                     children: [
                       SvgPicture.asset(
                         AssetsPath.assets.suraNum,
-                        width: 50,
-                        height: 50,
+                        width: 40,
+                        height: 40,
                         colorFilter: ColorFilter.mode(
-                          style.surahNumberDecorationColor ??
-                              Colors.teal.withValues(alpha: 0.6),
+                          textColor,
                           BlendMode.srcIn,
                         ),
                       ),
@@ -162,7 +160,7 @@ class _SurahsList extends StatelessWidget {
                             languageCode: languageCode),
                         style: QuranLibrary()
                             .cairoStyle
-                            .copyWith(fontSize: 16, color: textColor),
+                            .copyWith(fontSize: 14, color: textColor),
                       ),
                     ],
                   ),

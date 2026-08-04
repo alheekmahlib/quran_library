@@ -11,12 +11,6 @@ class QuranRepository {
   ///Quran pages number
   static const hafsPagesNumber = 604;
 
-  QuranRepository({GzipJsonAssetService? gzipJsonAssetService})
-      : _gzipJsonAssetService =
-            gzipJsonAssetService ?? const GzipJsonAssetService();
-
-  final GzipJsonAssetService _gzipJsonAssetService;
-
   /// Fetches the Quran data.
   ///
   /// This method retrieves a list of Quran data asynchronously.
@@ -26,10 +20,9 @@ class QuranRepository {
   ///
   /// Throws an [Exception] if the data retrieval fails.
   Future<List<dynamic>> getQuran() async {
-    const gzPath = 'packages/quran_library/assets/jsons/quran_hafs.json.gz';
-    return _gzipJsonAssetService.loadJsonList(
-      gzPath,
-    );
+    String content = await rootBundle
+        .loadString('packages/quran_library/assets/jsons/quran_hafs.json');
+    return jsonDecode(content);
   }
 
   /// Fetches the list of Surahs from the data source.
@@ -45,10 +38,9 @@ class QuranRepository {
   /// Throws:
   ///   An exception if there is an error while fetching the Surah data.
   Future<Map<String, dynamic>> getSurahs() async {
-    const gzPath = 'packages/quran_library/assets/jsons/surahs_name.json.gz';
-    return _gzipJsonAssetService.loadJsonMap(
-      gzPath,
-    );
+    String content = await rootBundle
+        .loadString('packages/quran_library/assets/jsons/surahs_name.json');
+    return jsonDecode(content);
   }
 
   /// Fetches a list of Quran fonts.
@@ -63,10 +55,9 @@ class QuranRepository {
   /// List<dynamic> fonts = await getFontsQuran();
   /// ```
   Future<List<dynamic>> getQuranDataV3() async {
-    const gzPath = 'packages/quran_library/assets/jsons/quranV4.json.gz';
-    final jsonResponse = await _gzipJsonAssetService.loadJsonMap(
-      gzPath,
-    );
+    String jsonString = await rootBundle
+        .loadString('packages/quran_library/assets/jsons/quranV3.json');
+    Map<String, dynamic> jsonResponse = jsonDecode(jsonString);
     List<dynamic> surahsJson = jsonResponse['data']['surahs'];
     return surahsJson;
   }

@@ -98,9 +98,7 @@ class AyahsAudioWidget extends StatelessWidget {
                                     MainAxisAlignment.spaceBetween,
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  PlayAyahWidget(
-                                      style: effectiveStyle,
-                                      dark: isDark ?? false),
+                                  PlayAyahWidget(style: effectiveStyle),
                                   AyahChangeReader(
                                       style: effectiveStyle,
                                       isDark: isDark,
@@ -165,8 +163,7 @@ class AyahsAudioWidget extends StatelessWidget {
                                                   AyahSkipToPrevious(
                                                       style: effectiveStyle),
                                                   PlayAyahWidget(
-                                                      style: effectiveStyle,
-                                                      dark: isDark ?? false),
+                                                      style: effectiveStyle),
                                                   AyahSkipToNext(
                                                       style: effectiveStyle),
                                                 ],

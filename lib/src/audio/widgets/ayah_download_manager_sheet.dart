@@ -129,46 +129,26 @@ class AyahDownloadManagerSheet extends StatelessWidget {
                                 vertical:
                                     effectiveStyle.itemVerticalPadding ?? 8,
                               ),
-                              leading: Stack(
-                                alignment: Alignment.center,
-                                children: [
-                                  SvgPicture.asset(
-                                    AssetsPath.assets.suraNum,
-                                    width: 50,
-                                    height: 50,
-                                    colorFilter: ColorFilter.mode(
-                                      effectiveStyle
-                                              .surahNumberDecorationColor ??
-                                          Colors.teal.withValues(alpha: 0.6),
-                                      BlendMode.srcIn,
-                                    ),
-                                  ),
-                                  CircleAvatar(
-                                    radius: 18,
-                                    backgroundColor: fullyDownloaded
-                                        ? (effectiveStyle
-                                                .avatarDownloadedColor ??
+                              leading: CircleAvatar(
+                                radius: 18,
+                                backgroundColor: fullyDownloaded
+                                    ? (effectiveStyle.avatarDownloadedColor ??
+                                        Theme.of(context).colorScheme.primary)
+                                    : (effectiveStyle.avatarUndownloadedColor ??
                                             Theme.of(context)
                                                 .colorScheme
                                                 .primary)
-                                        : (effectiveStyle
-                                                    .avatarUndownloadedColor ??
-                                                Theme.of(context)
-                                                    .colorScheme
-                                                    .primary)
-                                            .withValues(alpha: .4),
-                                    child: Text(
-                                      s.surahNumber
-                                          .toString()
-                                          .convertNumbersAccordingToLang(
-                                              languageCode: language ?? 'ar'),
-                                      style: effectiveStyle.avatarTextStyle ??
-                                          QuranLibrary().cairoStyle.copyWith(
-                                              color: Colors.white,
-                                              fontWeight: FontWeight.bold),
-                                    ),
-                                  ),
-                                ],
+                                        .withValues(alpha: .4),
+                                child: Text(
+                                  s.surahNumber
+                                      .toString()
+                                      .convertNumbersAccordingToLang(
+                                          languageCode: language ?? 'ar'),
+                                  style: effectiveStyle.avatarTextStyle ??
+                                      QuranLibrary().cairoStyle.copyWith(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold),
+                                ),
                               ),
                               title: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -184,10 +164,6 @@ class AyahDownloadManagerSheet extends StatelessWidget {
                                               effectiveStyle.surahNameSize ??
                                                   30,
                                           height: 1.2,
-                                          fontFamilyFallback: const [
-                                            "surahName"
-                                          ],
-                                          inherit: false,
                                           package: "quran_library",
                                         ),
                                   ),
@@ -289,7 +265,7 @@ class DownloadedAndDeleteWidget extends StatelessWidget {
             // إذا لم يكن هذا العنصر هو الجاري تحميله حاليًا، أظهر زر تحميل/إعادة
             return SizedBox(
               height: 30,
-              width: 50,
+              width: 60,
               child: FilledButton(
                 onPressed: isDownloading
                     ? null

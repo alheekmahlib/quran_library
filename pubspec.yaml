@@ -1,50 +1,52 @@
 name: quran_library
 description: "An integrated package for displaying the Holy Qur’an identical to
   the Medina Quran with the narration of Hafs on the authority of Asim."
-version: 4.2.1
+version: 2.3.6
 homepage: https://github.com/alheekmahlib/quran_library
-documentation: https://quran-library.vexaltech.dev/
+documentation: https://alheekmahlib.github.io/quran_library_web/
 
 environment:
-  sdk: '>=3.3.0 <4.0.0'
-  flutter: ">=3.16.0"
+  sdk: '>=3.0.0 <4.0.0'
+  flutter: ">=1.20.0"
 
 dependencies:
-  arabic_justified_text: ^1.0.2
-  archive: ^4.0.9
+  archive: ^4.0.7
   audio_service: ^0.18.18
-  connectivity_plus: ^7.1.1
-  dio: ^5.9.2
+  connectivity_plus: ^7.0.0
+  dio: ^5.9.0
   flutter:
     sdk: flutter
   flutter_scale_kit: ^1.5.2
-  flutter_svg: ^2.3.0
+  flutter_svg: ^2.2.3
   get: ^4.7.3
   get_storage: ^2.1.1
   html: ^0.15.6
   just_audio: ^0.10.5
   just_audio_media_kit: ^2.1.0
-  # media_kit_libs_windows_audio: ^1.0.9  # Commented out for WASM compatibility
+  media_kit_libs_windows_audio: ^1.0.9
   path: ^1.9.1
   path_provider: ^2.1.5
   rxdart: ^0.28.0
-  preload_page_view: ^0.2.0
+  arabic_justified_text: ^1.0.2
+    # git:
+    #   ref: main
+    #   url: https://github.com/AhmedAlboishe/arabic_justified_text.git
 
 # This package supports all platforms listed below.
 # But note that it works and fits on mobile size devices
 # Additional Screen Sizes will be supported later
 platforms:
-  android:
-  ios:
-  linux:
-  macos:
-  web:
-  windows:
+  # linux
+  ? windows
+  ? web
+  ? android
+  ? ios
+  ? macos
 
 dev_dependencies:
+  flutter_lints: ^6.0.0
   flutter_test:
     sdk: flutter
-  flutter_lints: ^6.0.0
 
 package_rename_config:
   android:
@@ -77,9 +79,8 @@ flutter:
     - assets/jsons/
     - assets/svg/
     - assets/images/
-    - assets/saadi.json.gz
-    - assets/en.json.gz
-    - assets/fonts/quran_fonts_qfc4/
+    - assets/saadi.json
+    - assets/en.json
 
   fonts:
     - family: kufi

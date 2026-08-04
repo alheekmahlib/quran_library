@@ -8,7 +8,6 @@ class _QuranTopBar extends StatelessWidget {
   final DownloadFontsDialogStyle? downloadFontsDialogStyle;
   final Color? backgroundColor;
   final bool? isSingleSurah;
-  final bool? isPagesView;
 
   const _QuranTopBar(
     this.languageCode,
@@ -18,7 +17,6 @@ class _QuranTopBar extends StatelessWidget {
     this.downloadFontsDialogStyle,
     this.backgroundColor,
     this.isSingleSurah = false,
-    this.isPagesView = false,
   });
 
   @override
@@ -26,9 +24,6 @@ class _QuranTopBar extends StatelessWidget {
     // Centralized theming (read from theme or fallback to defaults)
     final QuranTopBarStyle defaults = QuranTopBarTheme.of(context)?.style ??
         QuranTopBarStyle.defaults(isDark: isDark, context: context);
-
-    final TajweedMenuStyle tajweedStyle = TajweedMenuTheme.of(context)?.style ??
-        TajweedMenuStyle.defaults(isDark: isDark, context: context);
     final Color bgColor = backgroundColor ??
         (defaults.backgroundColor ?? AppColors.getBackgroundColor(isDark));
 
@@ -80,71 +75,12 @@ class _QuranTopBar extends StatelessWidget {
                   _showMenuBottomSheet(context, defaults);
                 },
               ),
-            if ((defaults.showMenuButton ?? true) &&
-                (QuranCtrl.instance.state.fontsSelected.value == 0))
-              IconButton(
-                icon: SvgPicture.asset(
-                    defaults.tajweedIconPath ?? AssetsPath.assets.exclamation,
-                    height: defaults.iconSize,
-                    colorFilter: ColorFilter.mode(
-                        defaults.iconColor ??
-                            Theme.of(context).colorScheme.primary,
-                        BlendMode.srcIn)),
-                onPressed: () {
-                  _showDialog(context, tajweedStyle);
-                },
-              ),
             const Spacer(),
             if (defaults.customTopBarWidgets != null)
               ...defaults.customTopBarWidgets!,
             const Spacer(),
             Row(
               children: [
-                if (defaults.showAutoScrollButton ?? true)
-                  Obx(() {
-                    final isAutoScrollActive =
-                        AutoScrollCtrl.instance.state.isActive.value;
-                    return QuranCtrl.instance.state.displayMode.value ==
-                            QuranDisplayMode.defaultMode
-                        ? IconButton(
-                            icon: SvgPicture.asset(
-                                defaults.autoScrollIconPath ??
-                                    AssetsPath.assets.arrowDown,
-                                height: defaults.iconSize,
-                                colorFilter: ColorFilter.mode(
-                                    isAutoScrollActive
-                                        ? (defaults.iconColor ??
-                                            Theme.of(context)
-                                                .colorScheme
-                                                .primary)
-                                        : (defaults.iconColor ??
-                                                Theme.of(context)
-                                                    .colorScheme
-                                                    .primary)
-                                            .withValues(alpha: 0.5),
-                                    BlendMode.srcIn)),
-                            //   Icon(
-                            //   Icons.speed,
-                            //   size: defaults.iconSize ?? 22,
-                            //   color: isAutoScrollActive
-                            //       ? (defaults.accentColor ??
-                            //           Theme.of(context).colorScheme.primary)
-                            //       : (defaults.iconColor ??
-                            //           Theme.of(context).colorScheme.primary),
-                            // ),
-                            onPressed: () {
-                              final ctrl = AutoScrollCtrl.instance;
-                              if (ctrl.state.isActive.value) {
-                                ctrl.stopAutoScroll();
-                              } else {
-                                final currentPage = QuranCtrl
-                                    .instance.state.currentPageNumber.value;
-                                ctrl.startAutoScroll(currentPage);
-                              }
-                            },
-                          )
-                        : const SizedBox.shrink();
-                  }),
                 if (defaults.showAudioButton ?? true)
                   IconButton(
                     icon: SvgPicture.asset(
@@ -174,8 +110,7 @@ class _QuranTopBar extends StatelessWidget {
                       }
                     },
                   ),
-                if ((defaults.showFontsButton ?? true) && (!isSingleSurah!) ||
-                    (isPagesView!))
+                if ((defaults.showFontsButton ?? true) && (!isSingleSurah!))
                   FontsDownloadDialog(
                     downloadFontsDialogStyle: downloadFontsDialogStyle ??
                         DownloadFontsDialogStyle.defaults(isDark, context),
@@ -187,21 +122,6 @@ class _QuranTopBar extends StatelessWidget {
             )
           ],
         ),
-      ),
-    );
-  }
-
-  void _showDialog(BuildContext context, TajweedMenuStyle defaults) {
-    showDialog(
-      context: context,
-      builder: (ctx) => Dialog(
-        backgroundColor: backgroundColor ??
-            defaults.backgroundColor ??
-            AppColors.getBackgroundColor(isDark),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(defaults.borderRadius ?? 12),
-        ),
-        child: TajweedMenuWidget(isDark: isDark, languageCode: languageCode),
       ),
     );
   }
@@ -302,13 +222,11 @@ class _MenuBottomSheet extends StatelessWidget {
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: TabBar(
-                  indicatorSize: TabBarIndicatorSize.tab,
                   indicator: BoxDecoration(
                     color: accentColor,
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  indicatorPadding:
-                      style.indicatorPadding ?? const EdgeInsets.all(4),
+                  indicatorPadding: const EdgeInsets.all(4),
                   padding: EdgeInsets.zero,
                   labelColor: Colors.white,
                   unselectedLabelColor: textColor.withValues(alpha: 0.6),

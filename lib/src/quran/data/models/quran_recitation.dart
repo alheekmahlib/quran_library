@@ -37,30 +37,21 @@ class DataSource {
 /// Quran recitation types with their configurations
 enum QuranRecitation {
   /// حفص - الخط الأساسي
-  // hafs(
-  //   recitationIndex: 0,
-  //   arabicName: 'الخط الأساسي (حفص)',
-  //   englishName: 'Hafs',
-  //   fontFamily: 'hafs',
-  //   dataSource: DataSource.local('quran_hafs.json'),
-  // ),
+  hafs(
+    recitationIndex: 0,
+    arabicName: 'الخط الأساسي (حفص)',
+    englishName: 'Hafs',
+    fontFamily: 'hafs',
+    dataSource: DataSource.local('quran_hafs.json'),
+  ),
 
   /// حفص - خط المصحف (requires download)
-  // hafsMushaf(
-  //   recitationIndex: 1,
-  //   arabicName: 'خط المصحف (حفص)',
-  //   englishName: 'Hafs Mushaf',
-  //   fontFamily: 'hafs',
-  //   dataSource: DataSource.downloaded(),
-  // ),
-
-  /// حفص - خط المصحف (مضمّن في assets)
-  hafsMushafTajweed(
-    recitationIndex: 0,
+  hafsMushaf(
+    recitationIndex: 1,
     arabicName: 'خط المصحف (حفص)',
     englishName: 'Hafs Mushaf',
-    fontFamily: 'p',
-    dataSource: DataSource.local('bundled'),
+    fontFamily: 'hafs',
+    dataSource: DataSource.downloaded(),
   );
 
   /// ورش - خط المصحف
@@ -101,7 +92,7 @@ enum QuranRecitation {
   static QuranRecitation fromIndex(int idx) {
     return QuranRecitation.values.firstWhere(
       (r) => r.recitationIndex == idx,
-      orElse: () => QuranRecitation.hafsMushafTajweed,
+      orElse: () => QuranRecitation.hafs,
     );
   }
 

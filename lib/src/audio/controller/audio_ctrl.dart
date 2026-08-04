@@ -30,13 +30,11 @@ class AudioCtrl extends GetxController {
       _addDownloadedSurahToPlaylist(),
       _updateDownloadedAyahsMap(),
     ]);
-    getAyahUQNumber(QuranCtrl.instance.state.currentPageNumber.value - 1);
+    getAyahUQNumber(state._quranRepository.getLastPage() ?? 1);
 
-    debounce(
-      QuranCtrl.instance.state.currentPageNumber,
-      (pageNumber) => getAyahUQNumber(pageNumber - 1),
-      time: const Duration(milliseconds: 300),
-    );
+    ever(QuranCtrl.instance.state.currentPageNumber, (pageNumber) {
+      getAyahUQNumber(pageNumber);
+    });
 
     state.surahsPlayList = List.generate(114, (i) {
       state.selectedSurahIndex.value = i;
@@ -51,7 +49,7 @@ class AudioCtrl extends GetxController {
     if (!kIsWeb && (Platform.isIOS || Platform.isAndroid || Platform.isMacOS)) {
       if (!state.audioServiceInitialized.value) {
         if (!QuranCtrl.instance.state.isQuranLoaded) {
-          await QuranCtrl.instance.loadQuranDataV3().then((_) async {
+          await QuranCtrl.instance.loadQuranDataV1().then((_) async {
             await initAudioService();
             await setCachedArtUri();
             await lastAudioSource();
@@ -62,7 +60,7 @@ class AudioCtrl extends GetxController {
           await lastAudioSource();
         }
       } else {
-        await QuranCtrl.instance.loadQuranDataV3();
+        await QuranCtrl.instance.loadQuranDataV1();
         log("Audio service already initialized",
             name: 'surah_audio_controller');
         // ضمن حالة التهيئة المسبقة، احرص على مزامنة صورة الغلاف وMediaItem
@@ -508,73 +506,35 @@ class AudioCtrl extends GetxController {
   }
 
   Future<void> setCachedArtUri() async {
-    final iconRef = state.appIconUrl.value.trim();
-    if (iconRef.isEmpty) {
-      await resetAppIconToDefault();
-      return;
-    }
-
-    final parsed = Uri.tryParse(iconRef);
-    if (parsed != null &&
-        (parsed.scheme == 'http' || parsed.scheme == 'https')) {
-      state.cachedArtUri = parsed;
-      await _refreshCurrentMediaItemArt();
-      return;
-    }
-
-    if (iconRef.startsWith('assets/') || iconRef.startsWith('packages/')) {
-      await _setCachedArtUriFromAssetPath(iconRef);
-      return;
-    }
-
-    if (kIsWeb) {
-      state.cachedArtUri = Uri.base.resolve(iconRef);
-      await _refreshCurrentMediaItemArt();
-      return;
-    }
-
-    final file = File(iconRef);
-    if (await file.exists()) {
-      state.cachedArtUri = Uri.file(file.path);
-      await _refreshCurrentMediaItemArt();
-      return;
-    }
-
     await resetAppIconToDefault();
+    return;
   }
 
   Future<void> setCachedArtUriFromAsset() async {
-    // ضمن نفس الحزمة يُفضّل استخدام مسار الأصل مباشرة كما هو مُعلن في pubspec.yaml
-    const assetPath =
-        'packages/quran_library/assets/images/quran_library_logo.png';
-    await _setCachedArtUriFromAssetPath(assetPath, fallbackToDefault: false);
-  }
-
-  Future<void> _setCachedArtUriFromAssetPath(
-    String assetPath, {
-    bool fallbackToDefault = true,
-  }) async {
     try {
-      log('Setting cached art URI from asset: $assetPath', name: 'AudioCtrl');
+      log('Setting cached art URI from asset', name: 'AudioCtrl');
 
-      if (kIsWeb) {
-        state.cachedArtUri = Uri.base.resolve(assetPath);
-        await _refreshCurrentMediaItemArt();
-        return;
-      }
-
+      // ضمن نفس الحزمة يُفضّل استخدام مسار الأصل مباشرة كما هو مُعلن في pubspec.yaml
+      const assetPath =
+          'packages/quran_library/assets/images/quran_library_logo.png';
+      // 1. تحميل الصورة من مجلد assets
       final byteData = await rootBundle.load(assetPath);
+
+      // 2. إنشاء مسار مؤقت (احرص أن يكون الاسم فريدًا عشان ما يطغى على ملفات أخرى)
       final tempDir = await getTemporaryDirectory();
       final file = File('${tempDir.path}/${assetPath.split('/').last}');
 
+      // 3. كتابة البيانات في الملف المؤقت
       await file.writeAsBytes(byteData.buffer.asUint8List(), flush: true);
+
+      // 4. إرجاع URI صالح للاستخدام في MediaItem
+
       state.cachedArtUri = Uri.file(file.path);
+      log('Cached art URI set from asset successfully', name: 'AudioCtrl');
+      // أعِد بث MediaItem الحالي ليتم تحديث صورة الغلاف فورًا
       await _refreshCurrentMediaItemArt();
     } catch (e) {
       log('Exception in setCachedArtUri: $e', name: 'AudioCtrl');
-      if (fallbackToDefault) {
-        await setCachedArtUriFromAsset();
-      }
     }
   }
 
@@ -659,11 +619,11 @@ class AudioCtrl extends GetxController {
   void getAyahUQNumber(int pageNumber) {
     final ayahs =
         QuranCtrl.instance.getCurrentPageAyahsSeparatedForBasmalah(pageNumber);
+    log('Fetching AyahUQNumber for page $pageNumber', name: 'AudioCtrl');
     if (ayahs.isNotEmpty) {
-      final newValue = ayahs.first.first.ayahUQNumber;
-      if (state.currentAyahUniqueNumber.value != newValue) {
-        state.currentAyahUniqueNumber.value = newValue;
-      }
+      state.currentAyahUniqueNumber.value = ayahs.first.first.ayahUQNumber;
+      log('Updated currentAyahUniqueNumber to ${state.currentAyahUniqueNumber.value} for page $pageNumber',
+          name: 'AudioCtrl');
     }
   }
 }

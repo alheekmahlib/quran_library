@@ -17,8 +17,6 @@ abstract class _AssetsPath {
   String get buttomSheet;
   String get options;
   String get backArrow;
-  String get exclamation;
-  String get arrowDown;
 }
 
 class AssetsPath implements _AssetsPath {

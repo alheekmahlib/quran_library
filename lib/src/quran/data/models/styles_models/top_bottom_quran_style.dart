@@ -1,10 +1,5 @@
 part of '/quran.dart';
 
-typedef TopBottomCustomChildBuilder = Widget Function(
-  BuildContext context,
-  int pageIndex,
-);
-
 /// نمط مخصص لقسمَي أعلى/أسفل الصفحة (Top/Bottom) في المصحف.
 ///
 /// الغرض الأساسي: نقل باراميترات المحتوى (juzName, sajdaName, surahName, topTitleChild)
@@ -21,11 +16,6 @@ class TopBottomQuranStyle {
 
   /// ويدجت اختياري يسبق عنوان الأعلى (مثل شارة/عنوان مخصص).
   final Widget? customChild;
-
-  /// Builder اختياري يسبق عنوان الأعلى ويستقبل رقم الصفحة.
-  ///
-  /// ملاحظة: عند توفيره سيُستخدم بدل [customChild].
-  final TopBottomCustomChildBuilder? customChildBuilder;
 
   /// اسم الحزب القابل للتغيير (يستبدل كلمة "الحزب" في العرض السفلي)
   final String? hizbName;
@@ -50,7 +40,6 @@ class TopBottomQuranStyle {
     this.sajdaName,
     this.surahName,
     this.customChild,
-    this.customChildBuilder,
     this.hizbName,
     this.surahNameColor,
     this.juzTextColor,
@@ -64,7 +53,6 @@ class TopBottomQuranStyle {
     String? sajdaName,
     String? surahName,
     Widget? topTitleChild,
-    TopBottomCustomChildBuilder? customChildBuilder,
     String? hizbName,
     Color? surahNameColor,
     Color? juzTextColor,
@@ -77,7 +65,6 @@ class TopBottomQuranStyle {
       sajdaName: sajdaName ?? this.sajdaName,
       surahName: surahName ?? this.surahName,
       customChild: topTitleChild ?? customChild,
-      customChildBuilder: customChildBuilder ?? this.customChildBuilder,
       hizbName: hizbName ?? this.hizbName,
       surahNameColor: surahNameColor ?? this.surahNameColor,
       juzTextColor: juzTextColor ?? this.juzTextColor,
@@ -98,7 +85,6 @@ class TopBottomQuranStyle {
       sajdaName: 'سجدة',
       surahName: null,
       customChild: null,
-      customChildBuilder: null,
       hizbName: 'الحزب',
       surahNameColor: Color(0xff77554B),
       juzTextColor: Color(0xff77554B),

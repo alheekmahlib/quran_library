@@ -95,13 +95,13 @@ class _PatchedPreloadPageViewState extends State<PatchedPreloadPageView> {
         physics: physics,
         viewportBuilder: (BuildContext context, ViewportOffset position) {
           return Viewport(
-            cacheExtent: preload < 1
+            scrollCacheExtent: ScrollCacheExtent.pixels(preload < 1
                 ? 0
                 : (preload == 1
                     ? 1
                     : widget.scrollDirection == Axis.horizontal
                         ? MediaQuery.of(context).size.width * preload - 1
-                        : MediaQuery.of(context).size.height * preload - 1),
+                        : MediaQuery.of(context).size.height * preload - 1)),
             axisDirection: axisDirection,
             offset: position,
             slivers: <Widget>[

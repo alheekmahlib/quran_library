@@ -19,6 +19,7 @@ abstract class _AssetsPath {
   String get backArrow;
   String get exclamation;
   String get arrowDown;
+  String get mic;
 }
 
 class AssetsPath implements _AssetsPath {

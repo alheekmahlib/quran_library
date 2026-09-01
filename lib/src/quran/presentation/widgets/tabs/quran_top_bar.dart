@@ -100,6 +100,30 @@ class _QuranTopBar extends StatelessWidget {
             const Spacer(),
             Row(
               children: [
+                // زر وضع التسميع — يخفى كلمات الصفحة ويبدأ التسميع
+                // (يُخفى على الويب: الميكروفون غير مدعوم).
+                if (!kIsWeb && (defaults.showTasmeeButton ?? true))
+                  Obx(() {
+                    final isTasmeeActive =
+                        TasmeeCtrl.instance.state.isTasmeeMode.value;
+                    return IconButton(
+                      icon: SvgPicture.asset(
+                        defaults.tasmeeIconPath ?? AssetsPath.assets.mic,
+                        height: defaults.iconSize,
+                        colorFilter: ColorFilter.mode(
+                            isTasmeeActive
+                                ? (defaults.accentColor ??
+                                    Theme.of(context).colorScheme.primary)
+                                : (defaults.iconColor ??
+                                        Theme.of(context).colorScheme.primary)
+                                    .withValues(alpha: 0.5),
+                            BlendMode.srcIn)),
+                      onPressed: () {
+                        QuranCtrl.instance.state.isShowMenu.value = false;
+                        TasmeeCtrl.instance.toggleTasmeeMode();
+                      },
+                    );
+                  }),
                 if (defaults.showAutoScrollButton ?? true)
                   Obx(() {
                     final isAutoScrollActive =

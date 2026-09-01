@@ -49,15 +49,29 @@ class _TasmeeControlWidgetState extends State<TasmeeControlWidget> {
         return;
       }
       if (s == RecitationState.finished && !_sheetOpen && mounted) {
-        _sheetOpen = true;
-        showTasmeeResultSheet(
-          context: context,
-          isDark: widget.isDark,
-          style: widget.style,
-          languageCode: widget.languageCode,
-        );
+        _openResultSheet();
       }
     });
+  }
+
+  /// يفتح bottomSheet النتائج (ويصفّر حارس الفتح عند إغلاقه بأي وسيلة).
+  void _openResultSheet() {
+    _sheetOpen = true;
+    showTasmeeResultSheet(
+      context: context,
+      isDark: widget.isDark,
+      style: widget.style,
+      languageCode: widget.languageCode,
+    ).then((_) => _sheetOpen = false);
+  }
+
+  /// يفتح/يغلق bottomSheet النتائج يدويًا.
+  void _toggleResultSheet() {
+    if (_sheetOpen) {
+      Navigator.of(context).pop();
+      return;
+    }
+    _openResultSheet();
   }
 
   @override
@@ -101,6 +115,7 @@ class _TasmeeControlWidgetState extends State<TasmeeControlWidget> {
               children: [
                 // زر الإعدادات (محرك/خادم).
                 IconButton(
+                  tooltip: defaults.settingsLabel,
                   icon:
                       Icon(Icons.settings_outlined, color: defaults.iconColor),
                   onPressed: (sessionState == RecitationState.recording ||
@@ -112,6 +127,49 @@ class _TasmeeControlWidgetState extends State<TasmeeControlWidget> {
                             style: defaults,
                             languageCode: widget.languageCode,
                           ),
+                ),
+                // زر فتح/إغلاق bottomSheet النتائج (بعد أول تقييم).
+                if (state.lastResult.value != null)
+                  IconButton(
+                    tooltip: defaults.resultsToggleLabel,
+                    icon: Icon(
+                      _sheetOpen
+                          ? Icons.fact_check_rounded
+                          : Icons.fact_check_outlined,
+                      color: _sheetOpen
+                          ? defaults.accentColor
+                          : defaults.iconColor,
+                    ),
+                    onPressed: (sessionState == RecitationState.recording ||
+                            sessionState == RecitationState.processing)
+                        ? null
+                        : _toggleResultSheet,
+                  ),
+                // زر إظهار/إخفاء كل كلمات الصفحة (لا يعمل أثناء التسجيل).
+                IconButton(
+                  tooltip: state.showAllWords.value
+                      ? defaults.hideWordsLabel
+                      : defaults.showWordsLabel,
+                  icon: Icon(
+                    state.showAllWords.value
+                        ? Icons.visibility_off_outlined
+                        : Icons.visibility_outlined,
+                    color: state.showAllWords.value
+                        ? defaults.accentColor
+                        : defaults.iconColor,
+                  ),
+                  onPressed: sessionState == RecitationState.recording
+                      ? null
+                      : ctrl.toggleShowAllWords,
+                ),
+                // زر إعادة التسميع من البداية (إخفاء الكلمات من جديد).
+                IconButton(
+                  tooltip: defaults.retryLabel,
+                  icon: Icon(Icons.replay_rounded, color: defaults.iconColor),
+                  onPressed: (sessionState == RecitationState.recording ||
+                          sessionState == RecitationState.processing)
+                      ? null
+                      : ctrl.retryTasmee,
                 ),
                 Expanded(child: _buildStatus(ctrl, defaults)),
                 _buildAction(ctrl, defaults),

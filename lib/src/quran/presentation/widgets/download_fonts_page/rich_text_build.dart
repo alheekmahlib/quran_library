@@ -285,8 +285,6 @@ class _QpcV4RichTextLineState extends State<QpcV4RichTextLine> {
         isDark: widget.isDark,
         onPagePress: widget.onPagePress,
         hideGlyphs: tasmeeStatus == TasmeeWordStatus.hidden,
-        glyphColorOverride:
-            tasmeeColorOfStatus(tasmeeStatus, isDark: widget.isDark),
       );
 
       final spanStart = charOffset;

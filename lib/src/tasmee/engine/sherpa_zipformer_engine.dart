@@ -243,9 +243,8 @@ class SherpaZipformerEngine implements LiveCapableRecitationEngine {
         (suraIdx != null && ayaIdx != null && (_reference?.isLoaded ?? false))
             ? _reference!.getReference(suraIdx: suraIdx, ayaIdx: ayaIdx)
             : null;
-    _liveRange = (range != null && (_reference?.isLoaded ?? false))
-        ? range
-        : null;
+    _liveRange =
+        (range != null && (_reference?.isLoaded ?? false)) ? range : null;
     _rangeTracker = _liveRange == null
         ? null
         : RangeLiveTracker(
@@ -460,8 +459,8 @@ class SherpaZipformerEngine implements LiveCapableRecitationEngine {
           predUnits: predUnits,
           wordAt: ref.wordAt,
         );
-        errors.addAll(
-            _timingErrors(ops, ref.units, ref.wordAt, predUnits, frame, durationSec));
+        errors.addAll(_timingErrors(
+            ops, ref.units, ref.wordAt, predUnits, frame, durationSec));
 
         return RecitationResult(
           uthmaniText: ref.uthmani,

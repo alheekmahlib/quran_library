@@ -31,7 +31,9 @@ void main() {
     test('تراكب الوحدات = مجموع وحدات الآيات', () {
       expect(
         range.units.length,
-        verses[0].units.length + verses[1].units.length + verses[2].units.length,
+        verses[0].units.length +
+            verses[1].units.length +
+            verses[2].units.length,
       );
       expect(range.unitVerseIdx.length, range.units.length);
       expect(range.unitWordIdx.length, range.units.length);
@@ -60,16 +62,19 @@ void main() {
       final wordsWithUnits = verses.fold<int>(
           0,
           (sum, v) =>
-              sum + v.uthmaniWords.where((_) => true).length -
-              v.uthmaniWords.where((w) => !v.unitWordIdx.contains(
-                  v.uthmaniWords.indexOf(w))).length);
+              sum +
+              v.uthmaniWords.where((_) => true).length -
+              v.uthmaniWords
+                  .where(
+                      (w) => !v.unitWordIdx.contains(v.uthmaniWords.indexOf(w)))
+                  .length);
       expect(range.wordCount, wordsWithUnits);
       for (var i = 0; i < range.wordSpans.length; i++) {
         final span = range.wordSpans[i];
         expect(span.endUnit, greaterThanOrEqualTo(span.startUnit));
         if (i > 0) {
-          expect(span.startUnit,
-              greaterThan(range.wordSpans[i - 1].endUnit - 1));
+          expect(
+              span.startUnit, greaterThan(range.wordSpans[i - 1].endUnit - 1));
         }
       }
     });
@@ -94,8 +99,8 @@ void main() {
     });
 
     test('getRange يبني النطاق ويرجع null عند غاب آية', () {
-      final built = refDb.getRange(
-          [(suraIdx: 1, ayaIdx: 1), (suraIdx: 2, ayaIdx: 255)]);
+      final built =
+          refDb.getRange([(suraIdx: 1, ayaIdx: 1), (suraIdx: 2, ayaIdx: 255)]);
       expect(built, isNotNull);
       expect(built!.verses.length, 2);
       expect(refDb.getRange([(suraIdx: 1, ayaIdx: 999)]), isNull);
@@ -182,9 +187,7 @@ void main() {
       final ops = alignUnits(range.units, range.units);
       final withLead = [
         ...List.generate(
-            3,
-            (i) => UnitAlignOp(
-                type: 'insert', refIdx: -1, predIdx: i)),
+            3, (i) => UnitAlignOp(type: 'insert', refIdx: -1, predIdx: i)),
         ...ops,
       ];
       final filtered = dropLeadingInserts(withLead);

@@ -40,5 +40,7 @@ export 'controller/tasmee_ctrl.dart';
 
 // ── الواجهة / UI ───────────────────────────────────────────────
 export 'presentation/widgets/tasmee_control_widget.dart';
-export 'presentation/widgets/tasmee_result_sheet.dart' show showTasmeeResultSheet;
-export 'presentation/widgets/tasmee_settings_sheet.dart' show showTasmeeSettingsSheet;
+export 'presentation/widgets/tasmee_result_sheet.dart'
+    show showTasmeeResultSheet;
+export 'presentation/widgets/tasmee_settings_sheet.dart'
+    show showTasmeeSettingsSheet;

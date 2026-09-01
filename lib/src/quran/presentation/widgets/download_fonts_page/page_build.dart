@@ -137,7 +137,7 @@ class PageBuild extends StatelessWidget {
                   showAyahBookmarkedIcon: showAyahBookmarkedIcon,
                   bookmarksAyahs: bookmarksAyahs,
                   bookmarksColor: bookmarksColor,
-                                  customBookmarksColor: customBookmarksColor,
+                  customBookmarksColor: customBookmarksColor,
                   ayahSelectedBackgroundColor: ayahSelectedBackgroundColor,
                   context: context,
                   quranCtrl: quranCtrl,

@@ -58,9 +58,7 @@ TextSpan _qpcV4SpanSegment({
     fontSize: fontSize,
     height: 2,
     // wordSpacing: 50,
-    color: glyphColorOverride ??
-        textColor ??
-        AppColors.getTextColor(isDark),
+    color: glyphColorOverride ?? textColor ?? AppColors.getTextColor(isDark),
   );
 
   InlineSpan? tail;
@@ -156,7 +154,6 @@ TextSpan _qpcV4SpanSegment({
 
 typedef _LongPressStartDetailsFunction = void Function(LongPressStartDetails)?;
 
-
 // ── وضع التسميع — مساعدات العرض / Tasmee display helpers ─────────────
 
 /// حالة كلمة في وضع التسميع (null = الوضع غير مفعّل لهذه الصفحة).
@@ -175,9 +172,12 @@ TasmeeWordStatus? tasmeeStatusOfSegment(QpcV4WordSegment seg, int pageIndex) {
 Color? tasmeeColorOfStatus(TasmeeWordStatus? status, {required bool isDark}) {
   if (status == null || status == TasmeeWordStatus.hidden) return null;
   return switch (status) {
-    TasmeeWordStatus.correct => isDark ? const Color(0xFF81C784) : const Color(0xFF2E7D32),
-    TasmeeWordStatus.incorrect => isDark ? const Color(0xFFE57373) : const Color(0xFFC62828),
-    TasmeeWordStatus.current => isDark ? const Color(0xFFFFB74D) : const Color(0xFFE65100),
+    TasmeeWordStatus.correct =>
+      isDark ? const Color(0xFF81C784) : const Color(0xFF2E7D32),
+    TasmeeWordStatus.incorrect =>
+      isDark ? const Color(0xFFE57373) : const Color(0xFFC62828),
+    TasmeeWordStatus.current =>
+      isDark ? const Color(0xFFFFB74D) : const Color(0xFFE65100),
     TasmeeWordStatus.hidden => null,
   };
 }

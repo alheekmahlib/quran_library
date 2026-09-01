@@ -272,8 +272,7 @@ class QuranPhonemeReference {
   /// يبني نطاقاً مرجعياً متعدد الآيات (صفحة كاملة) بترتيب المفاتيح المعطاة.
   ///
   /// يُعيد null إن لم يُحمَّل المرجع أو غابت أي آية منه أو فشل التقطيع.
-  QuranReferenceRange? getRange(
-      List<({int suraIdx, int ayaIdx})> verseKeys) {
+  QuranReferenceRange? getRange(List<({int suraIdx, int ayaIdx})> verseKeys) {
     if (!_loaded || verseKeys.isEmpty) return null;
     final verses = <QuranReferenceVerse>[];
     for (final k in verseKeys) {

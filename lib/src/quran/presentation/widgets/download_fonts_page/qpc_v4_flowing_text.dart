@@ -102,42 +102,42 @@ class _QpcV4FlowingTextState extends State<QpcV4FlowingText> {
         builder: (_) => GetBuilder<TasmeeCtrl>(
           id: TasmeeUpdateIds.page(widget.pageIndex),
           builder: (_) {
-          final withTajweed = QuranCtrl.instance.state.isTajweedEnabled.value;
-          final isTenRecitations = wordInfoCtrl.isTenRecitations;
+            final withTajweed = QuranCtrl.instance.state.isTajweedEnabled.value;
+            final isTenRecitations = wordInfoCtrl.isTenRecitations;
 
-          if (isTenRecitations &&
-              !withTajweed &&
-              wordInfoCtrl.isKindAvailable(WordInfoKind.recitations)) {
-            final surahs = widget.segments.map((s) => s.surahNumber).toSet();
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              wordInfoCtrl.prewarmRecitationsSurahs(surahs);
-            });
-          }
+            if (isTenRecitations &&
+                !withTajweed &&
+                wordInfoCtrl.isKindAvailable(WordInfoKind.recitations)) {
+              final surahs = widget.segments.map((s) => s.surahNumber).toSet();
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                wordInfoCtrl.prewarmRecitationsSurahs(surahs);
+              });
+            }
 
-          final fp = _computeFingerprint();
-          if (_cachedWidget != null && fp == _lastFingerprint) {
-            return _cachedWidget!;
-          }
-          _lastFingerprint = fp;
+            final fp = _computeFingerprint();
+            if (_cachedWidget != null && fp == _lastFingerprint) {
+              return _cachedWidget!;
+            }
+            _lastFingerprint = fp;
 
-          _cachedWidget = LayoutBuilder(
-            builder: (ctx, constraints) {
-              final base = PageFontSizeHelper.hafsFontSize(
-                context: ctx,
-                maxWidth: constraints.maxWidth,
-              );
-              final quranCtrl = QuranCtrl.instance;
-              final fs = base * quranCtrl.state.scaleFactor.value;
+            _cachedWidget = LayoutBuilder(
+              builder: (ctx, constraints) {
+                final base = PageFontSizeHelper.hafsFontSize(
+                  context: ctx,
+                  maxWidth: constraints.maxWidth,
+                );
+                final quranCtrl = QuranCtrl.instance;
+                final fs = base * quranCtrl.state.scaleFactor.value;
 
-              return _buildFlowingRichText(
-                wordInfoCtrl,
-                context,
-                fs,
-                withTajweed: withTajweed,
-                isTenRecitations: isTenRecitations,
-              );
-            },
-          );
+                return _buildFlowingRichText(
+                  wordInfoCtrl,
+                  context,
+                  fs,
+                  withTajweed: withTajweed,
+                  isTenRecitations: isTenRecitations,
+                );
+              },
+            );
             return _cachedWidget!;
           },
         ),

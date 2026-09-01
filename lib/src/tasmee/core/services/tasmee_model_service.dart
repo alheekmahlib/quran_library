@@ -18,9 +18,21 @@ import '../../engine/zipformer_model.dart';
 
 /// يدير نموذج Zipformer على القرص (فحص/تنزيل/حذف).
 class TasmeeModelService {
-  TasmeeModelService({Dio? dio}) : _dio = dio ?? Dio();
+  TasmeeModelService({
+    Dio? dio,
+    int minValidBytes = kZipformerMinValidBytes,
+    String? modelUrl,
+  })  : _dio = dio ?? Dio(),
+        _minValidBytes = minValidBytes,
+        _modelUrl = modelUrl ?? kZipformerModelUrl;
 
   final Dio _dio;
+
+  /// أقل حجم صالح (قابل لِلحقن لِلاختبارات).
+  final int _minValidBytes;
+
+  /// رابط التنزيل (قابل لِلحقن لِلاختبارات).
+  final String _modelUrl;
 
   /// مسار النموذج المتوقع في مجلد دعم التطبيق.
   Future<String> get modelPath async {
@@ -32,7 +44,7 @@ class TasmeeModelService {
   Future<bool> isModelReady() async {
     final p = await modelPath;
     if (!await PlatformIo.fileExists(p)) return false;
-    return await PlatformIo.fileLength(p) > kZipformerMinValidBytes;
+    return await PlatformIo.fileLength(p) > _minValidBytes;
   }
 
   /// ينزّل النموذج بِـ تقدم لحظي — تنزيل ذرّي: ملف مؤقّت ثم إعادة تسمية.
@@ -52,7 +64,7 @@ class TasmeeModelService {
       await PlatformIo.deleteFile(partial);
       log('TasmeeModelService: downloading model…', name: 'TasmeeModel');
       await _dio.download(
-        kZipformerModelUrl,
+        _modelUrl,
         partial,
         cancelToken: cancelToken,
         onReceiveProgress: (received, total) {
@@ -60,7 +72,7 @@ class TasmeeModelService {
         },
       );
       final size = await PlatformIo.fileLength(partial);
-      if (size <= kZipformerMinValidBytes) {
+      if (size <= _minValidBytes) {
         throw Exception(
             'الملف المنزّل غير مكتمل (${(size / 1024 / 1024).toStringAsFixed(1)}MB)');
       }

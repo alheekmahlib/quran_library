@@ -40,8 +40,7 @@ class TasmeeReferenceStore {
   Future<void> _doLoad({String? tokensPath, String? filePath}) async {
     String tokensText;
     if (tokensPath != null && await PlatformIo.fileExists(tokensPath)) {
-      tokensText = String.fromCharCodes(
-          await PlatformIo.readFile(tokensPath));
+      tokensText = String.fromCharCodes(await PlatformIo.readFile(tokensPath));
     } else {
       tokensText = await loadPackageAssetString(kTasmeeTokensAssetPath);
     }
@@ -53,8 +52,7 @@ class TasmeeReferenceStore {
   }
 
   /// يبني نطاقاً مرجعياً متعدد الآيات (أو null إن لم يُحمَّل المرجع).
-  QuranReferenceRange? buildRange(
-      List<({int suraIdx, int ayaIdx})> verseKeys) {
+  QuranReferenceRange? buildRange(List<({int suraIdx, int ayaIdx})> verseKeys) {
     return _reference?.getRange(verseKeys);
   }
 }

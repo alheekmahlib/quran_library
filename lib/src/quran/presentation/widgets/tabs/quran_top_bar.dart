@@ -108,16 +108,16 @@ class _QuranTopBar extends StatelessWidget {
                         TasmeeCtrl.instance.state.isTasmeeMode.value;
                     return IconButton(
                       icon: SvgPicture.asset(
-                        defaults.tasmeeIconPath ?? AssetsPath.assets.mic,
-                        height: defaults.iconSize,
-                        colorFilter: ColorFilter.mode(
-                            isTasmeeActive
-                                ? (defaults.accentColor ??
-                                    Theme.of(context).colorScheme.primary)
-                                : (defaults.iconColor ??
-                                        Theme.of(context).colorScheme.primary)
-                                    .withValues(alpha: 0.5),
-                            BlendMode.srcIn)),
+                          defaults.tasmeeIconPath ?? AssetsPath.assets.mic,
+                          height: defaults.iconSize,
+                          colorFilter: ColorFilter.mode(
+                              isTasmeeActive
+                                  ? (defaults.accentColor ??
+                                      Theme.of(context).colorScheme.primary)
+                                  : (defaults.iconColor ??
+                                          Theme.of(context).colorScheme.primary)
+                                      .withValues(alpha: 0.5),
+                              BlendMode.srcIn)),
                       onPressed: () {
                         QuranCtrl.instance.state.isShowMenu.value = false;
                         TasmeeCtrl.instance.toggleTasmeeMode();

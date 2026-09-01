@@ -51,8 +51,7 @@ class TasmeeCtrl extends GetxController {
   Worker? _pageWorker;
 
   /// هل التسجيل جارٍ الآن؟
-  bool get isRecording =>
-      state.sessionState.value == RecitationState.recording;
+  bool get isRecording => state.sessionState.value == RecitationState.recording;
 
   /// هل المعالجة جارية (بعد الإيقاف)؟
   bool get isProcessing =>
@@ -172,7 +171,8 @@ class TasmeeCtrl extends GetxController {
       _rangeAyahs = ayahs;
       _range = TasmeeReferenceStore.instance.buildRange([
         for (final a in ayahs)
-          if (a.surahNumber != null) (suraIdx: a.surahNumber!, ayaIdx: a.ayahNumber),
+          if (a.surahNumber != null)
+            (suraIdx: a.surahNumber!, ayaIdx: a.ayahNumber),
       ]);
       state.totalWords.value = _range?.wordCount ?? 0;
       if (_range == null) {
@@ -337,7 +337,8 @@ class TasmeeCtrl extends GetxController {
       }
       final healthy = await Recitation.isEngineHealthy();
       if (!healthy) {
-        state.lastError.value = 'لا يمكن الوصول إلى خادم التسميع — تحقّق من العنوان والاتصال';
+        state.lastError.value =
+            'لا يمكن الوصول إلى خادم التسميع — تحقّق من العنوان والاتصال';
         return false;
       }
       return true;
@@ -399,10 +400,9 @@ class TasmeeCtrl extends GetxController {
     if (state.currentWordKey.value == key) {
       state.currentWordKey.value = null;
     }
-    state.completedWords.value =
-        state.wordStatuses.values
-            .where((s) => s != TasmeeWordStatus.hidden)
-            .length;
+    state.completedWords.value = state.wordStatuses.values
+        .where((s) => s != TasmeeWordStatus.hidden)
+        .length;
     _refreshQuranPages();
   }
 

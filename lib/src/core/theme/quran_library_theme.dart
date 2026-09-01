@@ -89,8 +89,7 @@ class QuranLibraryTheme extends StatelessWidget {
                                         AutoScrollTheme(style: s, child: c),
                                     _wrapIfNotNull(
                                       tasmeeStyle,
-                                      (s, c) =>
-                                          TasmeeTheme(style: s, child: c),
+                                      (s, c) => TasmeeTheme(style: s, child: c),
                                       child,
                                     ),
                                   ),
@@ -331,7 +330,6 @@ class QuranTafsirSideTheme extends InheritedWidget {
   bool updateShouldNotify(covariant QuranTafsirSideTheme oldWidget) =>
       style != oldWidget.style;
 }
-
 
 /// مزود نمط التسميع
 class TasmeeTheme extends InheritedWidget {

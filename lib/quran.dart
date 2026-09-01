@@ -38,11 +38,7 @@ import 'src/tafsir/tafsir.dart';
 // تحتاج TasmeeCtrl، ووحدة التسميع تحتاج QuranCtrl. الاستيراد محدود
 // بـ show كي لا تتسرب أسماء المحرك إلى فضاء مكتبة القرآن.
 import 'src/tasmee/tasmee.dart'
-    show
-        TasmeeCtrl,
-        TasmeeWordStatus,
-        TasmeeUpdateIds,
-        TasmeeControlWidget;
+    show TasmeeCtrl, TasmeeWordStatus, TasmeeUpdateIds, TasmeeControlWidget;
 
 part 'src/core/theme/quran_library_theme.dart';
 part 'src/core/utils/assets_path.dart';

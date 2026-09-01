@@ -350,7 +350,7 @@ class QuranPagesScreen extends StatelessWidget {
                           showAyahBookmarkedIcon: showAyahBookmarkedIcon,
                           onAyahLongPress: onAyahLongPress,
                           bookmarksColor: bookmarksColor,
-                                  customBookmarksColor: customBookmarksColor,
+                          customBookmarksColor: customBookmarksColor,
                           surahNameStyle: surahNameStyle,
                           bannerStyle: bannerStyle,
                           basmalaStyle: basmalaStyle,
@@ -436,8 +436,8 @@ class QuranPagesScreen extends StatelessWidget {
                               builder: (quranCtrl) {
                                 final visible = quranCtrl.isShowControl.value;
                                 // وضع التسميع: يُستبدل شريط الصوت بشريط التسميع.
-                                final isTasmee =
-                                    TasmeeCtrl.instance.state.isTasmeeMode.value;
+                                final isTasmee = TasmeeCtrl
+                                    .instance.state.isTasmeeMode.value;
                                 return RepaintBoundary(
                                   child: IgnorePointer(
                                     ignoring: !visible,
@@ -459,10 +459,12 @@ class QuranPagesScreen extends StatelessWidget {
                                               : isShowAudioSlider!
                                                   ? AyahsAudioWidget(
                                                       style: ayahStyle ??
-                                                          AyahAudioStyle.defaults(
-                                                              isDark: isDark,
-                                                              context:
-                                                                  context),
+                                                          AyahAudioStyle
+                                                              .defaults(
+                                                                  isDark:
+                                                                      isDark,
+                                                                  context:
+                                                                      context),
                                                       isDark: isDark,
                                                       languageCode:
                                                           languageCode,

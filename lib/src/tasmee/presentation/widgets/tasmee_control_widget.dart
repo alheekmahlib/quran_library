@@ -79,8 +79,7 @@ class _TasmeeControlWidgetState extends State<TasmeeControlWidget> {
           borderRadius: BorderRadius.circular(defaults.borderRadius ?? 12),
           boxShadow: [
             BoxShadow(
-              color: defaults.shadowColor ??
-                  Colors.black.withValues(alpha: .2),
+              color: defaults.shadowColor ?? Colors.black.withValues(alpha: .2),
               spreadRadius: 1,
               blurRadius: 5,
               offset: const Offset(0, 5),
@@ -97,8 +96,8 @@ class _TasmeeControlWidgetState extends State<TasmeeControlWidget> {
               children: [
                 // زر الإعدادات (محرك/خادم).
                 IconButton(
-                  icon: Icon(Icons.settings_outlined,
-                      color: defaults.iconColor),
+                  icon:
+                      Icon(Icons.settings_outlined, color: defaults.iconColor),
                   onPressed: (sessionState == RecitationState.recording ||
                           sessionState == RecitationState.processing)
                       ? null

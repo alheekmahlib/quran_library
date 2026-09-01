@@ -93,7 +93,8 @@ class _TasmeeResultSheet extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           if (result == null || !result.hasMatch)
-            _NoMatchView(defaults: defaults, message: ctrl.state.lastError.value)
+            _NoMatchView(
+                defaults: defaults, message: ctrl.state.lastError.value)
           else ...[
             _ErrorSummaryBar(result: result, defaults: defaults),
             const SizedBox(height: 12),
@@ -250,8 +251,7 @@ class _ErrorSummaryBar extends StatelessWidget {
 }
 
 class _SummaryChip extends StatelessWidget {
-  const _SummaryChip(
-      {required this.label, required this.value, this.color});
+  const _SummaryChip({required this.label, required this.value, this.color});
 
   final String label;
   final String value;
@@ -363,8 +363,7 @@ class _ErrorCard extends StatelessWidget {
                     package: 'quran_library',
                   ),
                 ),
-                if (error.wordText != null &&
-                    error.wordText!.isNotEmpty) ...[
+                if (error.wordText != null && error.wordText!.isNotEmpty) ...[
                   const SizedBox(height: 6),
                   Container(
                     padding:

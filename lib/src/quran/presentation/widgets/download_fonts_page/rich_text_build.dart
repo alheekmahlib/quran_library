@@ -127,45 +127,45 @@ class _QpcV4RichTextLineState extends State<QpcV4RichTextLine> {
         builder: (_) => GetBuilder<TasmeeCtrl>(
           id: TasmeeUpdateIds.page(widget.pageIndex),
           builder: (_) {
-          // قراءة القيم داخل الـ builder حتى تعكس آخر حالة عند كل rebuild
-          final withTajweed = QuranCtrl.instance.state.isTajweedEnabled.value;
-          final isTenRecitations = wordInfoCtrl.isTenRecitations;
+            // قراءة القيم داخل الـ builder حتى تعكس آخر حالة عند كل rebuild
+            final withTajweed = QuranCtrl.instance.state.isTajweedEnabled.value;
+            final isTenRecitations = wordInfoCtrl.isTenRecitations;
 
-          // prewarm القراءات في خلفية
-          if (isTenRecitations &&
-              !withTajweed &&
-              wordInfoCtrl.isKindAvailable(WordInfoKind.recitations)) {
-            final surahs = widget.segments.map((s) => s.surahNumber).toSet();
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              wordInfoCtrl.prewarmRecitationsSurahs(surahs);
-            });
-          }
+            // prewarm القراءات في خلفية
+            if (isTenRecitations &&
+                !withTajweed &&
+                wordInfoCtrl.isKindAvailable(WordInfoKind.recitations)) {
+              final surahs = widget.segments.map((s) => s.surahNumber).toSet();
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                wordInfoCtrl.prewarmRecitationsSurahs(surahs);
+              });
+            }
 
-          // فحص البصمة: إذا لم تتغيّر البيانات الفعلية → أعد الكاش
-          final fp = _computeFingerprint();
-          if (_cachedWidget != null && fp == _lastFingerprint) {
-            return _cachedWidget!;
-          }
-          _lastFingerprint = fp;
+            // فحص البصمة: إذا لم تتغيّر البيانات الفعلية → أعد الكاش
+            final fp = _computeFingerprint();
+            if (_cachedWidget != null && fp == _lastFingerprint) {
+              return _cachedWidget!;
+            }
+            _lastFingerprint = fp;
 
-          _cachedWidget = LayoutBuilder(
-            builder: (ctx, constraints) {
-              final fs = isLandscape
-                  ? 100.0
-                  : PageFontSizeHelper.getFontSize(
-                      widget.pageIndex,
-                      ctx,
-                    ).h;
+            _cachedWidget = LayoutBuilder(
+              builder: (ctx, constraints) {
+                final fs = isLandscape
+                    ? 100.0
+                    : PageFontSizeHelper.getFontSize(
+                        widget.pageIndex,
+                        ctx,
+                      ).h;
 
-              return _buildRichText(
-                wordInfoCtrl,
-                context,
-                fs,
-                withTajweed: withTajweed,
-                isTenRecitations: isTenRecitations,
-              );
-            },
-          );
+                return _buildRichText(
+                  wordInfoCtrl,
+                  context,
+                  fs,
+                  withTajweed: withTajweed,
+                  isTenRecitations: isTenRecitations,
+                );
+              },
+            );
             return _cachedWidget!;
           },
         ),
@@ -285,8 +285,8 @@ class _QpcV4RichTextLineState extends State<QpcV4RichTextLine> {
         isDark: widget.isDark,
         onPagePress: widget.onPagePress,
         hideGlyphs: tasmeeStatus == TasmeeWordStatus.hidden,
-        glyphColorOverride: tasmeeColorOfStatus(tasmeeStatus,
-            isDark: widget.isDark),
+        glyphColorOverride:
+            tasmeeColorOfStatus(tasmeeStatus, isDark: widget.isDark),
       );
 
       final spanStart = charOffset;

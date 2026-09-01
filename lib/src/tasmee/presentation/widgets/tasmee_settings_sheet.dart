@@ -53,8 +53,8 @@ class _TasmeeSettingsSheetState extends State<_TasmeeSettingsSheet> {
   @override
   void initState() {
     super.initState();
-    _urlCtrl = TextEditingController(
-        text: TasmeeCtrl.instance.state.serverUrl.value);
+    _urlCtrl =
+        TextEditingController(text: TasmeeCtrl.instance.state.serverUrl.value);
   }
 
   @override
@@ -140,14 +140,13 @@ class _TasmeeSettingsSheetState extends State<_TasmeeSettingsSheet> {
   }) {
     final selected = ctrl.state.engineMode.value == mode;
     final accent = widget.defaults.accentColor;
-    final textColor = widget.defaults.textColor ??
-        AppColors.getTextColor(widget.isDark);
+    final textColor =
+        widget.defaults.textColor ?? AppColors.getTextColor(widget.isDark);
     return InkWell(
       borderRadius: BorderRadius.circular(12),
       onTap: () => ctrl.setEngineMode(mode),
       child: Container(
-        padding:
-            const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
         decoration: BoxDecoration(
           color: selected
               ? (accent ?? textColor).withValues(alpha: .08)
@@ -223,7 +222,8 @@ class _TasmeeSettingsSheetState extends State<_TasmeeSettingsSheet> {
             const SizedBox(height: 8),
             OutlinedButton.icon(
               icon: const Icon(Icons.download_rounded, size: 20),
-              label: Text(widget.defaults.modelDownloadTitle ?? 'تنزيل النموذج'),
+              label:
+                  Text(widget.defaults.modelDownloadTitle ?? 'تنزيل النموذج'),
               onPressed: () => ctrl.downloadModelIfNeeded(),
             ),
           ],

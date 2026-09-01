@@ -7,6 +7,7 @@ part of '/quran.dart';
 class TasmeeStyle {
   const TasmeeStyle({
     this.backgroundColor,
+    this.hiddenWordColor,
     this.textColor,
     this.accentColor,
     this.correctColor,
@@ -48,6 +49,10 @@ class TasmeeStyle {
   final Color? backgroundColor;
   final Color? textColor;
   final Color? accentColor;
+
+  /// لون إخفاء كلمات التسميع غير المتلوّة (يجب أن يطابق خلفية الصفحة —
+  /// يُستخدم backgroundColor ثم الافتراضي إن لم يُحدَّد).
+  final Color? hiddenWordColor;
 
   /// لون الكلمة الصحيحة (أخضر).
   final Color? correctColor;
@@ -101,6 +106,7 @@ class TasmeeStyle {
     final scheme = Theme.of(context).colorScheme;
     return TasmeeStyle(
       backgroundColor: AppColors.getBackgroundColor(isDark),
+      hiddenWordColor: AppColors.getBackgroundColor(isDark),
       textColor: AppColors.getTextColor(isDark),
       accentColor: scheme.primary,
       correctColor: isDark ? const Color(0xFF81C784) : const Color(0xFF2E7D32),

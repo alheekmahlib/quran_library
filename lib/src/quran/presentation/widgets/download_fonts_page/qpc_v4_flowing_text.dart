@@ -158,6 +158,12 @@ class _QpcV4FlowingTextState extends State<QpcV4FlowingText> {
         widget.bookmarks.values.expand((list) => list).toList();
     final bookmarksAyahsList = bookmarksSet.toList();
 
+    // لون إخفاء كلمات التسميع — يطابق خلفية الصفحة (المخصصة أو الافتراضية).
+    final tasmeeStyle = TasmeeTheme.of(context)?.style;
+    final hiddenColor = tasmeeStyle?.hiddenWordColor ??
+        tasmeeStyle?.backgroundColor ??
+        AppColors.getBackgroundColor(widget.isDark);
+
     final spans =
         List<InlineSpan>.generate(widget.segments.length, (segmentIndex) {
       final seg = widget.segments[segmentIndex];
@@ -250,7 +256,7 @@ class _QpcV4FlowingTextState extends State<QpcV4FlowingText> {
         isDark: widget.isDark,
         onPagePress: widget.onPagePress,
         hideGlyphs: tasmeeStatus == TasmeeWordStatus.hidden,
-        hiddenGlyphColor: AppColors.getBackgroundColor(widget.isDark),
+        hiddenGlyphColor: hiddenColor,
       );
     });
 

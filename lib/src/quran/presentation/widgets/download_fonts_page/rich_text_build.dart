@@ -193,6 +193,12 @@ class _QpcV4RichTextLineState extends State<QpcV4RichTextLine> {
         widget.bookmarks.values.expand((list) => list).toList();
     final ayahBookmarkedSet = widget.ayahBookmarked.toSet();
 
+    // لون إخفاء كلمات التسميع — يطابق خلفية الصفحة (المخصصة أو الافتراضية).
+    final tasmeeStyle = TasmeeTheme.of(context)?.style;
+    final hiddenColor = tasmeeStyle?.hiddenWordColor ??
+        tasmeeStyle?.backgroundColor ??
+        AppColors.getBackgroundColor(widget.isDark);
+
     final spans =
         List<InlineSpan>.generate(widget.segments.length, (segmentIndex) {
       final seg = widget.segments[segmentIndex];
@@ -285,7 +291,7 @@ class _QpcV4RichTextLineState extends State<QpcV4RichTextLine> {
         isDark: widget.isDark,
         onPagePress: widget.onPagePress,
         hideGlyphs: tasmeeStatus == TasmeeWordStatus.hidden,
-        hiddenGlyphColor: AppColors.getBackgroundColor(widget.isDark),
+        hiddenGlyphColor: hiddenColor,
       );
 
       final spanStart = charOffset;

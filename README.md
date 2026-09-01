@@ -904,6 +904,197 @@ nature: words appear with the results after stopping.
 > teacher — accuracy is lower for children under 12. (Required by the
 > [Quran-Lab NPL-1.2](https://github.com/alheekmahlib/quran_audio) model license.)
 
+### Programmatic Control (TasmeeCtrl)
+
+Everything the tasmee UI does is available programmatically through
+`TasmeeCtrl.instance`:
+
+* ### Toggle Tasmee Mode
+
+```dart
+final tasmee = TasmeeCtrl.instance;
+
+// Enter tasmee mode (hides the current page's words, stops audio/auto-scroll)
+await tasmee.enterTasmeeMode();
+
+// Or toggle (enter if idle, exit if active)
+tasmee.toggleTasmeeMode();
+
+// Exit and restore the normal view
+tasmee.exitTasmeeMode();
+```
+
+* ### Record & Evaluate
+
+```dart
+// Start recording (prepares the engine — downloads the model on first
+// offline use — then streams live word tracking)
+await tasmee.startRecording();
+
+// Stop, evaluate, and open the results bottom sheet
+await tasmee.stopRecording();
+
+// Re-hide everything and start over on the same page
+await tasmee.retryTasmee();
+```
+
+* ### Peek at the Page & State
+
+```dart
+// Temporarily show all words while staying in tasmee mode (the eye button)
+tasmee.toggleShowAllWords();
+
+// Read the reactive state (usable inside Obx)
+final s = tasmee.state;
+bool active = s.isTasmeeMode.value;          // tasmee mode on?
+bool recording = tasmee.isRecording;         // recording now?
+bool processing = tasmee.isProcessing;       // evaluating after stop?
+int done = s.completedWords.value;           // completed words so far
+int total = s.totalWords.value;              // words on the page
+RecitationResult? result = s.lastResult.value; // last evaluation
+String error = s.lastError.value;            // last error message
+bool modelReady = s.isModelReady.value;      // offline model on disk?
+double progress = s.modelDownloadProgress.value; // 0.0 – 1.0
+```
+
+* ### Word Status Lookup
+
+Each word's tasmee status is keyed by `'$ayahUq:$wordNumber'` (wordNumber is
+1-based, matching `WordRef`/`QpcV4WordSegment`):
+
+```dart
+final status = tasmee.wordStatusOf('$12:3');
+// TasmeeWordStatus.hidden | current | correct | incorrect
+```
+
+* ### Engine Settings
+
+```dart
+// Choose the engine (persisted via GetStorage)
+tasmee.setEngineMode(TasmeeEngineMode.offline); // zipformer (default)
+tasmee.setEngineMode(TasmeeEngineMode.online);  // quran-muaalem server
+
+// Server mode: set and verify the server URL
+tasmee.setServerUrl('http://localhost:8001');
+final ok = await tasmee.testServerConnection();
+
+// Pre-download the offline model ahead of first use
+final ready = await TasmeeModelService().isModelReady();
+if (!ready) {
+  await tasmee.downloadModelIfNeeded(); // progress in state.modelDownloadProgress
+  // or directly:
+  // await TasmeeModelService().downloadModel(onProgress: (p) => print(p));
+}
+```
+
+### Low-Level Engine API
+
+For custom integrations (no UI), the ported engine can be used directly:
+
+```dart
+// ── Offline (default) ─────────────────────────────────────────
+await Recitation.initZipformer(); // model auto-resolved/downloaded separately
+
+// ── Or online (quran-muaalem server) ──────────────────────────
+Recitation.init(serverUrl: 'http://localhost:8001');
+
+// Health & readiness
+final healthy = await Recitation.isEngineHealthy();
+final offline = Recitation.isOffline; // true for zipformer
+final url = Recitation.serverUrl;
+
+// ── Session: whole current page (what the UI uses) ────────────
+final range = TasmeeReferenceStore.instance.buildRange([
+  (suraIdx: 1, ayaIdx: 1),
+  (suraIdx: 1, ayaIdx: 2),
+]);
+final session = Recitation.createSession(range: range);
+
+// Live streaming (offline engine only): word-by-word callbacks
+session.onWordDone = (verseIdx, wordIdx, correct) {
+  // fired when a word is fully pronounced, with its verdict
+};
+session.onRangeComplete = () => print('page completed');
+await session.startLive();
+// ... user recites; session.currentVerseIdx / currentWordIdx update live
+final result = await session.stopLive();
+
+// ── Session: single ayah (batch — works on both engines) ──────
+final s2 = Recitation.createSession(suraIdx: 1, ayaIdx: 1);
+await s2.start();            // records WAV then evaluates on stop
+final r2 = await s2.stop();
+print(r2?.errors);           // List<RecitationError>
+```
+
+* ### Reading the Result
+
+```dart
+final result = session.result.value; // RecitationResult?
+
+result?.hasMatch;        // was a match found in the Quran?
+result?.isFullyCorrect;  // no errors at all?
+result?.start;           // SurahAyahPosition (suraIdx/ayaIdx)
+result?.errors;          // all RecitationError items
+result?.tajweedErrors;   // tajweed-only
+result?.normalErrors;    // wrong-letter pronunciation
+result?.tashkeelErrors;  // haraka mistakes
+result?.predictedPhonemes; // what the user actually recited
+
+// Each error:
+for (final e in result?.errors ?? <RecitationError>[]) {
+  e.description;   // ready-to-show Arabic description
+  e.wordText;      // the affected Quranic word (or null)
+  e.expectedPh;    // expected phoneme
+  e.predictedPh;   // recited phoneme
+  e.suraIdx;       // position (offline range mode)
+  e.ayaIdx;
+  e.wordIdx;       // 0-based word index within the ayah
+}
+```
+
+* ### Model & Reference Internals
+
+```dart
+// Model file management (73MB ONNX — runtime download, never bundled)
+final model = TasmeeModelService();
+await model.isModelReady();     // exists & valid (> 60MB)
+await model.downloadModel(onProgress: (p) {});
+await model.deleteModel();
+print(kZipformerModelUrl);      // the GitHub release URL
+
+// Shared phoneme reference (used to build page ranges)
+final store = TasmeeReferenceStore.instance;
+await store.load();             // loads tokens + full-Quran reference once
+final verseText = store.reference?.getReference(suraIdx: 1, ayaIdx: 1)?.uthmani;
+final pageRange = store.buildRange([(suraIdx: 1, ayaIdx: 1)]);
+
+// Pure tracker (what powers the live word reveal) — testable standalone
+final tracker = RangeLiveTracker(
+  range: pageRange!,
+  onWordDone: (v, w, correct) {},
+  onRangeComplete: () {},
+);
+```
+
+### UI Surfaces & Theming
+
+```dart
+// Control bar (replaces the ayah audio bar inside tasmee mode)
+TasmeeControlWidget(isDark: false);
+
+// Bottom sheets (also open automatically after each evaluation)
+await showTasmeeResultSheet(context: context, isDark: false);
+await showTasmeeSettingsSheet(context: context, isDark: false);
+
+// Top bar entry point
+QuranTopBarStyle(showTasmeeButton: true, tasmeeIconPath: myMicSvg);
+```
+
+Everything is themable via `TasmeeStyle` (control bar, results/settings
+sheets, every label for i18n, hide colour, verdict colours) injected through
+`QuranLibraryTheme(tasmeeStyle: ...)` or read from `TasmeeTheme.of(context)`.
+
+
 ### Permissions required from the host app
 
 The package already merges `RECORD_AUDIO` into the Android manifest. iOS/macOS
@@ -923,16 +1114,7 @@ hosts must declare microphone usage themselves:
 <true/>
 ```
 
-### Customization
-
-- Toggle/hide the top-bar button via `QuranTopBarStyle.showTasmeeButton` /
-  `tasmeeIconPath` (hidden automatically on web — the mic and the offline model
-  are not supported there).
-- Theme every tasmee surface (control bar, results sheet, settings sheet,
-  disclaimers, and all labels for i18n) via `TasmeeStyle` +
-  `QuranLibraryTheme(tasmeeStyle: ...)`.
-
-### Example
+### Quick Start
 
 ```dart
 // The button lives in the default Quran top bar — nothing else to wire.
@@ -944,6 +1126,9 @@ if (!ready) {
   await TasmeeModelService().downloadModel();
 }
 ```
+
+> The tasmee button is hidden automatically on web — the microphone and the
+> offline model are not supported there.
 
 ## Sources
 

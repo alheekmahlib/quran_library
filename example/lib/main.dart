@@ -75,7 +75,7 @@ class FullQuran extends StatelessWidget {
   Widget build(BuildContext context) {
     return QuranLibraryScreen(
       parentContext: context,
-      isDark: true,
+      isDark: false,
       isShowTabBar: true,
       isFontsLocal: false,
       useDefaultAppBar: true,

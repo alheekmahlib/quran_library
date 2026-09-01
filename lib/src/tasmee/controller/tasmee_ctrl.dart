@@ -129,6 +129,9 @@ class TasmeeCtrl extends GetxController {
   }
 
   void exitTasmeeMode() {
+    // التقط رقم الصفحة قبل تصفيره — دونه لا يُحدَّث معرّف الصفحة فتبقى
+    // الكلمات مخفية على كاش السطر حتى يلمس المستخدم الشاشة.
+    final page = state.currentRangePage;
     _cancelSession();
     _pageWorker?.dispose();
     _pageWorker = null;
@@ -142,7 +145,7 @@ class TasmeeCtrl extends GetxController {
     _range = null;
     _rangeAyahs = const [];
     state.currentRangePage = -1;
-    _refreshQuranPages();
+    if (page > 0) update([TasmeeUpdateIds.page(page - 1)]);
     q.QuranCtrl.instance.update(['isShowControl']);
     update([TasmeeUpdateIds.control]);
   }
@@ -162,6 +165,7 @@ class TasmeeCtrl extends GetxController {
 
   /// يبني النطاق المرجعي لآيات الصفحة الحالية ويصفّر حالات الكلمات.
   Future<void> _buildRangeForCurrentPage() async {
+    final prevPage = state.currentRangePage;
     final page = q.QuranCtrl.instance.state.currentPageNumber.value;
     state.currentRangePage = page;
     state.wordStatuses.clear();
@@ -193,6 +197,13 @@ class TasmeeCtrl extends GetxController {
     } catch (e) {
       _range = null;
       state.lastError.value = 'خطأ في تجهيز التسميع: $e';
+    } finally {
+      // حدّث الصفحة الجديدة — والقديمة أيضًا (تبقى حيّة في PageView وقد
+      // تكون كلماتها مخفية على كاش السطر).
+      _refreshQuranPages();
+      if (prevPage > 0 && prevPage != page) {
+        update([TasmeeUpdateIds.page(prevPage - 1)]);
+      }
     }
   }
 

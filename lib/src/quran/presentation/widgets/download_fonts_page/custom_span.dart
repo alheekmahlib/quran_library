@@ -30,6 +30,7 @@ TextSpan _qpcV4SpanSegment({
   required bool isDark,
   VoidCallback? onPagePress,
   bool hideGlyphs = false,
+  Color? hiddenGlyphColor,
 }) {
   final quranCtrl = QuranCtrl.instance;
   final wordInfoCtrl = WordInfoCtrl.instance;
@@ -51,13 +52,19 @@ TextSpan _qpcV4SpanSegment({
     fontFamily = quranCtrl.getFontPath(pageIndex, isDark: isDark);
   }
 
+  // وضع التسميع: الكلمة غير المُتَلَّاة تُلوَّن بلون خلفية الصفحة (لا تُحذف)
+  // فيبقى التخطيط وتظل أرقام الآيات في مواضعها الصحيحة.
+  final effectiveGlyphColor = hideGlyphs
+      ? (hiddenGlyphColor ?? AppColors.getBackgroundColor(isDark))
+      : (textColor ?? AppColors.getTextColor(isDark));
+
   final baseTextStyle = TextStyle(
     fontFamily: fontFamily,
     package: fontPackageOverride,
     fontSize: fontSize,
     height: 2,
     // wordSpacing: 50,
-    color: textColor ?? AppColors.getTextColor(isDark),
+    color: effectiveGlyphColor,
   );
 
   InlineSpan? tail;
@@ -138,7 +145,7 @@ TextSpan _qpcV4SpanSegment({
 
   return TextSpan(
     children: <InlineSpan>[
-      // الكلمة المخفية تبقى في التخطيط (شفافة) وبلا مستمع لمس.
+      // الكلمة المخفية تبقى في التخطيط بلون الخلفية وبلا مستمع لمس.
       TextSpan(
         text: glyphs,
         style: baseTextStyle,

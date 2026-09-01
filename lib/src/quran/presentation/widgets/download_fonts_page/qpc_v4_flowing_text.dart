@@ -250,6 +250,7 @@ class _QpcV4FlowingTextState extends State<QpcV4FlowingText> {
         isDark: widget.isDark,
         onPagePress: widget.onPagePress,
         hideGlyphs: tasmeeStatus == TasmeeWordStatus.hidden,
+        hiddenGlyphColor: AppColors.getBackgroundColor(widget.isDark),
       );
     });
 

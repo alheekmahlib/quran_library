@@ -27,8 +27,13 @@ dependencies:
   # media_kit_libs_windows_audio: ^1.0.9  # Commented out for WASM compatibility
   path: ^1.9.1
   path_provider: ^2.1.5
+  # تسميع بالذكاء الاصطناعي: تسجيل الميكروفون / AI tasmee: mic recording
+  record: ^6.0.0
   rxdart: ^0.28.0
   preload_page_view: ^0.2.0
+  # محرك التسميع المحلي (ONNX) — 1.13.x يكسر البث على macOS arm64
+  # Offline tasmee engine (ONNX) — 1.13.x breaks streaming on macOS arm64
+  sherpa_onnx: ">=1.12.40 <1.13.0"
 
 # This package supports all platforms listed below.
 # But note that it works and fits on mobile size devices
@@ -80,6 +85,7 @@ flutter:
     - assets/images/
     - assets/saadi.json.gz
     - assets/en.json.gz
+    - assets/quran_lab/
     - assets/fonts/quran_fonts_qfc4/
 
   fonts:

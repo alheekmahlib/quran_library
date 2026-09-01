@@ -25,7 +25,18 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
-  
+
   assets:
     - assets/images/quran_library_logo.png
+
+dependency_overrides:
+  # توحيد الأصول الأصلية مع طبقة Dart لـ sherpa_onnx (نفس تثبيت quran_audio) —
+  # منع اختلاط أصول 1.13.x مع الطبقة المقيدة بـ <1.13.0.
+  # Align sherpa_onnx native endorsers with the pinned Dart layer.
+  sherpa_onnx_ios: 1.12.40
+  sherpa_onnx_macos: 1.12.40
+  sherpa_onnx_android_arm64: 1.12.40
+  sherpa_onnx_android_armeabi: 1.12.40
+  sherpa_onnx_android_x86: 1.12.40
+  sherpa_onnx_android_x86_64: 1.12.40
 

@@ -22,6 +22,7 @@ import 'phoneme_aligner.dart';
 import 'quran_reference.dart';
 import 'quran_units.dart';
 import 'range_tracker.dart';
+import '../core/services/tasmee_reference_store.dart';
 import 'wav_decoder.dart';
 import 'zipformer_model.dart';
 
@@ -75,9 +76,13 @@ class SherpaZipformerEngine implements LiveCapableRecitationEngine {
     sherpa.initBindings();
 
     final resolvedModel = await _resolveModelPath();
-    _lexicon = QuranUnitLexicon.fromTokensText(await _loadTokens());
-    _reference = QuranPhonemeReference(lexicon: _lexicon!);
-    await _reference!.load(filePath: referencePath);
+    // المرجع المشترك (يشاركه TasmeeCtrl) — تحميل واحد لِلذاكرة.
+    await TasmeeReferenceStore.instance.load(
+      tokensPath: tokensPath,
+      filePath: referencePath,
+    );
+    _lexicon = TasmeeReferenceStore.instance.lexicon;
+    _reference = TasmeeReferenceStore.instance.reference;
 
     final config = sherpa.OnlineRecognizerConfig(
       model: sherpa.OnlineModelConfig(
@@ -350,7 +355,7 @@ class SherpaZipformerEngine implements LiveCapableRecitationEngine {
     _liveStream = null;
     _recognizer?.free();
     _recognizer = null;
-    _reference?.dispose();
+    // لا يُحرَّر المرجع المشترك — يبقى لِجلسات لاحقة (تحميله مكلف).
     _initialized = false;
   }
 

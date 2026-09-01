@@ -31,3 +31,9 @@ export 'engine/models/recitation_result.dart';
 
 // ── الخدمات / Services ───────────────────────────────────────
 export 'core/services/tasmee_model_service.dart';
+export 'core/services/tasmee_reference_store.dart';
+
+// ── المتحكم والحالة / Controller & State ──────────────────────
+export 'constants/tasmee_storage_constants.dart';
+export 'controller/tasmee_state.dart';
+export 'controller/tasmee_ctrl.dart';

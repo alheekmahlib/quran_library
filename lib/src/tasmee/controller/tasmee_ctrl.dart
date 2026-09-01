@@ -171,6 +171,10 @@ class TasmeeCtrl extends GetxController {
 
     try {
       await TasmeeReferenceStore.instance.load();
+      // جهّز متغير الخط الشفاف للصفحة (إخفاء الكلمات دون المساس
+      // بالمواضع) — تحميل كسول عند الطلب فقط.
+      state.transparentFontsReady.value =
+          await q.QuranFontsService.ensureTransparentFont(page);
       final ayahs = q.QuranCtrl.instance.getAyahsByPage(page)
         ..sort((a, b) => a.ayahUQNumber.compareTo(b.ayahUQNumber));
       _rangeAyahs = ayahs;

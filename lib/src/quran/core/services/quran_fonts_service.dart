@@ -65,6 +65,43 @@ class QuranFontsService {
   /// اسم عائلة الخط الأحمر للخلاف (page1nr .. page604nr).
   static String getRedFontFamily(int pageIndex) => 'page${pageIndex + 1}nr';
 
+  /// اسم عائلة الخط الشفاف للتسميع (page1t .. page604t) — كل ألوان CPAL
+  /// ألفا 0: الكلمات تختفي بصريًا مع بقاء المقاييس والمواضع كما هي.
+  static String getTransparentFontFamily(int pageIndex) =>
+      'page${pageIndex + 1}t';
+
+  /// الصفحات التي سُجّل متغيرها الشفاف (تحميل كسول — عند الطلب فقط).
+  static final Set<int> _transparentLoadedPages = {};
+
+  /// هل المتغير الشفاف للصفحة (1-based) جاهز؟
+  static bool isTransparentPageReady(int page) =>
+      _transparentLoadedPages.contains(page);
+
+  /// يحمّل المتغير الشفاف لصفحة واحدة عند الطلب (وضع التسميع).
+  ///
+  /// يقرأ كاش القرص إن وُجد (مثل [_loadSinglePage])، يرقّع كل ألوان CPAL
+  /// إلى شفاف تمامًا، ويسجّل العائلة `page{N}t`. يُعيد false عند الفشل
+  /// (يتراجع العرض عندها إلى حذف مقاطع الكلمات المخفية).
+  static Future<bool> ensureTransparentFont(int page) {
+    if (_transparentLoadedPages.contains(page)) return Future.value(true);
+    try {
+      final familyName = 'page$page';
+      return _decompressFromAsset(page).then((fontBytes) async {
+        final transparentBytes = _modifyCpalAllColors(
+          Uint8List.fromList(fontBytes),
+          const Color(0x00000000), // شفاف بالكامل — الألفا 0.
+        );
+        await loadFontFromList(transparentBytes, fontFamily: '${familyName}t');
+        _transparentLoadedPages.add(page);
+        return true;
+      });
+    } catch (e, st) {
+      log('QuranFontsService: transparent font failed for page $page: $e',
+          name: 'QuranFontsService', stackTrace: st);
+      return Future.value(false);
+    }
+  }
+
   /// مسار الـ asset المضغوط للصفحة (1-based).
   static String _assetPath(int page) {
     final padded = page.toString().padLeft(3, '0');

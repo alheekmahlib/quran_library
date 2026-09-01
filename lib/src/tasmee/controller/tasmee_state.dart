@@ -37,6 +37,10 @@ class TasmeeState {
   /// إظهار كل كلمات الصفحة مؤقتًا (زر العين) أثناء وضع التسميع.
   final RxBool showAllWords = false.obs;
 
+  /// هل متغير الخط الشفاف جاهز لصفحة النطاق؟ (إخفاء مثالي؛ وإلا حذف
+  /// المقاطع احتياطًا).
+  final RxBool transparentFontsReady = false.obs;
+
   /// حالة الجلسة الحالية (خمول/تسجيل/معالجة/خطأ/منتهية).
   final Rx<RecitationState> sessionState = RecitationState.idle.obs;
 

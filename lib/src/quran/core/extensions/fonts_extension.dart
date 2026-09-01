@@ -24,4 +24,9 @@ extension FontsExtension on QuranCtrl {
   String getRedFontPath(int pageIndex) {
     return QuranFontsService.getRedFontFamily(pageIndex);
   }
+
+  /// يُرجع اسم عائلة الخط الشفاف لكلمات التسميع المخفية (ألفا 0).
+  String getTransparentFontPath(int pageIndex) {
+    return QuranFontsService.getTransparentFontFamily(pageIndex);
+  }
 }

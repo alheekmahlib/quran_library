@@ -41,8 +41,16 @@ TextSpan _qpcV4SpanSegment({
   final bool forceRed = isWordKhilaf && !withTajweed && isTenRecitations;
 
   // اختيار الخط: كلمات الخلاف تستخدم خط CPAL أحمر بدلاً من foreground Paint
+  final bool transparentHidden =
+      hideGlyphs && !isFontsLocal && GetInstance().isRegistered<TasmeeCtrl>()
+          ? TasmeeCtrl.instance.state.transparentFontsReady.value
+          : false;
   final String fontFamily;
-  if (fontFamilyOverride != null) {
+  if (transparentHidden) {
+    // كلمات التسميع المخفية: متغير CPAL شفاف بالكامل — تختفي بصريًا
+    // مع بقاء المقاييس فتظل أرقام الآيات في مواضعها.
+    fontFamily = quranCtrl.getTransparentFontPath(pageIndex);
+  } else if (fontFamilyOverride != null) {
     fontFamily = fontFamilyOverride;
   } else if (isFontsLocal) {
     fontFamily = fontsName;
@@ -145,12 +153,15 @@ TextSpan _qpcV4SpanSegment({
 
   return TextSpan(
     children: <InlineSpan>[
-      // الكلمة المخفية تبقى في التخطيط بلون الخلفية وبلا مستمع لمس.
-      TextSpan(
-        text: glyphs,
-        style: baseTextStyle,
-        recognizer: hideGlyphs ? null : recognizer,
-      ),
+      // كلمة التسميع المخفية: بالخط الشفاف تبقى في التخطيط (فتظل أرقام
+      // الآيات في مواضعها)، وإن لم يكن جاهزًا تُحذف حروفها احتياطًا —
+      // وبلا مستمع لمس في الحالتين.
+      if (!hideGlyphs || transparentHidden)
+        TextSpan(
+          text: glyphs,
+          style: baseTextStyle,
+          recognizer: hideGlyphs ? null : recognizer,
+        ),
       if (tail != null) tail,
     ],
   );
@@ -182,6 +193,7 @@ int tasmeeFingerprint() {
     t.state.isTasmeeMode.value.hashCode,
     t.state.currentRangePage.hashCode,
     t.state.showAllWords.value.hashCode,
+    t.state.transparentFontsReady.value.hashCode,
     t.state.currentWordKey.value.hashCode,
     Object.hashAll(t.state.wordStatuses.entries
         .map((e) => Object.hash(e.key, e.value.index))),

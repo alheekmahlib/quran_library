@@ -30,6 +30,16 @@ class PlatformIo {
     throw UnsupportedError('File writing is not supported on web');
   }
 
+  /// على المنصات الأصلية: حجم الملف أو -1. / Native: file size, or -1.
+  /// على الويب: -1 دائماً. / Web: always -1.
+  static Future<int> fileLength(String path) async => -1;
+
+  /// على المنصات الأصلية: أعد التسمية. / Native: rename a file.
+  /// على الويب: غير مدعوم. / Web: unsupported.
+  static Future<void> renameFile(String from, String to) async {
+    throw UnsupportedError('File renaming is not supported on web');
+  }
+
   /// على المنصات الأصلية: احذف الملف. / Native: delete a file.
   /// على الويب: لا شيء. / Web: no-op.
   static Future<void> deleteFile(String path) async {}

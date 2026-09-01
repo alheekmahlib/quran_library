@@ -5,6 +5,7 @@ import 'package:dio/dio.dart';
 
 import 'models/muaalem_config.dart';
 import 'models/recitation_result.dart';
+import 'quran_reference.dart';
 import 'recitation_engine.dart';
 
 /// خطأ من خادم quran-muaalem (مثل HTTP 500).
@@ -68,6 +69,7 @@ class MuaalemClient implements RecitationEngine {
     double errorRatio = 0.1,
     int? suraIdx, // @unused — الخادم يبحث في القرآن كاملاً
     int? ayaIdx, // @unused
+    QuranReferenceRange? range, // @unused
     String? referenceText, // @unused
   }) async {
     final form = FormData();

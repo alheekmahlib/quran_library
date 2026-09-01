@@ -117,6 +117,9 @@ class RecitationError {
     this.insertedTajweedRules = const [],
     this.replacedTajweedRules = const [],
     this.missingTajweedRules = const [],
+    this.suraIdx,
+    this.ayaIdx,
+    this.wordIdx,
   });
 
   /// نوع الخطأ: 'tajweed' أو 'normal' أو 'tashkeel'.
@@ -183,6 +186,46 @@ class RecitationError {
   /// قواعد التجويد المفقودة (لم يُطبّقها).
   /// Missing tajweed rules (not applied).
   final List<TajweedRule> missingTajweedRules;
+
+  /// موضع الخطأ في المصحف (يُملأ في وضع النطاق offline فقط).
+  /// Error position in the moshaf (offline range mode only).
+  final int? suraIdx;
+
+  /// رقم الآية (1-based) للموضع أعلاه.
+  /// Ayah number (1-based) for the position above.
+  final int? ayaIdx;
+
+  /// رقم الكلمة داخل الآية (0-based) للموضع أعلاه.
+  /// Word index within the ayah (0-based) for the position above.
+  final int? wordIdx;
+
+  /// نسخة من الخطأ موسومة بموضعها في المصحف (وضع النطاق).
+  ///
+  /// Returns a copy tagged with its moshaf position (range mode).
+  RecitationError withPosition({
+    required int suraIdx,
+    required int ayaIdx,
+    required int wordIdx,
+  }) {
+    return RecitationError(
+      errorType: errorType,
+      speechErrorType: speechErrorType,
+      uthmaniPos: uthmaniPos,
+      phPos: phPos,
+      expectedPh: expectedPh,
+      predictedPh: predictedPh,
+      expectedLen: expectedLen,
+      predictedLen: predictedLen,
+      wordText: wordText,
+      refTajweedRules: refTajweedRules,
+      insertedTajweedRules: insertedTajweedRules,
+      replacedTajweedRules: replacedTajweedRules,
+      missingTajweedRules: missingTajweedRules,
+      suraIdx: suraIdx,
+      ayaIdx: ayaIdx,
+      wordIdx: wordIdx,
+    );
+  }
 
   /// وصف مختصر لِلخطأ بِالعربية واضح وَمفهوم (مثل الخادم).
   ///

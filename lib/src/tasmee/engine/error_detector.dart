@@ -11,7 +11,6 @@ library;
 
 import 'models/recitation_result.dart';
 import 'phoneme_aligner.dart';
-import 'quran_reference.dart';
 import 'quran_units.dart';
 
 /// قاعدة مدّ جاهزة (تُستخدم أيضًا في madd_timing).
@@ -29,7 +28,7 @@ List<RecitationError> buildErrorsFromUnitAlignment({
   required List<UnitAlignOp> ops,
   required List<QuranUnit> refUnits,
   required List<QuranUnit> predUnits,
-  required QuranReferenceVerse reference,
+  required String? Function(int unitIdx) wordAt,
 }) {
   final errors = <RecitationError>[];
   for (final op in ops) {
@@ -37,13 +36,13 @@ List<RecitationError> buildErrorsFromUnitAlignment({
       case 'match':
       case 'replace':
         if (op.refIdx < 0 || op.predIdx < 0) continue;
-        _handleSameLetterOrReplace(op, refUnits, predUnits, reference, errors);
+        _handleSameLetterOrReplace(op, refUnits, predUnits, wordAt, errors);
       case 'insert':
         if (op.predIdx < 0) continue;
         _handleInsert(op, predUnits, errors);
       case 'delete':
         if (op.refIdx < 0) continue;
-        _handleDelete(op, refUnits, reference, errors);
+        _handleDelete(op, refUnits, wordAt, errors);
     }
   }
   return errors;
@@ -54,12 +53,12 @@ void _handleSameLetterOrReplace(
   UnitAlignOp op,
   List<QuranUnit> refUnits,
   List<QuranUnit> predUnits,
-  QuranReferenceVerse reference,
+  String? Function(int unitIdx) wordAt,
   List<RecitationError> errors,
 ) {
   final ref = refUnits[op.refIdx];
   final pred = predUnits[op.predIdx];
-  final word = reference.wordAt(op.refIdx);
+  final word = wordAt(op.refIdx);
   final pos = [op.refIdx, op.refIdx + 1];
 
   // حرفان أساسيان مختلفان → normal/replace.
@@ -165,7 +164,7 @@ void _handleInsert(
 void _handleDelete(
   UnitAlignOp op,
   List<QuranUnit> refUnits,
-  QuranReferenceVerse reference,
+  String? Function(int unitIdx) wordAt,
   List<RecitationError> errors,
 ) {
   final ref = refUnits[op.refIdx];
@@ -173,7 +172,7 @@ void _handleDelete(
   // تسامح الوحدة الأولى القصيرة (نمط معروف في النماذج الصغيرة).
   if (op.refIdx == 0 && ref.symbol.length <= 2) return;
 
-  final word = reference.wordAt(op.refIdx);
+  final word = wordAt(op.refIdx);
   final rules = <TajweedRule>[
     if (ref.isMadd) _maddRule(ref.maddLength ?? 2),
     if (ref.isShadda) _rule('الشدة', 'Shaddah'),

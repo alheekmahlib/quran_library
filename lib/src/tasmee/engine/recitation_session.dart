@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:developer' show log;
-import 'dart:io' show File;
 
 import 'package:get/get.dart';
 import 'package:record/record.dart';
@@ -9,6 +8,7 @@ import 'platform_io.dart';
 import 'live_recitation_engine.dart';
 import 'models/muaalem_config.dart';
 import 'models/recitation_result.dart';
+import 'quran_reference.dart';
 import 'recitation_engine.dart';
 import 'wav_decoder.dart';
 import 'recitation_state.dart';
@@ -33,6 +33,7 @@ class RecitationSession {
     AudioRecorder? recorder,
     this.suraIdx,
     this.ayaIdx,
+    this.range,
     this.referenceText,
   })  : _engine = engine,
         _recorder = recorder;
@@ -46,6 +47,9 @@ class RecitationSession {
 
   /// رقم الآية (offline) — لِـ جلب المرجع من DB.
   final int? ayaIdx;
+
+  /// النطاق المرجعي متعدد الآيات (offline، وضع الصفحة) — يشمل ما سبق.
+  final QuranReferenceRange? range;
 
   /// النصّ المرجعي (offline، بديل) — يُستخدم إن لم يُعطَ suraIdx/ayaIdx.
   final String? referenceText;
@@ -149,7 +153,7 @@ class RecitationSession {
       try {
         final docDir = await PlatformIo.documentsDir;
         final diagPath = '$docDir/last_recitation.wav';
-        await File(diagPath).writeAsBytes(wavBytes);
+        await PlatformIo.writeFile(diagPath, wavBytes);
         log('RecitationSession: DIAG copy saved → $diagPath',
             name: 'RecitationSession');
       } catch (_) {}
@@ -161,6 +165,7 @@ class RecitationSession {
         config: config,
         suraIdx: suraIdx,
         ayaIdx: ayaIdx,
+        range: range,
         referenceText: referenceText,
       );
 
@@ -212,6 +217,23 @@ class RecitationSession {
   /// Index of the word currently being recited (0-based, or -1).
   final RxInt currentWordIdx = (-1).obs;
 
+  /// فهرس الآية الجارية داخل نطاق الجلسة أثناء البثّ (0-based، أو -1).
+  ///
+  /// يعمل مع وضع النطاق (الصفحة) — يُقرأ مع [currentWordIdx].
+  /// Index of the verse currently being recited within the range (or -1).
+  final RxInt currentVerseIdx = (-1).obs;
+
+  /// يُستدعى عند اكتمال نطق كلمة (وضع النطاق) — بَعد مرور المحاذاة على
+  /// آخر وحدة فيها — ومعها صحة نطقها. اربطه لِتلوين الكلمة أخضر/أحمر.
+  ///
+  /// Called when a word is fully pronounced (range mode) with its verdict.
+  void Function(int verseIdx, int wordIdx, bool correct)? onWordDone;
+
+  /// يُستدعى عند اكتمال كل كلمات النطاق (إتمام الصفحة).
+  ///
+  /// Called when every word in the range has been completed.
+  void Function()? onRangeComplete;
+
   /// هل الجلسة في الوضع الحي؟
   /// Is the session in live mode?
   final RxBool isLive = false.obs;
@@ -241,6 +263,7 @@ class RecitationSession {
       lastError.value = '';
       liveUnits.clear();
       currentWordIdx.value = -1;
+      currentVerseIdx.value = -1;
       _liveRecorder ??= AudioRecorder();
       if (!await _liveRecorder!.hasPermission()) {
         throw StateError('Microphone permission denied');
@@ -249,6 +272,7 @@ class RecitationSession {
       engine.startLive(
         suraIdx: suraIdx,
         ayaIdx: ayaIdx,
+        range: range,
         onPartial: (frame) {
           liveUnits.assignAll(frame.units);
           // سجّل وصول الوحدات كل 5 لِملاحظة الحيّية فورًا في الكونسول.
@@ -262,6 +286,12 @@ class RecitationSession {
           }
         },
         onWord: (wordIdx) => currentWordIdx.value = wordIdx,
+        onRangeWord: (verseIdx, wordIdx) {
+          currentVerseIdx.value = verseIdx;
+          currentWordIdx.value = wordIdx;
+        },
+        onWordDone: onWordDone,
+        onRangeComplete: onRangeComplete,
       );
       const settings = RecordConfig(
         encoder: AudioEncoder.pcm16bits,
@@ -323,6 +353,7 @@ class RecitationSession {
         config: config,
         suraIdx: suraIdx,
         ayaIdx: ayaIdx,
+        range: range,
         referenceText: referenceText,
         frame: frame,
       );
@@ -337,6 +368,7 @@ class RecitationSession {
     } finally {
       isLive.value = false;
       currentWordIdx.value = -1;
+      currentVerseIdx.value = -1;
       try {
         await _liveRecorder?.dispose();
       } catch (_) {}

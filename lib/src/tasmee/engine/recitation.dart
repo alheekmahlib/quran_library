@@ -3,6 +3,7 @@ import 'dart:developer' show log;
 import 'madd_timing.dart';
 import 'models/muaalem_config.dart';
 import 'muaalem_client.dart';
+import 'quran_reference.dart';
 import 'recitation_engine.dart';
 import 'recitation_session.dart';
 // شرطي: يستبعد sherpa_onnx (dart:ffi) من بناء الويب.
@@ -157,11 +158,14 @@ class Recitation {
   ///
   /// [suraIdx]/[ayaIdx] (offline) رقم السورة والآية — يُمكّن المحرّك
   ///   offline من جلب المرجع من DB ومقارنة الفونيمات + كشف أخطاء التجويد.
+  /// [range] (offline، وضع الصفحة) نطاق متعدد الآيات جاهز — يشمل ما سبق
+  ///   ويفعّل التتبّع الحيّ لكل كلمات النطاق (onWordDone/onRangeComplete).
   /// [referenceText] (offline، بديل) نصّ الآية العثماني.
   static RecitationSession createSession({
     MuaalemConfig config = const MuaalemConfig(),
     int? suraIdx,
     int? ayaIdx,
+    QuranReferenceRange? range,
     String? referenceText,
   }) {
     _ensureInitialized();
@@ -170,6 +174,7 @@ class Recitation {
       engine: _engine!,
       suraIdx: suraIdx,
       ayaIdx: ayaIdx,
+      range: range,
       referenceText: referenceText,
     );
   }

@@ -22,9 +22,7 @@ import 'phoneme_aligner.dart';
 import 'quran_reference.dart';
 import 'quran_units.dart';
 import 'wav_decoder.dart';
-
-/// اسم ملف النموذج في مجلد دعم التطبيق (بعد التنزيل من GitHub Release).
-const kZipformerModelFileName = 'zipformer_p_arabic_v3.1.int8.onnx';
+import 'zipformer_model.dart';
 
 /// محرّك offline يشغّل zipformer v3.1 محليًا (دفعة + بثّ حي).
 class SherpaZipformerEngine implements LiveCapableRecitationEngine {
@@ -55,6 +53,29 @@ class SherpaZipformerEngine implements LiveCapableRecitationEngine {
   void Function(int wordIdx)? _onWord;
   int _lastLiveUnitCount = 0;
   int _lastLiveWordIdx = -1;
+
+  // تتبّع النطاق متعدد الآيات (وضع الصفحة) — محاذاة بنافذة انزلاقية.
+  QuranReferenceRange? _liveRange;
+  void Function(int verseIdx, int wordIdx)? _onRangeWord;
+  void Function(int verseIdx, int wordIdx, bool correct)? _onWordDone;
+  void Function()? _onRangeComplete;
+
+  /// آخر وحدة مرجعية مؤكَّدة (مرساة النافذة) وآخر وحدة متنبأة مستهلَكة.
+  int _anchRef = -1;
+  int _anchPred = -1;
+
+  /// مؤشر كلمات النطاق المُبلَّغ عن اكتمالها + الكلمات التي شهدت خطأً.
+  int _doneWordCursor = 0;
+  final Set<QuranRangeWordSpan> _erroredSpans = {};
+
+  /// آخر كلمة جارية مُبلَّغة (لِتجنب تكرار onRangeWord).
+  int _lastRangeVerse = -1;
+  int _lastRangeWord = -1;
+  bool _rangeCompleteFired = false;
+
+  /// حجم نافذة المحاذاة الحيّة (وحدات مرجعية) — يُبقي التعقيد صغيرًا
+  /// على مستوى الصفحة الكاملة.
+  static const int _liveWindowUnits = 64;
 
   @override
   Future<bool> isHealthy() async => _initialized && _recognizer != null;
@@ -138,6 +159,7 @@ class SherpaZipformerEngine implements LiveCapableRecitationEngine {
     double errorRatio = 0.1,
     int? suraIdx,
     int? ayaIdx,
+    QuranReferenceRange? range,
     String? referenceText,
   }) async {
     if (!_initialized) await initialize();
@@ -154,6 +176,7 @@ class SherpaZipformerEngine implements LiveCapableRecitationEngine {
       durationSec: durationSec,
       suraIdx: suraIdx,
       ayaIdx: ayaIdx,
+      range: range,
       referenceText: referenceText,
     );
   }
@@ -215,20 +238,37 @@ class SherpaZipformerEngine implements LiveCapableRecitationEngine {
     void Function(LiveRecognitionFrame frame)? onPartial,
     void Function()? onEndpoint,
     void Function(int wordIdx)? onWord,
+    void Function(int verseIdx, int wordIdx)? onRangeWord,
+    void Function(int verseIdx, int wordIdx, bool correct)? onWordDone,
+    void Function()? onRangeComplete,
     int? suraIdx,
     int? ayaIdx,
+    QuranReferenceRange? range,
   }) {
     _liveStream?.free();
     _liveStream = _recognizer!.createStream();
     _onPartial = onPartial;
     _onEndpoint = onEndpoint;
     _onWord = onWord;
+    _onRangeWord = onRangeWord;
+    _onWordDone = onWordDone;
+    _onRangeComplete = onRangeComplete;
     _lastLiveUnitCount = 0;
     _lastLiveWordIdx = -1;
+    _anchRef = -1;
+    _anchPred = -1;
+    _doneWordCursor = 0;
+    _erroredSpans.clear();
+    _lastRangeVerse = -1;
+    _lastRangeWord = -1;
+    _rangeCompleteFired = false;
     _liveRef =
         (suraIdx != null && ayaIdx != null && (_reference?.isLoaded ?? false))
             ? _reference!.getReference(suraIdx: suraIdx, ayaIdx: ayaIdx)
             : null;
+    _liveRange = (range != null && (_reference?.isLoaded ?? false))
+        ? range
+        : null;
   }
 
   @override
@@ -252,6 +292,10 @@ class SherpaZipformerEngine implements LiveCapableRecitationEngine {
   /// يعاد الحساب فقط عند نموّ الوحدات (لا مع كل دفعة PCM صامتة)،
   /// وأبعد موضع مُطابَق يحدّد الكلمة الحالية.
   void _maybeReportLiveWord(LiveRecognitionFrame frame) {
+    if (_liveRange != null) {
+      _trackLiveRange(frame);
+      return;
+    }
     final ref = _liveRef;
     final onWord = _onWord;
     if (ref == null || onWord == null) return;
@@ -269,6 +313,93 @@ class SherpaZipformerEngine implements LiveCapableRecitationEngine {
       _lastLiveWordIdx = wordIdx;
       onWord(wordIdx);
     }
+  }
+
+  /// يتبّع التلاوة على نطاق متعدد الآيات (وضع الصفحة) بِنافذة انزلاقية.
+  ///
+  /// تُحاذى الوحدات المتوقَّعة الحديثة مقابل نافذة مرجعية تبدأ بعد آخر
+  /// مرساة مؤكَّدة — يُبقي Wagner-Fischer صغيرًا على مستوى الصفحة. عند
+  /// مرور المحاذاة على آخر وحدة في كلمة تُبلَّغ [onWordDone] بِنتيجة نطقها
+  /// (خطأ الكلمة = أي replace/delete على وحداتها)، وعند اكتمال كل الكلمات
+  /// تُبلَّغ onRangeComplete.
+  void _trackLiveRange(LiveRecognitionFrame frame) {
+    final range = _liveRange!;
+    if (frame.units.length == _lastLiveUnitCount) return;
+    _lastLiveUnitCount = frame.units.length;
+
+    final refFrom = _anchRef + 1;
+    if (refFrom >= range.units.length) {
+      _fireRangeComplete(range);
+      return;
+    }
+    final predFrom = _anchPred + 1;
+    if (predFrom >= frame.units.length) return;
+    final lex = _lexicon!;
+    final predUnits =
+        frame.units.map((s) => lex.bySymbol[s]!).toList(growable: false);
+
+    final refTo = (refFrom + _liveWindowUnits < range.units.length)
+        ? refFrom + _liveWindowUnits
+        : range.units.length;
+    final ops = alignUnits(
+      range.units.sublist(refFrom, refTo),
+      predUnits.sublist(predFrom),
+    );
+
+    // سجّل أخطاء الكلمات في هذا المقطع (replace/delete على وحداتها).
+    for (final op in ops) {
+      if (op.refIdx < 0 || op.type == 'match') continue;
+      final span = range.spanOfUnit(refFrom + op.refIdx);
+      if (span != null) _erroredSpans.add(span);
+    }
+
+    final sliceLast = lastMatchedRefIdx(ops);
+    if (sliceLast < 0) return; // لا مطابقة بعد (سكوت/بسملة/ضوضاء بادئة).
+    final globalLast = refFrom + sliceLast;
+
+    // الكلمة الجارية (فهرس الآية داخل النطاق + فهرس الكلمة فيها).
+    final onRangeWord = _onRangeWord;
+    if (onRangeWord != null) {
+      final v = range.unitVerseIdx[globalLast];
+      final w = range.unitWordIdx[globalLast];
+      if (v != _lastRangeVerse || w != _lastRangeWord) {
+        _lastRangeVerse = v;
+        _lastRangeWord = w;
+        onRangeWord(v, w);
+      }
+    }
+
+    // الكلمات التي مرّت المحاذاة على آخر وحدة فيها = مكتملة النطق.
+    final onWordDone = _onWordDone;
+    while (_doneWordCursor < range.wordSpans.length &&
+        range.wordSpans[_doneWordCursor].endUnit <= globalLast) {
+      final span = range.wordSpans[_doneWordCursor];
+      onWordDone?.call(span.verseIdx, span.wordIdx,
+          !_erroredSpans.contains(span));
+      _doneWordCursor++;
+    }
+
+    // قدّم المرساة — greedy CTC يُلحِق فقط (لا يراجع) فالتقديم آمن.
+    _anchRef = globalLast;
+    var maxPred = -1;
+    for (final op in ops) {
+      if ((op.type == 'match' || op.type == 'replace') &&
+          op.refIdx <= sliceLast &&
+          op.predIdx > maxPred) {
+        maxPred = op.predIdx;
+      }
+    }
+    if (maxPred >= 0) _anchPred = predFrom + maxPred;
+    _fireRangeComplete(range);
+  }
+
+  /// يبلّغ اكتمال النطاق مرة واحدة فقط.
+  void _fireRangeComplete(QuranReferenceRange range) {
+    if (_rangeCompleteFired || _doneWordCursor < range.wordSpans.length) {
+      return;
+    }
+    _rangeCompleteFired = true;
+    _onRangeComplete?.call();
   }
 
   @override
@@ -289,6 +420,7 @@ class SherpaZipformerEngine implements LiveCapableRecitationEngine {
     required MuaalemConfig config,
     int? suraIdx,
     int? ayaIdx,
+    QuranReferenceRange? range,
     String? referenceText,
     required LiveRecognitionFrame frame,
   }) async {
@@ -301,6 +433,7 @@ class SherpaZipformerEngine implements LiveCapableRecitationEngine {
       durationSec: duration,
       suraIdx: suraIdx,
       ayaIdx: ayaIdx,
+      range: range,
       referenceText: referenceText,
     );
   }
@@ -338,12 +471,56 @@ class SherpaZipformerEngine implements LiveCapableRecitationEngine {
     required double durationSec,
     int? suraIdx,
     int? ayaIdx,
+    QuranReferenceRange? range,
     String? referenceText,
   }) async {
     final lex = _lexicon!;
     final predictedPhonemes = frame.units.join(' ');
     final predUnits =
         frame.units.map((s) => lex.bySymbol[s]!).toList(growable: false);
+
+    // وضع النطاق (صفحة كاملة) — أولوية على الآية المفردة.
+    if (range != null && (_reference?.isLoaded ?? false)) {
+      // تسامح البادئ: بسملة/بداية متأخرة قبل أول مطابقة مرجعية.
+      final ops = dropLeadingInserts(alignUnits(range.units, predUnits));
+      final stats = computeUnitStats(ops);
+      log(
+          'ZipformerEngine: aligned range(${range.verses.length} verses) — '
+          'ref=${range.units.length} pred=${predUnits.length} $stats',
+          name: 'ZipformerEngine');
+
+      if (stats.matches == 0 && stats.totalOps > 0) {
+        return RecitationResult(
+          uthmaniText: range.uthmani,
+          predictedPhonemes: predictedPhonemes,
+          noMatchMessage:
+              'لم يتمكّن النموذج من التعرّف على التلاوة. حاول مرّة أخرى '
+              'بِالتحدّث بِـوضوح أقرب من الميكروفون.',
+        );
+      }
+
+      final errors = <RecitationError>[
+        ...buildErrorsFromUnitAlignment(
+          ops: ops,
+          refUnits: range.units,
+          predUnits: predUnits,
+          wordAt: range.wordAt,
+        ),
+        ..._timingErrors(
+            ops, range.units, range.wordAt, predUnits, frame, durationSec),
+      ];
+      final tagged = _tagErrorPositions(errors, range);
+      final first = range.keyOfVerse(0);
+      final last = range.keyOfVerse(range.verses.length - 1);
+      return RecitationResult(
+        uthmaniText: range.uthmani,
+        predictedPhonemes: predictedPhonemes,
+        referencePhonemes: range.phonemeString,
+        errors: tagged,
+        start: SurahAyahPosition(suraIdx: first.suraIdx, ayaIdx: first.ayaIdx),
+        end: SurahAyahPosition(suraIdx: last.suraIdx, ayaIdx: last.ayaIdx),
+      );
+    }
 
     if (suraIdx != null && ayaIdx != null && (_reference?.isLoaded ?? false)) {
       final ref = _reference!.getReference(suraIdx: suraIdx, ayaIdx: ayaIdx);
@@ -370,9 +547,10 @@ class SherpaZipformerEngine implements LiveCapableRecitationEngine {
           ops: ops,
           refUnits: ref.units,
           predUnits: predUnits,
-          reference: ref,
+          wordAt: ref.wordAt,
         );
-        errors.addAll(_timingErrors(ops, ref, predUnits, frame, durationSec));
+        errors.addAll(
+            _timingErrors(ops, ref.units, ref.wordAt, predUnits, frame, durationSec));
 
         return RecitationResult(
           uthmaniText: ref.uthmani,
@@ -398,11 +576,36 @@ class SherpaZipformerEngine implements LiveCapableRecitationEngine {
     return RecitationResult(predictedPhonemes: predictedPhonemes);
   }
 
+  /// يوسم كل خطأ بِموضعه في المصحف (سورة/آية/كلمة) من موضع وحدته المرجعية.
+  ///
+  /// أخطاء insert بلا موضع مرجعي تُترك بلا وسم.
+  List<RecitationError> _tagErrorPositions(
+    List<RecitationError> errors,
+    QuranReferenceRange range,
+  ) {
+    return errors.map((e) {
+      if (e.speechErrorType == 'insert' ||
+          e.uthmaniPos.isEmpty ||
+          e.uthmaniPos[0] < 0) {
+        return e;
+      }
+      final span = range.spanOfUnit(e.uthmaniPos[0]);
+      if (span == null) return e;
+      final key = range.keyOfVerse(span.verseIdx);
+      return e.withPosition(
+        suraIdx: key.suraIdx,
+        ayaIdx: key.ayaIdx,
+        wordIdx: span.wordIdx,
+      );
+    }).toList();
+  }
+
   /// يدمج أحكام المدّ الزمنية كأخطاء (المدّ الرمزي المتطابق يبقى بلا خطأ
   /// إلا إذا خان الزمنُ المُسموعَ).
   List<RecitationError> _timingErrors(
     List<UnitAlignOp> ops,
-    QuranReferenceVerse ref,
+    List<QuranUnit> refUnits,
+    String? Function(int unitIdx) wordAt,
     List<QuranUnit> predUnits,
     LiveRecognitionFrame frame,
     double durationSec,
@@ -410,7 +613,7 @@ class SherpaZipformerEngine implements LiveCapableRecitationEngine {
     if (frame.timestamps.isEmpty) return const [];
     final verdicts = judgeMaddTimings(
       ops: ops,
-      refUnits: ref.units,
+      refUnits: refUnits,
       predCount: predUnits.length,
       predTimestamps: frame.timestamps,
       totalDurationSec: durationSec,
@@ -423,12 +626,12 @@ class SherpaZipformerEngine implements LiveCapableRecitationEngine {
         speechErrorType: 'replace',
         uthmaniPos: [v.refIdx, v.refIdx + 1],
         phPos: [v.predIdx, v.predIdx + 1],
-        expectedPh: ref.units[v.refIdx].symbol,
+        expectedPh: refUnits[v.refIdx].symbol,
         predictedPh:
             v.predIdx < predUnits.length ? predUnits[v.predIdx].symbol : null,
         expectedLen: v.goldenHarakat,
         predictedLen: v.actualHarakat.round(),
-        wordText: ref.wordAt(v.refIdx),
+        wordText: wordAt(v.refIdx),
         refTajweedRules: [
           TajweedRule(
             nameAr: 'المدّ (زمني)',

@@ -18,6 +18,7 @@ export 'engine/recitation_session.dart';
 export 'engine/recitation_state.dart';
 export 'engine/muaalem_client.dart';
 export 'engine/sherpa_factory.dart';
+export 'engine/zipformer_model.dart';
 export 'engine/quran_units.dart';
 export 'engine/quran_reference.dart';
 export 'engine/phoneme_aligner.dart';
@@ -26,3 +27,6 @@ export 'engine/madd_timing.dart';
 export 'engine/wav_decoder.dart';
 export 'engine/models/muaalem_config.dart';
 export 'engine/models/recitation_result.dart';
+
+// ── الخدمات / Services ───────────────────────────────────────
+export 'core/services/tasmee_model_service.dart';

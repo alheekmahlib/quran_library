@@ -141,3 +141,24 @@ int lastMatchedRefIdx(List<UnitAlignOp> ops) {
   }
   return last;
 }
+
+/// يحذف عمليات insert قبل أول match/replace — تسامح البادئ.
+///
+/// في وضع النطاق (صفحة كاملة) قد يبدأ المستخدم بِـ بسملة أو ينتظر قبل
+/// أول كلمة، فتظهر وحدات متوقَّعة قبل أول مطابقة مرجعية؛ هذه العمليات
+/// بلا موضع مرجعي أصلاً ولا يجب أن تُحسب أخطاًء "حرف زائد".
+///
+/// Drops insert ops preceding the first match/replace — leading-insert
+/// tolerance for range mode (basmalah / late starts).
+List<UnitAlignOp> dropLeadingInserts(List<UnitAlignOp> ops) {
+  var first = -1;
+  for (var i = 0; i < ops.length; i++) {
+    if (ops[i].type != 'insert') {
+      first = i;
+      break;
+    }
+  }
+  if (first == -1) return const []; // كله inserts بلا أي مطابقة.
+  if (first == 0) return ops;
+  return ops.sublist(first);
+}

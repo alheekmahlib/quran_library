@@ -12,6 +12,7 @@ import 'dart:typed_data';
 
 import 'models/muaalem_config.dart';
 import 'models/recitation_result.dart';
+import 'quran_reference.dart';
 
 /// محرّك تقييم التلاوة (online أو offline).
 abstract interface class RecitationEngine {
@@ -22,6 +23,7 @@ abstract interface class RecitationEngine {
   /// [errorRatio] نسبة التسامح في المطابقة (0-1).
   /// [suraIdx]/[ayaIdx] (offline) رقم السورة والآية — لِـ جلب المرجع من DB
   ///   ومقارنة الفونيمات + كشف أخطاء التجويد بِشكل كامل.
+  /// [range] (offline، بديل يشمل ما سبق) نطاق متعدد الآيات — وضع الصفحة.
   /// [referenceText] (offline، بديل) نصّ الآية العثماني — يُستخدم إن لم
   ///   يُعطَ suraIdx/ayaIdx. يُقارن بشكل أبسط (بِدون DB مرجعي كامل).
   Future<RecitationResult> correctRecitation({
@@ -30,6 +32,7 @@ abstract interface class RecitationEngine {
     final double errorRatio = 0.1,
     final int? suraIdx,
     final int? ayaIdx,
+    final QuranReferenceRange? range,
     final String? referenceText,
   });
 

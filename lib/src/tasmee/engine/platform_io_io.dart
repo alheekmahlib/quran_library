@@ -21,6 +21,18 @@ class PlatformIo {
   static Future<void> writeFile(String path, Uint8List bytes) =>
       File(path).writeAsBytes(bytes, flush: true);
 
+  /// حجم الملف بالبايت، أو -1 إن لم يوجد / File size in bytes, or -1.
+  static Future<int> fileLength(String path) async {
+    final f = File(path);
+    if (!await f.exists()) return -1;
+    return f.length();
+  }
+
+  /// أعد تسمية/انقل ملفاً / Rename (move) a file.
+  static Future<void> renameFile(String from, String to) async {
+    await File(from).rename(to);
+  }
+
   /// احذف الملف (إن وُجد) / Delete a file (if it exists).
   static Future<void> deleteFile(String path) async {
     final f = File(path);

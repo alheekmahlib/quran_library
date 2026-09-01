@@ -8,6 +8,7 @@ import 'dart:typed_data';
 
 import 'models/muaalem_config.dart';
 import 'models/recitation_result.dart';
+import 'quran_reference.dart';
 import 'recitation_engine.dart';
 
 /// لقطة تنبؤ حيّة (وحدات + طوابع بدايتها بالثوان).
@@ -24,15 +25,25 @@ abstract interface class LiveCapableRecitationEngine
   /// يبدأ جلسة بثّ جديدة. [onPartial] يُستدعى بعد كل تغذية بِـ آخر تنبؤ،
   /// و[onEndpoint] عند كشف صمت نهاية مقطع (فاصل — ليس إيقافًا).
   ///
-  /// [suraIdx]/[ayaIdx] (اختياري) يفعّلان تتبّع الكلمات: تُحاذى الوحدات
-  /// المتنامية مع الآية المرجعية ويُستدعى [onWord] بفهرس الكلمة الجارية
-  /// (0-based، أو -1 قبل أول مطابقة).
+  /// [suraIdx]/[ayaIdx] (اختياري) يفعّلان تتبّع الكلمات لِآية واحدة:
+  /// تُحاذى الوحدات المتنامية مع الآية المرجعية ويُستدعى [onWord] بفهرس
+  /// الكلمة الجارية (0-based، أو -1 قبل أول مطابقة).
+  ///
+  /// [range] (اختياري) يفعّل تتبّع نطاق متعدد الآيات (وضع الصفحة):
+  /// - [onRangeWord] يُستدعى بِـ (فهرس الآية داخل النطاق، فهرس الكلمة).
+  /// - [onWordDone] عند اكتمال نطق كلمة — بَعد مرور المحاذاة على آخر
+  ///   وحدة فيها — ومعها صحة نطقها (كل وحداتها match = صحيح).
+  /// - [onRangeComplete] عند اكتمال كل كلمات النطاق.
   void startLive({
     void Function(LiveRecognitionFrame frame)? onPartial,
     void Function()? onEndpoint,
     void Function(int wordIdx)? onWord,
+    void Function(int verseIdx, int wordIdx)? onRangeWord,
+    void Function(int verseIdx, int wordIdx, bool correct)? onWordDone,
+    void Function()? onRangeComplete,
     int? suraIdx,
     int? ayaIdx,
+    QuranReferenceRange? range,
   });
 
   /// يغذّي عيّنات PCM ‏(16kHz mono، [-1,1]).
@@ -46,6 +57,7 @@ abstract interface class LiveCapableRecitationEngine
     required MuaalemConfig config,
     int? suraIdx,
     int? ayaIdx,
+    QuranReferenceRange? range,
     String? referenceText,
     required LiveRecognitionFrame frame,
   });

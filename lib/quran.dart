@@ -34,6 +34,11 @@ import 'src/service/connectivity_service.dart';
 import 'src/service/gzip_json_asset_service.dart';
 import 'src/service/internet_connection_controller.dart';
 import 'src/tafsir/tafsir.dart';
+// وحدة التسميع — دورة استيراد مقصودة: أجزاء quran.dart (طبقة العرض)
+// تحتاج TasmeeCtrl، ووحدة التسميع تحتاج QuranCtrl. الاستيراد محدود
+// بـ show كي لا تتسرب أسماء المحرك إلى فضاء مكتبة القرآن.
+import 'src/tasmee/tasmee.dart'
+    show TasmeeCtrl, TasmeeWordStatus, TasmeeUpdateIds;
 
 part 'src/core/theme/quran_library_theme.dart';
 part 'src/core/utils/assets_path.dart';

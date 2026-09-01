@@ -433,12 +433,14 @@ class TasmeeCtrl extends GetxController {
       state.wordStatuses[key] ?? TasmeeWordStatus.hidden;
 
   /// يحدّث صفحات القراءة المعروضة (إخفاء/إظهار/تلوين الكلمات).
+  ///
+  /// التحديث موجَّه لِـ `GetBuilder<TasmeeCtrl>` بمعرّف الصفحة — وبصمة
+  /// السطر (tasmeeFingerprint) تتكفّل بإعادة البناء عند تغيّر الحالات.
   void _refreshQuranPages() {
     final page = state.currentRangePage;
     if (page > 0) {
-      q.QuranCtrl.instance.update([TasmeeUpdateIds.page(page - 1)]);
+      update([TasmeeUpdateIds.page(page - 1)]);
     }
-    q.QuranCtrl.instance.update(['_pageViewBuild']);
   }
 
   @override

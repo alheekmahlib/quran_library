@@ -76,6 +76,7 @@ class _QpcV4FlowingTextState extends State<QpcV4FlowingText> {
     final recitationsRevisionHash =
         WordInfoCtrl.instance.recitationsDataRevision.hashCode;
     final scaleHash = quranCtrl.state.scaleFactor.value.hashCode;
+    final tasmeeHash = tasmeeFingerprint();
 
     return Object.hash(
         selHash,
@@ -87,7 +88,7 @@ class _QpcV4FlowingTextState extends State<QpcV4FlowingText> {
         wordSelectedHash,
         tenRecHash,
         recitationsRevisionHash,
-        Object.hash(overrideHash, scaleHash));
+        Object.hash(overrideHash, scaleHash, tasmeeHash));
   }
 
   @override
@@ -98,7 +99,9 @@ class _QpcV4FlowingTextState extends State<QpcV4FlowingText> {
       id: 'selection_page_${widget.pageIndex}',
       builder: (_) => GetBuilder<WordInfoCtrl>(
         id: 'word_info_data',
-        builder: (_) {
+        builder: (_) => GetBuilder<TasmeeCtrl>(
+          id: TasmeeUpdateIds.page(widget.pageIndex),
+          builder: (_) {
           final withTajweed = QuranCtrl.instance.state.isTajweedEnabled.value;
           final isTenRecitations = wordInfoCtrl.isTenRecitations;
 
@@ -135,8 +138,9 @@ class _QpcV4FlowingTextState extends State<QpcV4FlowingText> {
               );
             },
           );
-          return _cachedWidget!;
-        },
+            return _cachedWidget!;
+          },
+        ),
       ),
     );
   }
@@ -170,6 +174,9 @@ class _QpcV4FlowingTextState extends State<QpcV4FlowingText> {
 
       final info = wordInfoCtrl.getRecitationsInfoSync(ref);
       final hasKhilaf = info?.hasKhilaf ?? false;
+
+      // وضع التسميع: إخفاء/تلوين الكلمة بحسب حالة تلاوتها.
+      final tasmeeStatus = tasmeeStatusOfSegment(seg, widget.pageIndex);
 
       return _qpcV4SpanSegment(
         context: context,
@@ -242,6 +249,9 @@ class _QpcV4FlowingTextState extends State<QpcV4FlowingText> {
         ayahBookmarked: widget.ayahBookmarked,
         isDark: widget.isDark,
         onPagePress: widget.onPagePress,
+        hideGlyphs: tasmeeStatus == TasmeeWordStatus.hidden,
+        glyphColorOverride:
+            tasmeeColorOfStatus(tasmeeStatus, isDark: widget.isDark),
       );
     });
 

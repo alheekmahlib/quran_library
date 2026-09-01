@@ -96,6 +96,8 @@ class _QpcV4RichTextLineState extends State<QpcV4RichTextLine> {
     // تغيّر بيانات القراءات (عند اكتمال prewarm)
     final recitationsRevisionHash =
         WordInfoCtrl.instance.recitationsDataRevision.hashCode;
+    // حالة التسميع (إخفاء/إظهار/تلوين الكلمات)
+    final tasmeeHash = tasmeeFingerprint();
 
     return Object.hash(
         selHash,
@@ -107,6 +109,7 @@ class _QpcV4RichTextLineState extends State<QpcV4RichTextLine> {
         wordSelectedHash,
         tenRecHash,
         recitationsRevisionHash,
+        tasmeeHash,
         overrideHash);
   }
 
@@ -121,7 +124,9 @@ class _QpcV4RichTextLineState extends State<QpcV4RichTextLine> {
       id: 'selection_page_${widget.pageIndex}',
       builder: (_) => GetBuilder<WordInfoCtrl>(
         id: 'word_info_data',
-        builder: (_) {
+        builder: (_) => GetBuilder<TasmeeCtrl>(
+          id: TasmeeUpdateIds.page(widget.pageIndex),
+          builder: (_) {
           // قراءة القيم داخل الـ builder حتى تعكس آخر حالة عند كل rebuild
           final withTajweed = QuranCtrl.instance.state.isTajweedEnabled.value;
           final isTenRecitations = wordInfoCtrl.isTenRecitations;
@@ -161,8 +166,9 @@ class _QpcV4RichTextLineState extends State<QpcV4RichTextLine> {
               );
             },
           );
-          return _cachedWidget!;
-        },
+            return _cachedWidget!;
+          },
+        ),
       ),
     );
   }
@@ -178,6 +184,8 @@ class _QpcV4RichTextLineState extends State<QpcV4RichTextLine> {
     final ayahCharRanges = <int, TextSelection>{};
     final bookmarkCharRanges = <int, _ColoredTextRange>{};
     TextSelection? wordSelectionRange;
+    // الكلمة الجارية في وضع التسميع (تُبرز بخلفية accent).
+    TextSelection? tasmeeCurrentRange;
     int charOffset = 0;
 
     final bookmarksAyahsList = bookmarksSet.toList();
@@ -201,6 +209,9 @@ class _QpcV4RichTextLineState extends State<QpcV4RichTextLine> {
 
       final info = wordInfoCtrl.getRecitationsInfoSync(ref);
       final hasKhilaf = info?.hasKhilaf ?? false;
+
+      // وضع التسميع: إخفاء/تلوين الكلمة بحسب حالة تلاوتها.
+      final tasmeeStatus = tasmeeStatusOfSegment(seg, widget.pageIndex);
 
       final span = _qpcV4SpanSegment(
         context: context,
@@ -273,6 +284,9 @@ class _QpcV4RichTextLineState extends State<QpcV4RichTextLine> {
         ayahBookmarked: widget.ayahBookmarked,
         isDark: widget.isDark,
         onPagePress: widget.onPagePress,
+        hideGlyphs: tasmeeStatus == TasmeeWordStatus.hidden,
+        glyphColorOverride: tasmeeColorOfStatus(tasmeeStatus,
+            isDark: widget.isDark),
       );
 
       final spanStart = charOffset;
@@ -281,6 +295,14 @@ class _QpcV4RichTextLineState extends State<QpcV4RichTextLine> {
       // تتبع نطاق الكلمة المحددة
       if (wordInfoCtrl.selectedWordRef.value == ref) {
         wordSelectionRange = TextSelection(
+          baseOffset: spanStart,
+          extentOffset: charOffset,
+        );
+      }
+
+      // تتبع نطاق الكلمة الجارية في التسميع
+      if (tasmeeStatus == TasmeeWordStatus.current) {
+        tasmeeCurrentRange = TextSelection(
           baseOffset: spanStart,
           extentOffset: charOffset,
         );
@@ -363,8 +385,12 @@ class _QpcV4RichTextLineState extends State<QpcV4RichTextLine> {
     final hasSelection = ayahCharRanges.isNotEmpty;
     final hasBookmarks = bookmarkCharRanges.isNotEmpty;
     final hasWordSelection = wordSelectionRange != null;
+    final hasTasmeeCurrent = tasmeeCurrentRange != null;
 
-    if (!hasSelection && !hasBookmarks && !hasWordSelection) {
+    if (!hasSelection &&
+        !hasBookmarks &&
+        !hasWordSelection &&
+        !hasTasmeeCurrent) {
       return richText;
     }
 
@@ -374,6 +400,7 @@ class _QpcV4RichTextLineState extends State<QpcV4RichTextLine> {
           const Color(0xffCDAD80).withValues(alpha: 0.25),
       bookmarkRanges: bookmarkCharRanges.values.toList(),
       wordSelectionRange: wordSelectionRange,
+      tasmeeCurrentRange: tasmeeCurrentRange,
       child: richText,
     );
   }
@@ -410,11 +437,15 @@ class _AyahSelectionWidget extends SingleChildRenderObjectWidget {
   final List<_ColoredTextRange> bookmarkRanges;
   final TextSelection? wordSelectionRange;
 
+  /// الكلمة الجارية في وضع التسميع (تُرسم بلون accent أقوى).
+  final TextSelection? tasmeeCurrentRange;
+
   const _AyahSelectionWidget({
     required this.selectedRanges,
     required this.selectionColor,
     this.bookmarkRanges = const [],
     this.wordSelectionRange,
+    this.tasmeeCurrentRange,
     required super.child,
   });
 
@@ -425,6 +456,7 @@ class _AyahSelectionWidget extends SingleChildRenderObjectWidget {
       selectionColor: selectionColor,
       bookmarkRanges: bookmarkRanges,
       wordSelectionRange: wordSelectionRange,
+      tasmeeCurrentRange: tasmeeCurrentRange,
     );
   }
 
@@ -435,7 +467,8 @@ class _AyahSelectionWidget extends SingleChildRenderObjectWidget {
       ..selectedRanges = selectedRanges
       ..selectionColor = selectionColor
       ..bookmarkRanges = bookmarkRanges
-      ..wordSelectionRange = wordSelectionRange;
+      ..wordSelectionRange = wordSelectionRange
+      ..tasmeeCurrentRange = tasmeeCurrentRange;
   }
 }
 
@@ -447,13 +480,18 @@ class _AyahSelectionRenderBox extends RenderProxyBox {
     required Color selectionColor,
     List<_ColoredTextRange> bookmarkRanges = const [],
     TextSelection? wordSelectionRange,
+    TextSelection? tasmeeCurrentRange,
   })  : _selectedRanges = selectedRanges,
         _selectionColor = selectionColor,
         _bookmarkRanges = bookmarkRanges,
-        _wordSelectionRange = wordSelectionRange;
+        _wordSelectionRange = wordSelectionRange,
+        _tasmeeCurrentRange = tasmeeCurrentRange;
 
   static const _wordSelectionColor =
       Color(0xffCDAD80); // بدون alpha — يُطبّق عند الرسم
+
+  static const _tasmeeCurrentColor =
+      Color(0xFFE65100); // برتقالي داكن — يُطبّق عند الرسم
 
   List<TextSelection> _selectedRanges;
   set selectedRanges(List<TextSelection> value) {
@@ -482,6 +520,13 @@ class _AyahSelectionRenderBox extends RenderProxyBox {
     markNeedsPaint();
   }
 
+  TextSelection? _tasmeeCurrentRange;
+  set tasmeeCurrentRange(TextSelection? value) {
+    if (_tasmeeCurrentRange == value) return;
+    _tasmeeCurrentRange = value;
+    markNeedsPaint();
+  }
+
   @override
   void paint(PaintingContext context, Offset offset) {
     if (child is RenderParagraph) {
@@ -489,7 +534,19 @@ class _AyahSelectionRenderBox extends RenderProxyBox {
       if (_bookmarkRanges.isNotEmpty) {
         _paintColoredRanges(context, offset, _bookmarkRanges);
       }
-      // 2) تحديد الكلمة
+      // 2) الكلمة الجارية في التسميع (تحت تحديد الكلمة وفوقه بروزًا)
+      if (_tasmeeCurrentRange != null) {
+        final paint = Paint()
+          ..color = _tasmeeCurrentColor.withValues(alpha: 0.45);
+        _paintMergedBoxes(
+          child! as RenderParagraph,
+          context,
+          offset,
+          [_tasmeeCurrentRange!],
+          paint,
+        );
+      }
+      // 3) تحديد الكلمة
       if (_wordSelectionRange != null) {
         final paint = Paint()
           ..color = _wordSelectionColor.withValues(alpha: 0.25);
@@ -501,7 +558,7 @@ class _AyahSelectionRenderBox extends RenderProxyBox {
           paint,
         );
       }
-      // 3) تحديد الآية (أعلى طبقة)
+      // 4) تحديد الآية (أعلى طبقة)
       if (_selectedRanges.isNotEmpty) {
         _paintSelectionBackgrounds(context, offset);
       }

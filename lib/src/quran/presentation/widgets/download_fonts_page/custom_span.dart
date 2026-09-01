@@ -29,6 +29,8 @@ TextSpan _qpcV4SpanSegment({
   bool usePaintColoring = true,
   required bool isDark,
   VoidCallback? onPagePress,
+  bool hideGlyphs = false,
+  Color? glyphColorOverride,
 }) {
   final quranCtrl = QuranCtrl.instance;
   final wordInfoCtrl = WordInfoCtrl.instance;
@@ -56,7 +58,9 @@ TextSpan _qpcV4SpanSegment({
     fontSize: fontSize,
     height: 2,
     // wordSpacing: 50,
-    color: textColor ?? AppColors.getTextColor(isDark),
+    color: glyphColorOverride ??
+        textColor ??
+        AppColors.getTextColor(isDark),
   );
 
   InlineSpan? tail;
@@ -137,14 +141,56 @@ TextSpan _qpcV4SpanSegment({
 
   return TextSpan(
     children: <InlineSpan>[
-      TextSpan(
-        text: glyphs,
-        style: baseTextStyle,
-        recognizer: recognizer,
-      ),
+      // وضع التسميع: الكلمة غير المُتَلَّاة بعد تُخفى حروفها ويبقى رقم
+      // الآية (tail) ظاهرًا.
+      if (!hideGlyphs)
+        TextSpan(
+          text: glyphs,
+          style: baseTextStyle,
+          recognizer: recognizer,
+        ),
       if (tail != null) tail,
     ],
   );
 }
 
 typedef _LongPressStartDetailsFunction = void Function(LongPressStartDetails)?;
+
+
+// ── وضع التسميع — مساعدات العرض / Tasmee display helpers ─────────────
+
+/// حالة كلمة في وضع التسميع (null = الوضع غير مفعّل لهذه الصفحة).
+///
+/// [pageIndex] فهرس الصفحة (0-based) — الإخفاء يخص صفحة النطاق فقط.
+TasmeeWordStatus? tasmeeStatusOfSegment(QpcV4WordSegment seg, int pageIndex) {
+  final TasmeeCtrl tasmeeCtrl;
+  if (!GetInstance().isRegistered<TasmeeCtrl>()) return null;
+  tasmeeCtrl = TasmeeCtrl.instance;
+  if (!tasmeeCtrl.state.isTasmeeMode.value) return null;
+  if (tasmeeCtrl.state.currentRangePage != pageIndex + 1) return null;
+  return tasmeeCtrl.wordStatusOf('${seg.ayahUq}:${seg.wordNumber}');
+}
+
+/// لون كلمة التسميع بحسب حالتها (أو null لِلون الافتراضي).
+Color? tasmeeColorOfStatus(TasmeeWordStatus? status, {required bool isDark}) {
+  if (status == null || status == TasmeeWordStatus.hidden) return null;
+  return switch (status) {
+    TasmeeWordStatus.correct => isDark ? const Color(0xFF81C784) : const Color(0xFF2E7D32),
+    TasmeeWordStatus.incorrect => isDark ? const Color(0xFFE57373) : const Color(0xFFC62828),
+    TasmeeWordStatus.current => isDark ? const Color(0xFFFFB74D) : const Color(0xFFE65100),
+    TasmeeWordStatus.hidden => null,
+  };
+}
+
+/// بصمة حالة التسميع المؤثرة على بناء السطر (تُدمج في _computeFingerprint).
+int tasmeeFingerprint() {
+  if (!GetInstance().isRegistered<TasmeeCtrl>()) return 0;
+  final t = TasmeeCtrl.instance;
+  return Object.hash(
+    t.state.isTasmeeMode.value.hashCode,
+    t.state.currentRangePage.hashCode,
+    t.state.currentWordKey.value.hashCode,
+    Object.hashAll(t.state.wordStatuses.entries
+        .map((e) => Object.hash(e.key, e.value.index))),
+  );
+}

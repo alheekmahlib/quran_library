@@ -25,6 +25,8 @@ class TasmeeStyle {
     this.settingsLabel,
     this.retryLabel,
     this.exitLabel,
+    this.showWordsLabel,
+    this.hideWordsLabel,
     this.resultsTitle,
     this.noErrorsLabel,
     this.totalErrorsLabel,
@@ -68,6 +70,10 @@ class TasmeeStyle {
   final String? settingsLabel;
   final String? retryLabel;
   final String? exitLabel;
+
+  /// زر إظهار/إخفاء كل كلمات الصفحة (العين).
+  final String? showWordsLabel;
+  final String? hideWordsLabel;
   final String? resultsTitle;
   final String? noErrorsLabel;
   final String? totalErrorsLabel;
@@ -111,6 +117,8 @@ class TasmeeStyle {
       settingsLabel: 'إعدادات التسميع',
       retryLabel: 'إعادة التسميع',
       exitLabel: 'خروج من وضع التسميع',
+      showWordsLabel: 'إظهار الكلام',
+      hideWordsLabel: 'إخفاء الكلام',
       resultsTitle: 'نتيجة التسميع',
       noErrorsLabel: 'أحسنت! لا أخطاء',
       totalErrorsLabel: 'إجمالي الأخطاء',

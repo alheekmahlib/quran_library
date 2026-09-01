@@ -35,16 +35,21 @@ class TasmeeControlWidget extends StatefulWidget {
 
 class _TasmeeControlWidgetState extends State<TasmeeControlWidget> {
   Worker? _resultWorker;
+  bool _sheetOpen = false;
 
   @override
   void initState() {
     super.initState();
     final ctrl = TasmeeCtrl.instance;
-    // افتح bottomSheet النتائج تلقائياً عند اكتمال التقييم.
     _resultWorker = ever<RecitationState>(ctrl.state.sessionState, (s) {
-      if (s == RecitationState.finished &&
-          ctrl.state.lastResult.value != null &&
-          mounted) {
+      // افتح bottomSheet النتائج تلقائياً عند اكتمال التقييم — مرة لكل
+      // جلسة (يُعاد ضبط الحارس عند بدء تسجيل جديد).
+      if (s == RecitationState.recording) {
+        _sheetOpen = false;
+        return;
+      }
+      if (s == RecitationState.finished && !_sheetOpen && mounted) {
+        _sheetOpen = true;
         showTasmeeResultSheet(
           context: context,
           isDark: widget.isDark,

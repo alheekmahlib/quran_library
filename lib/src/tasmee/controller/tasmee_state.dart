@@ -34,6 +34,9 @@ class TasmeeState {
   /// هل وضع التسميع مفعّل الآن؟
   final RxBool isTasmeeMode = false.obs;
 
+  /// إظهار كل كلمات الصفحة مؤقتًا (زر العين) أثناء وضع التسميع.
+  final RxBool showAllWords = false.obs;
+
   /// حالة الجلسة الحالية (خمول/تسجيل/معالجة/خطأ/منتهية).
   final Rx<RecitationState> sessionState = RecitationState.idle.obs;
 

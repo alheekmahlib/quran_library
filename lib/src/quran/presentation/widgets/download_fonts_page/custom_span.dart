@@ -139,14 +139,12 @@ TextSpan _qpcV4SpanSegment({
 
   return TextSpan(
     children: <InlineSpan>[
-      // وضع التسميع: الكلمة غير المُتَلَّاة بعد تُخفى حروفها ويبقى رقم
-      // الآية (tail) ظاهرًا.
-      if (!hideGlyphs)
-        TextSpan(
-          text: glyphs,
-          style: baseTextStyle,
-          recognizer: recognizer,
-        ),
+      // الكلمة المخفية تبقى في التخطيط (شفافة) وبلا مستمع لمس.
+      TextSpan(
+        text: glyphs,
+        style: baseTextStyle,
+        recognizer: hideGlyphs ? null : recognizer,
+      ),
       if (tail != null) tail,
     ],
   );
@@ -164,6 +162,8 @@ TasmeeWordStatus? tasmeeStatusOfSegment(QpcV4WordSegment seg, int pageIndex) {
   if (!GetInstance().isRegistered<TasmeeCtrl>()) return null;
   tasmeeCtrl = TasmeeCtrl.instance;
   if (!tasmeeCtrl.state.isTasmeeMode.value) return null;
+  // زر إظهار الكلام: عرض طبيعي مؤقت لكل كلمات الصفحة.
+  if (tasmeeCtrl.state.showAllWords.value) return null;
   if (tasmeeCtrl.state.currentRangePage != pageIndex + 1) return null;
   return tasmeeCtrl.wordStatusOf('${seg.ayahUq}:${seg.wordNumber}');
 }
@@ -189,6 +189,7 @@ int tasmeeFingerprint() {
   return Object.hash(
     t.state.isTasmeeMode.value.hashCode,
     t.state.currentRangePage.hashCode,
+    t.state.showAllWords.value.hashCode,
     t.state.currentWordKey.value.hashCode,
     Object.hashAll(t.state.wordStatuses.entries
         .map((e) => Object.hash(e.key, e.value.index))),

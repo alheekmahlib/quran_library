@@ -42,6 +42,9 @@ class TasmeeCtrl extends GetxController {
   RecitationSession? _session;
   QuranReferenceRange? _range;
 
+  /// مفاتيح الكلمات المكتملة بترتيب إتمامها (لِتقليم ما يظهر بعد الإيقاف).
+  final List<String> _doneWordKeys = [];
+
   /// آيات الصفحة مرتبة بترتيب النطاق (لِتحويل فهرس الآية → ayahUq).
   List<q.AyahModel> _rangeAyahs = const [];
 
@@ -113,6 +116,8 @@ class TasmeeCtrl extends GetxController {
     state.isTasmeeMode.value = true;
     state.lastError.value = '';
     state.lastResult.value = null;
+    state.showAllWords.value = false;
+    _doneWordKeys.clear();
     await _buildRangeForCurrentPage();
     _pageWorker = ever(q.QuranCtrl.instance.state.currentPageNumber,
         (int page) => _onPageChanged(page));
@@ -219,6 +224,11 @@ class TasmeeCtrl extends GetxController {
       final session = Recitation.createSession(range: _range);
       _session = session;
       _stateWorker = ever<RecitationState>(session.state, (s) {
+        // انسخ النتيجة قبل إعلان الحالة كي تجدها مستمعات الواجهة
+        // (وإلا فاتها فتح bottomSheet النتائج).
+        if (s == RecitationState.finished) {
+          state.lastResult.value = _session?.result.value;
+        }
         state.sessionState.value = s;
         update([TasmeeUpdateIds.control]);
       });
@@ -257,6 +267,9 @@ class TasmeeCtrl extends GetxController {
   }
 
   /// يوقف التسجيل ويُقيّم — النتيجة في [TasmeeState.lastResult].
+  ///
+  /// بعد الإيقاف يبقى ظاهرًا فقط ما أُتمّ نطقه فعلًا (الكلمات المكتملة)
+  /// مع تلوينها بحسب التقييم النهائي المعتمد.
   Future<void> stopRecording() async {
     final session = _session;
     if (session == null) return;
@@ -277,16 +290,26 @@ class TasmeeCtrl extends GetxController {
     } catch (e) {
       state.lastError.value = 'خطأ في التقييم: $e';
     } finally {
+      _trimToCompletedWords();
       _cancelSession();
       _refreshQuranPages();
       update([TasmeeUpdateIds.control]);
     }
   }
 
+  /// يقصِر الحالات الظاهرة على الكلمات المكتملة فقط — الكلمة "الجارية"
+  /// الأخيرة غير المؤكَّدة تُخفى، فلا يظهر بعد الإيقاف إلا ما تُلِي فعلًا.
+  void _trimToCompletedWords() {
+    final done = _doneWordKeys.toSet();
+    state.wordStatuses.removeWhere((key, _) => !done.contains(key));
+    state.currentWordKey.value = null;
+  }
+
   /// إعادة التسميع من البداية (الكلمات تُخفى من جديد).
   Future<void> retryTasmee() async {
     state.lastResult.value = null;
     state.lastError.value = '';
+    _doneWordKeys.clear();
     await _buildRangeForCurrentPage();
     _refreshQuranPages();
     update([TasmeeUpdateIds.control]);
@@ -373,6 +396,13 @@ class TasmeeCtrl extends GetxController {
     }
   }
 
+  /// يبدّل إظهار كل كلمات الصفحة مؤقتًا (زر العين).
+  void toggleShowAllWords() {
+    state.showAllWords.value = !state.showAllWords.value;
+    _refreshQuranPages();
+    update([TasmeeUpdateIds.control]);
+  }
+
   /// يفحص اتصال خادم التسميع بالعنوان المحفوظ (لِلواجهة).
   Future<bool> testServerConnection() async {
     final url = state.serverUrl.value.trim();
@@ -395,6 +425,7 @@ class TasmeeCtrl extends GetxController {
   void _onWordDone(int verseIdx, int wordIdx, bool correct) {
     if (verseIdx < 0 || verseIdx >= _rangeAyahs.length) return;
     final key = _wordKey(verseIdx, wordIdx);
+    _doneWordKeys.add(key);
     state.wordStatuses[key] =
         correct ? TasmeeWordStatus.correct : TasmeeWordStatus.incorrect;
     if (state.currentWordKey.value == key) {

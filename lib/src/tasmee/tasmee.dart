@@ -22,6 +22,7 @@ export 'engine/zipformer_model.dart';
 export 'engine/quran_units.dart';
 export 'engine/quran_reference.dart';
 export 'engine/phoneme_aligner.dart';
+export 'engine/range_tracker.dart';
 export 'engine/error_detector.dart';
 export 'engine/madd_timing.dart';
 export 'engine/wav_decoder.dart';

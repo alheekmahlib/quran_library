@@ -21,6 +21,7 @@ import 'models/recitation_result.dart';
 import 'phoneme_aligner.dart';
 import 'quran_reference.dart';
 import 'quran_units.dart';
+import 'range_tracker.dart';
 import 'wav_decoder.dart';
 import 'zipformer_model.dart';
 
@@ -54,28 +55,9 @@ class SherpaZipformerEngine implements LiveCapableRecitationEngine {
   int _lastLiveUnitCount = 0;
   int _lastLiveWordIdx = -1;
 
-  // تتبّع النطاق متعدد الآيات (وضع الصفحة) — محاذاة بنافذة انزلاقية.
+  // تتبّع النطاق متعدد الآيات (وضع الصفحة) — يُفوَّض إلى RangeLiveTracker.
   QuranReferenceRange? _liveRange;
-  void Function(int verseIdx, int wordIdx)? _onRangeWord;
-  void Function(int verseIdx, int wordIdx, bool correct)? _onWordDone;
-  void Function()? _onRangeComplete;
-
-  /// آخر وحدة مرجعية مؤكَّدة (مرساة النافذة) وآخر وحدة متنبأة مستهلَكة.
-  int _anchRef = -1;
-  int _anchPred = -1;
-
-  /// مؤشر كلمات النطاق المُبلَّغ عن اكتمالها + الكلمات التي شهدت خطأً.
-  int _doneWordCursor = 0;
-  final Set<QuranRangeWordSpan> _erroredSpans = {};
-
-  /// آخر كلمة جارية مُبلَّغة (لِتجنب تكرار onRangeWord).
-  int _lastRangeVerse = -1;
-  int _lastRangeWord = -1;
-  bool _rangeCompleteFired = false;
-
-  /// حجم نافذة المحاذاة الحيّة (وحدات مرجعية) — يُبقي التعقيد صغيرًا
-  /// على مستوى الصفحة الكاملة.
-  static const int _liveWindowUnits = 64;
+  RangeLiveTracker? _rangeTracker;
 
   @override
   Future<bool> isHealthy() async => _initialized && _recognizer != null;
@@ -250,18 +232,8 @@ class SherpaZipformerEngine implements LiveCapableRecitationEngine {
     _onPartial = onPartial;
     _onEndpoint = onEndpoint;
     _onWord = onWord;
-    _onRangeWord = onRangeWord;
-    _onWordDone = onWordDone;
-    _onRangeComplete = onRangeComplete;
     _lastLiveUnitCount = 0;
     _lastLiveWordIdx = -1;
-    _anchRef = -1;
-    _anchPred = -1;
-    _doneWordCursor = 0;
-    _erroredSpans.clear();
-    _lastRangeVerse = -1;
-    _lastRangeWord = -1;
-    _rangeCompleteFired = false;
     _liveRef =
         (suraIdx != null && ayaIdx != null && (_reference?.isLoaded ?? false))
             ? _reference!.getReference(suraIdx: suraIdx, ayaIdx: ayaIdx)
@@ -269,6 +241,14 @@ class SherpaZipformerEngine implements LiveCapableRecitationEngine {
     _liveRange = (range != null && (_reference?.isLoaded ?? false))
         ? range
         : null;
+    _rangeTracker = _liveRange == null
+        ? null
+        : RangeLiveTracker(
+            range: _liveRange!,
+            onRangeWord: onRangeWord,
+            onWordDone: onWordDone,
+            onRangeComplete: onRangeComplete,
+          );
   }
 
   @override
@@ -315,91 +295,17 @@ class SherpaZipformerEngine implements LiveCapableRecitationEngine {
     }
   }
 
-  /// يتبّع التلاوة على نطاق متعدد الآيات (وضع الصفحة) بِنافذة انزلاقية.
-  ///
-  /// تُحاذى الوحدات المتوقَّعة الحديثة مقابل نافذة مرجعية تبدأ بعد آخر
-  /// مرساة مؤكَّدة — يُبقي Wagner-Fischer صغيرًا على مستوى الصفحة. عند
-  /// مرور المحاذاة على آخر وحدة في كلمة تُبلَّغ [onWordDone] بِنتيجة نطقها
-  /// (خطأ الكلمة = أي replace/delete على وحداتها)، وعند اكتمال كل الكلمات
-  /// تُبلَّغ onRangeComplete.
+  /// يتبّع التلاوة على نطاق متعدد الآيات (وضع الصفحة) — يُفوَّض بالكامل
+  /// إلى [RangeLiveTracker] (منطق نقي قابل لِلاختبار بلا sherpa).
   void _trackLiveRange(LiveRecognitionFrame frame) {
-    final range = _liveRange!;
     if (frame.units.length == _lastLiveUnitCount) return;
     _lastLiveUnitCount = frame.units.length;
-
-    final refFrom = _anchRef + 1;
-    if (refFrom >= range.units.length) {
-      _fireRangeComplete(range);
-      return;
-    }
-    final predFrom = _anchPred + 1;
-    if (predFrom >= frame.units.length) return;
+    final tracker = _rangeTracker;
+    if (tracker == null) return;
     final lex = _lexicon!;
     final predUnits =
         frame.units.map((s) => lex.bySymbol[s]!).toList(growable: false);
-
-    final refTo = (refFrom + _liveWindowUnits < range.units.length)
-        ? refFrom + _liveWindowUnits
-        : range.units.length;
-    final ops = alignUnits(
-      range.units.sublist(refFrom, refTo),
-      predUnits.sublist(predFrom),
-    );
-
-    // سجّل أخطاء الكلمات في هذا المقطع (replace/delete على وحداتها).
-    for (final op in ops) {
-      if (op.refIdx < 0 || op.type == 'match') continue;
-      final span = range.spanOfUnit(refFrom + op.refIdx);
-      if (span != null) _erroredSpans.add(span);
-    }
-
-    final sliceLast = lastMatchedRefIdx(ops);
-    if (sliceLast < 0) return; // لا مطابقة بعد (سكوت/بسملة/ضوضاء بادئة).
-    final globalLast = refFrom + sliceLast;
-
-    // الكلمة الجارية (فهرس الآية داخل النطاق + فهرس الكلمة فيها).
-    final onRangeWord = _onRangeWord;
-    if (onRangeWord != null) {
-      final v = range.unitVerseIdx[globalLast];
-      final w = range.unitWordIdx[globalLast];
-      if (v != _lastRangeVerse || w != _lastRangeWord) {
-        _lastRangeVerse = v;
-        _lastRangeWord = w;
-        onRangeWord(v, w);
-      }
-    }
-
-    // الكلمات التي مرّت المحاذاة على آخر وحدة فيها = مكتملة النطق.
-    final onWordDone = _onWordDone;
-    while (_doneWordCursor < range.wordSpans.length &&
-        range.wordSpans[_doneWordCursor].endUnit <= globalLast) {
-      final span = range.wordSpans[_doneWordCursor];
-      onWordDone?.call(span.verseIdx, span.wordIdx,
-          !_erroredSpans.contains(span));
-      _doneWordCursor++;
-    }
-
-    // قدّم المرساة — greedy CTC يُلحِق فقط (لا يراجع) فالتقديم آمن.
-    _anchRef = globalLast;
-    var maxPred = -1;
-    for (final op in ops) {
-      if ((op.type == 'match' || op.type == 'replace') &&
-          op.refIdx <= sliceLast &&
-          op.predIdx > maxPred) {
-        maxPred = op.predIdx;
-      }
-    }
-    if (maxPred >= 0) _anchPred = predFrom + maxPred;
-    _fireRangeComplete(range);
-  }
-
-  /// يبلّغ اكتمال النطاق مرة واحدة فقط.
-  void _fireRangeComplete(QuranReferenceRange range) {
-    if (_rangeCompleteFired || _doneWordCursor < range.wordSpans.length) {
-      return;
-    }
-    _rangeCompleteFired = true;
-    _onRangeComplete?.call();
+    tracker.onUnits(predUnits);
   }
 
   @override

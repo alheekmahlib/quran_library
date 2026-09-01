@@ -435,6 +435,9 @@ class QuranPagesScreen extends StatelessWidget {
                               id: 'isShowControl',
                               builder: (quranCtrl) {
                                 final visible = quranCtrl.isShowControl.value;
+                                // وضع التسميع: يُستبدل شريط الصوت بشريط التسميع.
+                                final isTasmee =
+                                    TasmeeCtrl.instance.state.isTasmeeMode.value;
                                 return RepaintBoundary(
                                   child: IgnorePointer(
                                     ignoring: !visible,
@@ -447,20 +450,27 @@ class QuranPagesScreen extends StatelessWidget {
                                         alignment: Alignment.center,
                                         children: [
                                           // السلايدر السفلي - يظهر من الأسفل للأعلى
-                                          // Bottom slider - appears from bottom to top
-                                          isShowAudioSlider!
-                                              ? AyahsAudioWidget(
-                                                  style: ayahStyle ??
-                                                      AyahAudioStyle.defaults(
-                                                          isDark: isDark,
-                                                          context: context),
+                                          // في وضع التسميع يُستبدل بشريط التسميع.
+                                          isTasmee
+                                              ? TasmeeControlWidget(
                                                   isDark: isDark,
                                                   languageCode: languageCode,
-                                                  downloadManagerStyle:
-                                                      ayahDownloadManagerStyle,
                                                 )
-                                              : const SizedBox.shrink(),
-                                          kIsWeb
+                                              : isShowAudioSlider!
+                                                  ? AyahsAudioWidget(
+                                                      style: ayahStyle ??
+                                                          AyahAudioStyle.defaults(
+                                                              isDark: isDark,
+                                                              context:
+                                                                  context),
+                                                      isDark: isDark,
+                                                      languageCode:
+                                                          languageCode,
+                                                      downloadManagerStyle:
+                                                          ayahDownloadManagerStyle,
+                                                    )
+                                                  : const SizedBox.shrink(),
+                                          kIsWeb && !isTasmee
                                               ? JumpingPageControllerWidget(
                                                   backgroundColor:
                                                       backgroundColor,

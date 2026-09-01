@@ -119,6 +119,8 @@ class TasmeeCtrl extends GetxController {
         (int page) => _onPageChanged(page));
     // حدّث صفحة القراءة (إخفاء الكلمات) وعناصر التحكم.
     _refreshQuranPages();
+    // شاشات لا تستخدم Obx (مثل شاشة الصفحات) تُحدَّث عبر هذا المعرف.
+    q.QuranCtrl.instance.update(['isShowControl']);
     update([TasmeeUpdateIds.control]);
   }
 
@@ -137,6 +139,7 @@ class TasmeeCtrl extends GetxController {
     _rangeAyahs = const [];
     state.currentRangePage = -1;
     _refreshQuranPages();
+    q.QuranCtrl.instance.update(['isShowControl']);
     update([TasmeeUpdateIds.control]);
   }
 
@@ -366,6 +369,18 @@ class TasmeeCtrl extends GetxController {
     } finally {
       state.isDownloadingModel.value = false;
       update([TasmeeUpdateIds.control]);
+    }
+  }
+
+  /// يفحص اتصال خادم التسميع بالعنوان المحفوظ (لِلواجهة).
+  Future<bool> testServerConnection() async {
+    final url = state.serverUrl.value.trim();
+    if (url.isEmpty) return false;
+    try {
+      Recitation.init(serverUrl: url);
+      return await Recitation.isEngineHealthy();
+    } catch (_) {
+      return false;
     }
   }
 

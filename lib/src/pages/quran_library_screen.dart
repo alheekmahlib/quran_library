@@ -840,6 +840,9 @@ class _ControlWidget extends StatelessWidget {
       builder: (quranCtrl) {
         return Obx(() {
           final visible = quranCtrl.isShowControl.value;
+          // وضع التسميع: يُستبدل شريط الصوت بشريط التسميع وتُخفى بقية
+          // عناصر التحكم (زر الدخول/الخروج في الشريط العلوي يبقى).
+          final isTasmee = TasmeeCtrl.instance.state.isTasmeeMode.value;
           // إخفاء كل عناصر التحكم أثناء السكرول التلقائي النشط (غير المتوقف)
           final autoScroll = AutoScrollCtrl.instance;
           final isAutoScrollRunning = autoScroll.state.isActive.value &&
@@ -857,18 +860,23 @@ class _ControlWidget extends StatelessWidget {
                   alignment: Alignment.center,
                   children: [
                     // السلايدر السفلي - يظهر من الأسفل للأعلى
-                    // Bottom slider - appears from bottom to top
-                    isShowAudioSlider!
-                        ? AyahsAudioWidget(
-                            style: ayahStyle ??
-                                AyahAudioStyle.defaults(
-                                    isDark: isDark, context: context),
+                    // في وضع التسميع يُستبدل بشريط التحكم بالتسميع.
+                    isTasmee
+                        ? TasmeeControlWidget(
                             isDark: isDark,
                             languageCode: languageCode,
-                            downloadManagerStyle: ayahDownloadManagerStyle,
                           )
-                        : const SizedBox.shrink(),
-                    kIsWeb
+                        : isShowAudioSlider!
+                            ? AyahsAudioWidget(
+                                style: ayahStyle ??
+                                    AyahAudioStyle.defaults(
+                                        isDark: isDark, context: context),
+                                isDark: isDark,
+                                languageCode: languageCode,
+                                downloadManagerStyle: ayahDownloadManagerStyle,
+                              )
+                            : const SizedBox.shrink(),
+                    kIsWeb && !isTasmee
                         ? JumpingPageControllerWidget(
                             backgroundColor: backgroundColor,
                             isDark: isDark,
@@ -886,7 +894,7 @@ class _ControlWidget extends StatelessWidget {
                             isFontsLocal: isFontsLocal,
                           )
                         : const SizedBox.shrink(),
-                    isShowTabBar!
+                    isShowTabBar! && !isTasmee
                         ? Positioned(
                             top: 70,
                             child: QuranOrTenRecitationsTabBar(
@@ -900,7 +908,7 @@ class _ControlWidget extends StatelessWidget {
                         : const SizedBox.shrink(),
                     // شريط اختيار وضع العرض - يظهر على الجانب
                     // Display mode selector bar - appears on the side
-                    if (isShowDisplayModeBar!)
+                    if (isShowDisplayModeBar! && !isTasmee)
                       Positioned(
                         right: 8,
                         top: 0,
@@ -913,13 +921,14 @@ class _ControlWidget extends StatelessWidget {
                         ),
                       ),
                     // شريط التحكم بسرعة السكرول التلقائي — يبقى ظاهرًا بشكل مستقل
-                    AutoScrollSpeedSlider(
-                      isDark: isDark,
-                      autoScrollStyle: autoScrollStyle ??
-                          AutoScrollStyle.defaults(
-                              isDark: isDark, context: context),
-                      languageCode: languageCode,
-                    ),
+                    if (!isTasmee)
+                      AutoScrollSpeedSlider(
+                        isDark: isDark,
+                        autoScrollStyle: autoScrollStyle ??
+                            AutoScrollStyle.defaults(
+                                isDark: isDark, context: context),
+                        languageCode: languageCode,
+                      ),
                   ],
                 ),
               ),

@@ -38,7 +38,11 @@ import 'src/tafsir/tafsir.dart';
 // تحتاج TasmeeCtrl، ووحدة التسميع تحتاج QuranCtrl. الاستيراد محدود
 // بـ show كي لا تتسرب أسماء المحرك إلى فضاء مكتبة القرآن.
 import 'src/tasmee/tasmee.dart'
-    show TasmeeCtrl, TasmeeWordStatus, TasmeeUpdateIds;
+    show
+        TasmeeCtrl,
+        TasmeeWordStatus,
+        TasmeeUpdateIds,
+        TasmeeControlWidget;
 
 part 'src/core/theme/quran_library_theme.dart';
 part 'src/core/utils/assets_path.dart';
@@ -91,6 +95,7 @@ part 'src/quran/data/models/styles_models/surah_name_style.dart';
 part 'src/quran/data/models/styles_models/tajweed_menu_style.dart';
 part 'src/quran/data/models/styles_models/top_bottom_quran_style.dart';
 part 'src/quran/data/models/styles_models/word_info_bottom_sheet_style.dart';
+part 'src/tasmee/data/models/styles_models/tasmee_style.dart';
 part 'src/quran/data/models/surah_names_model.dart';
 part 'src/quran/data/models/word_info_models.dart';
 part 'src/quran/data/qpc_v4/qpc_hafs_word_by_word_assets_loader.dart';

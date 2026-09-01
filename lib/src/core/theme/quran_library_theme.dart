@@ -18,6 +18,7 @@ class QuranLibraryTheme extends StatelessWidget {
   final QuranTafsirSideStyle? quranTafsirSideStyle;
   final WordInfoBottomSheetStyle? wordInfoBottomSheetStyle;
   final AutoScrollStyle? autoScrollStyle;
+  final TasmeeStyle? tasmeeStyle;
   final Widget child;
 
   const QuranLibraryTheme({
@@ -38,6 +39,7 @@ class QuranLibraryTheme extends StatelessWidget {
     this.quranTafsirSideStyle,
     this.wordInfoBottomSheetStyle,
     this.autoScrollStyle,
+    this.tasmeeStyle,
     required this.child,
   });
 
@@ -85,7 +87,12 @@ class QuranLibraryTheme extends StatelessWidget {
                                     autoScrollStyle,
                                     (s, c) =>
                                         AutoScrollTheme(style: s, child: c),
-                                    child,
+                                    _wrapIfNotNull(
+                                      tasmeeStyle,
+                                      (s, c) =>
+                                          TasmeeTheme(style: s, child: c),
+                                      child,
+                                    ),
                                   ),
                                 ),
                               ),
@@ -322,5 +329,23 @@ class QuranTafsirSideTheme extends InheritedWidget {
 
   @override
   bool updateShouldNotify(covariant QuranTafsirSideTheme oldWidget) =>
+      style != oldWidget.style;
+}
+
+
+/// مزود نمط التسميع
+class TasmeeTheme extends InheritedWidget {
+  final TasmeeStyle style;
+  const TasmeeTheme({
+    super.key,
+    required this.style,
+    required super.child,
+  });
+
+  static TasmeeTheme? of(BuildContext context) =>
+      context.dependOnInheritedWidgetOfExactType<TasmeeTheme>();
+
+  @override
+  bool updateShouldNotify(covariant TasmeeTheme oldWidget) =>
       style != oldWidget.style;
 }

@@ -83,6 +83,7 @@
 - [Word Audio (Word-by-Word)](#word-audio-word-by-word)
 - [Tafsir](#tafsir)
 - [Audio Playback](#audio-playback)
+- [AI Recitation Checking (التسميع)](#ai-recitation-checking-التسميع)
 - [Sources](#sources)
 - [License](#license)
 
@@ -130,7 +131,7 @@ In the `pubspec.yaml` of your flutter project, add the following dependency:
 ```yaml
 dependencies:
   ...
-  quran_library: ^4.3.0
+  quran_library: ^4.4.0
 ```
 
 Import it:
@@ -876,6 +877,72 @@ QuranLibrary().hafsStyle;
 
 /// [naskhStyle] is the default style for other text.
 QuranLibrary().naskhStyle;
+```
+
+## AI Recitation Checking (التسميع)
+
+AI-powered memorization checking: toggle tasmee mode from the Quran top bar (mic
+button) — the page's words are hidden (ayah-end numbers stay visible), audio and
+other controls step aside, and a record/stop bar takes over. While you recite,
+words are revealed progressively: the current word is highlighted, and each
+completed word is colored green (correct) or red (incorrect) after it is fully
+pronounced. Stopping opens a results bottom sheet listing tajweed / pronunciation
+/ tashkeel errors with expected vs recited phonemes.
+
+Two engines are supported:
+
+| Engine | Live word reveal | Internet |
+| --- | --- | --- |
+| **Offline (default)** — Quran-Lab zipformer v3.1 via `sherpa_onnx` | ✅ | Only once — a 73MB model is downloaded at first use (never bundled in assets), then tasmee works fully offline |
+| **Server** — [quran-muaalem](https://github.com/obadx/quran-muaalem) | ❌ (results after stop) | Required |
+
+Engine choice, server URL, and model download are managed from the in-mode
+settings sheet (⚙) and persisted automatically. Server mode is batch-only by
+nature: words appear with the results after stopping.
+
+> **Note:** automatic correction can be wrong and does not replace a certified
+> teacher — accuracy is lower for children under 12. (Required by the
+> [Quran-Lab NPL-1.2](https://github.com/alheekmahlib/quran_audio) model license.)
+
+### Permissions required from the host app
+
+The package already merges `RECORD_AUDIO` into the Android manifest. iOS/macOS
+hosts must declare microphone usage themselves:
+
+`ios/Runner/Info.plist`:
+
+```xml
+<key>NSMicrophoneUsageDescription</key>
+<string>يستخدم التطبيق الميكروفون لتسجيل تسميعك والتحقق من قراءتك.</string>
+```
+
+`macos/Runner/DebugProfile.entitlements` and `Release.entitlements`:
+
+```xml
+<key>com.apple.security.device.audio-input</key>
+<true/>
+```
+
+### Customization
+
+- Toggle/hide the top-bar button via `QuranTopBarStyle.showTasmeeButton` /
+  `tasmeeIconPath` (hidden automatically on web — the mic and the offline model
+  are not supported there).
+- Theme every tasmee surface (control bar, results sheet, settings sheet,
+  disclaimers, and all labels for i18n) via `TasmeeStyle` +
+  `QuranLibraryTheme(tasmeeStyle: ...)`.
+
+### Example
+
+```dart
+// The button lives in the default Quran top bar — nothing else to wire.
+QuranLibraryScreen(isDark: false);
+
+// Optional: pre-download the offline model ahead of first use.
+final ready = await TasmeeModelService().isModelReady();
+if (!ready) {
+  await TasmeeModelService().downloadModel();
+}
 ```
 
 ## Sources

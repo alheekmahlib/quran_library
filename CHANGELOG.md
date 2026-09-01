@@ -1,5 +1,16 @@
 # Changelog
 
+## 4.4.0
+
+* **ADD:**
+  * AI recitation checking (التسميع بالذكاء الاصطناعي), ported from the `quran_audio` package: toggle tasmee mode from the Quran top bar (mic button) — the page's words are hidden (ayah-end numbers stay), `AyahsAudioWidget`, `JumpingPageControllerWidget`, `QuranOrTenRecitationsTabBar`, and `DisplayModeBar` are replaced or hidden, and a record/stop bar takes over. While reciting, words are revealed progressively — the current word is highlighted, and each completed word is colored green/red after it is fully pronounced. Stopping opens a results bottom sheet (tajweed / pronunciation / tashkeel errors with expected vs recited phonemes).
+  * Two engines: offline Quran-Lab zipformer v3.1 via `sherpa_onnx` (live word tracking; works with no internet after a one-time 73MB model download at first use — the model is never bundled in assets) and an optional quran-muaalem server mode (batch correction after stop, no live reveal). Engine choice + server URL persist via GetStorage and are configurable from the in-mode settings sheet and `TasmeeStyle`.
+  * Multi-ayah page sessions: the phoneme reference layer was extended with `QuranReferenceRange` (page-level concatenated units), a pure `RangeLiveTracker` (confirmed-jump incremental matching), leading-insert tolerance (basmalah / late starts), and error → (surah, ayah, word) position tagging for on-page highlighting.
+  * Web-safe engine isolation: `sherpa_onnx` (dart:ffi) sits behind a conditional factory so web builds keep compiling; the tasmee button is hidden on web.
+  * New dependencies: `record: ^6.0.0` and `sherpa_onnx: ">=1.12.40 <1.13.0"` (native endorsers pinned via the example's `dependency_overrides`).
+  * Mic permissions: `RECORD_AUDIO` is added to the package's Android manifest (merges into host apps); iOS/macOS hosts must add `NSMicrophoneUsageDescription` / the audio-input entitlement (documented in the README).
+  * The Quran-Lab model license (NPL-1.2) ships at `assets/quran_lab/LICENSE-QuranLab-NPL-1.2.txt` with its mandatory disclaimer shown in the results sheet.
+
 ## 4.3.0
 
 * **FIX:**

@@ -73,6 +73,7 @@ class QuranLibraryScreen extends StatelessWidget {
     this.wordInfoBottomSheetStyle,
     this.isShowDisplayModeBar = true,
     this.autoScrollStyle,
+    this.isShowTasmeeControl = true,
   });
 
   /// إذا قمت بإضافة شريط التطبيقات هنا فإنه سيحل محل شريط التطبيقات الافتراضية [appBar]
@@ -357,6 +358,13 @@ class QuranLibraryScreen extends StatelessWidget {
   ///
   /// [isShowDisplayModeBar] To specify whether to show the display mode bar or not
   final bool? isShowDisplayModeBar;
+
+  /// في وضع التسميع: التحكم في إظهار شريط التحكم بالتسميع المدمج.
+  ///
+  /// [isShowTasmeeControl] Whether to show the built-in tasmee control bar
+  /// in tasmee mode. Set it to false if the host app provides its own
+  /// tasmee control UI (e.g. in its own bottom navigation bar).
+  final bool? isShowTasmeeControl;
 
   @override
   Widget build(BuildContext context) {
@@ -672,6 +680,7 @@ class QuranLibraryScreen extends StatelessWidget {
                           topBarStyle: topBarStyle,
                           isShowDisplayModeBar: isShowDisplayModeBar,
                           autoScrollStyle: autoScrollStyle,
+                          isShowTasmeeControl: isShowTasmeeControl,
                         ),
                       ],
                     ),
@@ -814,6 +823,7 @@ class _ControlWidget extends StatelessWidget {
     required this.topBarStyle,
     required this.isShowDisplayModeBar,
     required this.autoScrollStyle,
+    required this.isShowTasmeeControl,
   });
 
   final bool? isShowAudioSlider;
@@ -832,6 +842,7 @@ class _ControlWidget extends StatelessWidget {
   final bool? isShowDisplayModeBar;
   final QuranTopBarStyle? topBarStyle;
   final AutoScrollStyle? autoScrollStyle;
+  final bool? isShowTasmeeControl;
 
   @override
   Widget build(BuildContext context) {
@@ -860,8 +871,9 @@ class _ControlWidget extends StatelessWidget {
                   alignment: Alignment.center,
                   children: [
                     // السلايدر السفلي - يظهر من الأسفل للأعلى
-                    // في وضع التسميع يُستبدل بشريط التحكم بالتسميع.
-                    isTasmee
+                    // في وضع التسميع يُستبدل شريط الصوت بشريط التحكم بالتسميع
+                    // (يمكن للتطبيق المضيف إلغاء ذلك عبر isShowTasmeeControl).
+                    isTasmee && isShowTasmeeControl!
                         ? TasmeeControlWidget(
                             isDark: isDark,
                             languageCode: languageCode,

@@ -33,7 +33,21 @@ class TasmeeCtrl extends GetxController {
   TasmeeCtrl({TasmeeModelService? modelService})
       : _modelService = modelService ?? TasmeeModelService();
 
-  static TasmeeCtrl get instance => GetInstance().putOrFind(() => TasmeeCtrl());
+  static TasmeeCtrl? _cachedInstance;
+
+  /// نسخة واحدة ثابتة طوال عمر التطبيق.
+  ///
+  /// حالة التسميع عابرة (وضع مفعّل/جلسة جارية)، لذا لا يجوز أن يحذفها
+  /// GetX مع مسار مضيف (SmartManagement) ويُنشئ نسخة جديدة فارغة — ما كان
+  /// يُبطل وضع التسميع بعد أول خروج عبر Get.offAll. لذلك يُسجَّل الكائن
+  /// [permanent] ويُعاد تسجيله إن أُزيل من السجل، مع الحفاظ على نفس الهوية.
+  static TasmeeCtrl get instance {
+    final instance = _cachedInstance ??= TasmeeCtrl();
+    if (!GetInstance().isRegistered<TasmeeCtrl>()) {
+      Get.put<TasmeeCtrl>(instance, permanent: true);
+    }
+    return instance;
+  }
 
   final TasmeeModelService _modelService;
   final TasmeeState state = TasmeeState();
@@ -117,8 +131,11 @@ class TasmeeCtrl extends GetxController {
     state.lastError.value = '';
     state.lastResult.value = null;
     state.showAllWords.value = false;
+    // جلسة سابقة قد انتهت بـ finished/error تبقى في الحالة — صفّرها لدخول نظيف.
+    state.sessionState.value = RecitationState.idle;
     _doneWordKeys.clear();
     await _buildRangeForCurrentPage();
+    _pageWorker?.dispose();
     _pageWorker = ever(q.QuranCtrl.instance.state.currentPageNumber,
         (int page) => _onPageChanged(page));
     // حدّث صفحة القراءة (إخفاء الكلمات) وعناصر التحكم.

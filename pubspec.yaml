@@ -1,7 +1,7 @@
 name: quran_library
 description: "An integrated package for displaying the Holy Qur’an identical to
   the Medina Quran with the narration of Hafs on the authority of Asim."
-version: 4.4.0
+version: 4.5.0
 homepage: https://github.com/alheekmahlib/quran_library
 documentation: https://quran-library.vexaltech.dev/
 
@@ -31,9 +31,13 @@ dependencies:
   record: ^6.0.0
   rxdart: ^0.28.0
   preload_page_view: ^0.2.0
-  # محرك التسميع المحلي (ONNX) — 1.13.x يكسر البث على macOS arm64
-  # Offline tasmee engine (ONNX) — 1.13.x breaks streaming on macOS arm64
-  sherpa_onnx: ">=1.12.40 <1.13.0"
+  # محرك التسميع المحلي (ONNX):
+  # 1.13+ مطلوب على iOS مع الربط الثابت (use_frameworks! :linkage => :static)
+  # في تطبيقات المضيف — التهيئة الموحدة (#3875) تستخدم DynamicLibrary.process()
+  # بدل فتح إطار ديناميكي يفشل. ومشكلة غموض SherpaOnnxC.framework على macOS
+  # arm64 (#3876) أُصلحت بعد 1.13.5.
+  # Offline tasmee engine (ONNX)
+  sherpa_onnx: "^1.13.6"
 
 # This package supports all platforms listed below.
 # But note that it works and fits on mobile size devices

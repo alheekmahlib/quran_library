@@ -130,6 +130,26 @@ void main() {
       expect(done.last.$1, 2);
     });
 
+    test('تلاوة الكلمة الأولى وحدها لا تكشف كلمات لاحقة', () {
+      // انحدار: المطابقة الفورية عند المتوقَّع فقط — تكرار الحروف
+      // العربية داخل الكلمات التالية يجب ألا يُزح المؤشر أمامًا.
+      final done = <(int, int, bool)>[];
+      var lastWord = -1;
+      final tracker = RangeLiveTracker(
+        range: range,
+        onRangeWord: (_, w) => lastWord = w,
+        onWordDone: (v, w, c) => done.add((v, w, c)),
+      );
+      final firstWordEnd = range.wordSpans.first.endUnit;
+      final firstWordUnits = range.units.sublist(0, firstWordEnd + 1);
+      for (var i = 1; i <= firstWordUnits.length; i++) {
+        tracker.onUnits(firstWordUnits.sublist(0, i));
+      }
+      expect(tracker.completedWords, 1, reason: 'الكلمة الأولى فقط اكتملت');
+      expect(tracker.isComplete, isFalse);
+      expect(lastWord, 0, reason: 'الكلمة الجارية هي الأولى');
+    });
+
     test('خطأ في كلمة (استبدال حرف) → تُعلَّم خطأً عند اكتمالها', () {
       final done = <(int, int, bool)>[];
       final tracker = RangeLiveTracker(

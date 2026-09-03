@@ -1,5 +1,14 @@
 # Changelog
 
+## 4.5.0
+
+* **FIX:**
+  * **sherpa_onnx `>=1.12.40 <1.13.0` → `^1.13.6`**: on iOS with statically-linked frameworks (`use_frameworks! :linkage => :static` in the host Podfile), sherpa 1.12 loaded `sherpa_onnx.framework/sherpa_onnx` as a dynamic framework and failed with `DynamicLibrary.open` → tasmee engine init always threw «خطأ في تهيئة محرّك التسميع». The unified init API (#3875, sherpa 1.13.6+) uses `DynamicLibrary.process()` on Flutter, matching the `sherpa_onnx_ios` FFI-plugin pod. The macOS arm64 ambiguous-`SherpaOnnxC.framework` regression (#3876) that motivated the 1.12 pin was fixed after 1.13.5. Engine code needed no changes (API-compatible).
+  * `TasmeeCtrl.instance` now holds a single permanent instance: it was registered via `putOrFind` and bound to the host route, so `Get.offAll` (e.g. a host app's exit-to-home button) deleted it with SmartManagement and the next access silently created a fresh empty controller — tasmee mode then failed to activate on every re-entry after the first. The controller object is now cached statically and re-registered as `permanent` if ever removed. Also resets a stale `finished`/`error` session state to `idle` on mode entry and disposes any leftover page worker.
+
+* **ADD:**
+  * `isShowTasmeeControl` parameter (default `true`) on `QuranLibraryScreen` and `QuranPagesScreen`: lets host apps that build their own tasmee control UI (e.g. inside their own bottom navigation bar) suppress the built-in `TasmeeControlWidget` swap in tasmee mode without affecting the default behavior.
+
 ## 4.4.0
 
 * **ADD:**

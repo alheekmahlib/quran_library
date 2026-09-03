@@ -67,6 +67,7 @@ class QuranPagesScreen extends StatelessWidget {
     this.ayahMenuStyle,
     this.bookmarksTabStyle,
     this.wordInfoBottomSheetStyle,
+    this.isShowTasmeeControl = true,
   }) : assert(
           (page != null && startPage == null && endPage == null) ||
               (page == null && (startPage != null || endPage != null)),
@@ -113,6 +114,14 @@ class QuranPagesScreen extends StatelessWidget {
 
   /// تخصيص نمط نافذة/قائمة أحكام التجويد
   final TajweedMenuStyle? tajweedMenuStyle;
+
+  /// في وضع التسميع: التحكم في إظهار شريط التحكم بالتسميع المدمج.
+  ///
+  /// [isShowTasmeeControl] Whether to show the built-in tasmee control bar
+  /// in tasmee mode. Set it to false if the host app provides its own
+  /// tasmee control UI (e.g. in its own bottom navigation bar).
+  final bool? isShowTasmeeControl;
+
   final BuildContext parentContext;
 
   /// تخصيص نمط تبويب الفهرس الخاص بالمصحف
@@ -450,8 +459,10 @@ class QuranPagesScreen extends StatelessWidget {
                                         alignment: Alignment.center,
                                         children: [
                                           // السلايدر السفلي - يظهر من الأسفل للأعلى
-                                          // في وضع التسميع يُستبدل بشريط التسميع.
-                                          isTasmee
+                                          // في وضع التسميع يُستبدل بشريط التحكم
+                                          // بالتسميع (يمكن إلغاء ذلك عبر
+                                          // isShowTasmeeControl).
+                                          isTasmee && isShowTasmeeControl!
                                               ? TasmeeControlWidget(
                                                   isDark: isDark,
                                                   languageCode: languageCode,

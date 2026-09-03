@@ -37,7 +37,11 @@ dependencies:
   # بدل فتح إطار ديناميكي يفشل. ومشكلة غموض SherpaOnnxC.framework على macOS
   # arm64 (#3876) أُصلحت بعد 1.13.5.
   # Offline tasmee engine (ONNX)
-  sherpa_onnx: "^1.13.6"
+  # محرك التسميع المحلي — تثبيت مطابق للأصول الأصلية (overrides في
+  # example): إصدارات 1.13.x من طبقة Dart تتطلب رموز أصلية 1.13 غير
+  # موجودة في أصول 1.12.40 (يفشل initBindings)، و1.13 يكسر البثّ على
+  # macOS arm64. Dart + natives يجب أن يكونا 1.12.40 معًا.
+  sherpa_onnx: 1.12.40
 
 # This package supports all platforms listed below.
 # But note that it works and fits on mobile size devices

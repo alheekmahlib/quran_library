@@ -165,6 +165,11 @@ class _QpcV4FlowingTextState extends State<QpcV4FlowingText> {
         tasmeeStyle.backgroundColor ??
         AppColors.getBackgroundColor(widget.isDark);
 
+    // خطوط التسميع السفلية: تُرسم في صندوق السطر تحت صندوق الحروف
+    // (لا عبر TextStyle الذي يأخذ موضعه من مقاييس خط QCF).
+    final tasmeeUnderlineRanges = <_ColoredTextRange>[];
+    int charOffset = 0;
+
     final spans =
         List<InlineSpan>.generate(widget.segments.length, (segmentIndex) {
       final seg = widget.segments[segmentIndex];
@@ -190,7 +195,7 @@ class _QpcV4FlowingTextState extends State<QpcV4FlowingText> {
         style: tasmeeStyle,
       );
 
-      return _qpcV4SpanSegment(
+      final span = _qpcV4SpanSegment(
         context: context,
         pageIndex: widget.pageIndex,
         isSelected: isSelectedCombined,
@@ -263,17 +268,42 @@ class _QpcV4FlowingTextState extends State<QpcV4FlowingText> {
         onPagePress: widget.onPagePress,
         hideGlyphs: tasmeeStatus == TasmeeWordStatus.hidden,
         hiddenGlyphColor: hiddenColor,
-        tasmeeUnderlineColor: tasmeeUnderline,
       );
+
+      final spanStart = charOffset;
+      charOffset += _countCharsInSpan(span);
+
+      // خط التسميع السفلي: نطاق حروف الكلمة فقط — يُرسم في صندوق
+      // السطر تحت صندوق الحروف.
+      if (tasmeeUnderline != null) {
+        tasmeeUnderlineRanges.add(_ColoredTextRange(
+          range: TextSelection(
+            baseOffset: spanStart,
+            extentOffset: spanStart + seg.glyphs.length,
+          ),
+          color: tasmeeUnderline,
+        ));
+      }
+      return span;
     });
 
-    return RichText(
+    final richText = RichText(
       textDirection: TextDirection.rtl,
       textAlign: TextAlign.justify,
       softWrap: true,
       overflow: TextOverflow.visible,
       maxLines: null,
       text: TextSpan(children: spans),
+    );
+
+    // بلا خطوط تسميع → RichText مباشر كما كان (صفر كلفة إضافية).
+    if (tasmeeUnderlineRanges.isEmpty) return richText;
+
+    return _AyahSelectionWidget(
+      selectedRanges: const [],
+      selectionColor: const Color(0xffCDAD80).withValues(alpha: 0.25),
+      tasmeeUnderlineRanges: tasmeeUnderlineRanges,
+      child: richText,
     );
   }
 }

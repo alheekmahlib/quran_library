@@ -31,7 +31,6 @@ TextSpan _qpcV4SpanSegment({
   VoidCallback? onPagePress,
   bool hideGlyphs = false,
   Color? hiddenGlyphColor,
-  Color? tasmeeUnderlineColor,
 }) {
   final quranCtrl = QuranCtrl.instance;
   final wordInfoCtrl = WordInfoCtrl.instance;
@@ -67,6 +66,9 @@ TextSpan _qpcV4SpanSegment({
       ? (hiddenGlyphColor ?? AppColors.getBackgroundColor(isDark))
       : (textColor ?? AppColors.getTextColor(isDark));
 
+  // الخط السفلي لكلمات التسميع لا يُرسم عبر TextStyle (موضعه يأتي من
+  // مقاييس خط QCF فيقع فوق الحروف) — بل يرسمه صندوق السطر الموجود
+  // _AyahSelectionRenderBox تحت صندوق الحروف مباشرة.
   final baseTextStyle = TextStyle(
     fontFamily: fontFamily,
     package: fontPackageOverride,
@@ -74,11 +76,6 @@ TextSpan _qpcV4SpanSegment({
     height: 2,
     // wordSpacing: 50,
     color: effectiveGlyphColor,
-    // وضع التسميع: الخط السفلي يرسمه محرك النص (لا الخط الملوّن COLR)
-    // فيعمل حتمًا — أخضر للسليمة ولون نوع الخطأ للخاطئة.
-    decoration: tasmeeUnderlineColor == null ? null : TextDecoration.underline,
-    decorationColor: tasmeeUnderlineColor,
-    decorationThickness: 2,
   );
 
   InlineSpan? tail;

@@ -664,7 +664,7 @@ class _AyahSelectionRenderBox extends RenderProxyBox {
         final rect = box.toRect();
         final underline = Rect.fromLTWH(
           rect.left + 2,
-          rect.bottom + 3,
+          rect.bottom + 1,
           rect.width - 4,
           2.5,
         );

@@ -22,6 +22,7 @@ import 'phoneme_aligner.dart';
 import 'quran_reference.dart';
 import 'quran_units.dart';
 import 'range_tracker.dart';
+import 'tasmee_error_kind.dart';
 import '../core/services/tasmee_reference_store.dart';
 import 'wav_decoder.dart';
 import 'zipformer_model.dart';
@@ -226,7 +227,7 @@ class SherpaZipformerEngine implements LiveCapableRecitationEngine {
     void Function()? onEndpoint,
     void Function(int wordIdx)? onWord,
     void Function(int verseIdx, int wordIdx)? onRangeWord,
-    void Function(int verseIdx, int wordIdx, bool correct)? onWordDone,
+    void Function(int verseIdx, int wordIdx, TasmeeErrorKind kind)? onWordDone,
     void Function()? onRangeComplete,
     int? suraIdx,
     int? ayaIdx,

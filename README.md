@@ -900,6 +900,15 @@ Engine choice, server URL, and model download are managed from the in-mode
 settings sheet (⚙) and persisted automatically. Server mode is batch-only by
 nature: words appear with the results after stopping.
 
+**Error-type underlines:** each revealed word gets a colored underline drawn by
+the text engine (works with the COLR mushaf fonts): green for correct words,
+and — while reciting — a live-classified color for mistakes: **purple for
+tajweed** (madd/shadda/qalqalah/ghunnah/ikhfaa), **red for pronunciation**
+(wrong/extra/missing letter), **orange for tashkeel**. The final evaluation
+after stopping is authoritative and refines the classification. All colors are
+themeable via `TasmeeStyle.correctColor`, `tajweedErrorColor`,
+`normalErrorColor`, and `tashkeelErrorColor`.
+
 > **Note:** automatic correction can be wrong and does not replace a certified
 > teacher — accuracy is lower for children under 12. (Required by the
 > [Quran-Lab NPL-1.2](https://github.com/alheekmahlib/quran_audio) model license.)

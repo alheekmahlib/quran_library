@@ -12,6 +12,7 @@ import 'quran_reference.dart';
 import 'recitation_engine.dart';
 import 'wav_decoder.dart';
 import 'recitation_state.dart';
+import 'tasmee_error_kind.dart';
 
 /// جلسة تسميع واحدة — تسجّل WAV، تُرسله لِلمحرّك (online أو offline)،
 /// تستلم التصحيح.
@@ -227,7 +228,7 @@ class RecitationSession {
   /// آخر وحدة فيها — ومعها صحة نطقها. اربطه لِتلوين الكلمة أخضر/أحمر.
   ///
   /// Called when a word is fully pronounced (range mode) with its verdict.
-  void Function(int verseIdx, int wordIdx, bool correct)? onWordDone;
+  void Function(int verseIdx, int wordIdx, TasmeeErrorKind kind)? onWordDone;
 
   /// يُستدعى عند اكتمال كل كلمات النطاق (إتمام الصفحة).
   ///

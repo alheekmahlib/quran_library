@@ -183,6 +183,11 @@ class _QpcV4FlowingTextState extends State<QpcV4FlowingText> {
 
       // وضع التسميع: إخفاء/تلوين الكلمة بحسب حالة تلاوتها.
       final tasmeeStatus = tasmeeStatusOfSegment(seg, widget.pageIndex);
+      final tasmeeUnderline = tasmeeUnderlineColorFor(
+        status: tasmeeStatus,
+        kind: tasmeeErrorKindOfSegment(seg, widget.pageIndex),
+        isDark: widget.isDark,
+      );
 
       return _qpcV4SpanSegment(
         context: context,
@@ -257,6 +262,7 @@ class _QpcV4FlowingTextState extends State<QpcV4FlowingText> {
         onPagePress: widget.onPagePress,
         hideGlyphs: tasmeeStatus == TasmeeWordStatus.hidden,
         hiddenGlyphColor: hiddenColor,
+        tasmeeUnderlineColor: tasmeeUnderline,
       );
     });
 

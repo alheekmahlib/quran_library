@@ -23,7 +23,10 @@ void main() {
     final pred = predSymbols.map((s) => lex.bySymbol[s]!).toList();
     final ops = alignUnits(fatiha1.units, pred);
     return buildErrorsFromUnitAlignment(
-        ops: ops, refUnits: fatiha1.units, predUnits: pred, wordAt: fatiha1.wordAt);
+        ops: ops,
+        refUnits: fatiha1.units,
+        predUnits: pred,
+        wordAt: fatiha1.wordAt);
   }
 
   test('تلاوة مطابقة تمامًا → صفر أخطاء', () {

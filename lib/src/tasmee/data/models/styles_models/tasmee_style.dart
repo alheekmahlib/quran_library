@@ -12,6 +12,9 @@ class TasmeeStyle {
     this.accentColor,
     this.correctColor,
     this.incorrectColor,
+    this.tajweedErrorColor,
+    this.normalErrorColor,
+    this.tashkeelErrorColor,
     this.recordButtonColor,
     this.stopButtonColor,
     this.iconColor,
@@ -54,11 +57,20 @@ class TasmeeStyle {
   /// يُستخدم backgroundColor ثم الافتراضي إن لم يُحدَّد).
   final Color? hiddenWordColor;
 
-  /// لون الكلمة الصحيحة (أخضر).
+  /// لون الكلمة الصحيحة (أخضر — خط سفلي تحت الكلمة).
   final Color? correctColor;
 
-  /// لون الكلمة الخاطئة (أحمر).
+  /// لون الكلمة الخاطئة (أحمر — يُستخدم احتياطًا عند غياب نوع الخطأ).
   final Color? incorrectColor;
+
+  /// لون الخط السفلي لأخطاء التجويد (بنفسجي).
+  final Color? tajweedErrorColor;
+
+  /// لون الخط السفلي لأخطاء النطق (أحمر).
+  final Color? normalErrorColor;
+
+  /// لون الخط السفلي لأخطاء التشكيل (برتقالي).
+  final Color? tashkeelErrorColor;
 
   final Color? recordButtonColor;
   final Color? stopButtonColor;
@@ -112,6 +124,12 @@ class TasmeeStyle {
       correctColor: isDark ? const Color(0xFF81C784) : const Color(0xFF2E7D32),
       incorrectColor:
           isDark ? const Color(0xFFE57373) : const Color(0xFFC62828),
+      tajweedErrorColor:
+          isDark ? const Color(0xFFB39DDB) : const Color(0xFF6A1B9A),
+      normalErrorColor:
+          isDark ? const Color(0xFFE57373) : const Color(0xFFC62828),
+      tashkeelErrorColor:
+          isDark ? const Color(0xFFFFB74D) : const Color(0xFFEF6C00),
       recordButtonColor: scheme.primary,
       stopButtonColor:
           isDark ? const Color(0xFFE57373) : const Color(0xFFC62828),

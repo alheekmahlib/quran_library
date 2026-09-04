@@ -4,6 +4,7 @@ library;
 import 'package:get/get.dart';
 
 import '../engine/models/recitation_result.dart';
+import '../engine/tasmee_error_kind.dart';
 import '../engine/recitation_state.dart';
 
 /// وضع محرّك التسميع.
@@ -47,6 +48,11 @@ class TasmeeState {
   /// حالة كل كلمة في الصفحة بمفتاح `'$ayahUq:$wordNumber'` (كلمة 1-based).
   final RxMap<String, TasmeeWordStatus> wordStatuses =
       <String, TasmeeWordStatus>{}.obs;
+
+  /// نوع خطأ كل كلمة خاطئة (بنفس مفتاح [wordStatuses]) — للخط السفلي
+  /// الملوّن؛ الكلمات الصحيحة بلا مدخل.
+  final RxMap<String, TasmeeErrorKind> wordErrorKinds =
+      <String, TasmeeErrorKind>{}.obs;
 
   /// الكلمة الجارية (مفتاح) — أو null.
   final Rxn<String> currentWordKey = Rxn<String>();

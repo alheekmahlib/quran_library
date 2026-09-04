@@ -21,6 +21,7 @@ import '../engine/quran_reference.dart';
 import '../engine/recitation.dart';
 import '../engine/recitation_session.dart';
 import '../engine/recitation_state.dart';
+import '../engine/tasmee_error_kind.dart';
 import 'tasmee_state.dart';
 
 /// معرّفات تحديث الواجهة لِـ GetBuilder.
@@ -154,6 +155,7 @@ class TasmeeCtrl extends GetxController {
     _pageWorker = null;
     state.isTasmeeMode.value = false;
     state.wordStatuses.clear();
+    state.wordErrorKinds.clear();
     state.currentWordKey.value = null;
     state.lastError.value = '';
     state.completedWords.value = 0;
@@ -186,6 +188,7 @@ class TasmeeCtrl extends GetxController {
     final page = q.QuranCtrl.instance.state.currentPageNumber.value;
     state.currentRangePage = page;
     state.wordStatuses.clear();
+    state.wordErrorKinds.clear();
     state.currentWordKey.value = null;
     state.completedWords.value = 0;
     state.totalWords.value = 0;
@@ -341,6 +344,7 @@ class TasmeeCtrl extends GetxController {
   Future<void> retryTasmee() async {
     state.lastResult.value = null;
     state.lastError.value = '';
+    state.wordErrorKinds.clear();
     _doneWordKeys.clear();
     await _buildRangeForCurrentPage();
     _refreshQuranPages();
@@ -454,12 +458,18 @@ class TasmeeCtrl extends GetxController {
     return '${ayah.ayahUQNumber}:${wordIdx + 1}';
   }
 
-  void _onWordDone(int verseIdx, int wordIdx, bool correct) {
+  void _onWordDone(int verseIdx, int wordIdx, TasmeeErrorKind kind) {
     if (verseIdx < 0 || verseIdx >= _rangeAyahs.length) return;
     final key = _wordKey(verseIdx, wordIdx);
     _doneWordKeys.add(key);
+    final correct = kind == TasmeeErrorKind.correct;
     state.wordStatuses[key] =
         correct ? TasmeeWordStatus.correct : TasmeeWordStatus.incorrect;
+    if (correct) {
+      state.wordErrorKinds.remove(key);
+    } else {
+      state.wordErrorKinds[key] = kind;
+    }
     if (state.currentWordKey.value == key) {
       state.currentWordKey.value = null;
     }
@@ -483,7 +493,8 @@ class TasmeeCtrl extends GetxController {
     _refreshQuranPages();
   }
 
-  /// يوسم كلمات الأخطاء النهائية بالأحمر (المرجع المعتمد).
+  /// يرقّع تصنيف الكلمات من التقييم النهائي (المرجع المعتمد) —
+  /// يستبدل التصنيف الحيّ الاسترشادي بلون أعلى أسبقية عند تعدد الأخطاء.
   void _applyFinalErrorsToStatuses(RecitationResult result) {
     for (final error in result.errors) {
       if (error.suraIdx == null ||
@@ -495,6 +506,10 @@ class TasmeeCtrl extends GetxController {
       if (verseIdx < 0) continue;
       final key = _wordKey(verseIdx, error.wordIdx!);
       state.wordStatuses[key] = TasmeeWordStatus.incorrect;
+      final kind = tasmeeErrorKindFromType(error.errorType);
+      final prev = state.wordErrorKinds[key];
+      state.wordErrorKinds[key] =
+          prev == null ? kind : mergeTasmeeErrorKinds(prev, kind);
     }
   }
 
@@ -509,6 +524,9 @@ class TasmeeCtrl extends GetxController {
   /// حالة كلمة بمفتاحها (لِلطبقة العرضية).
   TasmeeWordStatus wordStatusOf(String key) =>
       state.wordStatuses[key] ?? TasmeeWordStatus.hidden;
+
+  /// نوع خطأ كلمة خاطئة بمفتاحها (null للصحيحة/المخفية).
+  TasmeeErrorKind? tasmeeErrorKindOf(String key) => state.wordErrorKinds[key];
 
   /// يحدّث صفحات القراءة المعروضة (إخفاء/إظهار/تلوين الكلمات).
   ///

@@ -9,6 +9,7 @@ import 'dart:typed_data';
 import 'models/muaalem_config.dart';
 import 'models/recitation_result.dart';
 import 'quran_reference.dart';
+import 'tasmee_error_kind.dart';
 import 'recitation_engine.dart';
 
 /// لقطة تنبؤ حيّة (وحدات + طوابع بدايتها بالثوان).
@@ -39,7 +40,7 @@ abstract interface class LiveCapableRecitationEngine
     void Function()? onEndpoint,
     void Function(int wordIdx)? onWord,
     void Function(int verseIdx, int wordIdx)? onRangeWord,
-    void Function(int verseIdx, int wordIdx, bool correct)? onWordDone,
+    void Function(int verseIdx, int wordIdx, TasmeeErrorKind kind)? onWordDone,
     void Function()? onRangeComplete,
     int? suraIdx,
     int? ayaIdx,

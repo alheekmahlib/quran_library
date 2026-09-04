@@ -27,6 +27,7 @@ library;
 
 import 'quran_reference.dart';
 import 'quran_units.dart';
+import 'tasmee_error_kind.dart';
 
 class RangeLiveTracker {
   RangeLiveTracker({
@@ -49,7 +50,8 @@ class RangeLiveTracker {
   final int maxSkipUnits;
 
   final void Function(int verseIdx, int wordIdx)? onRangeWord;
-  final void Function(int verseIdx, int wordIdx, bool correct)? onWordDone;
+  final void Function(int verseIdx, int wordIdx, TasmeeErrorKind kind)?
+      onWordDone;
   final void Function()? onRangeComplete;
 
   /// فهرس الوحدة المرجعية المتوقَّعة التالية (0-based).
@@ -61,6 +63,9 @@ class RangeLiveTracker {
   /// فهرس المطابقة المرشَّح لقفزة واسعة مؤقتة بانتظار تأكيد (-1 = لا شيء).
   int _pendingK = -1;
 
+  /// الوحدة المتنبأة المؤقتة المرتبطة بِـ [_pendingK] (لِلتصنيف عند التأكيد).
+  QuranUnit? _pendingUnit;
+
   /// مؤشر كلمات النطاق المُبلَّغ عن اكتمالها.
   int _doneCursor = 0;
 
@@ -69,8 +74,8 @@ class RangeLiveTracker {
   int _lastWord = -1;
   bool _completeFired = false;
 
-  /// الكلمات التي شهدت حذفًا أو إدراجًا على وحداتها.
-  final Set<QuranRangeWordSpan> _erroredSpans = {};
+  /// أسوأ نوع خطأ لكل كلمة شهدت حذفًا/إدراجًا/اختلاف رمز على وحداتها.
+  final Map<QuranRangeWordSpan, TasmeeErrorKind> _wordKinds = {};
 
   /// عدد الكلمات المكتملة حتى الآن.
   int get completedWords => _doneCursor;
@@ -99,7 +104,7 @@ class RangeLiveTracker {
     final tight = _findMatch(pred, tightSkipUnits);
     if (tight >= 0) {
       if (_pendingK >= 0) _discardPending();
-      _consume(tight);
+      _consume(tight, pred);
       return;
     }
 
@@ -108,7 +113,7 @@ class RangeLiveTracker {
     if (wide < 0) {
       // 3) لا مطابقة → إدراج على الكلمة المتوقَّعة (والقفزة المؤقتة ساقطة).
       if (_pendingK >= 0) _resolvePendingAsInsert();
-      _markError(_nextRef);
+      _markError(_nextRef, TasmeeErrorKind.normal);
       return;
     }
     // وحدة بلا أي مطابقة قريبة مع قفزة معلَّقة: القفزة كانت ضوضاء —
@@ -116,16 +121,20 @@ class RangeLiveTracker {
     if (_pendingK >= 0) {
       if (wide == _pendingK + 1) {
         // تأكيد: وحدتان متتاليتان على الإزاحة نفسها → تجاوز فعلي.
-        _consume(_pendingK);
+        _consume(_pendingK, _pendingUnit ?? pred);
+        _pendingUnit = null;
         _pendingK = -1;
-        _consume(wide);
+        _consume(wide, pred);
       } else {
-        // إزاحتان مختلفتان → الأولى إدراج، والثانية تنتظر تأكيدًا.
+        // إزاحتان مختلفتان → الأولى إدراج، والثانية تنتظر تأكيدًا
+        // (نخزّن وحدتها لِلتصنيف عند التأكيد).
         _resolvePendingAsInsert();
+        _pendingUnit = pred;
         _pendingK = wide;
       }
       return;
     }
+    _pendingUnit = pred;
     _pendingK = wide;
   }
 
@@ -140,18 +149,45 @@ class RangeLiveTracker {
     return -1;
   }
 
-  /// يستهلك مطابقة عند [k]: الوحدات قبله حذف، والمؤشّر يتجاوزه.
-  void _consume(int k) {
+  /// يستهلك مطابقة عند [k] مع تصنيف الكلمات المتأثرة:
+  /// الوحدات المتخطَّاة قبله حذف (تجويدية = تجويد وإلا نطق)، والوحدة
+  /// المطابِقة نفسها: رمز مطابق = سليمة، نفس الحرف برمز مختلف =
+  /// تشكيل أو تجويد بحسب طبيعة الفرق (منطق error_detector نفسه).
+  void _consume(int k, QuranUnit pred) {
     for (var d = _nextRef; d < k; d++) {
-      _markError(d);
+      final ref = range.units[d];
+      final tajweedish = ref.isMadd ||
+          ref.isShadda ||
+          ref.qalqalah ||
+          ref.ghunna ||
+          ref.ikhfaa;
+      _markError(
+          d, tajweedish ? TasmeeErrorKind.tajweed : TasmeeErrorKind.normal);
+    }
+    final ref = range.units[k];
+    if (ref.symbol != pred.symbol) {
+      _markError(k, _classifyUnitDiff(ref, pred));
     }
     _nextRef = k + 1;
     _reportCurrentWord();
   }
 
+  /// يصنّف فرق رمزين بنفس الحرف الأساسي: فروق التجويد (مدّ/شدة/قلقلة/
+  /// غنّة/إخفاء) → تجويد، وإلا ففرق الحركة → تشكيل.
+  TasmeeErrorKind _classifyUnitDiff(QuranUnit ref, QuranUnit pred) {
+    final tajweedDiff = (ref.isMadd != pred.isMadd) ||
+        (ref.isShadda != pred.isShadda) ||
+        (ref.qalqalah != pred.qalqalah) ||
+        (ref.ghunna != pred.ghunna) ||
+        (ref.ikhfaa != pred.ikhfaa) ||
+        (ref.isMadd && pred.isMadd && ref.coreRepeat != pred.coreRepeat);
+    return tajweedDiff ? TasmeeErrorKind.tajweed : TasmeeErrorKind.tashkeel;
+  }
+
   /// القفزة المؤقتة ساقطة → الوحدة نطق زائد على الكلمة المتوقَّعة.
   void _resolvePendingAsInsert() {
-    _markError(_nextRef);
+    _markError(_nextRef, TasmeeErrorKind.normal);
+    _pendingUnit = null;
     _pendingK = -1;
   }
 
@@ -159,13 +195,17 @@ class RangeLiveTracker {
   /// بالضبط فالقفزة كانت حرفًا أماميًا متكررًا صادف التنبؤ، لا نطقًا
   /// زائدًا يستحق وسْم خطأ.
   void _discardPending() {
+    _pendingUnit = null;
     _pendingK = -1;
   }
 
-  /// يسجّل خطأً على الكلمة التي تضم الوحدة المرجعية [unitIdx].
-  void _markError(int unitIdx) {
+  /// يسجّل خطأ بنوعه على الكلمة التي تضم الوحدة المرجعية [unitIdx]
+  /// (الأعلى أسبقية يبقى عند تعدد الأخطاء في الكلمة).
+  void _markError(int unitIdx, TasmeeErrorKind kind) {
     final span = range.spanOfUnit(unitIdx);
-    if (span != null) _erroredSpans.add(span);
+    if (span == null) return;
+    final prev = _wordKinds[span];
+    _wordKinds[span] = prev == null ? kind : mergeTasmeeErrorKinds(prev, kind);
   }
 
   /// يبلّغ الكلمة الجارية عند تغيّرها.
@@ -183,14 +223,15 @@ class RangeLiveTracker {
     }
   }
 
-  /// يبلّغ الكلمات التي تجاوزها المؤشّر (آخر وحدة فيها مُطابَقة).
+  /// يبلّغ الكلمات التي تجاوزها المؤشّر (آخر وحدة فيها مُطابَقة)
+  /// مع نوع خطأها (correct إن كانت سليمة).
   void _reportCompleted() {
     final onWordDone = this.onWordDone;
     while (_doneCursor < range.wordSpans.length &&
         range.wordSpans[_doneCursor].endUnit < _nextRef) {
       final span = range.wordSpans[_doneCursor];
-      onWordDone?.call(
-          span.verseIdx, span.wordIdx, !_erroredSpans.contains(span));
+      onWordDone?.call(span.verseIdx, span.wordIdx,
+          _wordKinds[span] ?? TasmeeErrorKind.correct);
       _doneCursor++;
     }
   }

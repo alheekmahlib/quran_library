@@ -19,6 +19,7 @@
   * New dependencies: `record: ^6.0.0` and `sherpa_onnx: ">=1.12.40 <1.13.0"` (native endorsers pinned via the example's `dependency_overrides`).
   * Mic permissions: `RECORD_AUDIO` is added to the package's Android manifest (merges into host apps); iOS/macOS hosts must add `NSMicrophoneUsageDescription` / the audio-input entitlement (documented in the README).
   * The Quran-Lab model license (NPL-1.2) ships at `assets/quran_lab/LICENSE-QuranLab-NPL-1.2.txt` with its mandatory disclaimer shown in the results sheet.
+  * Error-type underlines: revealed words get an engine-drawn underline (works with COLR fonts) — green for correct, and live-classified colors for mistakes (purple tajweed / red pronunciation / orange tashkeel), refined by the final evaluation. Themeable via `TasmeeStyle.correctColor/tajweedErrorColor/normalErrorColor/tashkeelErrorColor`; results-sheet chips use the same palette.
 
 ## 4.3.0
 

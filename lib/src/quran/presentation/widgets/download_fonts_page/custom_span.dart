@@ -31,6 +31,7 @@ TextSpan _qpcV4SpanSegment({
   VoidCallback? onPagePress,
   bool hideGlyphs = false,
   Color? hiddenGlyphColor,
+  Color? tasmeeUnderlineColor,
 }) {
   final quranCtrl = QuranCtrl.instance;
   final wordInfoCtrl = WordInfoCtrl.instance;
@@ -73,6 +74,11 @@ TextSpan _qpcV4SpanSegment({
     height: 2,
     // wordSpacing: 50,
     color: effectiveGlyphColor,
+    // وضع التسميع: الخط السفلي يرسمه محرك النص (لا الخط الملوّن COLR)
+    // فيعمل حتمًا — أخضر للسليمة ولون نوع الخطأ للخاطئة.
+    decoration: tasmeeUnderlineColor == null ? null : TextDecoration.underline,
+    decorationColor: tasmeeUnderlineColor,
+    decorationThickness: 2,
   );
 
   InlineSpan? tail;
@@ -185,6 +191,41 @@ TasmeeWordStatus? tasmeeStatusOfSegment(QpcV4WordSegment seg, int pageIndex) {
   return tasmeeCtrl.wordStatusOf('${seg.ayahUq}:${seg.wordNumber}');
 }
 
+/// نوع خطأ كلمة تسميع (null = غير خاطئة/الوضع غير مفعّل).
+TasmeeErrorKind? tasmeeErrorKindOfSegment(QpcV4WordSegment seg, int pageIndex) {
+  final TasmeeCtrl tasmeeCtrl;
+  if (!GetInstance().isRegistered<TasmeeCtrl>()) return null;
+  tasmeeCtrl = TasmeeCtrl.instance;
+  if (!tasmeeCtrl.state.isTasmeeMode.value) return null;
+  if (tasmeeCtrl.state.showAllWords.value) return null;
+  if (tasmeeCtrl.state.currentRangePage != pageIndex + 1) return null;
+  return tasmeeCtrl.tasmeeErrorKindOf('${seg.ayahUq}:${seg.wordNumber}');
+}
+
+/// يحدّد لون الخط السفلي لكلمة تسميع من حالتها ونوع خطأها
+/// (null = بلا خط: المخفية والجارية والوضع غير المفعّل).
+Color? tasmeeUnderlineColorFor({
+  required TasmeeWordStatus? status,
+  required TasmeeErrorKind? kind,
+  required bool isDark,
+}) {
+  if (status == null || status == TasmeeWordStatus.hidden) return null;
+  if (status == TasmeeWordStatus.current) return null; // لها تظليل مرسوم.
+  final TasmeeStyle style = TasmeeTheme.of(Get.context!)?.style ??
+      TasmeeStyle.defaults(isDark: isDark, context: Get.context!);
+  return switch (status) {
+    TasmeeWordStatus.correct => style.correctColor,
+    TasmeeWordStatus.incorrect => switch (kind) {
+        TasmeeErrorKind.tajweed => style.tajweedErrorColor,
+        TasmeeErrorKind.tashkeel => style.tashkeelErrorColor,
+        TasmeeErrorKind.normal => style.normalErrorColor,
+        _ => style.incorrectColor,
+      },
+    TasmeeWordStatus.current => null,
+    TasmeeWordStatus.hidden => null,
+  };
+}
+
 /// بصمة حالة التسميع المؤثرة على بناء السطر (تُدمج في _computeFingerprint).
 int tasmeeFingerprint() {
   if (!GetInstance().isRegistered<TasmeeCtrl>()) return 0;
@@ -196,6 +237,8 @@ int tasmeeFingerprint() {
     t.state.transparentFontsReady.value.hashCode,
     t.state.currentWordKey.value.hashCode,
     Object.hashAll(t.state.wordStatuses.entries
+        .map((e) => Object.hash(e.key, e.value.index))),
+    Object.hashAll(t.state.wordErrorKinds.entries
         .map((e) => Object.hash(e.key, e.value.index))),
   );
 }

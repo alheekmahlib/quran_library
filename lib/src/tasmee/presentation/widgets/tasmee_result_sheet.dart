@@ -234,16 +234,17 @@ class _ErrorSummaryBar extends StatelessWidget {
         _SummaryChip(
           label: defaults.tajweedErrorsLabel ?? 'تجويد',
           value: '${result.tajweedErrors.length}',
-          color: defaults.accentColor,
+          color: defaults.tajweedErrorColor,
         ),
         _SummaryChip(
           label: defaults.normalErrorsLabel ?? 'نطق',
           value: '${result.normalErrors.length}',
-          color: defaults.incorrectColor,
+          color: defaults.normalErrorColor,
         ),
         _SummaryChip(
           label: defaults.tashkeelErrorsLabel ?? 'تشكيل',
           value: '${result.tashkeelErrors.length}',
+          color: defaults.tashkeelErrorColor,
         ),
       ],
     );
@@ -334,9 +335,11 @@ class _ErrorCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isTajweed = error.errorType == 'tajweed';
-    final iconColor =
-        isTajweed ? defaults.accentColor : defaults.incorrectColor;
+    final iconColor = switch (error.errorType) {
+      'tajweed' => defaults.tajweedErrorColor,
+      'tashkeel' => defaults.tashkeelErrorColor,
+      _ => defaults.normalErrorColor,
+    };
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.all(12),
@@ -347,8 +350,12 @@ class _ErrorCard extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(isTajweed ? Icons.music_note_rounded : Icons.error_outline,
-              color: iconColor, size: 22),
+          Icon(
+              error.errorType == 'normal'
+                  ? Icons.error_outline
+                  : Icons.music_note_rounded,
+              color: iconColor,
+              size: 22),
           const SizedBox(width: 10),
           Expanded(
             child: Column(

@@ -218,6 +218,11 @@ class _QpcV4RichTextLineState extends State<QpcV4RichTextLine> {
 
       // وضع التسميع: إخفاء/تلوين الكلمة بحسب حالة تلاوتها.
       final tasmeeStatus = tasmeeStatusOfSegment(seg, widget.pageIndex);
+      final tasmeeUnderline = tasmeeUnderlineColorFor(
+        status: tasmeeStatus,
+        kind: tasmeeErrorKindOfSegment(seg, widget.pageIndex),
+        isDark: widget.isDark,
+      );
 
       final span = _qpcV4SpanSegment(
         context: context,
@@ -292,6 +297,7 @@ class _QpcV4RichTextLineState extends State<QpcV4RichTextLine> {
         onPagePress: widget.onPagePress,
         hideGlyphs: tasmeeStatus == TasmeeWordStatus.hidden,
         hiddenGlyphColor: hiddenColor,
+        tasmeeUnderlineColor: tasmeeUnderline,
       );
 
       final spanStart = charOffset;

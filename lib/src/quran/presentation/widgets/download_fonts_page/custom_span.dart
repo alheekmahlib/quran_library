@@ -204,15 +204,16 @@ TasmeeErrorKind? tasmeeErrorKindOfSegment(QpcV4WordSegment seg, int pageIndex) {
 
 /// يحدّد لون الخط السفلي لكلمة تسميع من حالتها ونوع خطأها
 /// (null = بلا خط: المخفية والجارية والوضع غير المفعّل).
+///
+/// [style] النمط المحلول مسبقًا في نطاق بناء السطر — بلا سياق Get
+/// (استدعاء أثناء الـ layout قد يسبق جاهزية Get.context).
 Color? tasmeeUnderlineColorFor({
   required TasmeeWordStatus? status,
   required TasmeeErrorKind? kind,
-  required bool isDark,
+  required TasmeeStyle style,
 }) {
   if (status == null || status == TasmeeWordStatus.hidden) return null;
   if (status == TasmeeWordStatus.current) return null; // لها تظليل مرسوم.
-  final TasmeeStyle style = TasmeeTheme.of(Get.context!)?.style ??
-      TasmeeStyle.defaults(isDark: isDark, context: Get.context!);
   return switch (status) {
     TasmeeWordStatus.correct => style.correctColor,
     TasmeeWordStatus.incorrect => switch (kind) {

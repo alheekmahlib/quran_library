@@ -159,9 +159,10 @@ class _QpcV4FlowingTextState extends State<QpcV4FlowingText> {
     final bookmarksAyahsList = bookmarksSet.toList();
 
     // لون إخفاء كلمات التسميع — يطابق خلفية الصفحة (المخصصة أو الافتراضية).
-    final tasmeeStyle = TasmeeTheme.of(context)?.style;
-    final hiddenColor = tasmeeStyle?.hiddenWordColor ??
-        tasmeeStyle?.backgroundColor ??
+    final tasmeeStyle = TasmeeTheme.of(context)?.style ??
+        TasmeeStyle.defaults(isDark: widget.isDark, context: context);
+    final hiddenColor = tasmeeStyle.hiddenWordColor ??
+        tasmeeStyle.backgroundColor ??
         AppColors.getBackgroundColor(widget.isDark);
 
     final spans =
@@ -186,7 +187,7 @@ class _QpcV4FlowingTextState extends State<QpcV4FlowingText> {
       final tasmeeUnderline = tasmeeUnderlineColorFor(
         status: tasmeeStatus,
         kind: tasmeeErrorKindOfSegment(seg, widget.pageIndex),
-        isDark: widget.isDark,
+        style: tasmeeStyle,
       );
 
       return _qpcV4SpanSegment(

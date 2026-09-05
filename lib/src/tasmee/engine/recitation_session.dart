@@ -269,10 +269,17 @@ class RecitationSession {
   final RxInt currentVerseIdx = (-1).obs;
 
   /// يُستدعى عند اكتمال نطق كلمة (وضع النطاق) — بَعد مرور المحاذاة على
-  /// آخر وحدة فيها — ومعها صحة نطقها. اربطه لِتلوين الكلمة أخضر/أحمر.
+  /// آخر وحدة فيها — ومعها صحة نطقها وتفصيل خطئها. اربطه لِتلوين الكلمة
+  /// أخضر/أحمر وعرض الخطأ في المصحح.
   ///
-  /// Called when a word is fully pronounced (range mode) with its verdict.
-  void Function(int verseIdx, int wordIdx, TasmeeErrorKind kind)? onWordDone;
+  /// Called when a word is fully pronounced (range mode) with its verdict
+  /// and mistake detail.
+  void Function(
+    int verseIdx,
+    int wordIdx,
+    TasmeeErrorKind kind,
+    TasmeeWordMistake? mistake,
+  )? onWordDone;
 
   /// يُستدعى عند اكتمال كل كلمات النطاق (إتمام الصفحة).
   ///

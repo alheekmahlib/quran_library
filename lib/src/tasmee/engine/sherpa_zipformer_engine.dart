@@ -227,7 +227,12 @@ class SherpaZipformerEngine implements LiveCapableRecitationEngine {
     void Function()? onEndpoint,
     void Function(int wordIdx)? onWord,
     void Function(int verseIdx, int wordIdx)? onRangeWord,
-    void Function(int verseIdx, int wordIdx, TasmeeErrorKind kind)? onWordDone,
+    void Function(
+      int verseIdx,
+      int wordIdx,
+      TasmeeErrorKind kind,
+      TasmeeWordMistake? mistake,
+    )? onWordDone,
     void Function()? onRangeComplete,
     int? suraIdx,
     int? ayaIdx,

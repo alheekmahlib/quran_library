@@ -44,6 +44,9 @@ class TasmeeWordCorrection {
     required this.wordNumber,
     required this.verseIdx,
     required this.wordIdx,
+    this.errorType = 'replace',
+    this.expectedSymbol,
+    this.predictedSymbol,
   });
 
   /// مفتاح الكلمة في خرائط الحالات `'$ayahUq:$wordNumber'`.
@@ -64,6 +67,16 @@ class TasmeeWordCorrection {
   /// موضعها داخل نطاق الجلسة (0-based) — لِبناء جلسة إعادة النطق.
   final int verseIdx;
   final int wordIdx;
+
+  /// نوع خطأ النطق: 'insert' (زيادة) أو 'delete' (نقص) أو 'replace'
+  /// (استبدال) — من تفصيل المتتبّع الحي.
+  final String errorType;
+
+  /// رمز الوحدة المرجعية المتوقعة (null عند الزيادة) — لعرض «المتوقع».
+  final String? expectedSymbol;
+
+  /// رمز الوحدة المنطوقة فعلًا (null عند النقص) — لعرض «المنطوق».
+  final String? predictedSymbol;
 }
 
 /// نتيجة محاولة إعادة نطق كلمة في نمط المصحح.

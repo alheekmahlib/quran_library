@@ -50,8 +50,12 @@ class RangeLiveTracker {
   final int maxSkipUnits;
 
   final void Function(int verseIdx, int wordIdx)? onRangeWord;
-  final void Function(int verseIdx, int wordIdx, TasmeeErrorKind kind)?
-      onWordDone;
+  final void Function(
+    int verseIdx,
+    int wordIdx,
+    TasmeeErrorKind kind,
+    TasmeeWordMistake? mistake,
+  )? onWordDone;
   final void Function()? onRangeComplete;
 
   /// فهرس الوحدة المرجعية المتوقَّعة التالية (0-based).
@@ -76,6 +80,10 @@ class RangeLiveTracker {
 
   /// أسوأ نوع خطأ لكل كلمة شهدت حذفًا/إدراجًا/اختلاف رمز على وحداتها.
   final Map<QuranRangeWordSpan, TasmeeErrorKind> _wordKinds = {};
+
+  /// تفصيل الخطأ المعتمد لكل كلمة (يرافق [TasmeeErrorKind] في onWordDone)
+  /// — يُستبدل عند ورود خطأ أعلى أسبقية.
+  final Map<QuranRangeWordSpan, TasmeeWordMistake> _wordMistakes = {};
 
   /// عدد الكلمات المكتملة حتى الآن.
   int get completedWords => _doneCursor;
@@ -111,9 +119,14 @@ class RangeLiveTracker {
     // 2) قفزة واسعة — تحتاج تأكيد الوحدة التالية على الإزاحة نفسها.
     final wide = _findMatch(pred, maxSkipUnits);
     if (wide < 0) {
-      // 3) لا مطابقة → إدراج على الكلمة المتوقَّعة (والقفزة المؤقتة ساقطة).
+      // 3) لا مطابقة → إدراج على الكلمة المتوقعة (والقفزة المؤقتة ساقطة).
       if (_pendingK >= 0) _resolvePendingAsInsert();
-      _markError(_nextRef, TasmeeErrorKind.normal);
+      _markError(
+        _nextRef,
+        TasmeeErrorKind.normal,
+        predictedSymbol: pred.symbol,
+        errorType: 'insert',
+      );
       return;
     }
     // وحدة بلا أي مطابقة قريبة مع قفزة معلَّقة: القفزة كانت ضوضاء —
@@ -162,11 +175,21 @@ class RangeLiveTracker {
           ref.ghunna ||
           ref.ikhfaa;
       _markError(
-          d, tajweedish ? TasmeeErrorKind.tajweed : TasmeeErrorKind.normal);
+        d,
+        tajweedish ? TasmeeErrorKind.tajweed : TasmeeErrorKind.normal,
+        expectedSymbol: ref.symbol,
+        errorType: 'delete',
+      );
     }
     final ref = range.units[k];
     if (ref.symbol != pred.symbol) {
-      _markError(k, _classifyUnitDiff(ref, pred));
+      _markError(
+        k,
+        _classifyUnitDiff(ref, pred),
+        expectedSymbol: ref.symbol,
+        predictedSymbol: pred.symbol,
+        errorType: 'replace',
+      );
     }
     _nextRef = k + 1;
     _reportCurrentWord();
@@ -186,7 +209,12 @@ class RangeLiveTracker {
 
   /// القفزة المؤقتة ساقطة → الوحدة نطق زائد على الكلمة المتوقَّعة.
   void _resolvePendingAsInsert() {
-    _markError(_nextRef, TasmeeErrorKind.normal);
+    _markError(
+      _nextRef,
+      TasmeeErrorKind.normal,
+      predictedSymbol: _pendingUnit?.symbol,
+      errorType: 'insert',
+    );
     _pendingUnit = null;
     _pendingK = -1;
   }
@@ -199,13 +227,28 @@ class RangeLiveTracker {
     _pendingK = -1;
   }
 
-  /// يسجّل خطأ بنوعه على الكلمة التي تضم الوحدة المرجعية [unitIdx]
-  /// (الأعلى أسبقية يبقى عند تعدد الأخطاء في الكلمة).
-  void _markError(int unitIdx, TasmeeErrorKind kind) {
+  /// يسجّل خطأ بنوعه وتفصيله على الكلمة التي تضم الوحدة المرجعية
+  /// [unitIdx] (الأعلى أسبقية يبقى — ومعه تفصيله — عند تعدد الأخطاء).
+  void _markError(
+    int unitIdx,
+    TasmeeErrorKind kind, {
+    String? expectedSymbol,
+    String? predictedSymbol,
+    String errorType = 'delete',
+  }) {
     final span = range.spanOfUnit(unitIdx);
     if (span == null) return;
     final prev = _wordKinds[span];
-    _wordKinds[span] = prev == null ? kind : mergeTasmeeErrorKinds(prev, kind);
+    if (prev == null || mergeTasmeeErrorKinds(prev, kind) != prev) {
+      _wordKinds[span] =
+          prev == null ? kind : mergeTasmeeErrorKinds(prev, kind);
+      _wordMistakes[span] = TasmeeWordMistake(
+        kind: _wordKinds[span]!,
+        errorType: errorType,
+        expectedSymbol: expectedSymbol,
+        predictedSymbol: predictedSymbol,
+      );
+    }
   }
 
   /// يبلّغ الكلمة الجارية عند تغيّرها.
@@ -224,14 +267,14 @@ class RangeLiveTracker {
   }
 
   /// يبلّغ الكلمات التي تجاوزها المؤشّر (آخر وحدة فيها مُطابَقة)
-  /// مع نوع خطأها (correct إن كانت سليمة).
+  /// مع نوع خطأها وتفصيله (correct وبلا تفصيل إن كانت سليمة).
   void _reportCompleted() {
     final onWordDone = this.onWordDone;
     while (_doneCursor < range.wordSpans.length &&
         range.wordSpans[_doneCursor].endUnit < _nextRef) {
       final span = range.wordSpans[_doneCursor];
       onWordDone?.call(span.verseIdx, span.wordIdx,
-          _wordKinds[span] ?? TasmeeErrorKind.correct);
+          _wordKinds[span] ?? TasmeeErrorKind.correct, _wordMistakes[span]);
       _doneCursor++;
     }
   }

@@ -33,14 +33,20 @@ abstract interface class LiveCapableRecitationEngine
   /// [range] (اختياري) يفعّل تتبّع نطاق متعدد الآيات (وضع الصفحة):
   /// - [onRangeWord] يُستدعى بِـ (فهرس الآية داخل النطاق، فهرس الكلمة).
   /// - [onWordDone] عند اكتمال نطق كلمة — بَعد مرور المحاذاة على آخر
-  ///   وحدة فيها — ومعها صحة نطقها (كل وحداتها match = صحيح).
+  ///   وحدة فيها — ومعها صحة نطقها وتفصيل خطئها ([TasmeeWordMistake]
+  ///   أو null إن كانت سليمة).
   /// - [onRangeComplete] عند اكتمال كل كلمات النطاق.
   void startLive({
     void Function(LiveRecognitionFrame frame)? onPartial,
     void Function()? onEndpoint,
     void Function(int wordIdx)? onWord,
     void Function(int verseIdx, int wordIdx)? onRangeWord,
-    void Function(int verseIdx, int wordIdx, TasmeeErrorKind kind)? onWordDone,
+    void Function(
+      int verseIdx,
+      int wordIdx,
+      TasmeeErrorKind kind,
+      TasmeeWordMistake? mistake,
+    )? onWordDone,
     void Function()? onRangeComplete,
     int? suraIdx,
     int? ayaIdx,

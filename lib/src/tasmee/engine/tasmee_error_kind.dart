@@ -29,6 +29,30 @@ TasmeeErrorKind tasmeeErrorKindFromType(String errorType) {
   }
 }
 
+/// تفصيل خطأ كلمة واحد من التتبّع الحي — ما نُطق فعلًا مقابل المتوقع،
+/// لعرضه في شيت تصحيح الكلمة (نمط المصحح).
+class TasmeeWordMistake {
+  const TasmeeWordMistake({
+    required this.kind,
+    required this.errorType,
+    this.expectedSymbol,
+    this.predictedSymbol,
+  });
+
+  /// أسوأ نوع خطأ في الكلمة (المستخدم للون والشارة).
+  final TasmeeErrorKind kind;
+
+  /// نوع خطأ النطق: 'insert' (زيادة) أو 'delete' (نقص) أو 'replace'
+  /// (استبدال/اختلاف رمز).
+  final String errorType;
+
+  /// رمز الوحدة المرجعية المتوقعة (null عند الزيادة).
+  final String? expectedSymbol;
+
+  /// رمز الوحدة المنطوقة فعلًا (null عند النقص).
+  final String? predictedSymbol;
+}
+
 /// أسبقية الدمج عند تعدد أنواع الأخطاء في كلمة واحدة
 /// (تجويد > نطق > تشكيل) — يُعرض لون الأعلى أسبقية.
 TasmeeErrorKind mergeTasmeeErrorKinds(TasmeeErrorKind a, TasmeeErrorKind b) {

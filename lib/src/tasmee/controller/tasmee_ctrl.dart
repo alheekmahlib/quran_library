@@ -365,8 +365,8 @@ class TasmeeCtrl extends GetxController {
         state.sessionState.value = s;
         update([TasmeeUpdateIds.control]);
       });
-      session.onWordDone =
-          (v, w, kind) => _onWordDone(v + verseIdxOffset, w, kind);
+      session.onWordDone = (v, w, kind, mistake) =>
+          _onWordDone(v + verseIdxOffset, w, kind, mistake);
       session.onRangeComplete = () {
         // أكمل النطاق — أوقف بعد مهلة قصيرة تسمح بآخر وحدة.
         Future.delayed(const Duration(milliseconds: 800), () {
@@ -568,7 +568,12 @@ class TasmeeCtrl extends GetxController {
     return '${ayah.ayahUQNumber}:${wordIdx + 1}';
   }
 
-  void _onWordDone(int verseIdx, int wordIdx, TasmeeErrorKind kind) {
+  void _onWordDone(
+    int verseIdx,
+    int wordIdx,
+    TasmeeErrorKind kind,
+    TasmeeWordMistake? mistake,
+  ) {
     if (verseIdx < 0 || verseIdx >= _rangeAyahs.length) return;
     final key = _wordKey(verseIdx, wordIdx);
     _doneWordKeys.add(key);
@@ -596,7 +601,7 @@ class TasmeeCtrl extends GetxController {
       if (kind != TasmeeErrorKind.correct &&
           state.activeWordCorrection.value == null) {
         // بلا انتظار — onWordDone متزامن التوقيع.
-        _beginWordCorrection(verseIdx, wordIdx, kind);
+        _beginWordCorrection(verseIdx, wordIdx, kind, mistake);
       }
     }
   }
@@ -613,6 +618,7 @@ class TasmeeCtrl extends GetxController {
     int verseIdx,
     int wordIdx,
     TasmeeErrorKind kind,
+    TasmeeWordMistake? mistake,
   ) async {
     if (verseIdx < 0 || verseIdx >= _rangeAyahs.length) return;
     final ayah = _rangeAyahs[verseIdx];
@@ -622,8 +628,12 @@ class TasmeeCtrl extends GetxController {
     final wordText = verse != null && wordIdx < verse.uthmaniWords.length
         ? verse.uthmaniWords[wordIdx]
         : '';
-    log('TasmeeCtrl corrector begin — "$wordText" ($verseIdx:$wordIdx)',
-        name: 'TasmeeCtrl');
+    log(
+      'TasmeeCtrl corrector begin — "$wordText" ($verseIdx:$wordIdx) '
+      'mistake=${mistake?.errorType} exp=${mistake?.expectedSymbol} '
+      'pred=${mistake?.predictedSymbol}',
+      name: 'TasmeeCtrl',
+    );
     await _session?.pauseLive();
     log('TasmeeCtrl corrector paused, opening sheet', name: 'TasmeeCtrl');
     state.wordRetryOutcome.value = null;
@@ -636,6 +646,9 @@ class TasmeeCtrl extends GetxController {
       wordNumber: wordIdx + 1,
       verseIdx: verseIdx,
       wordIdx: wordIdx,
+      errorType: mistake?.errorType ?? 'replace',
+      expectedSymbol: mistake?.expectedSymbol,
+      predictedSymbol: mistake?.predictedSymbol,
     );
   }
 

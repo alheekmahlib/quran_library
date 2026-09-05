@@ -81,6 +81,15 @@ class TasmeeCtrl extends GetxController {
   bool get isProcessing =>
       state.sessionState.value == RecitationState.processing;
 
+  /// عدد آيات نطاق الصفحة الحالية (لِحلقة المعلم).
+  int get rangeAyahCount => _rangeAyahs.length;
+
+  /// رقم الآية الفريد (UQ) لآية داخل النطاق — أو -1.
+  int rangeAyahUQ(int verseIdx) =>
+      verseIdx >= 0 && verseIdx < _rangeAyahs.length
+          ? _rangeAyahs[verseIdx].ayahUQNumber
+          : -1;
+
   // ── التهيئة ────────────────────────────────────────────────────
 
   @override
@@ -111,14 +120,16 @@ class TasmeeCtrl extends GetxController {
     _disposeRetrySession();
     state.activeWordCorrection.value = null;
     state.wordRetryOutcome.value = null;
+    // اضبط النمط قبل الإيقاف كي تحترس مستمعات المعلم في التطبيق من
+    // تقييم جلسةٍ تنتمي لنمطٍ قديم.
+    state.mode.value = mode;
+    _storage.write(TasmeeStorageConstants.tasmeeMode, mode.storageName);
     if (isRecording ||
         isProcessing ||
         state.sessionState.value == RecitationState.connecting ||
         state.sessionState.value == RecitationState.paused) {
       await stopRecording();
     }
-    state.mode.value = mode;
-    _storage.write(TasmeeStorageConstants.tasmeeMode, mode.storageName);
     await retryTasmee();
     update([TasmeeUpdateIds.control]);
   }
@@ -267,6 +278,8 @@ class TasmeeCtrl extends GetxController {
   /// يبدأ التسجيل بعد التأكد من جاهزية المحرك والنموذج.
   Future<void> startRecording() async {
     if (state.isTasmeeMode.value == false ||
+        // نمط المعلم يُدار آية-بآية عبر [startAyahRecording].
+        state.mode.value == TasmeeMode.teacher ||
         isRecording ||
         isProcessing ||
         kIsWeb) {
@@ -290,8 +303,55 @@ class TasmeeCtrl extends GetxController {
       return;
     }
 
+    state.completedWords.value = 0;
+    await _launchLiveSession(range: _range!, verseIdxOffset: 0);
+  }
+
+  /// يبدأ تسجيل تسميع آية واحدة داخل نطاق الصفحة (نمط المعلم) — جلسة
+  /// حيّة بمدى الآية وحدها؛ أحداث كلماتها تُسقَط على مواضعها الصفحية
+  /// فتتراكم حالات الكلمات عبر الآيات المتقنة.
+  Future<void> startAyahRecording(int verseIdx) async {
+    if (!state.isTasmeeMode.value ||
+        state.mode.value != TasmeeMode.teacher ||
+        isRecording ||
+        isProcessing ||
+        kIsWeb) {
+      return;
+    }
+    if (verseIdx < 0 || verseIdx >= _rangeAyahs.length) return;
+    final ayah = _rangeAyahs[verseIdx];
+    if (ayah.surahNumber == null) return;
+
+    state.lastError.value = '';
+    state.lastResult.value = null;
+    state.isPreparingEngine.value = true;
+    update([TasmeeUpdateIds.control]);
+    final ready = await _ensureEngineReady();
+    state.isPreparingEngine.value = false;
+    if (!ready) {
+      update([TasmeeUpdateIds.control]);
+      return;
+    }
+
+    final ayahRange = TasmeeReferenceStore.instance.buildRange([
+      (suraIdx: ayah.surahNumber!, ayaIdx: ayah.ayahNumber),
+    ]);
+    if (ayahRange == null) {
+      state.lastError.value = 'تعذّر تجهيز مرجع الآية للتسميع';
+      update([TasmeeUpdateIds.control]);
+      return;
+    }
+    await _launchLiveSession(range: ayahRange, verseIdxOffset: verseIdx);
+  }
+
+  /// يشغّل جلسة حيّة على النطاق المعطى مع إسقاط فهارس الآيات على
+  /// مواضعها داخل نطاق الصفحة ([verseIdxOffset] لنطاق الآية الواحدة).
+  Future<void> _launchLiveSession({
+    required QuranReferenceRange range,
+    int verseIdxOffset = 0,
+  }) async {
     try {
-      final session = Recitation.createSession(range: _range);
+      final session = Recitation.createSession(range: range);
       _session = session;
       _stateWorker = ever<RecitationState>(session.state, (s) {
         // انسخ النتيجة قبل إعلان الحالة كي تجدها مستمعات الواجهة
@@ -302,23 +362,23 @@ class TasmeeCtrl extends GetxController {
         state.sessionState.value = s;
         update([TasmeeUpdateIds.control]);
       });
-      session.onWordDone = _onWordDone;
+      session.onWordDone =
+          (v, w, kind) => _onWordDone(v + verseIdxOffset, w, kind);
       session.onRangeComplete = () {
-        // أكمل الصفحة — أوقف بعد مهلة قصيرة تسمح بآخر وحدة.
+        // أكمل النطاق — أوقف بعد مهلة قصيرة تسمح بآخر وحدة.
         Future.delayed(const Duration(milliseconds: 800), () {
           if (isRecording) stopRecording();
         });
       };
 
-      state.completedWords.value = 0;
       // الكلمة الجارية (الوضع الحيّ فقط — offline).
       _verseWorker = ever<int>(session.currentVerseIdx, (v) {
         final w = session.currentWordIdx.value;
-        if (v >= 0 && w >= 0) markCurrentWord(v, w);
+        if (v >= 0 && w >= 0) markCurrentWord(v + verseIdxOffset, w);
       });
       _wordWorker = ever<int>(session.currentWordIdx, (w) {
         final v = session.currentVerseIdx.value;
-        if (v >= 0 && w >= 0) markCurrentWord(v, w);
+        if (v >= 0 && w >= 0) markCurrentWord(v + verseIdxOffset, w);
       });
       if (Recitation.isOffline) {
         await session.startLive();

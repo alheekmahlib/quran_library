@@ -69,6 +69,24 @@ class TasmeeWordCorrection {
 /// نتيجة محاولة إعادة نطق كلمة في نمط المصحح.
 enum TasmeeWordRetryOutcome { correct, incorrect }
 
+/// أطوار جلسة معلم القرآن (آية بآية داخل صفحة النطاق).
+enum TasmeeTeacherPhase {
+  /// لا جلسة معلم جارية.
+  idle,
+
+  /// القارئ يتلو الآية الحالية.
+  qariPlaying,
+
+  /// المستخدم يتلو الآية (التسجيل جارٍ).
+  userRecording,
+
+  /// جارٍ تقييم محاولة المستخدم.
+  evaluating,
+
+  /// أُتقنت كل آيات الصفحة واكتمل التسميع.
+  pageDone,
+}
+
 class TasmeeState {
   /// هل وضع التسميع مفعّل الآن؟
   final RxBool isTasmeeMode = false.obs;
@@ -110,6 +128,15 @@ class TasmeeState {
 
   /// جلسة إعادة نطق الكلمة تستمع الآن؟
   final RxBool isWordRetryListening = false.obs;
+
+  /// طور جلسة المعلم الجاري (نمط المعلم).
+  final Rx<TasmeeTeacherPhase> teacherPhase = TasmeeTeacherPhase.idle.obs;
+
+  /// فهرس الآية الجارية داخل صفحة المعلم (0-based، أو -1).
+  final RxInt teacherAyahIndex = (-1).obs;
+
+  /// إجمالي آيات صفحة المعلم.
+  final RxInt teacherAyahTotal = 0.obs;
 
   /// نتيجة آخر تسميع (تُملأ بعد الإيقاف).
   final Rx<RecitationResult?> lastResult = Rx<RecitationResult?>(null);

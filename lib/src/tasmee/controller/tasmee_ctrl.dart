@@ -600,6 +600,10 @@ class TasmeeCtrl extends GetxController {
 
   /// يضبط الكلمة الخاطئة المنتظرة تصحيحًا ويجمّد الجلسة الرئيسية —
   /// الميكروفون يتوقف فلا يسمع نطق الكلمة من السماعة أثناء الشيت.
+  ///
+  /// الإيقاف يجب أن يكتمل **قبل** ضبط الحالة (الذي يفتح الشيت ويشغّل
+  /// النطق): مسجّل `record` يفكّ جلسة الصوت عند الإيقاف، وتشغيل الصوت
+  /// بالتوازي معها يُقتل أو يتحوّل لسماعة الأذن فيبدو صامتًا.
   Future<void> _beginWordCorrection(
     int verseIdx,
     int wordIdx,
@@ -613,6 +617,7 @@ class TasmeeCtrl extends GetxController {
     final wordText = verse != null && wordIdx < verse.uthmaniWords.length
         ? verse.uthmaniWords[wordIdx]
         : '';
+    await _session?.pauseLive();
     state.wordRetryOutcome.value = null;
     state.activeWordCorrection.value = TasmeeWordCorrection(
       key: _wordKey(verseIdx, wordIdx),
@@ -624,7 +629,6 @@ class TasmeeCtrl extends GetxController {
       verseIdx: verseIdx,
       wordIdx: wordIdx,
     );
-    await _session?.pauseLive();
   }
 
   /// يبدأ محاولة إعادة نطق الكلمة المنتظرة — تسجيل دفعي قصير بمدى الكلمة

@@ -627,9 +627,11 @@ class TasmeeCtrl extends GetxController {
     await _session?.pauseLive();
   }
 
-  /// يبدأ محاولة إعادة نطق الكلمة المنتظرة — جلسة حيّة مصغّرة بمدى
-  /// الكلمة وحدها؛ الحكم في [TasmeeState.wordRetryOutcome] وتُعلَّم
-  /// الكلمة صحيحة وتُستأنف الجلسة بالحل عند [TasmeeWordRetryOutcome.correct].
+  /// يبدأ محاولة إعادة نطق الكلمة المنتظرة — تسجيل دفعي قصير بمدى الكلمة
+  /// وحدها يتوقف تلقائيًا بعد النطق والسكون، ثم يُقيَّم بالمسار المرجعي
+  /// الكامل (محاذاة + كشف أخطاء) — لا بالتتبّع الحيّ الاسترشادي، ولا
+  /// يمسّ بثّ الجلسة الرئيسية المتوقفة (المسار الدفعي يستخدم Stream خاصًا
+  /// به داخل المحرك). الحكم في [TasmeeState.wordRetryOutcome].
   Future<void> startWordRetry() async {
     final correction = state.activeWordCorrection.value;
     if (correction == null || _retrySession != null) return;
@@ -647,31 +649,24 @@ class TasmeeCtrl extends GetxController {
     _retrySession = session;
     state.wordRetryOutcome.value = null;
     state.isWordRetryListening.value = true;
-    session.onWordDone = (_, __, kind) {
-      state.wordRetryOutcome.value = kind == TasmeeErrorKind.correct
-          ? TasmeeWordRetryOutcome.correct
-          : TasmeeWordRetryOutcome.incorrect;
-      _scheduleRetryStop(session);
-    };
-    session.onRangeComplete = () => _scheduleRetryStop(session);
     _retryStateWorker = ever<RecitationState>(session.state, (s) {
-      if (s == RecitationState.finished || s == RecitationState.error) {
-        // انتهت بلا حكم حيّ (لم تُطابق) → محاولة فاشلة.
-        if (state.wordRetryOutcome.value == null) {
-          state.wordRetryOutcome.value = TasmeeWordRetryOutcome.incorrect;
-        }
+      if (s == RecitationState.finished) {
+        final result = session.result.value;
+        state.wordRetryOutcome.value =
+            result != null && result.hasMatch && result.isFullyCorrect
+                ? TasmeeWordRetryOutcome.correct
+                : TasmeeWordRetryOutcome.incorrect;
+        _disposeRetrySession();
+      } else if (s == RecitationState.error) {
+        state.lastError.value = session.lastError.value;
+        state.wordRetryOutcome.value = TasmeeWordRetryOutcome.incorrect;
         _disposeRetrySession();
       }
     });
-    await session.startLive();
-  }
-
-  /// مهلة قصيرة بعد اكتمال الكلمة قبل إنهاء جلسة إعادة النطق — تسمح
-  /// بابتلاع آخر وحدة كالمعتاد في جلسة الصفحة.
-  void _scheduleRetryStop(RecitationSession session) {
-    Future.delayed(const Duration(milliseconds: 700), () {
-      if (session.isLive.value) session.stopLive();
-    });
+    await session.start(
+      stopAfterSilence: const Duration(milliseconds: 1200),
+      maxDuration: const Duration(seconds: 8),
+    );
   }
 
   void _disposeRetrySession() {

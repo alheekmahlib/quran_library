@@ -177,15 +177,22 @@ typedef _LongPressStartDetailsFunction = void Function(LongPressStartDetails)?;
 /// حالة كلمة في وضع التسميع (null = الوضع غير مفعّل لهذه الصفحة).
 ///
 /// [pageIndex] فهرس الصفحة (0-based) — الإخفاء يخص صفحة النطاق فقط.
+///
+/// عند إظهار الكلمات (زر العين أو نمطا المصحح/المعلم) تبقى الكلمات
+/// ظاهرة كلها، لكن المنطوقة منها يُرسم تحتها خط حالتها (أخضر/أحمر)
+/// — لذا تُعاد null للمخفية فقط كي لا تُخفى.
 TasmeeWordStatus? tasmeeStatusOfSegment(QpcV4WordSegment seg, int pageIndex) {
   final TasmeeCtrl tasmeeCtrl;
   if (!GetInstance().isRegistered<TasmeeCtrl>()) return null;
   tasmeeCtrl = TasmeeCtrl.instance;
   if (!tasmeeCtrl.state.isTasmeeMode.value) return null;
-  // زر إظهار الكلام: عرض طبيعي مؤقت لكل كلمات الصفحة.
-  if (tasmeeCtrl.state.showAllWords.value) return null;
   if (tasmeeCtrl.state.currentRangePage != pageIndex + 1) return null;
-  return tasmeeCtrl.wordStatusOf('${seg.ayahUq}:${seg.wordNumber}');
+  final status = tasmeeCtrl.wordStatusOf('${seg.ayahUq}:${seg.wordNumber}');
+  if (status == TasmeeWordStatus.hidden &&
+      tasmeeCtrl.state.showAllWords.value) {
+    return null;
+  }
+  return status;
 }
 
 /// نوع خطأ كلمة تسميع (null = غير خاطئة/الوضع غير مفعّل).
@@ -194,7 +201,6 @@ TasmeeErrorKind? tasmeeErrorKindOfSegment(QpcV4WordSegment seg, int pageIndex) {
   if (!GetInstance().isRegistered<TasmeeCtrl>()) return null;
   tasmeeCtrl = TasmeeCtrl.instance;
   if (!tasmeeCtrl.state.isTasmeeMode.value) return null;
-  if (tasmeeCtrl.state.showAllWords.value) return null;
   if (tasmeeCtrl.state.currentRangePage != pageIndex + 1) return null;
   return tasmeeCtrl.tasmeeErrorKindOf('${seg.ayahUq}:${seg.wordNumber}');
 }

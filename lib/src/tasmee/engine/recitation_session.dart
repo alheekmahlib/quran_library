@@ -60,6 +60,10 @@ class RecitationSession {
   bool _ownsRecorder = false;
   String? _recordingPath;
 
+  /// إيقاف تلقائي (إعادة نطق الكلمة) — مراقبة النسبة وسقف المدة.
+  StreamSubscription<Amplitude>? _amplitudeSub;
+  Timer? _maxDurationTimer;
+
   /// حالة الجلسة (reactive لِـ GetX).
   /// Session state (reactive for GetX).
   final Rx<RecitationState> state = RecitationState.idle.obs;
@@ -77,9 +81,15 @@ class RecitationSession {
   /// Start recording.
   ///
   /// يُسجّل WAV (16kHz mono) إلى ملف مؤقّت. لا يُرسل شيئاً لِلخادم حتى [stop].
-  /// Records WAV (16kHz mono) to a temp file. Doesn't send anything to the
-  /// server until [stop].
-  Future<void> start() async {
+  ///
+  /// [stopAfterSilence]: إيقاف تلقائي بعد نطقٍ ثم سكون (كشف بالنسبة عبر
+  /// `onAmplitudeChanged`) — لِجلسات قصيرة بلا تدخل يدوي (إعادة نطق كلمة).
+  ///
+  /// [maxDuration]: سقف صلب لِلمدة مهما حدث.
+  Future<void> start({
+    Duration? stopAfterSilence,
+    Duration? maxDuration,
+  }) async {
     if (state.value.isActive) {
       log('RecitationSession already active', name: 'RecitationSession');
       return;
@@ -113,6 +123,7 @@ class RecitationSession {
           '$dir/recitation_${DateTime.now().millisecondsSinceEpoch}.wav';
 
       await _recorder!.start(settings, path: _recordingPath!);
+      _wireAutoStop(stopAfterSilence, maxDuration);
       state.value = RecitationState.recording;
       log('RecitationSession started recording: $_recordingPath',
           name: 'RecitationSession');
@@ -122,6 +133,35 @@ class RecitationSession {
       log('RecitationSession start failed: $e',
           name: 'RecitationSession', stackTrace: s);
     }
+  }
+
+  /// يربط الإيقاف التلقائي: سقف مدة، وسكون بعد نطق (كشف النسبة).
+  void _wireAutoStop(Duration? stopAfterSilence, Duration? maxDuration) {
+    if (maxDuration != null) {
+      _maxDurationTimer = Timer(maxDuration, () {
+        if (state.value == RecitationState.recording) stop();
+      });
+    }
+    if (stopAfterSilence == null) return;
+    var spoke = false;
+    DateTime? lastVoiceAt;
+    _amplitudeSub = _recorder!
+        .onAmplitudeChanged(const Duration(milliseconds: 100))
+        .listen((amp) {
+      // كلام البشر عادة > ‎-35dB‏ والسكوت حول ‎-45dB‏ فأدنى.
+      final heard = amp.current > -35;
+      if (heard) {
+        spoke = true;
+        lastVoiceAt = DateTime.now();
+        return;
+      }
+      if (spoke &&
+          lastVoiceAt != null &&
+          DateTime.now().difference(lastVoiceAt!) >= stopAfterSilence &&
+          state.value == RecitationState.recording) {
+        stop();
+      }
+    });
   }
 
   /// أوقف التسجيل ومرّر الصوت لِلمحرّك لِلتصحيح.
@@ -178,8 +218,12 @@ class RecitationSession {
       log('RecitationSession stop error: $e',
           name: 'RecitationSession', stackTrace: s);
     } finally {
-      // تنظيف: احذف الملف المؤقّت وتصرّف بالمسجّل.
-      // Cleanup: delete the temp file and dispose the recorder.
+      // تنظيف: أوقف مراقبات الإيقاف التلقائي، واحذف الملف المؤقّت وتصرّف
+      // بالمسجّل.
+      _amplitudeSub?.cancel();
+      _amplitudeSub = null;
+      _maxDurationTimer?.cancel();
+      _maxDurationTimer = null;
       if (_recordingPath != null) {
         try {
           await PlatformIo.deleteFile(_recordingPath!);

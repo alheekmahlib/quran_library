@@ -588,11 +588,16 @@ class TasmeeCtrl extends GetxController {
         .length;
     _refreshQuranPages();
     // نمط المصحح: أول كلمة خاطئة توقف الجلسة بانتظار تصحيحها.
-    if (state.mode.value == TasmeeMode.corrector &&
-        kind != TasmeeErrorKind.correct &&
-        state.activeWordCorrection.value == null) {
-      // بلا انتظار — onWordDone متزامن التوقيع.
-      _beginWordCorrection(verseIdx, wordIdx, kind);
+    if (state.mode.value == TasmeeMode.corrector) {
+      log(
+          'TasmeeCtrl corrector word-done — v=$verseIdx w=$wordIdx '
+          'kind=$kind active=${state.activeWordCorrection.value != null}',
+          name: 'TasmeeCtrl');
+      if (kind != TasmeeErrorKind.correct &&
+          state.activeWordCorrection.value == null) {
+        // بلا انتظار — onWordDone متزامن التوقيع.
+        _beginWordCorrection(verseIdx, wordIdx, kind);
+      }
     }
   }
 
@@ -617,7 +622,10 @@ class TasmeeCtrl extends GetxController {
     final wordText = verse != null && wordIdx < verse.uthmaniWords.length
         ? verse.uthmaniWords[wordIdx]
         : '';
+    log('TasmeeCtrl corrector begin — "$wordText" ($verseIdx:$wordIdx)',
+        name: 'TasmeeCtrl');
     await _session?.pauseLive();
+    log('TasmeeCtrl corrector paused, opening sheet', name: 'TasmeeCtrl');
     state.wordRetryOutcome.value = null;
     state.activeWordCorrection.value = TasmeeWordCorrection(
       key: _wordKey(verseIdx, wordIdx),

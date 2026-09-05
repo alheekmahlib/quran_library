@@ -387,7 +387,14 @@ class RecitationSession {
   /// لتصحيح كلمة في نمط المصحح دون أن يسمع الميكروفون نطق الكلمة من
   /// السماعة. يُستأنف بـ [resumeLive] من نفس نقطة المحاذاة.
   Future<void> pauseLive() async {
-    if (!isLive.value || state.value != RecitationState.recording) return;
+    if (!isLive.value || state.value != RecitationState.recording) {
+      log(
+        'RecitationSession pauseLive skipped — '
+        'isLive=${isLive.value} state=${state.value}',
+        name: 'RecitationSession',
+      );
+      return;
+    }
     try {
       await _liveSub?.cancel();
       _liveSub = null;

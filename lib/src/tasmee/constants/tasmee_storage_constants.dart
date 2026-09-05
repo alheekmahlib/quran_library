@@ -9,4 +9,7 @@ class TasmeeStorageConstants {
 
   /// عنوان خادم Muaalem (لِلوضع online).
   static const String serverUrl = 'TASMEE_SERVER_URL';
+
+  /// نمط التسميع الأخير: 'tasmee' (افتراضي) أو 'corrector' أو 'teacher'.
+  static const String tasmeeMode = 'TASMEE_MODE';
 }

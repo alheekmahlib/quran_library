@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import '../engine/models/recitation_result.dart';
 import '../engine/tasmee_error_kind.dart';
 import '../engine/recitation_state.dart';
+import 'tasmee_mode.dart';
 
 /// وضع محرّك التسميع.
 enum TasmeeEngineMode {
@@ -34,6 +35,9 @@ enum TasmeeWordStatus {
 class TasmeeState {
   /// هل وضع التسميع مفعّل الآن؟
   final RxBool isTasmeeMode = false.obs;
+
+  /// نمط التسميع الحالي — يحدّد سلوك الجلسة وإظهار الكلمات الافتراضي.
+  final Rx<TasmeeMode> mode = TasmeeMode.tasmee.obs;
 
   /// إظهار كل كلمات الصفحة مؤقتًا (زر العين) أثناء وضع التسميع.
   final RxBool showAllWords = false.obs;

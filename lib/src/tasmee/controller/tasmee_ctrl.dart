@@ -22,6 +22,7 @@ import '../engine/recitation.dart';
 import '../engine/recitation_session.dart';
 import '../engine/recitation_state.dart';
 import '../engine/tasmee_error_kind.dart';
+import 'tasmee_mode.dart';
 import 'tasmee_state.dart';
 
 /// معرّفات تحديث الواجهة لِـ GetBuilder.
@@ -85,11 +86,32 @@ class TasmeeCtrl extends GetxController {
         mode == 'online' ? TasmeeEngineMode.online : TasmeeEngineMode.offline;
     state.serverUrl.value =
         _storage.read<String>(TasmeeStorageConstants.serverUrl) ?? '';
+    state.mode.value = tasmeeModeFromName(
+      _storage.read<String>(TasmeeStorageConstants.tasmeeMode),
+    );
     if (!kIsWeb) {
       _modelService.isModelReady().then((ready) {
         state.isModelReady.value = ready;
       });
     }
+  }
+
+  /// يبدّل نمط التسميع (تسميع/مصحح/معلم) ويحفظ الاختيار.
+  ///
+  /// إن كان التسجيل نشطًا يُوقف ويُقيَّم أولًا — فتُحفظ نتيجة الصفحة عبر
+  /// مستمع الاكتمال في التطبيق — ثم يُصفَّر النطاق بالنمط الجديد:
+  /// المصحح والمعلم يفرضان إظهار الكلمات، والتسميع يخفيها.
+  Future<void> setMode(TasmeeMode mode) async {
+    if (state.mode.value == mode) return;
+    if (isRecording ||
+        isProcessing ||
+        state.sessionState.value == RecitationState.connecting) {
+      await stopRecording();
+    }
+    state.mode.value = mode;
+    _storage.write(TasmeeStorageConstants.tasmeeMode, mode.storageName);
+    await retryTasmee();
+    update([TasmeeUpdateIds.control]);
   }
 
   /// يغيّر المحرك ويحفظ الاختيار.
@@ -131,7 +153,8 @@ class TasmeeCtrl extends GetxController {
     state.isTasmeeMode.value = true;
     state.lastError.value = '';
     state.lastResult.value = null;
-    state.showAllWords.value = false;
+    // إظهار الكلمات افتراضيًا في المصحح والمعلم، وإخفاؤها في التسميع.
+    state.showAllWords.value = state.mode.value.showsWordsByDefault;
     // جلسة سابقة قد انتهت بـ finished/error تبقى في الحالة — صفّرها لدخول نظيف.
     state.sessionState.value = RecitationState.idle;
     _doneWordKeys.clear();

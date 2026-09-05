@@ -294,30 +294,7 @@ class RecitationSession {
         onWordDone: onWordDone,
         onRangeComplete: onRangeComplete,
       );
-      const settings = RecordConfig(
-        encoder: AudioEncoder.pcm16bits,
-        sampleRate: 16000,
-        numChannels: 1,
-        autoGain: true,
-        echoCancel: true,
-        noiseSuppress: true,
-      );
-      // record v6: startStream يُعيد Future<Stream> — انتظر الشبكة ثم اشترك.
-      final pcmStream = await _liveRecorder!.startStream(settings);
-      _liveSub = pcmStream.listen((chunk) {
-        // ملاحظة حرجة: دفعات record قد تكون عروضًا داخل ذاكرة أكبر وبإزاحة
-        // غير زوجية أحيانًا — pcm16ToFloats ينسخها إلى ذاكرة محاذية.
-        _liveChunkCount++;
-        _liveTotalBytes += chunk.lengthInBytes;
-        final floats = pcm16ToFloats(chunk);
-        var peak = 0.0;
-        for (final v in floats) {
-          final a = v < 0 ? -v : v;
-          if (a > peak) peak = a;
-        }
-        if (peak > _livePeak) _livePeak = peak;
-        engine.feedPcm(floats);
-      });
+      await _startPcmStreaming(engine);
       isLive.value = true;
       state.value = RecitationState.recording;
       _liveChunkCount = 0;
@@ -329,6 +306,76 @@ class RecitationSession {
       state.value = RecitationState.error;
       lastError.value = e.toString();
       log('RecitationSession startLive failed: $e',
+          name: 'RecitationSession', stackTrace: s);
+    }
+  }
+
+  /// يشترك في بثّ الميكروفون ويغذّي المحرّك بوحدات PCM — مشترك بين
+  /// [startLive] و[resumeLive].
+  Future<void> _startPcmStreaming(LiveCapableRecitationEngine engine) async {
+    const settings = RecordConfig(
+      encoder: AudioEncoder.pcm16bits,
+      sampleRate: 16000,
+      numChannels: 1,
+      autoGain: true,
+      echoCancel: true,
+      noiseSuppress: true,
+    );
+    // record v6: startStream يُعيد Future<Stream> — انتظر الشبكة ثم اشترك.
+    final pcmStream = await _liveRecorder!.startStream(settings);
+    _liveSub = pcmStream.listen((chunk) {
+      // ملاحظة حرجة: دفعات record قد تكون عروضًا داخل ذاكرة أكبر وبإزاحة
+      // غير زوجية أحيانًا — pcm16ToFloats ينسخها إلى ذاكرة محاذية.
+      _liveChunkCount++;
+      _liveTotalBytes += chunk.lengthInBytes;
+      final floats = pcm16ToFloats(chunk);
+      var peak = 0.0;
+      for (final v in floats) {
+        final a = v < 0 ? -v : v;
+        if (a > peak) peak = a;
+      }
+      if (peak > _livePeak) _livePeak = peak;
+      engine.feedPcm(floats);
+    });
+  }
+
+  /// يجمّد بثّ الميكروفون مؤقتًا دون إنهاء الجلسة أو تقييمها — مثلاً
+  /// لتصحيح كلمة في نمط المصحح دون أن يسمع الميكروفون نطق الكلمة من
+  /// السماعة. يُستأنف بـ [resumeLive] من نفس نقطة المحاذاة.
+  Future<void> pauseLive() async {
+    if (!isLive.value || state.value != RecitationState.recording) return;
+    try {
+      await _liveSub?.cancel();
+      _liveSub = null;
+      await _liveRecorder?.stop();
+      state.value = RecitationState.paused;
+      log('RecitationSession paused LIVE streaming', name: 'RecitationSession');
+    } catch (e, s) {
+      log('RecitationSession pauseLive error: $e',
+          name: 'RecitationSession', stackTrace: s);
+    }
+  }
+
+  /// يستأنف بثّ الميكروفون بعد [pauseLive] — المحرّك احتفظ بحالة
+  /// المحاذاة فتُكمل التلاوة من حيث توقفت.
+  Future<void> resumeLive() async {
+    final engine = _engine;
+    if (engine is! LiveCapableRecitationEngine ||
+        !isLive.value ||
+        state.value != RecitationState.paused ||
+        _liveSub != null) {
+      return;
+    }
+    try {
+      _liveRecorder ??= AudioRecorder();
+      await _startPcmStreaming(engine);
+      state.value = RecitationState.recording;
+      log('RecitationSession resumed LIVE streaming',
+          name: 'RecitationSession');
+    } catch (e, s) {
+      state.value = RecitationState.error;
+      lastError.value = e.toString();
+      log('RecitationSession resumeLive failed: $e',
           name: 'RecitationSession', stackTrace: s);
     }
   }

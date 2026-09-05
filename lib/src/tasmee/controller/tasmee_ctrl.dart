@@ -58,6 +58,11 @@ class TasmeeCtrl extends GetxController {
   RecitationSession? _session;
   QuranReferenceRange? _range;
 
+  /// جلسة إعادة نطق كلمة واحدة (نمط المصحح) — منفصلة عن الجلسة
+  /// الرئيسية المتوقفة مؤقتًا.
+  RecitationSession? _retrySession;
+  Worker? _retryStateWorker;
+
   /// مفاتيح الكلمات المكتملة بترتيب إتمامها (لِتقليم ما يظهر بعد الإيقاف).
   final List<String> _doneWordKeys = [];
 
@@ -103,9 +108,13 @@ class TasmeeCtrl extends GetxController {
   /// المصحح والمعلم يفرضان إظهار الكلمات، والتسميع يخفيها.
   Future<void> setMode(TasmeeMode mode) async {
     if (state.mode.value == mode) return;
+    _disposeRetrySession();
+    state.activeWordCorrection.value = null;
+    state.wordRetryOutcome.value = null;
     if (isRecording ||
         isProcessing ||
-        state.sessionState.value == RecitationState.connecting) {
+        state.sessionState.value == RecitationState.connecting ||
+        state.sessionState.value == RecitationState.paused) {
       await stopRecording();
     }
     state.mode.value = mode;
@@ -173,6 +182,9 @@ class TasmeeCtrl extends GetxController {
     // التقط رقم الصفحة قبل تصفيره — دونه لا يُحدَّث معرّف الصفحة فتبقى
     // الكلمات مخفية على كاش السطر حتى يلمس المستخدم الشاشة.
     final page = state.currentRangePage;
+    _disposeRetrySession();
+    state.activeWordCorrection.value = null;
+    state.wordRetryOutcome.value = null;
     _cancelSession();
     _pageWorker?.dispose();
     _pageWorker = null;
@@ -363,8 +375,17 @@ class TasmeeCtrl extends GetxController {
     state.currentWordKey.value = null;
   }
 
-  /// إعادة التسميع من البداية (الكلمات تُخفى من جديد).
+  /// إعادة التسميع من البداية (الكلمات تُخفى من جديد) — تُنهي أي جلسة
+  /// نشطة أو متوقفة لتصحيح كلمة وتصفّر حالة التصحيح أولًا.
   Future<void> retryTasmee() async {
+    if (isRecording ||
+        isProcessing ||
+        state.sessionState.value == RecitationState.paused) {
+      await stopRecording();
+    }
+    _disposeRetrySession();
+    state.activeWordCorrection.value = null;
+    state.wordRetryOutcome.value = null;
     state.lastResult.value = null;
     state.lastError.value = '';
     state.wordErrorKinds.clear();
@@ -500,6 +521,122 @@ class TasmeeCtrl extends GetxController {
         .where((s) => s != TasmeeWordStatus.hidden)
         .length;
     _refreshQuranPages();
+    // نمط المصحح: أول كلمة خاطئة توقف الجلسة بانتظار تصحيحها.
+    if (state.mode.value == TasmeeMode.corrector &&
+        kind != TasmeeErrorKind.correct &&
+        state.activeWordCorrection.value == null) {
+      // بلا انتظار — onWordDone متزامن التوقيع.
+      _beginWordCorrection(verseIdx, wordIdx, kind);
+    }
+  }
+
+  // ── تصحيح الكلمة (نمط المصحح) ──────────────────────────────────
+
+  /// يضبط الكلمة الخاطئة المنتظرة تصحيحًا ويجمّد الجلسة الرئيسية —
+  /// الميكروفون يتوقف فلا يسمع نطق الكلمة من السماعة أثناء الشيت.
+  Future<void> _beginWordCorrection(
+    int verseIdx,
+    int wordIdx,
+    TasmeeErrorKind kind,
+  ) async {
+    if (verseIdx < 0 || verseIdx >= _rangeAyahs.length) return;
+    final ayah = _rangeAyahs[verseIdx];
+    final verse = _range != null && verseIdx < _range!.verses.length
+        ? _range!.verses[verseIdx]
+        : null;
+    final wordText = verse != null && wordIdx < verse.uthmaniWords.length
+        ? verse.uthmaniWords[wordIdx]
+        : '';
+    state.wordRetryOutcome.value = null;
+    state.activeWordCorrection.value = TasmeeWordCorrection(
+      key: _wordKey(verseIdx, wordIdx),
+      wordText: wordText,
+      errorKind: kind,
+      suraIdx: ayah.surahNumber ?? 1,
+      ayaIdx: ayah.ayahNumber,
+      wordNumber: wordIdx + 1,
+      verseIdx: verseIdx,
+      wordIdx: wordIdx,
+    );
+    await _session?.pauseLive();
+  }
+
+  /// يبدأ محاولة إعادة نطق الكلمة المنتظرة — جلسة حيّة مصغّرة بمدى
+  /// الكلمة وحدها؛ الحكم في [TasmeeState.wordRetryOutcome] وتُعلَّم
+  /// الكلمة صحيحة وتُستأنف الجلسة بالحل عند [TasmeeWordRetryOutcome.correct].
+  Future<void> startWordRetry() async {
+    final correction = state.activeWordCorrection.value;
+    if (correction == null || _retrySession != null) return;
+    final verse = _range != null && correction.verseIdx < _range!.verses.length
+        ? _range!.verses[correction.verseIdx]
+        : null;
+    final wordRange = verse == null
+        ? null
+        : QuranReferenceRange.fromSingleWord(verse, correction.wordIdx);
+    if (wordRange == null) {
+      state.wordRetryOutcome.value = TasmeeWordRetryOutcome.incorrect;
+      return;
+    }
+    final session = Recitation.createSession(range: wordRange);
+    _retrySession = session;
+    state.wordRetryOutcome.value = null;
+    state.isWordRetryListening.value = true;
+    session.onWordDone = (_, __, kind) {
+      state.wordRetryOutcome.value = kind == TasmeeErrorKind.correct
+          ? TasmeeWordRetryOutcome.correct
+          : TasmeeWordRetryOutcome.incorrect;
+      _scheduleRetryStop(session);
+    };
+    session.onRangeComplete = () => _scheduleRetryStop(session);
+    _retryStateWorker = ever<RecitationState>(session.state, (s) {
+      if (s == RecitationState.finished || s == RecitationState.error) {
+        // انتهت بلا حكم حيّ (لم تُطابق) → محاولة فاشلة.
+        if (state.wordRetryOutcome.value == null) {
+          state.wordRetryOutcome.value = TasmeeWordRetryOutcome.incorrect;
+        }
+        _disposeRetrySession();
+      }
+    });
+    await session.startLive();
+  }
+
+  /// مهلة قصيرة بعد اكتمال الكلمة قبل إنهاء جلسة إعادة النطق — تسمح
+  /// بابتلاع آخر وحدة كالمعتاد في جلسة الصفحة.
+  void _scheduleRetryStop(RecitationSession session) {
+    Future.delayed(const Duration(milliseconds: 700), () {
+      if (session.isLive.value) session.stopLive();
+    });
+  }
+
+  void _disposeRetrySession() {
+    _retryStateWorker?.dispose();
+    _retryStateWorker = null;
+    try {
+      _retrySession?.dispose();
+    } catch (_) {}
+    _retrySession = null;
+    state.isWordRetryListening.value = false;
+  }
+
+  /// يحلّ الكلمة المنتظرة: قبول نطقها الصحيح (تُعلَّم خضراء) أو تخطّيها
+  /// (تبقى حمراء) — ثم يستأنف الجلسة الرئيسية المتوقفة.
+  Future<void> resolveWordCorrection({required bool accepted}) async {
+    final correction = state.activeWordCorrection.value;
+    if (correction == null) return;
+    _disposeRetrySession();
+    if (accepted) {
+      state.wordStatuses[correction.key] = TasmeeWordStatus.correct;
+      state.wordErrorKinds.remove(correction.key);
+      _refreshQuranPages();
+    }
+    state.wordRetryOutcome.value = null;
+    state.activeWordCorrection.value = null;
+    final session = _session;
+    if (session != null &&
+        session.isLive.value &&
+        session.state.value == RecitationState.paused) {
+      await session.resumeLive();
+    }
   }
 
   /// الكلمة الجارية (من محاذاة الوضع الحيّ) — تُبرز لحظيًا.

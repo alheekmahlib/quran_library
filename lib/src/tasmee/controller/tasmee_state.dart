@@ -32,6 +32,43 @@ enum TasmeeWordStatus {
   incorrect,
 }
 
+/// كلمة تنتظر تصحيحًا في نمط المصحح — تُضبط عند أول كلمة خاطئة (مع
+/// تجميد الجلسة الرئيسية) وتُصفَّر عند حلّها (قبول/تخطٍّ).
+class TasmeeWordCorrection {
+  const TasmeeWordCorrection({
+    required this.key,
+    required this.wordText,
+    required this.errorKind,
+    required this.suraIdx,
+    required this.ayaIdx,
+    required this.wordNumber,
+    required this.verseIdx,
+    required this.wordIdx,
+  });
+
+  /// مفتاح الكلمة في خرائط الحالات `'$ayahUq:$wordNumber'`.
+  final String key;
+
+  /// نص الكلمة العثماني.
+  final String wordText;
+
+  /// نوع الخطأ المكتشف حيًّا.
+  final TasmeeErrorKind errorKind;
+
+  /// موضع الكلمة في المصحف (سورة/آية 1-based وكلمة 1-based) — لتشغيل
+  /// نطقها عبر WordInfoCtrl.
+  final int suraIdx;
+  final int ayaIdx;
+  final int wordNumber;
+
+  /// موضعها داخل نطاق الجلسة (0-based) — لِبناء جلسة إعادة النطق.
+  final int verseIdx;
+  final int wordIdx;
+}
+
+/// نتيجة محاولة إعادة نطق كلمة في نمط المصحح.
+enum TasmeeWordRetryOutcome { correct, incorrect }
+
 class TasmeeState {
   /// هل وضع التسميع مفعّل الآن؟
   final RxBool isTasmeeMode = false.obs;
@@ -60,6 +97,19 @@ class TasmeeState {
 
   /// الكلمة الجارية (مفتاح) — أو null.
   final Rxn<String> currentWordKey = Rxn<String>();
+
+  /// الكلمة المنتظرة تصحيحها في نمط المصحح (أو null) — الجلسة الرئيسية
+  /// متوقفة مؤقتًا طوال وجودها.
+  final Rxn<TasmeeWordCorrection> activeWordCorrection =
+      Rxn<TasmeeWordCorrection>();
+
+  /// نتيجة آخر محاولة إعادة نطق للكلمة المنتظرة (null أثناء الاستماع
+  /// أو قبل أي محاولة).
+  final Rxn<TasmeeWordRetryOutcome> wordRetryOutcome =
+      Rxn<TasmeeWordRetryOutcome>();
+
+  /// جلسة إعادة نطق الكلمة تستمع الآن؟
+  final RxBool isWordRetryListening = false.obs;
 
   /// نتيجة آخر تسميع (تُملأ بعد الإيقاف).
   final Rx<RecitationResult?> lastResult = Rx<RecitationResult?>(null);

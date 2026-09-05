@@ -145,6 +145,37 @@ class QuranReferenceRange {
     );
   }
 
+  /// يبني نطاقًا من وحدات كلمة واحدة داخل آيتها — لِلتحقق المصغّر من
+  /// نطق كلمة (نمط المصحح). يعيد null إن لم تكن للكلمة وحدات في المرجع.
+  ///
+  /// [units] هنا وحدات الكلمة وحدها (لا الآية كلها) فتُحاذى التلاوة
+  /// عليها منفردة.
+  static QuranReferenceRange? fromSingleWord(
+    QuranReferenceVerse verse,
+    int wordIdx,
+  ) {
+    final units = <QuranUnit>[];
+    for (var u = 0; u < verse.units.length; u++) {
+      if (verse.unitWordIdx[u] == wordIdx) units.add(verse.units[u]);
+    }
+    if (units.isEmpty) return null;
+    return QuranReferenceRange._(
+      verses: [verse],
+      units: units,
+      unitVerseIdx: List<int>.filled(units.length, 0),
+      unitWordIdx: List<int>.filled(units.length, wordIdx),
+      wordSpans: [
+        QuranRangeWordSpan(
+          verseIdx: 0,
+          wordIdx: wordIdx,
+          startUnit: 0,
+          endUnit: units.length - 1,
+        ),
+      ],
+      unitSpanIdx: List<int>.filled(units.length, 0),
+    );
+  }
+
   /// يبني النطاق من آيات مرتبة (تراكب الوحدات + خرائط الكلمات).
   ///
   /// الكلمة التي لا وحدات لها في المرجع تُستثنى من التتبّع الحيّ.

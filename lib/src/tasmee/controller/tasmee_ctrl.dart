@@ -124,6 +124,9 @@ class TasmeeCtrl extends GetxController {
     // تقييم جلسةٍ تنتمي لنمطٍ قديم.
     state.mode.value = mode;
     _storage.write(TasmeeStorageConstants.tasmeeMode, mode.storageName);
+    // الآيات ظاهرة دائمًا في المصحح والمعلم؛ والتسميع يبدأ مخفيًا
+    // (وزر العين للمستخدم فيه).
+    state.showAllWords.value = mode.showsWordsByDefault;
     if (isRecording ||
         isProcessing ||
         state.sessionState.value == RecitationState.connecting ||
@@ -538,6 +541,9 @@ class TasmeeCtrl extends GetxController {
 
   /// يبدّل إظهار كل كلمات الصفحة مؤقتًا (زر العين).
   void toggleShowAllWords() {
+    // التسميع وحده يسمح بإخفاء/إظهار الكلمات — في المصحح والمعلم
+    // الآيات ظاهرة دائمًا.
+    if (state.mode.value != TasmeeMode.tasmee) return;
     state.showAllWords.value = !state.showAllWords.value;
     _refreshQuranPages();
     update([TasmeeUpdateIds.control]);

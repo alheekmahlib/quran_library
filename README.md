@@ -1,6 +1,6 @@
 ## Quran Library
 <p align="center">
-<img src="https://raw.githubusercontent.com/alheekmahlib/thegarlanded/master/Photos/Packages/quran_library/quran_library_banner.png" width="500"/>
+<img src="https://raw.githubusercontent.com/alheekmahlib/data/main/packages/quran_library/quran_library_banner.png" width="500"/>
 </p>
 
 

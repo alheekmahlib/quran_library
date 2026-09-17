@@ -15,7 +15,7 @@ PODS:
   - path_provider_foundation (0.0.1):
     - Flutter
     - FlutterMacOS
-  - record_ios (1.2.1):
+  - record_ios (2.0.0):
     - Flutter
   - sherpa_onnx_ios (1.12.40):
     - Flutter
@@ -65,10 +65,10 @@ SPEC CHECKSUMS:
   integration_test: 4a889634ef21a45d28d50d622cf412dc6d9f586e
   just_audio: 4e391f57b79cad2b0674030a00453ca5ce817eed
   path_provider_foundation: bb55f6dbba17d0dccd6737fe6f7f34fbd0376880
-  record_ios: 980fd386a97a35987d0fce3dfda4b26a38c90f4c
+  record_ios: 390a30c7caaf8b5d0fb1cb1d2fd5064b48b4520c
   sherpa_onnx_ios: bb7acea7cc928eb608b99f11850f87124f196d40
   sqflite_darwin: 20b2a3a3b70e43edae938624ce550a3cbf66a3d0
 
-PODFILE CHECKSUM: 4f1c12611da7338d21589c0b2ecd6bd20b109694
+PODFILE CHECKSUM: f269496ad7076dbb42c471b3294ceae2cc783d7d
 
 COCOAPODS: 1.16.2

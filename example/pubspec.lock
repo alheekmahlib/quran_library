@@ -628,45 +628,45 @@ packages:
     source: hosted
     version: "1.13.8"
   sherpa_onnx_android_arm64:
-    dependency: "direct overridden"
+    dependency: transitive
     description:
       name: sherpa_onnx_android_arm64
-      sha256: "6ba6c017504c1a83fa40ba0f79863245be288a86feb3a5ee98658c3ff2491db8"
+      sha256: "29db5572735afb1bc29f0f95ab160f7fb38b4b3f926f48e9113457fd740264f4"
       url: "https://pub.dev"
     source: hosted
-    version: "1.12.40"
+    version: "1.13.8"
   sherpa_onnx_android_armeabi:
-    dependency: "direct overridden"
+    dependency: transitive
     description:
       name: sherpa_onnx_android_armeabi
-      sha256: "76463ab7004ad7b5254efd1919c5c32c00fa0604e6b6a9483c89e72ef8e75581"
+      sha256: fe81837bd12f67d136a456c6d2b39876caaba09edd77761cb527cb170dac2d2a
       url: "https://pub.dev"
     source: hosted
-    version: "1.12.40"
+    version: "1.13.8"
   sherpa_onnx_android_x86:
-    dependency: "direct overridden"
+    dependency: transitive
     description:
       name: sherpa_onnx_android_x86
-      sha256: cb67363b84a60cd5f4437a5d209e61467a307f3d59b1ed456c32e2532522ecd9
+      sha256: "8ddbd35982d4bb15648fc818253f2711be18448db50a2edb05c56a6c745fcea7"
       url: "https://pub.dev"
     source: hosted
-    version: "1.12.40"
+    version: "1.13.8"
   sherpa_onnx_android_x86_64:
-    dependency: "direct overridden"
+    dependency: transitive
     description:
       name: sherpa_onnx_android_x86_64
-      sha256: "937cfd9dfdac4525bf4afc5ac8954ac747ad057fe6e9b2532d6ccda760d1b4c0"
+      sha256: d20c06c0edc92286609f256d04c295cad510bbb270068c0c79877f4a10f00581
       url: "https://pub.dev"
     source: hosted
-    version: "1.12.40"
+    version: "1.13.8"
   sherpa_onnx_ios:
-    dependency: "direct overridden"
+    dependency: transitive
     description:
       name: sherpa_onnx_ios
-      sha256: "0d4d7109f12ec7e49073b5c2e4f6a4800c3e0869fe060f495875c1bf444d5d01"
+      sha256: "044e3a614d1847c0ff9b6475201c6e5d023cd6ca6cd17f14c16332081c01e1d2"
       url: "https://pub.dev"
     source: hosted
-    version: "1.12.40"
+    version: "1.13.8"
   sherpa_onnx_linux:
     dependency: transitive
     description:
@@ -676,13 +676,13 @@ packages:
     source: hosted
     version: "1.13.8"
   sherpa_onnx_macos:
-    dependency: "direct overridden"
+    dependency: transitive
     description:
       name: sherpa_onnx_macos
-      sha256: "489f2d66ba2d8da6dc7e4b47223549a2bef8b2af9bdd6b3a952300db0908d15f"
+      sha256: bdedc34ac0acccee7ae73a5599f66e0081137c00467c565a92f72b67428837bb
       url: "https://pub.dev"
     source: hosted
-    version: "1.12.40"
+    version: "1.13.8"
   sherpa_onnx_web:
     dependency: transitive
     description:

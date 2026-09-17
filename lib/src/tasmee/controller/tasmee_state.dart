@@ -139,8 +139,18 @@ class TasmeeState {
   final Rxn<TasmeeWordRetryOutcome> wordRetryOutcome =
       Rxn<TasmeeWordRetryOutcome>();
 
+  /// خطأ أحدث محاولة إعادة نطق فاشلة (null عند الصحة أو قبل أي محاولة)
+  /// — يُحدَّث مع كل محاولة ليعرف المستخدم خطأه الحالي: أصلح النطق
+  /// فصار الخطأ تشكيلًا أو تجويدًا.
+  final Rxn<TasmeeRetryFeedback> wordRetryFeedback = Rxn<TasmeeRetryFeedback>();
+
   /// جلسة إعادة نطق الكلمة تستمع الآن؟
   final RxBool isWordRetryListening = false.obs;
+
+  /// الجلسة الحيّة تستمع لموضع بداية المستخدم (طور الالتقاط — انطلق
+  /// بأي آية تشاء) — يتغيّر إلى false عند أول كلمة جارية. لِلمؤشرات في
+  /// التطبيق المضيف.
+  final RxBool isAwaitingStart = false.obs;
 
   /// طور جلسة المعلم الجاري (نمط المعلم).
   final Rx<TasmeeTeacherPhase> teacherPhase = TasmeeTeacherPhase.idle.obs;

@@ -11,6 +11,7 @@ library;
 
 import 'models/recitation_result.dart';
 import 'phoneme_aligner.dart';
+import 'quran_reference.dart';
 import 'quran_units.dart';
 
 /// قاعدة مدّ جاهزة (تُستخدم أيضًا في madd_timing).
@@ -24,27 +25,55 @@ TajweedRule _rule(String ar, String en) =>
     TajweedRule(nameAr: ar, nameEn: en, correctnessType: 'match');
 
 /// يبني الأخطاء من عمليات محاذاة الوحدات.
+///
+/// الإدراجات تُعالَج **سلسلةً سلسلة**: كل متتالية وحدات زائدة تُدمج في
+/// خطأ واحد يُنسب لكلمته (المتوقَّعة التالية أو الأخيرة المطابَقة)،
+/// وإعادةُ كلمةٍ مُطابَقة حديثًا تُوسم "إعادة كلمة" على الكلمة نفسها —
+/// فلا يغرق التقرير ببطاقة لكل وحدة زائدة.
 List<RecitationError> buildErrorsFromUnitAlignment({
   required List<UnitAlignOp> ops,
   required List<QuranUnit> refUnits,
   required List<QuranUnit> predUnits,
   required String? Function(int unitIdx) wordAt,
+  QuranRangeWordSpan? Function(int unitIdx)? spanOfUnit,
 }) {
   final errors = <RecitationError>[];
+  final run = <QuranUnit>[];
+  var lastMatchedRef = -1;
+
+  void flushRun(int nextRef) {
+    if (run.isEmpty) return;
+    _handleInsertRun(
+      errors: errors,
+      run: List.of(run),
+      refUnits: refUnits,
+      wordAt: wordAt,
+      spanOfUnit: spanOfUnit,
+      lastMatchedRef: lastMatchedRef,
+      nextRef: nextRef,
+    );
+    run.clear();
+  }
+
   for (final op in ops) {
     switch (op.type) {
       case 'match':
       case 'replace':
         if (op.refIdx < 0 || op.predIdx < 0) continue;
+        flushRun(op.refIdx);
         _handleSameLetterOrReplace(op, refUnits, predUnits, wordAt, errors);
+        lastMatchedRef = op.refIdx;
       case 'insert':
         if (op.predIdx < 0) continue;
-        _handleInsert(op, predUnits, errors);
+        run.add(predUnits[op.predIdx]);
       case 'delete':
         if (op.refIdx < 0) continue;
+        flushRun(op.refIdx);
         _handleDelete(op, refUnits, wordAt, errors);
     }
   }
+  // سلسلة ختامية بعد آخر عملية — تُنسب لآخر كلمة مطابَقة.
+  flushRun(lastMatchedRef);
   return errors;
 }
 
@@ -142,21 +171,78 @@ void _handleSameLetterOrReplace(
   ));
 }
 
-/// فرع insert: ضوضاء CTC شائعة تُتجاهل.
-void _handleInsert(
-  UnitAlignOp op,
-  List<QuranUnit> predUnits,
-  List<RecitationError> errors,
-) {
-  final pred = predUnits[op.predIdx];
-  if (pred.isNoiseInsert) return;
+/// فرع الإدراج: سلسلة وحدات زائدة → خطأ واحد مدموج منسوب لكلمته.
+///
+/// - إعادة كلمة: سلسلة تطابق (بالحرف الأساسي) كلمةً مُطابَقة حديثًا →
+///   خطأ "إعادة كلمة" على الكلمة المعادة نفسها.
+/// - غير ذلك: خطأ "حروف زائدة" واحد على الكلمة المتوقَّعة التالية (أو
+///   الأخيرة المطابَقة إن ختمت التلاوة) — بلا بطاقة لكل وحدة.
+void _handleInsertRun({
+  required List<RecitationError> errors,
+  required List<QuranUnit> run,
+  required List<QuranUnit> refUnits,
+  required String? Function(int unitIdx) wordAt,
+  required QuranRangeWordSpan? Function(int unitIdx)? spanOfUnit,
+  required int lastMatchedRef,
+  required int nextRef,
+}) {
+  final units = run.where((u) => !u.isNoiseInsert).toList();
+  if (units.isEmpty) return;
+  final predicted = units.map((u) => u.symbol).join(' ');
+
+  // إعادة كلمة: الحروف الأساسية للسلسلة تطابق كلمة الجوار — السابقة
+  // (آخر كلمة مُطابَقة) أو التالية (المحاذاة قد تعدّ النسخة الأولى من
+  // التكرار إدراجًا والثانية هي المطابِقة).
+  QuranRangeWordSpan? repeatSpan;
+  if (spanOfUnit != null) {
+    for (final probe in [lastMatchedRef, nextRef]) {
+      if (probe < 0) continue;
+      final s = spanOfUnit(probe);
+      if (s == null || s.endUnit >= refUnits.length) continue;
+      final wordLetters = refUnits
+          .sublist(s.startUnit, s.endUnit + 1)
+          .map((u) => u.letter)
+          .toList();
+      if (wordLetters.length != units.length) continue;
+      var same = true;
+      for (var i = 0; i < wordLetters.length; i++) {
+        if (wordLetters[i] != units[i].letter) {
+          same = false;
+          break;
+        }
+      }
+      if (same) {
+        repeatSpan = s;
+        break;
+      }
+    }
+  }
+  if (repeatSpan != null) {
+    errors.add(RecitationError(
+      errorType: 'normal',
+      speechErrorType: 'insert',
+      uthmaniPos: [repeatSpan.startUnit, repeatSpan.startUnit + 1],
+      phPos: const [0, 0],
+      expectedPh: '',
+      predictedPh: predicted,
+      wordText: wordAt(repeatSpan.startUnit),
+      isWordRepeat: true,
+    ));
+    return;
+  }
+
+  // سلسلة زيادة على الكلمة المتوقَّعة (أو الأخيرة إن ختمت).
+  final at =
+      nextRef >= 0 ? nextRef : (lastMatchedRef >= 0 ? lastMatchedRef : -1);
   errors.add(RecitationError(
     errorType: 'normal',
     speechErrorType: 'insert',
-    uthmaniPos: const [0, 0],
-    phPos: [op.predIdx, op.predIdx + 1],
+    // -1 = بلا موضع مرجعي (لا يُوسَم ولا يُزاح عند تقييم نافذة).
+    uthmaniPos: at >= 0 ? [at, at + 1] : const [-1, -1],
+    phPos: const [0, 0],
     expectedPh: '',
-    predictedPh: pred.symbol,
+    predictedPh: predicted,
+    wordText: at >= 0 ? wordAt(at) : null,
   ));
 }
 

@@ -71,10 +71,13 @@ class QuranUnit {
   int? get maddLength => isMadd ? coreRepeat : null;
 
   /// ضوضاء إقحام شائعة في مخرجات CTC — لا تُعد خطأ تلاوة.
+  ///
+  /// الهَمز المفرد بحركة (ءِ/ءَ/ءُ) همسةُ نَفَسٍ عند فواصل الآيات لا
+  /// نطقٌ زائد مقصود (يُغتفر إدراجًا فقط — نقصه أو استبداله يبقى خطأ).
   bool get isNoiseInsert =>
       isSilence ||
       isHarakaOnly ||
-      symbol == 'ء' ||
+      letter == 'ء' ||
       symbol == 'ـ' ||
       symbol == 'ــ' ||
       symbol == '۾';

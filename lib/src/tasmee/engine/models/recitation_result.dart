@@ -15,6 +15,7 @@ class RecitationResult {
     this.uthmaniText,
     this.errors = const [],
     this.noMatchMessage,
+    this.matchedWordSpans = const [],
   });
 
   /// موضع بداية التطابق في المصحف (سورة، آية، كلمة، حرف).
@@ -44,6 +45,15 @@ class RecitationResult {
   /// رسالة إن لم يُعثر على تطابق (HTTP 404).
   /// Message when no match found (HTTP 404).
   final String? noMatchMessage;
+
+  /// الكلمات التي شملتها مطابقات التقييم النهائي (فهرس الآية والكلمة
+  /// 0-based داخل نطاق الجلسة) — وضع النطاق offline فقط.
+  ///
+  /// أساس "التغطية الفعلية" التي تُبنى عليها حالات الكلمات بعد الإيقاف
+  /// (كلمات النطاق المُتلوّة فعلًا)، بديلًا عن اكتمال المتتبّع الحي وحده.
+  /// Words covered by final-alignment matches (verse/word indexes 0-based
+  /// within the session range) — offline range mode only.
+  final List<({int verseIdx, int wordIdx})> matchedWordSpans;
 
   /// هل وُجد تطابق في القرآن؟
   /// Was a match found in the Quran?
@@ -113,6 +123,7 @@ class RecitationError {
     this.expectedLen,
     this.predictedLen,
     this.wordText,
+    this.isWordRepeat = false,
     this.refTajweedRules = const [],
     this.insertedTajweedRules = const [],
     this.replacedTajweedRules = const [],
@@ -171,6 +182,10 @@ class RecitationError {
   /// `referenceText`. null means unknown (nothing shown).
   final String? wordText;
 
+  /// هل السلسلة الزائدة إعادةُ كلمةٍ مُطابَقة حديثًا (تردد مستخدم) —
+  /// تُعرض "إعادة كلمة" على الكلمة المعادة لا "حروف زائدة" مبعثرة.
+  final bool isWordRepeat;
+
   /// قواعد التجويد المرجعية المُطبَّقة على هذا الموضع.
   /// Reference tajweed rules applied at this position.
   final List<TajweedRule> refTajweedRules;
@@ -217,6 +232,37 @@ class RecitationError {
       expectedLen: expectedLen,
       predictedLen: predictedLen,
       wordText: wordText,
+      refTajweedRules: refTajweedRules,
+      insertedTajweedRules: insertedTajweedRules,
+      replacedTajweedRules: replacedTajweedRules,
+      missingTajweedRules: missingTajweedRules,
+      suraIdx: suraIdx,
+      ayaIdx: ayaIdx,
+      wordIdx: wordIdx,
+    );
+  }
+
+  /// نسخة بموضع عثماني مُزاح بـ[offset] — تقييم نافذة جزئية من النطاق
+  /// (قصّ المقطع المتلو فعلًا) يُنتج فهارس محلية تُعاد بها إلى الفهارس
+  /// العالمية للنطاق كاملًا.
+  RecitationError shiftUthmaniPos(int offset) {
+    if (offset == 0 ||
+        uthmaniPos.length < 2 ||
+        uthmaniPos[0] < 0 ||
+        uthmaniPos[1] < 0) {
+      return this;
+    }
+    return RecitationError(
+      errorType: errorType,
+      speechErrorType: speechErrorType,
+      uthmaniPos: [uthmaniPos[0] + offset, uthmaniPos[1] + offset],
+      phPos: phPos,
+      expectedPh: expectedPh,
+      predictedPh: predictedPh,
+      expectedLen: expectedLen,
+      predictedLen: predictedLen,
+      wordText: wordText,
+      isWordRepeat: isWordRepeat,
       refTajweedRules: refTajweedRules,
       insertedTajweedRules: insertedTajweedRules,
       replacedTajweedRules: replacedTajweedRules,
@@ -279,9 +325,12 @@ class RecitationError {
       return 'تشكيل $verb';
     }
 
-    // 3) أخطاء النطق (normal): "حرف <زائد/مفقود>" أو "نطق خاطئ".
-    // Normal errors: "letter <extra/missing>" or "wrong pronunciation".
+    // 3) أخطاء النطق (normal): "حرف زائد" أو "نطق خاطئ".
+    // Normal errors: "letter extra" or "wrong pronunciation".
     return switch (speechErrorType) {
+      'insert' when isWordRepeat => 'إعادة كلمة',
+      'insert' when predictedPh != null && predictedPh!.contains(' ') =>
+        'حروف زائدة',
       'insert' => 'حرف زائد',
       'delete' => 'حرف مفقود',
       _ => 'نطق خاطئ',
@@ -309,8 +358,10 @@ class RecitationError {
       predictedPh: (j['preditected_ph'] ?? j['predicted_ph']) as String?,
       expectedLen: (j['expected_len'] as num?)?.toInt(),
       predictedLen: (j['predicted_len'] as num?)?.toInt(),
-      // استخرج الكلمة المتأثّرة من النصّ العثماني عند موضع الخطأ.
-      wordText: uthmaniText != null
+      // استخرج الكلمة المتأثّرة من النصّ العثماني عند موضع الخطأ — إلا
+      // الإدراجات: موضعها من الخادم بلا معنى ([0,0]) فكانت تُنسب زورًا
+      // لأول كلمة في الآية.
+      wordText: uthmaniText != null && speechErrorTypeValue(j) != 'insert'
           ? _extractWordFromUthmani(uthmaniText, uthmaniPos)
           : null,
       refTajweedRules: _parseRules(j['ref_tajweed_rules']),
@@ -319,6 +370,10 @@ class RecitationError {
       missingTajweedRules: _parseRules(j['missing_tajweed_rules']),
     );
   }
+
+  /// نوع خطأ النطق من JSON (مفتاح الخادم، أو null).
+  static String? speechErrorTypeValue(Map<String, dynamic> j) =>
+      j['speech_error_type'] as String?;
 
   /// يستخرج الكلمة العثمانية المحيطة بِموضع حرفي.
   ///

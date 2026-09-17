@@ -14,6 +14,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:sherpa_onnx/sherpa_onnx.dart' as sherpa;
 
 import 'error_detector.dart';
+import 'range_evaluation.dart';
 import 'live_recitation_engine.dart';
 import 'madd_timing.dart';
 import 'models/muaalem_config.dart';
@@ -277,6 +278,27 @@ class SherpaZipformerEngine implements LiveCapableRecitationEngine {
     _maybeReportLiveWord(frame);
   }
 
+  @override
+  void onLiveResumed() {
+    // استئناف إثر إيقاف المصحّح: أعد تسليح الالتقاط ليُرسّي المتتبّع على
+    // موضع المستخدم الفعلي بعد إغلاق الشيت — لا على موضع المؤشر المنزلق
+    // أثناء انتظار إيقاف الميكروفون عند فتحه.
+    _rangeTracker?.rearmAcquisition();
+  }
+
+  /// نافذة المقطع المتلو من متتبّع الجلسة الحيّة — أو null لتقييم النطاق
+  /// كاملًا (دفعات بلا متتبّع مطابق، كإعادة نطق كلمة واحدة).
+  ({int start, int end})? _liveRecitedWindow(QuranReferenceRange range) {
+    final tracker = _rangeTracker;
+    if (tracker == null || !identical(_liveRange, range)) return null;
+    if (tracker.firstConsumedRefIdx < 0) return null; // لم يُرسَ إطلاقًا.
+    return recitedWindowFor(
+      firstConsumed: tracker.firstConsumedRefIdx,
+      nextExpected: tracker.nextExpectedRefIdx,
+      rangeLength: range.units.length,
+    );
+  }
+
   /// يحاذي الوحدات المتنامية مع الآية ويُبلّغ فهرس الكلمة الجارية.
   ///
   /// يعاد الحساب فقط عند نموّ الوحدات (لا مع كل دفعة PCM صامتة)،
@@ -395,17 +417,27 @@ class SherpaZipformerEngine implements LiveCapableRecitationEngine {
     final predUnits =
         frame.units.map((s) => lex.bySymbol[s]!).toList(growable: false);
 
-    // وضع النطاق (صفحة كاملة) — أولوية على الآية المفردة.
+    // وضع النطاق (صفحة كاملة) — أولوية على الآية المفردة. الجلسات الحيّة
+    // تُقيَّم على نافذة المقطع المتلو فعلًا من المتتبّع (لا الصفحة كلها —
+    // محاذاة كامل الصفحة مقابل صوت مقطع قصير تُطابق ضوضاء الذيل مجانًا
+    // داخل ما لم يُتلَ فتنزاح النتائج). الدفعات بلا متتبّع تقاس كاملة.
     if (range != null && (_reference?.isLoaded ?? false)) {
-      // تسامح البادئ: بسملة/بداية متأخرة قبل أول مطابقة مرجعية.
-      final ops = dropLeadingInserts(alignUnits(range.units, predUnits));
-      final stats = computeUnitStats(ops);
+      final window = _liveRecitedWindow(range);
+      final eval = evaluateRangeAlignment(
+        range: range,
+        predUnits: predUnits,
+        frame: frame,
+        durationSec: durationSec,
+        maddTimingConfig: maddTimingConfig,
+        window: window,
+      );
       log(
-          'ZipformerEngine: aligned range(${range.verses.length} verses) — '
-          'ref=${range.units.length} pred=${predUnits.length} $stats',
+          'ZipformerEngine: aligned range(${range.verses.length} verses, '
+          'window=${window ?? 'full'}) — '
+          'ref=${range.units.length} pred=${predUnits.length} ${eval.stats}',
           name: 'ZipformerEngine');
 
-      if (stats.matches == 0 && stats.totalOps > 0) {
+      if (eval.stats.matches == 0 && eval.stats.totalOps > 0) {
         return RecitationResult(
           uthmaniText: range.uthmani,
           predictedPhonemes: predictedPhonemes,
@@ -415,26 +447,14 @@ class SherpaZipformerEngine implements LiveCapableRecitationEngine {
         );
       }
 
-      final errors = <RecitationError>[
-        ...buildErrorsFromUnitAlignment(
-          ops: ops,
-          refUnits: range.units,
-          predUnits: predUnits,
-          wordAt: range.wordAt,
-        ),
-        ..._timingErrors(
-            ops, range.units, range.wordAt, predUnits, frame, durationSec),
-      ];
-      final tagged = _tagErrorPositions(errors, range);
-      final first = range.keyOfVerse(0);
-      final last = range.keyOfVerse(range.verses.length - 1);
       return RecitationResult(
         uthmaniText: range.uthmani,
         predictedPhonemes: predictedPhonemes,
         referencePhonemes: range.phonemeString,
-        errors: tagged,
-        start: SurahAyahPosition(suraIdx: first.suraIdx, ayaIdx: first.ayaIdx),
-        end: SurahAyahPosition(suraIdx: last.suraIdx, ayaIdx: last.ayaIdx),
+        errors: eval.errors,
+        matchedWordSpans: eval.matchedSpans,
+        start: eval.start,
+        end: eval.end,
       );
     }
 
@@ -464,6 +484,7 @@ class SherpaZipformerEngine implements LiveCapableRecitationEngine {
           refUnits: ref.units,
           predUnits: predUnits,
           wordAt: ref.wordAt,
+          spanOfUnit: ref.spanOfUnit,
         );
         errors.addAll(_timingErrors(
             ops, ref.units, ref.wordAt, predUnits, frame, durationSec));
@@ -490,30 +511,6 @@ class SherpaZipformerEngine implements LiveCapableRecitationEngine {
       );
     }
     return RecitationResult(predictedPhonemes: predictedPhonemes);
-  }
-
-  /// يوسم كل خطأ بِموضعه في المصحف (سورة/آية/كلمة) من موضع وحدته المرجعية.
-  ///
-  /// أخطاء insert بلا موضع مرجعي تُترك بلا وسم.
-  List<RecitationError> _tagErrorPositions(
-    List<RecitationError> errors,
-    QuranReferenceRange range,
-  ) {
-    return errors.map((e) {
-      if (e.speechErrorType == 'insert' ||
-          e.uthmaniPos.isEmpty ||
-          e.uthmaniPos[0] < 0) {
-        return e;
-      }
-      final span = range.spanOfUnit(e.uthmaniPos[0]);
-      if (span == null) return e;
-      final key = range.keyOfVerse(span.verseIdx);
-      return e.withPosition(
-        suraIdx: key.suraIdx,
-        ayaIdx: key.ayaIdx,
-        wordIdx: span.wordIdx,
-      );
-    }).toList();
   }
 
   /// يدمج أحكام المدّ الزمنية كأخطاء (المدّ الرمزي المتطابق يبقى بلا خطأ

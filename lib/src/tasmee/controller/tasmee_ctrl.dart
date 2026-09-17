@@ -16,6 +16,7 @@ import '../../audio/audio.dart' as qa;
 import '../constants/tasmee_storage_constants.dart';
 import '../core/services/tasmee_model_service.dart';
 import '../core/services/tasmee_reference_store.dart';
+import '../engine/final_reconciliation.dart';
 import '../engine/models/recitation_result.dart';
 import '../engine/quran_reference.dart';
 import '../engine/recitation.dart';
@@ -65,6 +66,18 @@ class TasmeeCtrl extends GetxController {
 
   /// مفاتيح الكلمات المكتملة بترتيب إتمامها (لِتقليم ما يظهر بعد الإيقاف).
   final List<String> _doneWordKeys = [];
+
+  /// مفاتيح الكلمات التي قُبل تصحيحها في شيت المصحّح — التقييم النهائي
+  /// يحترمها: تبقى خضراء وتُصفّى أخطاؤها الأصلية من نتيجة العرض.
+  final Set<String> _acceptedCorrections = {};
+
+  /// تصحيح قيد الفتح (بين حدث الكلمة الخاطئة وضبط الشيت) — يمنع فتح
+  /// تصحيح ثانٍ أثناء انتظار إيقاف الميكروفون (سباق الأحداث المتتالية).
+  bool _correctionPending = false;
+
+  /// إزاحة فهارس الآيات لجلسة النطاق الفرعي (نمط المعلم) — لتأطير
+  /// أحداث الكلمات وتغطية التقييم النهائي على مواضعها الصفحية.
+  int _sessionVerseOffset = 0;
 
   /// آيات الصفحة مرتبة بترتيب النطاق (لِتحويل فهرس الآية → ayahUq).
   List<q.AyahModel> _rangeAyahs = const [];
@@ -120,6 +133,7 @@ class TasmeeCtrl extends GetxController {
     _disposeRetrySession();
     state.activeWordCorrection.value = null;
     state.wordRetryOutcome.value = null;
+    state.wordRetryFeedback.value = null;
     // اضبط النمط قبل الإيقاف كي تحترس مستمعات المعلم في التطبيق من
     // تقييم جلسةٍ تنتمي لنمطٍ قديم.
     state.mode.value = mode;
@@ -199,6 +213,7 @@ class TasmeeCtrl extends GetxController {
     _disposeRetrySession();
     state.activeWordCorrection.value = null;
     state.wordRetryOutcome.value = null;
+    state.wordRetryFeedback.value = null;
     _cancelSession();
     _pageWorker?.dispose();
     _pageWorker = null;
@@ -210,6 +225,7 @@ class TasmeeCtrl extends GetxController {
     state.completedWords.value = 0;
     state.totalWords.value = 0;
     state.sessionState.value = RecitationState.idle;
+    _acceptedCorrections.clear();
     _range = null;
     _rangeAyahs = const [];
     state.currentRangePage = -1;
@@ -241,6 +257,7 @@ class TasmeeCtrl extends GetxController {
     state.currentWordKey.value = null;
     state.completedWords.value = 0;
     state.totalWords.value = 0;
+    _acceptedCorrections.clear();
 
     try {
       await TasmeeReferenceStore.instance.load();
@@ -356,6 +373,7 @@ class TasmeeCtrl extends GetxController {
     try {
       final session = Recitation.createSession(range: range);
       _session = session;
+      _sessionVerseOffset = verseIdxOffset;
       _stateWorker = ever<RecitationState>(session.state, (s) {
         // انسخ النتيجة قبل إعلان الحالة كي تجدها مستمعات الواجهة
         // (وإلا فاتها فتح bottomSheet النتائج).
@@ -385,6 +403,9 @@ class TasmeeCtrl extends GetxController {
       });
       if (Recitation.isOffline) {
         await session.startLive();
+        // الوضع الحيّ: طور الالتقاط حتى أول كلمة جارية (بداية المستخدم
+        // الفعلية — قد تكون من منتصف الصفحة).
+        state.isAwaitingStart.value = true;
       } else {
         // الخادم: دفعة واحدة (بلا كشف حيّ).
         await session.start();
@@ -401,8 +422,9 @@ class TasmeeCtrl extends GetxController {
 
   /// يوقف التسجيل ويُقيّم — النتيجة في [TasmeeState.lastResult].
   ///
-  /// بعد الإيقاف يبقى ظاهرًا فقط ما أُتمّ نطقه فعلًا (الكلمات المكتملة)
-  /// مع تلوينها بحسب التقييم النهائي المعتمد.
+  /// التقييم النهائي (المحاذاة الشاملة) هو المرجع **ثنائي الاتجاه**:
+  /// يصحّح الكلمات التي لوّنها التتبّع الحي خطأً، ويسقط ما لم يُتلَ فعلًا،
+  /// ويحفظ الكلمات المقبولة في شيت المصحّح خضراء.
   Future<void> stopRecording() async {
     final session = _session;
     if (session == null) return;
@@ -413,17 +435,20 @@ class TasmeeCtrl extends GetxController {
         await session.stop();
       }
       final result = session.result.value;
-      state.lastResult.value = result;
       if (result == null || !result.hasMatch) {
+        state.lastResult.value = result;
         state.lastError.value =
             result?.noMatchMessage ?? session.lastError.value;
+        // لا تقييم شاملًا — أبقِ ما أكمله التتبّع الحي فقط.
+        _trimToCompletedWords();
       } else {
-        _applyFinalErrorsToStatuses(result);
+        state.lastResult.value = _resultWithoutAcceptedErrors(result);
+        _applyFinalVerdictsToStatuses(result);
       }
     } catch (e) {
       state.lastError.value = 'خطأ في التقييم: $e';
-    } finally {
       _trimToCompletedWords();
+    } finally {
       _cancelSession();
       _refreshQuranPages();
       update([TasmeeUpdateIds.control]);
@@ -449,10 +474,12 @@ class TasmeeCtrl extends GetxController {
     _disposeRetrySession();
     state.activeWordCorrection.value = null;
     state.wordRetryOutcome.value = null;
+    state.wordRetryFeedback.value = null;
     state.lastResult.value = null;
     state.lastError.value = '';
     state.wordErrorKinds.clear();
     _doneWordKeys.clear();
+    _acceptedCorrections.clear();
     await _buildRangeForCurrentPage();
     _refreshQuranPages();
     update([TasmeeUpdateIds.control]);
@@ -465,10 +492,12 @@ class TasmeeCtrl extends GetxController {
     _verseWorker = null;
     _wordWorker?.dispose();
     _wordWorker = null;
+    state.isAwaitingStart.value = false;
     try {
       _session?.dispose();
     } catch (_) {}
     _session = null;
+    _sessionVerseOffset = 0;
     if (state.sessionState.value == RecitationState.recording ||
         state.sessionState.value == RecitationState.processing) {
       state.sessionState.value = RecitationState.idle;
@@ -576,7 +605,10 @@ class TasmeeCtrl extends GetxController {
   ) {
     if (verseIdx < 0 || verseIdx >= _rangeAyahs.length) return;
     final key = _wordKey(verseIdx, wordIdx);
-    _doneWordKeys.add(key);
+    // بلا تكرارات — يُستخدم لاحقًا كمجموعة تقليم بعد الإيقاف.
+    if (_doneWordKeys.isEmpty || _doneWordKeys.last != key) {
+      _doneWordKeys.add(key);
+    }
     final correct = kind == TasmeeErrorKind.correct;
     state.wordStatuses[key] =
         correct ? TasmeeWordStatus.correct : TasmeeWordStatus.incorrect;
@@ -596,11 +628,13 @@ class TasmeeCtrl extends GetxController {
     if (state.mode.value == TasmeeMode.corrector) {
       log(
           'TasmeeCtrl corrector word-done — v=$verseIdx w=$wordIdx '
-          'kind=$kind active=${state.activeWordCorrection.value != null}',
+          'kind=$kind active=${state.activeWordCorrection.value != null} '
+          'pending=$_correctionPending',
           name: 'TasmeeCtrl');
-      if (kind != TasmeeErrorKind.correct &&
-          state.activeWordCorrection.value == null) {
-        // بلا انتظار — onWordDone متزامن التوقيع.
+      if (kind != TasmeeErrorKind.correct) {
+        // بلا انتظار — onWordDone متزامن التوقيع؛ الحارس داخل
+        // _beginWordCorrection (علم متزامن) يمنع الفتح المزدوج أثناء
+        // انتظار إيقاف الميكروفون.
         _beginWordCorrection(verseIdx, wordIdx, kind, mistake);
       }
     }
@@ -621,35 +655,49 @@ class TasmeeCtrl extends GetxController {
     TasmeeWordMistake? mistake,
   ) async {
     if (verseIdx < 0 || verseIdx >= _rangeAyahs.length) return;
-    final ayah = _rangeAyahs[verseIdx];
-    final verse = _range != null && verseIdx < _range!.verses.length
-        ? _range!.verses[verseIdx]
-        : null;
-    final wordText = verse != null && wordIdx < verse.uthmaniWords.length
-        ? verse.uthmaniWords[wordIdx]
-        : '';
-    log(
-      'TasmeeCtrl corrector begin — "$wordText" ($verseIdx:$wordIdx) '
-      'mistake=${mistake?.errorType} exp=${mistake?.expectedSymbol} '
-      'pred=${mistake?.predictedSymbol}',
-      name: 'TasmeeCtrl',
-    );
-    await _session?.pauseLive();
-    log('TasmeeCtrl corrector paused, opening sheet', name: 'TasmeeCtrl');
-    state.wordRetryOutcome.value = null;
-    state.activeWordCorrection.value = TasmeeWordCorrection(
-      key: _wordKey(verseIdx, wordIdx),
-      wordText: wordText,
-      errorKind: kind,
-      suraIdx: ayah.surahNumber ?? 1,
-      ayaIdx: ayah.ayahNumber,
-      wordNumber: wordIdx + 1,
-      verseIdx: verseIdx,
-      wordIdx: wordIdx,
-      errorType: mistake?.errorType ?? 'replace',
-      expectedSymbol: mistake?.expectedSymbol,
-      predictedSymbol: mistake?.predictedSymbol,
-    );
+    // حارس سباق: أحداث كلمات متتالية أثناء انتظار pauseLive لا تفتح
+    // تصحيحًا ثانيًا — العلم يُضبط متزامنًا قبل أي await.
+    if (_correctionPending || state.activeWordCorrection.value != null) {
+      return;
+    }
+    _correctionPending = true;
+    try {
+      final ayah = _rangeAyahs[verseIdx];
+      final verse = _range != null && verseIdx < _range!.verses.length
+          ? _range!.verses[verseIdx]
+          : null;
+      final wordText = verse != null && wordIdx < verse.uthmaniWords.length
+          ? verse.uthmaniWords[wordIdx]
+          : '';
+      log(
+        'TasmeeCtrl corrector begin — "$wordText" ($verseIdx:$wordIdx) '
+        'mistake=${mistake?.errorType} exp=${mistake?.expectedSymbol} '
+        'pred=${mistake?.predictedSymbol}',
+        name: 'TasmeeCtrl',
+      );
+      await _session?.pauseLive();
+      // غيّر المستخدم النمط/أعاد أثناء انتظار الإيقاف — لا تفتح شيتًا
+      // لجلسة لم تعد قائمة.
+      if (state.mode.value != TasmeeMode.corrector) return;
+      log('TasmeeCtrl corrector paused, opening sheet', name: 'TasmeeCtrl');
+      state.wordRetryOutcome.value = null;
+      state.wordRetryFeedback.value = null;
+      state.activeWordCorrection.value = TasmeeWordCorrection(
+        key: _wordKey(verseIdx, wordIdx),
+        wordText: wordText,
+        errorKind: kind,
+        suraIdx: ayah.surahNumber ?? 1,
+        ayaIdx: ayah.ayahNumber,
+        wordNumber: wordIdx + 1,
+        verseIdx: verseIdx,
+        wordIdx: wordIdx,
+        errorType: mistake?.errorType ?? 'replace',
+        expectedSymbol: mistake?.expectedSymbol,
+        predictedSymbol: mistake?.predictedSymbol,
+      );
+    } finally {
+      _correctionPending = false;
+    }
   }
 
   /// يبدأ محاولة إعادة نطق الكلمة المنتظرة — تسجيل دفعي قصير بمدى الكلمة
@@ -673,24 +721,36 @@ class TasmeeCtrl extends GetxController {
     final session = Recitation.createSession(range: wordRange);
     _retrySession = session;
     state.wordRetryOutcome.value = null;
+    state.wordRetryFeedback.value = null;
     state.isWordRetryListening.value = true;
     _retryStateWorker = ever<RecitationState>(session.state, (s) {
       if (s == RecitationState.finished) {
         final result = session.result.value;
-        state.wordRetryOutcome.value =
-            result != null && result.hasMatch && result.isFullyCorrect
-                ? TasmeeWordRetryOutcome.correct
-                : TasmeeWordRetryOutcome.incorrect;
+        // معيار مخفَّف موجَّهًا: الحروف والتجويد الجوهري رادعان، والتشكيل
+        // وطول المدّ الرمزي مُغتفَران (ارتعاج شبه حتمي في نطق معزول).
+        final ok = result != null && isWordRetryAcceptable(result);
+        state.wordRetryOutcome.value = ok
+            ? TasmeeWordRetryOutcome.correct
+            : TasmeeWordRetryOutcome.incorrect;
+        // خطأ هذه المحاولة بالذات (قد يختلف عن خطأ التلاوة الأول:
+        // أصلح المستخدم النطق فصار الخطأ تشكيلًا أو تجويدًا) — يُعرض
+        // في الشيت ليعرف ما يصحّحه الآن.
+        state.wordRetryFeedback.value =
+            ok ? null : retryFeedbackFromErrors(result?.errors ?? const []);
         _disposeRetrySession();
       } else if (s == RecitationState.error) {
         state.lastError.value = session.lastError.value;
         state.wordRetryOutcome.value = TasmeeWordRetryOutcome.incorrect;
+        state.wordRetryFeedback.value = null;
         _disposeRetrySession();
       }
     });
     await session.start(
       stopAfterSilence: const Duration(milliseconds: 1200),
       maxDuration: const Duration(seconds: 8),
+      // تصاهر بادئ: صدى نطق الكلمة من السماعة (الشيت يشغّله) لا يُحسب
+      // كلامًا فيُقطع التسجيل قبل أن ينطق المستخدم.
+      ignoreInitial: const Duration(milliseconds: 400),
     );
   }
 
@@ -704,8 +764,9 @@ class TasmeeCtrl extends GetxController {
     state.isWordRetryListening.value = false;
   }
 
-  /// يحلّ الكلمة المنتظرة: قبول نطقها الصحيح (تُعلَّم خضراء) أو تخطّيها
-  /// (تبقى حمراء) — ثم يستأنف الجلسة الرئيسية المتوقفة.
+  /// يحلّ الكلمة المنتظرة: قبول نطقها الصحيح (تُعلَّم خضراء ويُحمى من
+  /// التقييم النهائي عند الإيقاف) أو تخطّيها (تبقى حمراء) — ثم يستأنف
+  /// الجلسة الرئيسية المتوقفة.
   Future<void> resolveWordCorrection({required bool accepted}) async {
     final correction = state.activeWordCorrection.value;
     if (correction == null) return;
@@ -713,9 +774,13 @@ class TasmeeCtrl extends GetxController {
     if (accepted) {
       state.wordStatuses[correction.key] = TasmeeWordStatus.correct;
       state.wordErrorKinds.remove(correction.key);
+      // الصوت الأصلي ما يزال يحوي النطق الخاطئ الأول — احمِ القبول من
+      // التقييم النهائي لاحقًا (البق: نجاح التصحيح كان يُلغى عند الإيقاف).
+      _acceptedCorrections.add(correction.key);
       _refreshQuranPages();
     }
     state.wordRetryOutcome.value = null;
+    state.wordRetryFeedback.value = null;
     state.activeWordCorrection.value = null;
     final session = _session;
     if (session != null &&
@@ -728,6 +793,10 @@ class TasmeeCtrl extends GetxController {
   /// الكلمة الجارية (من محاذاة الوضع الحيّ) — تُبرز لحظيًا.
   void markCurrentWord(int verseIdx, int wordIdx) {
     if (verseIdx < 0 || verseIdx >= _rangeAyahs.length) return;
+    // أول كلمة جارية = انتهى طور الالتقاط (حددت بداية التلاوة الفعلية).
+    if (state.isAwaitingStart.value) {
+      state.isAwaitingStart.value = false;
+    }
     final key = _wordKey(verseIdx, wordIdx);
     // الكلمة الجارية تُبرَز فور ظهورها (الحالات النهائية تُدار من
     // onWordDone ولا تُداس هنا).
@@ -739,24 +808,73 @@ class TasmeeCtrl extends GetxController {
     _refreshQuranPages();
   }
 
-  /// يرقّع تصنيف الكلمات من التقييم النهائي (المرجع المعتمد) —
-  /// يستبدل التصنيف الحيّ الاسترشادي بلون أعلى أسبقية عند تعدد الأخطاء.
-  void _applyFinalErrorsToStatuses(RecitationResult result) {
-    for (final error in result.errors) {
-      if (error.suraIdx == null ||
-          error.ayaIdx == null ||
-          error.wordIdx == null) {
-        continue;
+  /// يرقّع حالات الكلمات من التقييم النهائي (المرجع المعتمد ثنائي
+  /// الاتجاه): الكلمة المغطاة بلا أخطاء → صحيحة (حتى لو أخطأ التتبّع الحي
+  /// في وسمها)، وعليها خطأ → خطأة بنوع أعلى أسبقية، وبلا تغطية ولا خطأ →
+  /// تُسقط (لم تُتلَ أصلًا)، والمقبولة في المصحّح تبقى خضراء.
+  void _applyFinalVerdictsToStatuses(RecitationResult result) {
+    // جلسات نطاق فرعي (المعلم): أطِر التغطية على مواضعها الصفحية.
+    final offset = _sessionVerseOffset;
+    final covered = offset == 0
+        ? result.matchedWordSpans
+        : [
+            for (final s in result.matchedWordSpans)
+              (verseIdx: s.verseIdx + offset, wordIdx: s.wordIdx),
+          ];
+    final verdicts = reconcileFinalWordVerdicts(
+      coveredSpans: covered,
+      errors: result.errors,
+      verseIndexOf: _verseIndexOf,
+      keyOf: _wordKey,
+      acceptedCorrectionKeys: _acceptedCorrections,
+    );
+    // أسقط ما لم يُتلَ فعلًا (بلا تغطية ولا خطأ) — مع حفظ المقبول تصحيحها.
+    state.wordStatuses.removeWhere((key, _) =>
+        !verdicts.containsKey(key) && !_acceptedCorrections.contains(key));
+    state.wordErrorKinds.removeWhere((key, _) =>
+        !verdicts.containsKey(key) && !_acceptedCorrections.contains(key));
+    for (final entry in verdicts.entries) {
+      final v = entry.value;
+      state.wordStatuses[entry.key] =
+          v.correct ? TasmeeWordStatus.correct : TasmeeWordStatus.incorrect;
+      if (v.correct || v.errorKind == null) {
+        state.wordErrorKinds.remove(entry.key);
+      } else {
+        state.wordErrorKinds[entry.key] = v.errorKind!;
       }
-      final verseIdx = _verseIndexOf(error.suraIdx!, error.ayaIdx!);
-      if (verseIdx < 0) continue;
-      final key = _wordKey(verseIdx, error.wordIdx!);
-      state.wordStatuses[key] = TasmeeWordStatus.incorrect;
-      final kind = tasmeeErrorKindFromType(error.errorType);
-      final prev = state.wordErrorKinds[key];
-      state.wordErrorKinds[key] =
-          prev == null ? kind : mergeTasmeeErrorKinds(prev, kind);
     }
+    // الكلمات المقبولة في المصحّح: خضراء دائمًا حتى لو ظهر لها خطأ في
+    // الصوت الأصلي المسجَّل قبل التصحيح.
+    for (final key in _acceptedCorrections) {
+      if (state.wordStatuses.containsKey(key)) {
+        state.wordStatuses[key] = TasmeeWordStatus.correct;
+        state.wordErrorKinds.remove(key);
+      }
+    }
+    state.currentWordKey.value = null;
+    state.completedWords.value = state.wordStatuses.length;
+    _refreshQuranPages();
+  }
+
+  /// نسخة عرض من النتيجة بلا أخطاء الكلمات التي قُبل تصحيحها في المصحّح.
+  RecitationResult _resultWithoutAcceptedErrors(RecitationResult result) {
+    final filtered = withoutAcceptedErrors(
+      errors: result.errors,
+      verseIndexOf: _verseIndexOf,
+      keyOf: _wordKey,
+      acceptedCorrectionKeys: _acceptedCorrections,
+    );
+    if (identical(filtered, result.errors)) return result;
+    return RecitationResult(
+      start: result.start,
+      end: result.end,
+      predictedPhonemes: result.predictedPhonemes,
+      referencePhonemes: result.referencePhonemes,
+      uthmaniText: result.uthmaniText,
+      errors: filtered,
+      noMatchMessage: result.noMatchMessage,
+      matchedWordSpans: result.matchedWordSpans,
+    );
   }
 
   int _verseIndexOf(int suraIdx, int ayaIdx) {

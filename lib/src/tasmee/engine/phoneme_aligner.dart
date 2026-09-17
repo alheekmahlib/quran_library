@@ -162,3 +162,95 @@ List<UnitAlignOp> dropLeadingInserts(List<UnitAlignOp> ops) {
   if (first == 0) return ops;
   return ops.sublist(first);
 }
+
+/// يحذف سلسلة delete الختامية الخالصة بعد آخر match/replace — تسامح
+/// الختام: المستخدم أوقف التلاوة قبل نهاية النطاق، فما بعدها ليس
+/// "حروفًا مفقودة" بل غير مُتلوّ أصلًا (تُدار تغطيته في التوفيق النهائي).
+///
+/// Drops the pure trailing run of delete ops after the last match/replace —
+/// trailing-delete tolerance for range mode (user stopped early; the
+/// un-recited tail is not a recitation error).
+List<UnitAlignOp> dropTrailingDeletes(List<UnitAlignOp> ops) {
+  var cut = ops.length;
+  while (cut > 0 && ops[cut - 1].type == 'delete') {
+    cut--;
+  }
+  if (cut == ops.length) return ops;
+  return ops.sublist(0, cut);
+}
+
+/// يحذف سلسلة delete البادئة الخالصة قبل أول match/replace — تسامح
+/// البادئة المرجعية: بداية المستخدم من منتصف النطاق ليست "حروفًا
+/// مفقودة" (للنطاقات متعددة الكلمات؛ إعادة نطق كلمة تبقى صارمة).
+///
+/// Drops the pure leading run of delete ops before the first match/replace
+/// — mid-range start tolerance (un-recited prefix is not a recitation
+/// error). Multi-word ranges only; single-word retries stay strict.
+List<UnitAlignOp> dropLeadingDeletes(List<UnitAlignOp> ops) {
+  var first = 0;
+  while (first < ops.length && ops[first].type == 'delete') {
+    first++;
+  }
+  if (first == 0) return ops;
+  return ops.sublist(first);
+}
+
+/// يحذف سلسلة insert الختامية الخالصة إن كانت قصيرة ([maxUnits] فأقل) —
+/// ضوضاء CTC الذيلية بعد نطق كلمة منفردة ليست خطأ مستخدم. السلاسل
+/// الأطول نطق زائد فعلي وتبقى (صرامة إعادة الكلمة).
+///
+/// Drops a short pure trailing run of insert ops (CTC tail noise after a
+/// single-word recitation — not a user error). Longer runs are genuine
+/// extra speech and stay flagged.
+List<UnitAlignOp> dropTrailingInserts(
+  List<UnitAlignOp> ops, {
+  int maxUnits = 2,
+}) {
+  var cut = ops.length;
+  while (cut > 0 && ops[cut - 1].type == 'insert') {
+    cut--;
+  }
+  if (cut == ops.length || ops.length - cut > maxUnits) return ops;
+  return ops.sublist(0, cut);
+}
+
+/// يحذف اللاحقة بعد نهاية آخر **سلسلة مطابقات موثوقة** إذا لم تحوِ
+/// إدراجات كثيرة — تسامح ختام النطاقات متعددة الكلمات.
+///
+/// «موثوقة»: سلسلة match/replace متتالية بطول ≥ [minReliableRun] — كلام
+/// المستخدم الفعلي يأتي سلاسلَ متصلة، بينما مطابقة ضوضاء الذيل حرفٌ
+/// صادف حرفًا في المنطقة غير المتلوّة فتظهر **معزولة** بين حذوف (المحاذاة
+/// تُطابقها مجانًا فتُزيح «آخر مطابقة» عميقًا وتُفشل أي اقتطاع يعتمد
+/// عليها). الاقتطاع عند نهاية آخر سلسلة موثوقة يتجاوز الفخ، واللاحقة
+/// بعدها (حذوف ما لم يُتلَ + إدراجات ≤ [maxTrailingInserts] ضوضاء)
+/// تُسقط كاملة. سلسلة إدراج أكبر (نطق زائد فعلي كإعادة كلمة) تُبقي
+/// اللاحقة — خطأ حقيقي يُعرض.
+List<UnitAlignOp> dropTrailingUnmatched(
+  List<UnitAlignOp> ops, {
+  int maxTrailingInserts = 3,
+  int minReliableRun = 2,
+}) {
+  // نهاية آخر سلسلة match/replace متتالية بطول كافٍ.
+  var reliableEnd = -1;
+  var i = 0;
+  while (i < ops.length) {
+    if (ops[i].type != 'match' && ops[i].type != 'replace') {
+      i++;
+      continue;
+    }
+    var run = 0;
+    while (i + run < ops.length &&
+        (ops[i + run].type == 'match' || ops[i + run].type == 'replace')) {
+      run++;
+    }
+    if (run >= minReliableRun) reliableEnd = i + run;
+    i += run;
+  }
+  if (reliableEnd < 0 || reliableEnd >= ops.length) return ops;
+  var inserts = 0;
+  for (var j = reliableEnd; j < ops.length; j++) {
+    if (ops[j].type == 'insert') inserts++;
+  }
+  if (inserts > maxTrailingInserts) return ops;
+  return ops.sublist(0, reliableEnd);
+}

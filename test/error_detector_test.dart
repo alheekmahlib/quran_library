@@ -26,7 +26,8 @@ void main() {
         ops: ops,
         refUnits: fatiha1.units,
         predUnits: pred,
-        wordAt: fatiha1.wordAt);
+        wordAt: fatiha1.wordAt,
+        spanOfUnit: fatiha1.spanOfUnit);
   }
 
   test('تلاوة مطابقة تمامًا → صفر أخطاء', () {
@@ -117,6 +118,37 @@ void main() {
     final errors = detect(pred);
     expect(errors.first.errorType, 'normal');
     expect(errors.first.speechErrorType, 'insert');
+  });
+
+  test('سلسلة وحدات زائدة متتالية → خطأ واحد مدموج لا وحدة-لوحدة', () {
+    final pred = fatiha1.units.map((u) => u.symbol).toList();
+    pred.insertAll(1, ['ق', 'ل', 'ق']); // 3 وحدات زائدة متتالية.
+    final errors =
+        detect(pred).where((e) => e.speechErrorType == 'insert').toList();
+    expect(errors.length, 1, reason: 'سلسلة الإدراج تُدمج في خطأ واحد');
+    expect(errors.first.predictedPh, 'ق ل ق');
+    expect(errors.first.description, 'حروف زائدة');
+    // الإدراج يُنسب لكلمة موضع متوقع صالح (يُرسم تحتها في الصفحة).
+    expect(errors.first.uthmaniPos[0], greaterThanOrEqualTo(0));
+    expect(errors.first.wordText, isNotNull);
+  });
+
+  test('إعادة كلمة كاملة (تردد) → خطأ "إعادة كلمة" واحد على الكلمة المعادة',
+      () {
+    final symbols = fatiha1.units.map((u) => u.symbol).toList();
+    // أعد كلمة «بِسْمِ» (الوحدات الثلاث الأولى) بعد نطقها ثم أكمل الآية.
+    final w0End = fatiha1.spanOfUnit(0)!.endUnit;
+    final pred = [
+      ...symbols.sublist(0, w0End + 1),
+      ...symbols.sublist(0, w0End + 1),
+      ...symbols.sublist(w0End + 1),
+    ];
+    final errors =
+        detect(pred).where((e) => e.speechErrorType == 'insert').toList();
+    expect(errors.length, 1, reason: 'إعادة الكلمة كلها خطأ واحد لا 3');
+    expect(errors.first.isWordRepeat, isTrue);
+    expect(errors.first.description, 'إعادة كلمة');
+    expect(errors.first.wordText, fatiha1.uthmaniWords.first);
   });
 
   test('استبدال حرف مختلف → normal/replace + wordText', () {

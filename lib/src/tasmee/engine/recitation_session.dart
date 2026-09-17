@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:developer' show log;
 
+import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:get/get.dart';
 import 'package:record/record.dart';
 
@@ -86,9 +87,14 @@ class RecitationSession {
   /// `onAmplitudeChanged`) — لِجلسات قصيرة بلا تدخل يدوي (إعادة نطق كلمة).
   ///
   /// [maxDuration]: سقف صلب لِلمدة مهما حدث.
+  ///
+  /// [ignoreInitial]: مهلة تصاهل في بداية التسجيل — صدى صوت الكلمة من
+  /// السماعة (شيت المصحّح يشغّل النطق الصحيح) لا يُحسب كلام مستخدم ولا
+  /// يُعدّل لحظة آخر كلام.
   Future<void> start({
     Duration? stopAfterSilence,
     Duration? maxDuration,
+    Duration? ignoreInitial,
   }) async {
     if (state.value.isActive) {
       log('RecitationSession already active', name: 'RecitationSession');
@@ -123,7 +129,7 @@ class RecitationSession {
           '$dir/recitation_${DateTime.now().millisecondsSinceEpoch}.wav';
 
       await _recorder!.start(settings, path: _recordingPath!);
-      _wireAutoStop(stopAfterSilence, maxDuration);
+      _wireAutoStop(stopAfterSilence, maxDuration, ignoreInitial);
       state.value = RecitationState.recording;
       log('RecitationSession started recording: $_recordingPath',
           name: 'RecitationSession');
@@ -135,19 +141,31 @@ class RecitationSession {
     }
   }
 
-  /// يربط الإيقاف التلقائي: سقف مدة، وسكون بعد نطق (كشف النسبة).
-  void _wireAutoStop(Duration? stopAfterSilence, Duration? maxDuration) {
+  /// يربط الإيقاف التلقائي: سقف مدة، وسكون بعد نطق (كشف النسبة)، ومهلة
+  /// تصاهر بادئة (صدى السماعة لا يُحسب كلامًا).
+  void _wireAutoStop(
+    Duration? stopAfterSilence,
+    Duration? maxDuration,
+    Duration? ignoreInitial,
+  ) {
     if (maxDuration != null) {
       _maxDurationTimer = Timer(maxDuration, () {
         if (state.value == RecitationState.recording) stop();
       });
     }
     if (stopAfterSilence == null) return;
+    final startedAt = DateTime.now();
     var spoke = false;
     DateTime? lastVoiceAt;
     _amplitudeSub = _recorder!
         .onAmplitudeChanged(const Duration(milliseconds: 100))
         .listen((amp) {
+      // عهدة البادئة: صدى نطق الكلمة من السماعة (شيت المصحّح) ليس كلام
+      // المستخدم — لا يُعلّم spoke ولا يُحدّث آخر كلام.
+      if (ignoreInitial != null &&
+          DateTime.now().difference(startedAt) < ignoreInitial) {
+        return;
+      }
       // كلام البشر عادة > ‎-35dB‏ والسكوت حول ‎-45dB‏ فأدنى.
       final heard = amp.current > -35;
       if (heard) {
@@ -189,15 +207,17 @@ class RecitationSession {
       log('RecitationSession: read ${wavBytes.length} bytes',
           name: 'RecitationSession');
 
-      // 🔍 تشخيص: احتفظ بنسخة من التسجيل في مجلد واضح لِتحليلها offline.
-      // Diagnostic: keep a copy in Documents for offline Python analysis.
-      try {
-        final docDir = await PlatformIo.documentsDir;
-        final diagPath = '$docDir/last_recitation.wav';
-        await PlatformIo.writeFile(diagPath, wavBytes);
-        log('RecitationSession: DIAG copy saved → $diagPath',
-            name: 'RecitationSession');
-      } catch (_) {}
+      // 🔍 تشخيص في وضع التصحيح فقط: نسخة من التسجيل لِتحليلها offline —
+      // في الإصدارات لا يبقى صوت المستخدم على القرص (خصوصية).
+      if (kDebugMode) {
+        try {
+          final docDir = await PlatformIo.documentsDir;
+          final diagPath = '$docDir/last_recitation.wav';
+          await PlatformIo.writeFile(diagPath, wavBytes);
+          log('RecitationSession: DIAG copy saved → $diagPath',
+              name: 'RecitationSession');
+        } catch (_) {}
+      }
 
       // مرّر لِلمحرّك (online: خادم، offline: ONNX).
       // Pass to the engine (online: server, offline: ONNX).
@@ -427,6 +447,10 @@ class RecitationSession {
     try {
       _liveRecorder ??= AudioRecorder();
       await _startPcmStreaming(engine);
+      // أعد تسليح طور الالتقاط: وحدات انزلقت أثناء انتظار إيقاف
+      // الميكروفون عند فتح الشيت قد قدّمت المؤشر أمام المستخدم —
+      // الإرساء الجديد يحدّد موضعه الفعلي بعد الإغلاق.
+      engine.onLiveResumed();
       state.value = RecitationState.recording;
       log('RecitationSession resumed LIVE streaming',
           name: 'RecitationSession');

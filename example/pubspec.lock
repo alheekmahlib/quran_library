@@ -5,10 +5,10 @@ packages:
     dependency: transitive
     description:
       name: arabic_justified_text
-      sha256: "0a0516fe91ec3cbdebd0afc701ea280fe9bc8c51ab0b8a41b614688aed98e995"
+      sha256: "4b4cd719950551e15a2df6ab93d998b52e626a48756641476abe696f28a22a99"
       url: "https://pub.dev"
     source: hosted
-    version: "1.0.2"
+    version: "1.0.4"
   archive:
     dependency: transitive
     description:
@@ -538,7 +538,7 @@ packages:
       path: ".."
       relative: true
     source: path
-    version: "4.5.0"
+    version: "4.6.0"
   record:
     dependency: transitive
     description:

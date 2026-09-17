@@ -54,6 +54,28 @@ class QuranReferenceVerse {
     if (w < 0 || w >= uthmaniWords.length) return null;
     return uthmaniWords[w];
   }
+
+  /// حدود الكلمة التي تضم وحدة ما داخل الآية (بفهارس وحدات الآية) —
+  /// لِلكشف عن إعادة كلمة كاملة في كاشف الأخطاء.
+  QuranRangeWordSpan? spanOfUnit(int unitIdx) {
+    if (unitIdx < 0 || unitIdx >= units.length) return null;
+    final w = unitWordIdx[unitIdx];
+    if (w < 0) return null;
+    var first = unitIdx;
+    while (first > 0 && unitWordIdx[first - 1] == w) {
+      first--;
+    }
+    var last = unitIdx;
+    while (last < units.length - 1 && unitWordIdx[last + 1] == w) {
+      last++;
+    }
+    return QuranRangeWordSpan(
+      verseIdx: 0,
+      wordIdx: w,
+      startUnit: first,
+      endUnit: last,
+    );
+  }
 }
 
 /// حدود كلمة واحدة داخل [QuranReferenceRange] (بوحدات النطاق المفلطحة).
@@ -126,6 +148,13 @@ class QuranReferenceRange {
     final w = unitWordIdx[unitIdx];
     if (w < 0 || w >= verse.uthmaniWords.length) return null;
     return verse.uthmaniWords[w];
+  }
+
+  /// فهرس الكلمة (داخل wordSpans) لوحدة ما (0-based)، أو -1 — O(1)
+  /// لقياس مسافة الكلمات بين موضعين.
+  int spanIndexAt(int unitIdx) {
+    if (unitIdx < 0 || unitIdx >= units.length) return -1;
+    return _unitSpanIdx[unitIdx];
   }
 
   /// حدود الكلمة التي تضم وحدة ما (بفهرسها العالمي)، أو null.
@@ -233,6 +262,96 @@ class QuranReferenceRange {
 }
 
 /// محمّل المرجع من asset أو ملف خارجي (gzip JSON) — تجزئة مؤجّلة لكل آية.
+/// حروف الكلمة العثمانية المطابقة وحدويًا: بلا حركات ولا علامات قرآنية،
+/// والشدة تُضاعف الحرف (تُقابل وحدة الشدة بوزن 2). المطابقة موضعية —
+/// لا مقارنة هوية حروف؛ حفظُ الإجمالي وحده يفصل المسارات.
+List<String> uthmaniWordLetters(String word) {
+  const marks = '\u064B\u064C\u064D\u064E\u064F\u0650\u0651\u0652\u0653'
+      '\u0654\u0655\u0656\u0657\u0658\u0670\u06D6\u06D7\u06D8'
+      '\u06D9\u06DA\u06DB\u06DC\u06DD\u06DE\u06DF\u06E0\u06E1'
+      '\u06E2\u06E3\u06E4\u06E5\u06E6\u06E7\u06E8\u06E9\u06EA'
+      '\u06EB\u06EC\u06ED\u0640';
+  final out = <String>[];
+  for (final r in word.runes) {
+    final ch = String.fromCharCode(r);
+    if (ch == '\u0651') {
+      // شدة: ضاعف الحرف السابق.
+      if (out.isNotEmpty) out.add(out.last);
+    } else if (!marks.contains(ch) &&
+        RegExp(r'\p{L}', unicode: true).hasMatch(ch)) {
+      out.add(ch);
+    }
+  }
+  return out;
+}
+
+/// يسند كل وحدة إلى فهرس كلمتها **العثمانية** — الفونيمات تختلف عن
+/// العثماني في ثلثي المصحف (كلمة فونيمية تدمج «هُدًى لِّلْمُتَّقِينَ»)،
+/// وأي خلط بين الفهرستين يُسقط كلمات من التتبّع كليًا فلا تظهر في
+/// التسميع (وتتركز في نهايات الآيات حيث تُدمج المدود باللامات).
+///
+/// ثلاثة مسارات تصاعديّة الأمان:
+/// 1. تطابق عدد الكلمات الفونيمية مع العثمانية → مطابقة فهرسية.
+/// 2. مشي موضعي بالأوزان (وحدة الشدة = 2، وما عداها = 1) عبر حدود
+///    الكلمات — يُعتمد إن حافظ على الإجمالي وغطّى كل كلمة ذات حروف.
+/// 3. احتياط نسبي رتيب (آيات تُهجّى حروفها فيختل الحفظ كـ«الٓمٓ»).
+List<int> mapUnitsToUthmaniWords({
+  required List<QuranUnit> units,
+  required List<int> phonemeIdx,
+  required List<String> uthmaniWords,
+}) {
+  final wordCount = uthmaniWords.length;
+  if (units.isEmpty || wordCount == 0) return const [];
+  final phonemeCount = phonemeIdx.toSet().length;
+  if (phonemeCount == wordCount) return phonemeIdx;
+
+  // حدود الكلمات بحروفها المطبَّعة.
+  final boundaries = List<int>.filled(wordCount + 1, 0);
+  for (var w = 0; w < wordCount; w++) {
+    boundaries[w + 1] =
+        boundaries[w] + uthmaniWordLetters(uthmaniWords[w]).length;
+  }
+  final totalLetters = boundaries[wordCount];
+  var totalWeight = 0;
+  for (final u in units) {
+    totalWeight += u.isShadda ? 2 : 1;
+  }
+  if (totalWeight == totalLetters) {
+    final result = List<int>.filled(units.length, 0);
+    var pos = 0;
+    var word = 0;
+    for (var i = 0; i < units.length; i++) {
+      while (word + 1 < wordCount && pos >= boundaries[word + 1]) {
+        word++;
+      }
+      result[i] = word;
+      pos += units[i].isShadda ? 2 : 1;
+    }
+    // كل كلمة ذات حروف يجب أن تُغطّى.
+    final covered = List<bool>.filled(wordCount, false);
+    for (final w in result) {
+      covered[w] = true;
+    }
+    var allCovered = true;
+    for (var w = 0; w < wordCount; w++) {
+      if (boundaries[w + 1] > boundaries[w] && !covered[w]) {
+        allCovered = false;
+        break;
+      }
+    }
+    if (allCovered) return result;
+  }
+
+  // احتياط نسبي رتيب.
+  final result = List<int>.filled(units.length, 0);
+  for (var i = 0; i < units.length; i++) {
+    result[i] = ((i + 1) * wordCount) ~/ units.length - 1 < 0
+        ? 0
+        : (((i + 1) * wordCount) ~/ units.length) - 1;
+  }
+  return result;
+}
+
 class QuranPhonemeReference {
   QuranPhonemeReference({required QuranUnitLexicon lexicon})
       : _lexicon = lexicon;
@@ -275,8 +394,10 @@ class QuranPhonemeReference {
     if (raw is! Map) return null;
     final m = Map<String, dynamic>.from(raw);
     final phonemeWords = (m['aya_phonemes_list'] as List).cast<String>();
+    final uthmaniWords =
+        ((m['aya_text'] as String).trim()).split(RegExp(r'\s+'));
     final units = <QuranUnit>[];
-    final unitWordIdx = <int>[];
+    final phonemeIdx = <int>[];
     for (var w = 0; w < phonemeWords.length; w++) {
       final wordUnits = _lexicon.segment(phonemeWords[w]);
       if (wordUnits.isEmpty) {
@@ -285,16 +406,20 @@ class QuranPhonemeReference {
         return null;
       }
       units.addAll(wordUnits);
-      unitWordIdx.addAll(List<int>.filled(wordUnits.length, w));
+      phonemeIdx.addAll(List<int>.filled(wordUnits.length, w));
     }
     final verse = QuranReferenceVerse(
       verseKey: key,
       uthmani: m['aya_text'] as String,
       phonemeString: m['aya_phoneme'] as String,
       phonemeWords: phonemeWords,
-      uthmaniWords: (m['aya_text'] as String).split(RegExp(r'\s+')),
+      uthmaniWords: uthmaniWords,
       units: units,
-      unitWordIdx: unitWordIdx,
+      unitWordIdx: mapUnitsToUthmaniWords(
+        units: units,
+        phonemeIdx: phonemeIdx,
+        uthmaniWords: uthmaniWords,
+      ),
     );
     _cache[key] = verse;
     return verse;

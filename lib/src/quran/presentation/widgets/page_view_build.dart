@@ -97,7 +97,7 @@ class PageViewBuild extends StatelessWidget {
         }
 
         return Align(
-          alignment: Alignment.topCenter,
+          alignment: Alignment.center,
           child: TopAndBottomWidget(
             pageIndex: pageIndex,
             languageCode: languageCode,

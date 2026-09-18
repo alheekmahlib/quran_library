@@ -80,7 +80,7 @@ class BannerStyle {
       bannerSvgPath: isDark
           ? AssetsPath.assets.surahSvgBannerDark
           : AssetsPath.assets.surahSvgBanner,
-      bannerSvgHeight: isLandscape ? 170.0.h : 35.0.h,
+      bannerSvgHeight: isLandscape ? 90.0.h : 35.0.h,
       bannerSvgWidth: isLandscape ? 250.0.w : 120.0.w,
       bannerImagePath: '',
       bannerImageHeight: 50,

@@ -1,5 +1,10 @@
 # Changelog
 
+## 4.4.1
+
+* **FIX:**
+  * Fix all page with Surah banner.
+  
 ## 4.4.0
 
 * **ADD:**

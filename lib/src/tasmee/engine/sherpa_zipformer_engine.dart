@@ -88,8 +88,9 @@ class SherpaZipformerEngine implements LiveCapableRecitationEngine {
 
     final config = sherpa.OnlineRecognizerConfig(
       model: sherpa.OnlineModelConfig(
-        zipformer2Ctc:
-            sherpa.OnlineZipformer2CtcModelConfig(model: resolvedModel),
+        zipformer2Ctc: sherpa.OnlineZipformer2CtcModelConfig(
+          model: resolvedModel,
+        ),
         tokens: await _materializeTokensForSherpa(),
         numThreads: 2,
         debug: false,
@@ -117,7 +118,8 @@ class SherpaZipformerEngine implements LiveCapableRecitationEngine {
     final f = File(p);
     if (await f.exists() && await f.length() > 60 * 1024 * 1024) return p;
     throw Exception(
-        'النموذج غير موجود. نزّله أولًا (≈73MB).\nالمسار المتوقع: $p');
+      'النموذج غير موجود. نزّله أولًا (≈73MB).\nالمسار المتوقع: $p',
+    );
   }
 
   Future<String> _loadTokens() async {
@@ -233,7 +235,8 @@ class SherpaZipformerEngine implements LiveCapableRecitationEngine {
       int wordIdx,
       TasmeeErrorKind kind,
       TasmeeWordMistake? mistake,
-    )? onWordDone,
+    )?
+    onWordDone,
     void Function()? onRangeComplete,
     int? suraIdx,
     int? ayaIdx,
@@ -248,10 +251,11 @@ class SherpaZipformerEngine implements LiveCapableRecitationEngine {
     _lastLiveWordIdx = -1;
     _liveRef =
         (suraIdx != null && ayaIdx != null && (_reference?.isLoaded ?? false))
-            ? _reference!.getReference(suraIdx: suraIdx, ayaIdx: ayaIdx)
-            : null;
-    _liveRange =
-        (range != null && (_reference?.isLoaded ?? false)) ? range : null;
+        ? _reference!.getReference(suraIdx: suraIdx, ayaIdx: ayaIdx)
+        : null;
+    _liveRange = (range != null && (_reference?.isLoaded ?? false))
+        ? range
+        : null;
     _rangeTracker = _liveRange == null
         ? null
         : RangeLiveTracker(
@@ -316,8 +320,9 @@ class SherpaZipformerEngine implements LiveCapableRecitationEngine {
 
     final lex = _lexicon!;
     // الرموز مُرشَّحة أصلًا في _frameFromResult لِضمان وجودها بالمعجم.
-    final predUnits =
-        frame.units.map((s) => lex.bySymbol[s]!).toList(growable: false);
+    final predUnits = frame.units
+        .map((s) => lex.bySymbol[s]!)
+        .toList(growable: false);
     final ops = alignUnits(ref.units, predUnits);
     final lastIdx = lastMatchedRefIdx(ops);
     final wordIdx = lastIdx < 0 ? -1 : ref.unitWordIdx[lastIdx];
@@ -335,8 +340,9 @@ class SherpaZipformerEngine implements LiveCapableRecitationEngine {
     final tracker = _rangeTracker;
     if (tracker == null) return;
     final lex = _lexicon!;
-    final predUnits =
-        frame.units.map((s) => lex.bySymbol[s]!).toList(growable: false);
+    final predUnits = frame.units
+        .map((s) => lex.bySymbol[s]!)
+        .toList(growable: false);
     tracker.onUnits(predUnits);
   }
 
@@ -414,8 +420,9 @@ class SherpaZipformerEngine implements LiveCapableRecitationEngine {
   }) async {
     final lex = _lexicon!;
     final predictedPhonemes = frame.units.join(' ');
-    final predUnits =
-        frame.units.map((s) => lex.bySymbol[s]!).toList(growable: false);
+    final predUnits = frame.units
+        .map((s) => lex.bySymbol[s]!)
+        .toList(growable: false);
 
     // وضع النطاق (صفحة كاملة) — أولوية على الآية المفردة. الجلسات الحيّة
     // تُقيَّم على نافذة المقطع المتلو فعلًا من المتتبّع (لا الصفحة كلها —
@@ -432,12 +439,15 @@ class SherpaZipformerEngine implements LiveCapableRecitationEngine {
         window: window,
       );
       log(
-          'ZipformerEngine: aligned range(${range.verses.length} verses, '
-          'window=${window ?? 'full'}) — '
-          'ref=${range.units.length} pred=${predUnits.length} ${eval.stats}',
-          name: 'ZipformerEngine');
+        'ZipformerEngine: aligned range(${range.verses.length} verses, '
+        'window=${window ?? 'full'}) — '
+        'ref=${range.units.length} pred=${predUnits.length} ${eval.stats}',
+        name: 'ZipformerEngine',
+      );
 
-      if (eval.stats.matches == 0 && eval.stats.totalOps > 0) {
+      // 0 تطابقات = تلاوة غير مفهومة أو لا صوت أصلًا (pred فارغ يعني
+      // totalOps=0 أيضًا — يجب رفضهما معًا وإلا ظهر نجاح زائف).
+      if (eval.stats.matches == 0) {
         return RecitationResult(
           uthmaniText: range.uthmani,
           predictedPhonemes: predictedPhonemes,
@@ -464,12 +474,14 @@ class SherpaZipformerEngine implements LiveCapableRecitationEngine {
         final ops = alignUnits(ref.units, predUnits);
         final stats = computeUnitStats(ops);
         log(
-            'ZipformerEngine: aligned ${ref.verseKey} — '
-            'ref=${ref.units.length} pred=${predUnits.length} $stats',
-            name: 'ZipformerEngine');
+          'ZipformerEngine: aligned ${ref.verseKey} — '
+          'ref=${ref.units.length} pred=${predUnits.length} $stats',
+          name: 'ZipformerEngine',
+        );
 
-        // رفض بِـ 0 تطابقات (تلاوة غير مفهومة).
-        if (stats.matches == 0 && stats.totalOps > 0) {
+        // رفض بِـ 0 تطابقات (تلاوة غير مفهومة أو لا صوت أصلًا — pred
+        // فارغ يعني totalOps=0 أيضًا فيجب رفضهما معًا).
+        if (stats.matches == 0) {
           return RecitationResult(
             uthmaniText: ref.uthmani,
             predictedPhonemes: predictedPhonemes,
@@ -486,8 +498,16 @@ class SherpaZipformerEngine implements LiveCapableRecitationEngine {
           wordAt: ref.wordAt,
           spanOfUnit: ref.spanOfUnit,
         );
-        errors.addAll(_timingErrors(
-            ops, ref.units, ref.wordAt, predUnits, frame, durationSec));
+        errors.addAll(
+          _timingErrors(
+            ops,
+            ref.units,
+            ref.wordAt,
+            predUnits,
+            frame,
+            durationSec,
+          ),
+        );
 
         return RecitationResult(
           uthmaniText: ref.uthmani,
@@ -498,8 +518,11 @@ class SherpaZipformerEngine implements LiveCapableRecitationEngine {
           end: SurahAyahPosition(suraIdx: suraIdx, ayaIdx: ayaIdx),
         );
       }
-      log('ZipformerEngine: verse $suraIdx:$ayaIdx not in reference',
-          name: 'ZipformerEngine', level: 900);
+      log(
+        'ZipformerEngine: verse $suraIdx:$ayaIdx not in reference',
+        name: 'ZipformerEngine',
+        level: 900,
+      );
     }
 
     // لا مرجع → أعد الوحدات فقط (بلا أخطاء مُلفّقة).
@@ -534,26 +557,29 @@ class SherpaZipformerEngine implements LiveCapableRecitationEngine {
     );
     final out = <RecitationError>[];
     for (final v in verdicts.where((v) => !v.ok)) {
-      out.add(RecitationError(
-        errorType: 'tajweed',
-        speechErrorType: 'replace',
-        uthmaniPos: [v.refIdx, v.refIdx + 1],
-        phPos: [v.predIdx, v.predIdx + 1],
-        expectedPh: refUnits[v.refIdx].symbol,
-        predictedPh:
-            v.predIdx < predUnits.length ? predUnits[v.predIdx].symbol : null,
-        expectedLen: v.goldenHarakat,
-        predictedLen: v.actualHarakat.round(),
-        wordText: wordAt(v.refIdx),
-        refTajweedRules: [
-          TajweedRule(
-            nameAr: 'المدّ (زمني)',
-            nameEn: 'Madd (timed)',
-            goldenLen: v.goldenHarakat,
-            correctnessType: 'count',
-          ),
-        ],
-      ));
+      out.add(
+        RecitationError(
+          errorType: 'tajweed',
+          speechErrorType: 'replace',
+          uthmaniPos: [v.refIdx, v.refIdx + 1],
+          phPos: [v.predIdx, v.predIdx + 1],
+          expectedPh: refUnits[v.refIdx].symbol,
+          predictedPh: v.predIdx < predUnits.length
+              ? predUnits[v.predIdx].symbol
+              : null,
+          expectedLen: v.goldenHarakat,
+          predictedLen: v.actualHarakat.round(),
+          wordText: wordAt(v.refIdx),
+          refTajweedRules: [
+            TajweedRule(
+              nameAr: 'المدّ (زمني)',
+              nameEn: 'Madd (timed)',
+              goldenLen: v.goldenHarakat,
+              correctnessType: 'count',
+            ),
+          ],
+        ),
+      );
     }
     return out;
   }

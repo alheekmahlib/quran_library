@@ -1,7 +1,8 @@
 import 'dart:async';
 import 'dart:developer' show log;
 
-import 'package:flutter/foundation.dart' show kDebugMode;
+import 'package:flutter/foundation.dart'
+    show TargetPlatform, defaultTargetPlatform, kDebugMode, kIsWeb;
 import 'package:get/get.dart';
 import 'package:record/record.dart';
 
@@ -37,8 +38,8 @@ class RecitationSession {
     this.ayaIdx,
     this.range,
     this.referenceText,
-  })  : _engine = engine,
-        _recorder = recorder;
+  }) : _engine = engine,
+       _recorder = recorder;
 
   /// إعدادات المصحف (Hafs افتراضياً).
   /// Moshaf config (Hafs by default).
@@ -131,13 +132,18 @@ class RecitationSession {
       await _recorder!.start(settings, path: _recordingPath!);
       _wireAutoStop(stopAfterSilence, maxDuration, ignoreInitial);
       state.value = RecitationState.recording;
-      log('RecitationSession started recording: $_recordingPath',
-          name: 'RecitationSession');
+      log(
+        'RecitationSession started recording: $_recordingPath',
+        name: 'RecitationSession',
+      );
     } catch (e, s) {
       state.value = RecitationState.error;
       lastError.value = e.toString();
-      log('RecitationSession start failed: $e',
-          name: 'RecitationSession', stackTrace: s);
+      log(
+        'RecitationSession start failed: $e',
+        name: 'RecitationSession',
+        stackTrace: s,
+      );
     }
   }
 
@@ -160,26 +166,26 @@ class RecitationSession {
     _amplitudeSub = _recorder!
         .onAmplitudeChanged(const Duration(milliseconds: 100))
         .listen((amp) {
-      // عهدة البادئة: صدى نطق الكلمة من السماعة (شيت المصحّح) ليس كلام
-      // المستخدم — لا يُعلّم spoke ولا يُحدّث آخر كلام.
-      if (ignoreInitial != null &&
-          DateTime.now().difference(startedAt) < ignoreInitial) {
-        return;
-      }
-      // كلام البشر عادة > ‎-35dB‏ والسكوت حول ‎-45dB‏ فأدنى.
-      final heard = amp.current > -35;
-      if (heard) {
-        spoke = true;
-        lastVoiceAt = DateTime.now();
-        return;
-      }
-      if (spoke &&
-          lastVoiceAt != null &&
-          DateTime.now().difference(lastVoiceAt!) >= stopAfterSilence &&
-          state.value == RecitationState.recording) {
-        stop();
-      }
-    });
+          // عهدة البادئة: صدى نطق الكلمة من السماعة (شيت المصحّح) ليس كلام
+          // المستخدم — لا يُعلّم spoke ولا يُحدّث آخر كلام.
+          if (ignoreInitial != null &&
+              DateTime.now().difference(startedAt) < ignoreInitial) {
+            return;
+          }
+          // كلام البشر عادة > ‎-35dB‏ والسكوت حول ‎-45dB‏ فأدنى.
+          final heard = amp.current > -35;
+          if (heard) {
+            spoke = true;
+            lastVoiceAt = DateTime.now();
+            return;
+          }
+          if (spoke &&
+              lastVoiceAt != null &&
+              DateTime.now().difference(lastVoiceAt!) >= stopAfterSilence &&
+              state.value == RecitationState.recording) {
+            stop();
+          }
+        });
   }
 
   /// أوقف التسجيل ومرّر الصوت لِلمحرّك لِلتصحيح.
@@ -194,8 +200,10 @@ class RecitationSession {
     try {
       state.value = RecitationState.processing;
       _recordingPath = await _recorder?.stop() ?? _recordingPath;
-      log('RecitationSession stopped. Sending to server...',
-          name: 'RecitationSession');
+      log(
+        'RecitationSession stopped. Sending to server...',
+        name: 'RecitationSession',
+      );
 
       if (_recordingPath == null) {
         throw StateError('No recording file');
@@ -204,8 +212,10 @@ class RecitationSession {
       // اقرأ ملف WAV كاملاً.
       // Read the full WAV file.
       final wavBytes = await PlatformIo.readFile(_recordingPath!);
-      log('RecitationSession: read ${wavBytes.length} bytes',
-          name: 'RecitationSession');
+      log(
+        'RecitationSession: read ${wavBytes.length} bytes',
+        name: 'RecitationSession',
+      );
 
       // 🔍 تشخيص في وضع التصحيح فقط: نسخة من التسجيل لِتحليلها offline —
       // في الإصدارات لا يبقى صوت المستخدم على القرص (خصوصية).
@@ -214,8 +224,10 @@ class RecitationSession {
           final docDir = await PlatformIo.documentsDir;
           final diagPath = '$docDir/last_recitation.wav';
           await PlatformIo.writeFile(diagPath, wavBytes);
-          log('RecitationSession: DIAG copy saved → $diagPath',
-              name: 'RecitationSession');
+          log(
+            'RecitationSession: DIAG copy saved → $diagPath',
+            name: 'RecitationSession',
+          );
         } catch (_) {}
       }
 
@@ -235,8 +247,11 @@ class RecitationSession {
     } catch (e, s) {
       state.value = RecitationState.error;
       lastError.value = e.toString();
-      log('RecitationSession stop error: $e',
-          name: 'RecitationSession', stackTrace: s);
+      log(
+        'RecitationSession stop error: $e',
+        name: 'RecitationSession',
+        stackTrace: s,
+      );
     } finally {
       // تنظيف: أوقف مراقبات الإيقاف التلقائي، واحذف الملف المؤقّت وتصرّف
       // بالمسجّل.
@@ -299,7 +314,8 @@ class RecitationSession {
     int wordIdx,
     TasmeeErrorKind kind,
     TasmeeWordMistake? mistake,
-  )? onWordDone;
+  )?
+  onWordDone;
 
   /// يُستدعى عند اكتمال كل كلمات النطاق (إتمام الصفحة).
   ///
@@ -352,9 +368,10 @@ class RecitationSession {
               (frame.units.isNotEmpty && lastLoggedCount == 0)) {
             lastLoggedCount = frame.units.length;
             log(
-                'RecitationSession LIVE partial — '
-                'units=${frame.units.length} last=${frame.units.last}',
-                name: 'RecitationSession');
+              'RecitationSession LIVE partial — '
+              'units=${frame.units.length} last=${frame.units.last}',
+              name: 'RecitationSession',
+            );
           }
         },
         onWord: (wordIdx) => currentWordIdx.value = wordIdx,
@@ -371,26 +388,37 @@ class RecitationSession {
       _liveChunkCount = 0;
       _liveTotalBytes = 0;
       _livePeak = 0.0;
-      log('RecitationSession started LIVE streaming',
-          name: 'RecitationSession');
+      log(
+        'RecitationSession started LIVE streaming',
+        name: 'RecitationSession',
+      );
     } catch (e, s) {
       state.value = RecitationState.error;
       lastError.value = e.toString();
-      log('RecitationSession startLive failed: $e',
-          name: 'RecitationSession', stackTrace: s);
+      log(
+        'RecitationSession startLive failed: $e',
+        name: 'RecitationSession',
+        stackTrace: s,
+      );
     }
   }
 
   /// يشترك في بثّ الميكروفون ويغذّي المحرّك بوحدات PCM — مشترك بين
   /// [startLive] و[resumeLive].
   Future<void> _startPcmStreaming(LiveCapableRecitationEngine engine) async {
-    const settings = RecordConfig(
+    // على macOS تفعيل echoCancel/autoGain يشغّل setVoiceProcessingEnabled،
+    // وتثبيت الـ tap بتنسيق مأخوذ قبل استقرار تنسيق VPIO قد يُسدّم أصفارًا
+    // مستمرة (peak=0) — التسميع يلتقط من الميكروفون مباشرة فلا حاجة
+    // لإلغاء الصدى هناك. بقية المنصات تحتفظ بالمعالجة.
+    final useVoiceProcessing =
+        defaultTargetPlatform != TargetPlatform.macOS && !kIsWeb;
+    final settings = RecordConfig(
       encoder: AudioEncoder.pcm16bits,
       sampleRate: 16000,
       numChannels: 1,
-      autoGain: true,
-      echoCancel: true,
-      noiseSuppress: true,
+      autoGain: useVoiceProcessing,
+      echoCancel: useVoiceProcessing,
+      noiseSuppress: useVoiceProcessing,
     );
     // record v6: startStream يُعيد Future<Stream> — انتظر الشبكة ثم اشترك.
     final pcmStream = await _liveRecorder!.startStream(settings);
@@ -429,8 +457,11 @@ class RecitationSession {
       state.value = RecitationState.paused;
       log('RecitationSession paused LIVE streaming', name: 'RecitationSession');
     } catch (e, s) {
-      log('RecitationSession pauseLive error: $e',
-          name: 'RecitationSession', stackTrace: s);
+      log(
+        'RecitationSession pauseLive error: $e',
+        name: 'RecitationSession',
+        stackTrace: s,
+      );
     }
   }
 
@@ -452,13 +483,18 @@ class RecitationSession {
       // الإرساء الجديد يحدّد موضعه الفعلي بعد الإغلاق.
       engine.onLiveResumed();
       state.value = RecitationState.recording;
-      log('RecitationSession resumed LIVE streaming',
-          name: 'RecitationSession');
+      log(
+        'RecitationSession resumed LIVE streaming',
+        name: 'RecitationSession',
+      );
     } catch (e, s) {
       state.value = RecitationState.error;
       lastError.value = e.toString();
-      log('RecitationSession resumeLive failed: $e',
-          name: 'RecitationSession', stackTrace: s);
+      log(
+        'RecitationSession resumeLive failed: $e',
+        name: 'RecitationSession',
+        stackTrace: s,
+      );
     }
   }
 
@@ -474,12 +510,13 @@ class RecitationSession {
       final frame = await engine.endLive();
       liveUnits.assignAll(frame.units);
       log(
-          'RecitationSession LIVE stream stats — '
-          'chunks=$_liveChunkCount bytes=$_liveTotalBytes '
-          'peak=${_livePeak.toStringAsFixed(3)} '
-          'units=${frame.units.length}',
-          name: 'RecitationSession');
-      result.value = await engine.evaluateLive(
+        'RecitationSession LIVE stream stats — '
+        'chunks=$_liveChunkCount bytes=$_liveTotalBytes '
+        'peak=${_livePeak.toStringAsFixed(3)} '
+        'units=${frame.units.length}',
+        name: 'RecitationSession',
+      );
+      final res = await engine.evaluateLive(
         config: config,
         suraIdx: suraIdx,
         ayaIdx: ayaIdx,
@@ -487,14 +524,33 @@ class RecitationSession {
         referenceText: referenceText,
         frame: frame,
       );
-      log('RecitationSession live done: ${result.value}',
-          name: 'RecitationSession');
+      // الصمت التام (peak=0) ليس تلاوة صحيحة — كلّف المستخدم بفحص الإذن
+      // وجهاز الإدخال بدل النجاح الزائف «أحسنت! لا أخطاء».
+      if (_livePeak <= 0.0) {
+        result.value = RecitationResult(
+          uthmaniText: res.uthmaniText,
+          predictedPhonemes: res.predictedPhonemes,
+          noMatchMessage:
+              'لم يصل أي صوت من الميكروفون — تأكد من منح التطبيق إذن '
+              'الميكروفون (إعدادات النظام ← الخصوصية والأمان ← الميكروفون) '
+              'ومن اختيار جهاز الإدخال الصحيح في إعدادات الصوت.',
+        );
+      } else {
+        result.value = res;
+      }
+      log(
+        'RecitationSession live done: ${result.value}',
+        name: 'RecitationSession',
+      );
       state.value = RecitationState.finished;
     } catch (e, s) {
       state.value = RecitationState.error;
       lastError.value = e.toString();
-      log('RecitationSession stopLive error: $e',
-          name: 'RecitationSession', stackTrace: s);
+      log(
+        'RecitationSession stopLive error: $e',
+        name: 'RecitationSession',
+        stackTrace: s,
+      );
     } finally {
       isLive.value = false;
       currentWordIdx.value = -1;

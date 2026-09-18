@@ -131,7 +131,7 @@ In the `pubspec.yaml` of your flutter project, add the following dependency:
 ```yaml
 dependencies:
   ...
-  quran_library: ^4.4.1
+  quran_library: ^4.4.2
 ```
 
 Import it:

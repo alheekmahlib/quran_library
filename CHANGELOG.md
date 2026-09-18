@@ -1,5 +1,12 @@
 # Changelog
 
+## 4.4.2
+
+* **FIX:**
+  * False "fully correct" result when the microphone delivers silence: the no-match guards in the offline engine's evaluation required `totalOps > 0`, so an empty recognition (`pred=0`, `totalOps=0`) skipped rejection and returned `errors: []` → `isFullyCorrect: true` → the results sheet showed "Well done! No mistakes." for a session where nothing was heard. `matches == 0` now rejects in both the page-range and single-verse paths.
+  * `stopLive` now detects total silence (`peak=0` across the whole live stream) and returns an actionable `noMatchMessage` ("No sound came from the microphone — check microphone permissions and input device") instead of a success result.
+  * macOS live capture disables voice processing (`echoCancel/autoGain/noiseSuppress` off, macOS only): enabling `setVoiceProcessingEnabled` in the `record_macos` plugin can install the audio tap with a pre-VPIO format and deliver all-zero PCM buffers forever. Tasmee captures the microphone directly, so echo cancellation is not needed there; iOS/Android keep voice processing.
+
 ## 4.4.1
 
 * **FIX:**

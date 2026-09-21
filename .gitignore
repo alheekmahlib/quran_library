@@ -27,3 +27,9 @@ migrate_working_dir/
 **/doc/api/
 .dart_tool/
 build/
+
+# Android generated build files
+/android/.gradle/
+/android/app/build/
+/android/build/
+/android/local.properties

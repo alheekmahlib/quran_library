@@ -1,0 +1,279 @@
+/// كشّاف أخطاء التلاوة على أبجدية Quran-Lab ‏(250 وحدة + blank).
+///
+/// التصنيف لِكلّ عمليّة محاذاة:
+/// - match بِنفس الرمز → لا خطأ رمزي (المدّ الزمني يُقاس في madd_timing).
+/// - نفس الحرف: فرق حركة → tashkeel؛ فرق حالة (شدة/قلقلة/غنّة/إخفاء أو
+///   طول مدّ خارج التسامح) → tajweed؛ مدّ golden>=4 متسامح 2..golden+2.
+/// - insert: ضوضاء (سكوت/حركة/همزة/شرطة) تُتجاهل، وإلاّ normal/insert.
+/// - delete: تسامح الوحدة الأولى القصيرة، وإلاّ tajweed إن لها حالة وإلاّ normal.
+/// - replace: حرف مختلف → normal؛ نفس الحرف بِحالة مختلفة → فروع match نفسها.
+library;
+
+import 'models/recitation_result.dart';
+import 'phoneme_aligner.dart';
+import 'quran_reference.dart';
+import 'quran_units.dart';
+
+/// قاعدة مدّ جاهزة (تُستخدم أيضًا في madd_timing).
+TajweedRule _maddRule(int goldenLen) => TajweedRule(
+    nameAr: 'المدّ',
+    nameEn: 'Madd',
+    goldenLen: goldenLen,
+    correctnessType: 'count');
+
+TajweedRule _rule(String ar, String en) =>
+    TajweedRule(nameAr: ar, nameEn: en, correctnessType: 'match');
+
+/// يبني الأخطاء من عمليات محاذاة الوحدات.
+///
+/// الإدراجات تُعالَج **سلسلةً سلسلة**: كل متتالية وحدات زائدة تُدمج في
+/// خطأ واحد يُنسب لكلمته (المتوقَّعة التالية أو الأخيرة المطابَقة)،
+/// وإعادةُ كلمةٍ مُطابَقة حديثًا تُوسم "إعادة كلمة" على الكلمة نفسها —
+/// فلا يغرق التقرير ببطاقة لكل وحدة زائدة.
+List<RecitationError> buildErrorsFromUnitAlignment({
+  required List<UnitAlignOp> ops,
+  required List<QuranUnit> refUnits,
+  required List<QuranUnit> predUnits,
+  required String? Function(int unitIdx) wordAt,
+  QuranRangeWordSpan? Function(int unitIdx)? spanOfUnit,
+}) {
+  final errors = <RecitationError>[];
+  final run = <QuranUnit>[];
+  var lastMatchedRef = -1;
+
+  void flushRun(int nextRef) {
+    if (run.isEmpty) return;
+    _handleInsertRun(
+      errors: errors,
+      run: List.of(run),
+      refUnits: refUnits,
+      wordAt: wordAt,
+      spanOfUnit: spanOfUnit,
+      lastMatchedRef: lastMatchedRef,
+      nextRef: nextRef,
+    );
+    run.clear();
+  }
+
+  for (final op in ops) {
+    switch (op.type) {
+      case 'match':
+      case 'replace':
+        if (op.refIdx < 0 || op.predIdx < 0) continue;
+        flushRun(op.refIdx);
+        _handleSameLetterOrReplace(op, refUnits, predUnits, wordAt, errors);
+        lastMatchedRef = op.refIdx;
+      case 'insert':
+        if (op.predIdx < 0) continue;
+        run.add(predUnits[op.predIdx]);
+      case 'delete':
+        if (op.refIdx < 0) continue;
+        flushRun(op.refIdx);
+        _handleDelete(op, refUnits, wordAt, errors);
+    }
+  }
+  // سلسلة ختامية بعد آخر عملية — تُنسب لآخر كلمة مطابَقة.
+  flushRun(lastMatchedRef);
+  return errors;
+}
+
+/// فرعا match/replace: نفس الحرف (تفاصيل) أو حرف مختلف.
+void _handleSameLetterOrReplace(
+  UnitAlignOp op,
+  List<QuranUnit> refUnits,
+  List<QuranUnit> predUnits,
+  String? Function(int unitIdx) wordAt,
+  List<RecitationError> errors,
+) {
+  final ref = refUnits[op.refIdx];
+  final pred = predUnits[op.predIdx];
+  final word = wordAt(op.refIdx);
+  final pos = [op.refIdx, op.refIdx + 1];
+
+  // حرفان أساسيان مختلفان → normal/replace.
+  if (ref.letter != pred.letter) {
+    errors.add(RecitationError(
+      errorType: 'normal',
+      speechErrorType: 'replace',
+      uthmaniPos: pos,
+      phPos: [op.predIdx, op.predIdx + 1],
+      expectedPh: ref.symbol,
+      predictedPh: pred.symbol,
+      wordText: word,
+    ));
+    return;
+  }
+
+  // نفس الرمز تمامًا → لا خطأ رمزي (الزمني لاحقًا).
+  if (ref.symbol == pred.symbol) return;
+
+  // مدّ مختلف الطول.
+  if (ref.isMadd && pred.isMadd) {
+    final golden = ref.maddLength!;
+    final actual = pred.maddLength!;
+    // المدّ الحر (golden>=4): الوصل يجعله 2 مشروعًا والإفراط بِحركتين متسامح.
+    final ok =
+        golden >= 4 ? (actual >= 2 && actual <= golden + 2) : actual == golden;
+    if (!ok) {
+      errors.add(RecitationError(
+        errorType: 'tajweed',
+        speechErrorType: 'replace',
+        uthmaniPos: pos,
+        phPos: [op.predIdx, op.predIdx + 1],
+        expectedPh: ref.symbol,
+        predictedPh: pred.symbol,
+        expectedLen: golden,
+        predictedLen: actual,
+        wordText: word,
+        refTajweedRules: [_maddRule(golden)],
+      ));
+    }
+    return;
+  }
+
+  // فرق حالة تجويدية: شدة/قلقلة/غنّة/إخفاء.
+  final diffs = <TajweedRule>[];
+  if (ref.isShadda != pred.isShadda) diffs.add(_rule('الشدة', 'Shaddah'));
+  if (ref.qalqalah != pred.qalqalah) diffs.add(_rule('القلقلة', 'Qalqalah'));
+  if (ref.ghunna != pred.ghunna) diffs.add(_rule('الغنّة', 'Ghunnah'));
+  if (ref.ikhfaa != pred.ikhfaa) diffs.add(_rule('الإخفاء', 'Ikhfaa'));
+  if (diffs.isNotEmpty) {
+    errors.add(RecitationError(
+      errorType: 'tajweed',
+      speechErrorType: 'replace',
+      uthmaniPos: pos,
+      phPos: [op.predIdx, op.predIdx + 1],
+      expectedPh: ref.symbol,
+      predictedPh: pred.symbol,
+      wordText: word,
+      refTajweedRules: diffs,
+    ));
+    return;
+  }
+
+  // بقي فرق الحركة (أو حركة ناقصة/زائدة) → tashkeel.
+  final String spTp;
+  if (pred.haraka == null && ref.haraka != null) {
+    spTp = 'delete';
+  } else if (pred.haraka != null && ref.haraka == null) {
+    spTp = 'insert';
+  } else {
+    spTp = 'replace';
+  }
+  errors.add(RecitationError(
+    errorType: 'tashkeel',
+    speechErrorType: spTp,
+    uthmaniPos: pos,
+    phPos: [op.predIdx, op.predIdx + 1],
+    expectedPh: ref.symbol,
+    predictedPh: pred.symbol,
+    wordText: word,
+  ));
+}
+
+/// فرع الإدراج: سلسلة وحدات زائدة → خطأ واحد مدموج منسوب لكلمته.
+///
+/// - إعادة كلمة: سلسلة تطابق (بالحرف الأساسي) كلمةً مُطابَقة حديثًا →
+///   خطأ "إعادة كلمة" على الكلمة المعادة نفسها.
+/// - غير ذلك: خطأ "حروف زائدة" واحد على الكلمة المتوقَّعة التالية (أو
+///   الأخيرة المطابَقة إن ختمت التلاوة) — بلا بطاقة لكل وحدة.
+void _handleInsertRun({
+  required List<RecitationError> errors,
+  required List<QuranUnit> run,
+  required List<QuranUnit> refUnits,
+  required String? Function(int unitIdx) wordAt,
+  required QuranRangeWordSpan? Function(int unitIdx)? spanOfUnit,
+  required int lastMatchedRef,
+  required int nextRef,
+}) {
+  final units = run.where((u) => !u.isNoiseInsert).toList();
+  if (units.isEmpty) return;
+  final predicted = units.map((u) => u.symbol).join(' ');
+
+  // إعادة كلمة: الحروف الأساسية للسلسلة تطابق كلمة الجوار — السابقة
+  // (آخر كلمة مُطابَقة) أو التالية (المحاذاة قد تعدّ النسخة الأولى من
+  // التكرار إدراجًا والثانية هي المطابِقة).
+  QuranRangeWordSpan? repeatSpan;
+  if (spanOfUnit != null) {
+    for (final probe in [lastMatchedRef, nextRef]) {
+      if (probe < 0) continue;
+      final s = spanOfUnit(probe);
+      if (s == null || s.endUnit >= refUnits.length) continue;
+      final wordLetters = refUnits
+          .sublist(s.startUnit, s.endUnit + 1)
+          .map((u) => u.letter)
+          .toList();
+      if (wordLetters.length != units.length) continue;
+      var same = true;
+      for (var i = 0; i < wordLetters.length; i++) {
+        if (wordLetters[i] != units[i].letter) {
+          same = false;
+          break;
+        }
+      }
+      if (same) {
+        repeatSpan = s;
+        break;
+      }
+    }
+  }
+  if (repeatSpan != null) {
+    errors.add(RecitationError(
+      errorType: 'normal',
+      speechErrorType: 'insert',
+      uthmaniPos: [repeatSpan.startUnit, repeatSpan.startUnit + 1],
+      phPos: const [0, 0],
+      expectedPh: '',
+      predictedPh: predicted,
+      wordText: wordAt(repeatSpan.startUnit),
+      isWordRepeat: true,
+    ));
+    return;
+  }
+
+  // سلسلة زيادة على الكلمة المتوقَّعة (أو الأخيرة إن ختمت).
+  final at =
+      nextRef >= 0 ? nextRef : (lastMatchedRef >= 0 ? lastMatchedRef : -1);
+  errors.add(RecitationError(
+    errorType: 'normal',
+    speechErrorType: 'insert',
+    // -1 = بلا موضع مرجعي (لا يُوسَم ولا يُزاح عند تقييم نافذة).
+    uthmaniPos: at >= 0 ? [at, at + 1] : const [-1, -1],
+    phPos: const [0, 0],
+    expectedPh: '',
+    predictedPh: predicted,
+    wordText: at >= 0 ? wordAt(at) : null,
+  ));
+}
+
+/// فرع delete: تسامح الوحدة الأولى + تصنيف حسب حالة الوحدة.
+void _handleDelete(
+  UnitAlignOp op,
+  List<QuranUnit> refUnits,
+  String? Function(int unitIdx) wordAt,
+  List<RecitationError> errors,
+) {
+  final ref = refUnits[op.refIdx];
+
+  // تسامح الوحدة الأولى القصيرة (نمط معروف في النماذج الصغيرة).
+  if (op.refIdx == 0 && ref.symbol.length <= 2) return;
+
+  final word = wordAt(op.refIdx);
+  final rules = <TajweedRule>[
+    if (ref.isMadd) _maddRule(ref.maddLength ?? 2),
+    if (ref.isShadda) _rule('الشدة', 'Shaddah'),
+    if (ref.qalqalah) _rule('القلقلة', 'Qalqalah'),
+    if (ref.ghunna) _rule('الغنّة', 'Ghunnah'),
+    if (ref.ikhfaa) _rule('الإخفاء', 'Ikhfaa'),
+  ];
+  errors.add(RecitationError(
+    errorType: rules.isNotEmpty ? 'tajweed' : 'normal',
+    speechErrorType: 'delete',
+    uthmaniPos: [op.refIdx, op.refIdx + 1],
+    phPos: [op.refIdx, op.refIdx + 1],
+    expectedPh: ref.symbol,
+    predictedPh: '',
+    wordText: word,
+    refTajweedRules: rules,
+  ));
+}

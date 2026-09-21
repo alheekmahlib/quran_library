@@ -29,6 +29,8 @@ TextSpan _qpcV4SpanSegment({
   bool usePaintColoring = true,
   required bool isDark,
   VoidCallback? onPagePress,
+  bool hideGlyphs = false,
+  Color? hiddenGlyphColor,
 }) {
   final quranCtrl = QuranCtrl.instance;
   final wordInfoCtrl = WordInfoCtrl.instance;
@@ -39,8 +41,16 @@ TextSpan _qpcV4SpanSegment({
   final bool forceRed = isWordKhilaf && !withTajweed && isTenRecitations;
 
   // اختيار الخط: كلمات الخلاف تستخدم خط CPAL أحمر بدلاً من foreground Paint
+  final bool transparentHidden =
+      hideGlyphs && !isFontsLocal && GetInstance().isRegistered<TasmeeCtrl>()
+          ? TasmeeCtrl.instance.state.transparentFontsReady.value
+          : false;
   final String fontFamily;
-  if (fontFamilyOverride != null) {
+  if (transparentHidden) {
+    // كلمات التسميع المخفية: متغير CPAL شفاف بالكامل — تختفي بصريًا
+    // مع بقاء المقاييس فتظل أرقام الآيات في مواضعها.
+    fontFamily = quranCtrl.getTransparentFontPath(pageIndex);
+  } else if (fontFamilyOverride != null) {
     fontFamily = fontFamilyOverride;
   } else if (isFontsLocal) {
     fontFamily = fontsName;
@@ -50,13 +60,22 @@ TextSpan _qpcV4SpanSegment({
     fontFamily = quranCtrl.getFontPath(pageIndex, isDark: isDark);
   }
 
+  // وضع التسميع: الكلمة غير المُتَلَّاة تُلوَّن بلون خلفية الصفحة (لا تُحذف)
+  // فيبقى التخطيط وتظل أرقام الآيات في مواضعها الصحيحة.
+  final effectiveGlyphColor = hideGlyphs
+      ? (hiddenGlyphColor ?? AppColors.getBackgroundColor(isDark))
+      : (textColor ?? AppColors.getTextColor(isDark));
+
+  // الخط السفلي لكلمات التسميع لا يُرسم عبر TextStyle (موضعه يأتي من
+  // مقاييس خط QCF فيقع فوق الحروف) — بل يرسمه صندوق السطر الموجود
+  // _AyahSelectionRenderBox تحت صندوق الحروف مباشرة.
   final baseTextStyle = TextStyle(
     fontFamily: fontFamily,
     package: fontPackageOverride,
     fontSize: fontSize,
     height: 2,
     // wordSpacing: 50,
-    color: textColor ?? AppColors.getTextColor(isDark),
+    color: effectiveGlyphColor,
   );
 
   InlineSpan? tail;
@@ -137,14 +156,93 @@ TextSpan _qpcV4SpanSegment({
 
   return TextSpan(
     children: <InlineSpan>[
-      TextSpan(
-        text: glyphs,
-        style: baseTextStyle,
-        recognizer: recognizer,
-      ),
+      // كلمة التسميع المخفية: بالخط الشفاف تبقى في التخطيط (فتظل أرقام
+      // الآيات في مواضعها)، وإن لم يكن جاهزًا تُحذف حروفها احتياطًا —
+      // وبلا مستمع لمس في الحالتين.
+      if (!hideGlyphs || transparentHidden)
+        TextSpan(
+          text: glyphs,
+          style: baseTextStyle,
+          recognizer: hideGlyphs ? null : recognizer,
+        ),
       if (tail != null) tail,
     ],
   );
 }
 
 typedef _LongPressStartDetailsFunction = void Function(LongPressStartDetails)?;
+
+// ── وضع التسميع — مساعدات العرض / Tasmee display helpers ─────────────
+
+/// حالة كلمة في وضع التسميع (null = الوضع غير مفعّل لهذه الصفحة).
+///
+/// [pageIndex] فهرس الصفحة (0-based) — الإخفاء يخص صفحة النطاق فقط.
+///
+/// عند إظهار الكلمات (زر العين أو نمطا المصحح/المعلم) تبقى الكلمات
+/// ظاهرة كلها، لكن المنطوقة منها يُرسم تحتها خط حالتها (أخضر/أحمر)
+/// — لذا تُعاد null للمخفية فقط كي لا تُخفى.
+TasmeeWordStatus? tasmeeStatusOfSegment(QpcV4WordSegment seg, int pageIndex) {
+  final TasmeeCtrl tasmeeCtrl;
+  if (!GetInstance().isRegistered<TasmeeCtrl>()) return null;
+  tasmeeCtrl = TasmeeCtrl.instance;
+  if (!tasmeeCtrl.state.isTasmeeMode.value) return null;
+  if (tasmeeCtrl.state.currentRangePage != pageIndex + 1) return null;
+  final status = tasmeeCtrl.wordStatusOf('${seg.ayahUq}:${seg.wordNumber}');
+  if (status == TasmeeWordStatus.hidden &&
+      tasmeeCtrl.state.showAllWords.value) {
+    return null;
+  }
+  return status;
+}
+
+/// نوع خطأ كلمة تسميع (null = غير خاطئة/الوضع غير مفعّل).
+TasmeeErrorKind? tasmeeErrorKindOfSegment(QpcV4WordSegment seg, int pageIndex) {
+  final TasmeeCtrl tasmeeCtrl;
+  if (!GetInstance().isRegistered<TasmeeCtrl>()) return null;
+  tasmeeCtrl = TasmeeCtrl.instance;
+  if (!tasmeeCtrl.state.isTasmeeMode.value) return null;
+  if (tasmeeCtrl.state.currentRangePage != pageIndex + 1) return null;
+  return tasmeeCtrl.tasmeeErrorKindOf('${seg.ayahUq}:${seg.wordNumber}');
+}
+
+/// يحدّد لون الخط السفلي لكلمة تسميع من حالتها ونوع خطأها
+/// (null = بلا خط: المخفية والجارية والوضع غير المفعّل).
+///
+/// [style] النمط المحلول مسبقًا في نطاق بناء السطر — بلا سياق Get
+/// (استدعاء أثناء الـ layout قد يسبق جاهزية Get.context).
+Color? tasmeeUnderlineColorFor({
+  required TasmeeWordStatus? status,
+  required TasmeeErrorKind? kind,
+  required TasmeeStyle style,
+}) {
+  if (status == null || status == TasmeeWordStatus.hidden) return null;
+  if (status == TasmeeWordStatus.current) return null; // لها تظليل مرسوم.
+  return switch (status) {
+    TasmeeWordStatus.correct => style.correctColor,
+    TasmeeWordStatus.incorrect => switch (kind) {
+        TasmeeErrorKind.tajweed => style.tajweedErrorColor,
+        TasmeeErrorKind.tashkeel => style.tashkeelErrorColor,
+        TasmeeErrorKind.normal => style.normalErrorColor,
+        _ => style.incorrectColor,
+      },
+    TasmeeWordStatus.current => null,
+    TasmeeWordStatus.hidden => null,
+  };
+}
+
+/// بصمة حالة التسميع المؤثرة على بناء السطر (تُدمج في _computeFingerprint).
+int tasmeeFingerprint() {
+  if (!GetInstance().isRegistered<TasmeeCtrl>()) return 0;
+  final t = TasmeeCtrl.instance;
+  return Object.hash(
+    t.state.isTasmeeMode.value.hashCode,
+    t.state.currentRangePage.hashCode,
+    t.state.showAllWords.value.hashCode,
+    t.state.transparentFontsReady.value.hashCode,
+    t.state.currentWordKey.value.hashCode,
+    Object.hashAll(t.state.wordStatuses.entries
+        .map((e) => Object.hash(e.key, e.value.index))),
+    Object.hashAll(t.state.wordErrorKinds.entries
+        .map((e) => Object.hash(e.key, e.value.index))),
+  );
+}

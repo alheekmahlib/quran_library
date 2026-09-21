@@ -48,6 +48,13 @@ class QuranTopBarStyle {
   final bool? showTajweedButton;
   final bool? showAutoScrollButton;
 
+  /// إظهار زر وضع التسميع (التخفى كلمات الصفحة ويتلوها المستخدم) —
+  /// يُخفى تلقائياً على الويب (الميكروفون غير مدعوم).
+  final bool? showTasmeeButton;
+
+  /// مسار أيقونة التسميع (مايك) — الافتراضي mic.svg.
+  final String? tasmeeIconPath;
+
   // Custom widgets to add to the top bar
   final List<Widget>? customTopBarWidgets;
 
@@ -90,6 +97,8 @@ class QuranTopBarStyle {
     this.autoScrollIconPath,
     this.showTajweedButton,
     this.showAutoScrollButton,
+    this.showTasmeeButton,
+    this.tasmeeIconPath,
     this.quranTabText,
     this.tenRecitationsTabText,
     this.tabLabelStyle,
@@ -129,6 +138,8 @@ class QuranTopBarStyle {
     bool? showTajweedButton,
     String? autoScrollIconPath,
     bool? showAutoScrollButton,
+    bool? showTasmeeButton,
+    String? tasmeeIconPath,
     String? quranTabText,
     String? tenRecitationsTabText,
     TextStyle? tabLabelStyle,
@@ -167,6 +178,8 @@ class QuranTopBarStyle {
         tajweedIconPath: tajweedIconPath ?? this.tajweedIconPath,
         showTajweedButton: showTajweedButton ?? this.showTajweedButton,
         showAutoScrollButton: showAutoScrollButton ?? this.showAutoScrollButton,
+        showTasmeeButton: showTasmeeButton ?? this.showTasmeeButton,
+        tasmeeIconPath: tasmeeIconPath ?? this.tasmeeIconPath,
         quranTabText: quranTabText ?? this.quranTabText,
         tenRecitationsTabText:
             tenRecitationsTabText ?? this.tenRecitationsTabText,
@@ -214,6 +227,8 @@ class QuranTopBarStyle {
       autoScrollIconPath: AssetsPath.assets.arrowDown,
       showTajweedButton: true,
       showAutoScrollButton: true,
+      showTasmeeButton: true,
+      tasmeeIconPath: AssetsPath.assets.mic,
       quranTabText: 'القرآن الكريم',
       tenRecitationsTabText: 'القراءات العشر',
       tabLabelStyle: TextStyle(

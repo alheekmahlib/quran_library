@@ -74,18 +74,20 @@ class _QuranFontsPage extends StatelessWidget {
 
         final isScaled = quranCtrl.state.scaleFactor.value > 1.3;
 
-        return Container(
-          padding: pageIndex == 0 || pageIndex == 1
-              ? EdgeInsets.symmetric(horizontal: size.width * .08)
-              : const EdgeInsets.symmetric(horizontal: 8.0),
-          margin: pageIndex == 0 || pageIndex == 1
-              ? EdgeInsets.symmetric(
-                  vertical: UiHelper.currentOrientation(
-                      size.width * .16, size.height * .01, context))
-              : EdgeInsets.zero,
-          child: isScaled
-              ? _buildFlowingLayout(quranCtrl)
-              : _buildPageLayout(context, quranCtrl),
+        return Center(
+          child: Container(
+            padding: pageIndex == 0 || pageIndex == 1
+                ? EdgeInsets.symmetric(horizontal: size.width * .08)
+                : const EdgeInsets.symmetric(horizontal: 8.0),
+            margin: pageIndex == 0 || pageIndex == 1
+                ? EdgeInsets.symmetric(
+                    vertical: UiHelper.currentOrientation(
+                        size.width * .16, size.height * .01, context))
+                : EdgeInsets.zero,
+            child: isScaled
+                ? _buildFlowingLayout(quranCtrl)
+                : _buildPageLayout(context, quranCtrl),
+          ),
         );
       },
     );
@@ -114,7 +116,7 @@ class _QuranFontsPage extends StatelessWidget {
       showAyahBookmarkedIcon: showAyahBookmarkedIcon,
       bookmarksAyahs: bookmarksAyahs,
       bookmarksColor: bookmarksColor,
-                                  customBookmarksColor: customBookmarksColor,
+      customBookmarksColor: customBookmarksColor,
       ayahSelectedBackgroundColor: ayahSelectedBackgroundColor,
       isFontsLocal: isFontsLocal,
       fontsName: fontsName,
@@ -172,7 +174,7 @@ class _QuranFontsPage extends StatelessWidget {
           showAyahBookmarkedIcon: showAyahBookmarkedIcon,
           bookmarksAyahs: bookmarksAyahs,
           bookmarksColor: bookmarksColor,
-                                  customBookmarksColor: customBookmarksColor,
+          customBookmarksColor: customBookmarksColor,
           ayahSelectedBackgroundColor: ayahSelectedBackgroundColor,
           isFontsLocal: isFontsLocal ?? false,
           fontsName: fontsName ?? '',

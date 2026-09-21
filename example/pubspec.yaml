@@ -22,10 +22,18 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  integration_test:
+    sdk: flutter
 
 flutter:
   uses-material-design: true
-  
+
   assets:
     - assets/images/quran_library_logo.png
+
+# لا حاجة لِـ dependency_overrides: المكتبة نفسها تثبّت sherpa_onnx
+# وحزمendorsers الأصلية كتبعيات مباشرة متطابقة (1.13.8) — والقيود
+# المباشرة تنتقل إلى أي تطبيق مستهلك عبر حلّ الإصدارات.
+# No overrides needed: the library pins sherpa_onnx + native endorsers
+# as matching direct deps, and those constraints propagate to hosts.
 

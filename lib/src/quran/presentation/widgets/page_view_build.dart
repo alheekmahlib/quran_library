@@ -97,7 +97,7 @@ class PageViewBuild extends StatelessWidget {
         }
 
         return Align(
-          alignment: Alignment.topCenter,
+          alignment: Alignment.center,
           child: TopAndBottomWidget(
             pageIndex: pageIndex,
             languageCode: languageCode,
@@ -112,7 +112,7 @@ class PageViewBuild extends StatelessWidget {
               bookmarks: bookmarksMap,
               onAyahLongPress: onAyahLongPress,
               bookmarksColor: bookmarksColor,
-                                  customBookmarksColor: customBookmarksColor,
+              customBookmarksColor: customBookmarksColor,
               surahNameStyle: surahNameStyle,
               bannerStyle: bannerStyle,
               basmalaStyle: basmalaStyle,

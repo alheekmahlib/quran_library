@@ -96,6 +96,8 @@ class _QpcV4RichTextLineState extends State<QpcV4RichTextLine> {
     // تغيّر بيانات القراءات (عند اكتمال prewarm)
     final recitationsRevisionHash =
         WordInfoCtrl.instance.recitationsDataRevision.hashCode;
+    // حالة التسميع (إخفاء/إظهار/تلوين الكلمات)
+    final tasmeeHash = tasmeeFingerprint();
 
     return Object.hash(
         selHash,
@@ -107,6 +109,7 @@ class _QpcV4RichTextLineState extends State<QpcV4RichTextLine> {
         wordSelectedHash,
         tenRecHash,
         recitationsRevisionHash,
+        tasmeeHash,
         overrideHash);
   }
 
@@ -121,48 +124,51 @@ class _QpcV4RichTextLineState extends State<QpcV4RichTextLine> {
       id: 'selection_page_${widget.pageIndex}',
       builder: (_) => GetBuilder<WordInfoCtrl>(
         id: 'word_info_data',
-        builder: (_) {
-          // قراءة القيم داخل الـ builder حتى تعكس آخر حالة عند كل rebuild
-          final withTajweed = QuranCtrl.instance.state.isTajweedEnabled.value;
-          final isTenRecitations = wordInfoCtrl.isTenRecitations;
+        builder: (_) => GetBuilder<TasmeeCtrl>(
+          id: TasmeeUpdateIds.page(widget.pageIndex),
+          builder: (_) {
+            // قراءة القيم داخل الـ builder حتى تعكس آخر حالة عند كل rebuild
+            final withTajweed = QuranCtrl.instance.state.isTajweedEnabled.value;
+            final isTenRecitations = wordInfoCtrl.isTenRecitations;
 
-          // prewarm القراءات في خلفية
-          if (isTenRecitations &&
-              !withTajweed &&
-              wordInfoCtrl.isKindAvailable(WordInfoKind.recitations)) {
-            final surahs = widget.segments.map((s) => s.surahNumber).toSet();
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              wordInfoCtrl.prewarmRecitationsSurahs(surahs);
-            });
-          }
+            // prewarm القراءات في خلفية
+            if (isTenRecitations &&
+                !withTajweed &&
+                wordInfoCtrl.isKindAvailable(WordInfoKind.recitations)) {
+              final surahs = widget.segments.map((s) => s.surahNumber).toSet();
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                wordInfoCtrl.prewarmRecitationsSurahs(surahs);
+              });
+            }
 
-          // فحص البصمة: إذا لم تتغيّر البيانات الفعلية → أعد الكاش
-          final fp = _computeFingerprint();
-          if (_cachedWidget != null && fp == _lastFingerprint) {
+            // فحص البصمة: إذا لم تتغيّر البيانات الفعلية → أعد الكاش
+            final fp = _computeFingerprint();
+            if (_cachedWidget != null && fp == _lastFingerprint) {
+              return _cachedWidget!;
+            }
+            _lastFingerprint = fp;
+
+            _cachedWidget = LayoutBuilder(
+              builder: (ctx, constraints) {
+                final fs = isLandscape
+                    ? 100.0
+                    : PageFontSizeHelper.getFontSize(
+                        widget.pageIndex,
+                        ctx,
+                      ).h;
+
+                return _buildRichText(
+                  wordInfoCtrl,
+                  context,
+                  fs,
+                  withTajweed: withTajweed,
+                  isTenRecitations: isTenRecitations,
+                );
+              },
+            );
             return _cachedWidget!;
-          }
-          _lastFingerprint = fp;
-
-          _cachedWidget = LayoutBuilder(
-            builder: (ctx, constraints) {
-              final fs = isLandscape
-                  ? 100.0
-                  : PageFontSizeHelper.getFontSize(
-                      widget.pageIndex,
-                      ctx,
-                    ).h;
-
-              return _buildRichText(
-                wordInfoCtrl,
-                context,
-                fs,
-                withTajweed: withTajweed,
-                isTenRecitations: isTenRecitations,
-              );
-            },
-          );
-          return _cachedWidget!;
-        },
+          },
+        ),
       ),
     );
   }
@@ -178,12 +184,24 @@ class _QpcV4RichTextLineState extends State<QpcV4RichTextLine> {
     final ayahCharRanges = <int, TextSelection>{};
     final bookmarkCharRanges = <int, _ColoredTextRange>{};
     TextSelection? wordSelectionRange;
+    // الكلمة الجارية في وضع التسميع (تُبرز بخلفية accent).
+    TextSelection? tasmeeCurrentRange;
+    // خطوط التسميع السفلية: نطاق حروف كل كلمة ظاهرة مع لون نوع خطئها —
+    // تُرسم في صندوق السطر تحت صندوق الحروف (لا عبر TextStyle).
+    final tasmeeUnderlineRanges = <_ColoredTextRange>[];
     int charOffset = 0;
 
     final bookmarksAyahsList = bookmarksSet.toList();
     final allBookmarksList =
         widget.bookmarks.values.expand((list) => list).toList();
     final ayahBookmarkedSet = widget.ayahBookmarked.toSet();
+
+    // لون إخفاء كلمات التسميع — يطابق خلفية الصفحة (المخصصة أو الافتراضية).
+    final tasmeeStyle = TasmeeTheme.of(context)?.style ??
+        TasmeeStyle.defaults(isDark: widget.isDark, context: context);
+    final hiddenColor = tasmeeStyle.hiddenWordColor ??
+        tasmeeStyle.backgroundColor ??
+        AppColors.getBackgroundColor(widget.isDark);
 
     final spans =
         List<InlineSpan>.generate(widget.segments.length, (segmentIndex) {
@@ -201,6 +219,14 @@ class _QpcV4RichTextLineState extends State<QpcV4RichTextLine> {
 
       final info = wordInfoCtrl.getRecitationsInfoSync(ref);
       final hasKhilaf = info?.hasKhilaf ?? false;
+
+      // وضع التسميع: إخفاء/تلوين الكلمة بحسب حالة تلاوتها.
+      final tasmeeStatus = tasmeeStatusOfSegment(seg, widget.pageIndex);
+      final tasmeeUnderline = tasmeeUnderlineColorFor(
+        status: tasmeeStatus,
+        kind: tasmeeErrorKindOfSegment(seg, widget.pageIndex),
+        style: tasmeeStyle,
+      );
 
       final span = _qpcV4SpanSegment(
         context: context,
@@ -273,6 +299,8 @@ class _QpcV4RichTextLineState extends State<QpcV4RichTextLine> {
         ayahBookmarked: widget.ayahBookmarked,
         isDark: widget.isDark,
         onPagePress: widget.onPagePress,
+        hideGlyphs: tasmeeStatus == TasmeeWordStatus.hidden,
+        hiddenGlyphColor: hiddenColor,
       );
 
       final spanStart = charOffset;
@@ -284,6 +312,26 @@ class _QpcV4RichTextLineState extends State<QpcV4RichTextLine> {
           baseOffset: spanStart,
           extentOffset: charOffset,
         );
+      }
+
+      // تتبع نطاق الكلمة الجارية في التسميع
+      if (tasmeeStatus == TasmeeWordStatus.current) {
+        tasmeeCurrentRange = TextSelection(
+          baseOffset: spanStart,
+          extentOffset: charOffset,
+        );
+      }
+
+      // خط التسميع السفلي: نطاق حروف الكلمة فقط (بدون رقم الآية) —
+      // يُرسم في صندوق السطر تحت صندوق الحروف.
+      if (tasmeeUnderline != null) {
+        tasmeeUnderlineRanges.add(_ColoredTextRange(
+          range: TextSelection(
+            baseOffset: spanStart,
+            extentOffset: spanStart + seg.glyphs.length,
+          ),
+          color: tasmeeUnderline,
+        ));
       }
 
       if (isSelectedCombined) {
@@ -363,8 +411,14 @@ class _QpcV4RichTextLineState extends State<QpcV4RichTextLine> {
     final hasSelection = ayahCharRanges.isNotEmpty;
     final hasBookmarks = bookmarkCharRanges.isNotEmpty;
     final hasWordSelection = wordSelectionRange != null;
+    final hasTasmeeCurrent = tasmeeCurrentRange != null;
+    final hasTasmeeUnderlines = tasmeeUnderlineRanges.isNotEmpty;
 
-    if (!hasSelection && !hasBookmarks && !hasWordSelection) {
+    if (!hasSelection &&
+        !hasBookmarks &&
+        !hasWordSelection &&
+        !hasTasmeeCurrent &&
+        !hasTasmeeUnderlines) {
       return richText;
     }
 
@@ -374,6 +428,8 @@ class _QpcV4RichTextLineState extends State<QpcV4RichTextLine> {
           const Color(0xffCDAD80).withValues(alpha: 0.25),
       bookmarkRanges: bookmarkCharRanges.values.toList(),
       wordSelectionRange: wordSelectionRange,
+      tasmeeCurrentRange: tasmeeCurrentRange,
+      tasmeeUnderlineRanges: tasmeeUnderlineRanges,
       child: richText,
     );
   }
@@ -410,11 +466,21 @@ class _AyahSelectionWidget extends SingleChildRenderObjectWidget {
   final List<_ColoredTextRange> bookmarkRanges;
   final TextSelection? wordSelectionRange;
 
+  /// الكلمة الجارية في وضع التسميع (تُرسم بلون accent أقوى).
+  final TextSelection? tasmeeCurrentRange;
+
+  /// خطوط التسميع السفلية: نطاق حروف كل كلمة مع لون نوع خطئها —
+  /// تُرسم تحت صندوق الحروف مباشرة (وليس عبر TextStyle الذي يأخذ
+  /// موضعه من مقاييس خط QCF فيقع فوق الحروف).
+  final List<_ColoredTextRange> tasmeeUnderlineRanges;
+
   const _AyahSelectionWidget({
     required this.selectedRanges,
     required this.selectionColor,
     this.bookmarkRanges = const [],
     this.wordSelectionRange,
+    this.tasmeeCurrentRange,
+    this.tasmeeUnderlineRanges = const [],
     required super.child,
   });
 
@@ -425,6 +491,8 @@ class _AyahSelectionWidget extends SingleChildRenderObjectWidget {
       selectionColor: selectionColor,
       bookmarkRanges: bookmarkRanges,
       wordSelectionRange: wordSelectionRange,
+      tasmeeCurrentRange: tasmeeCurrentRange,
+      tasmeeUnderlineRanges: tasmeeUnderlineRanges,
     );
   }
 
@@ -435,7 +503,9 @@ class _AyahSelectionWidget extends SingleChildRenderObjectWidget {
       ..selectedRanges = selectedRanges
       ..selectionColor = selectionColor
       ..bookmarkRanges = bookmarkRanges
-      ..wordSelectionRange = wordSelectionRange;
+      ..wordSelectionRange = wordSelectionRange
+      ..tasmeeCurrentRange = tasmeeCurrentRange
+      ..tasmeeUnderlineRanges = tasmeeUnderlineRanges;
   }
 }
 
@@ -447,13 +517,20 @@ class _AyahSelectionRenderBox extends RenderProxyBox {
     required Color selectionColor,
     List<_ColoredTextRange> bookmarkRanges = const [],
     TextSelection? wordSelectionRange,
+    TextSelection? tasmeeCurrentRange,
+    List<_ColoredTextRange> tasmeeUnderlineRanges = const [],
   })  : _selectedRanges = selectedRanges,
         _selectionColor = selectionColor,
         _bookmarkRanges = bookmarkRanges,
-        _wordSelectionRange = wordSelectionRange;
+        _wordSelectionRange = wordSelectionRange,
+        _tasmeeCurrentRange = tasmeeCurrentRange,
+        _tasmeeUnderlineRanges = tasmeeUnderlineRanges;
 
   static const _wordSelectionColor =
       Color(0xffCDAD80); // بدون alpha — يُطبّق عند الرسم
+
+  static const _tasmeeCurrentColor =
+      Color(0xFFE65100); // برتقالي داكن — يُطبّق عند الرسم
 
   List<TextSelection> _selectedRanges;
   set selectedRanges(List<TextSelection> value) {
@@ -482,14 +559,59 @@ class _AyahSelectionRenderBox extends RenderProxyBox {
     markNeedsPaint();
   }
 
+  TextSelection? _tasmeeCurrentRange;
+  set tasmeeCurrentRange(TextSelection? value) {
+    if (_tasmeeCurrentRange == value) return;
+    _tasmeeCurrentRange = value;
+    markNeedsPaint();
+  }
+
+  List<_ColoredTextRange> _tasmeeUnderlineRanges;
+  set tasmeeUnderlineRanges(List<_ColoredTextRange> value) {
+    if (_rangesSame(_tasmeeUnderlineRanges, value)) return;
+    _tasmeeUnderlineRanges = value;
+    markNeedsPaint();
+  }
+
+  static bool _rangesSame(
+      List<_ColoredTextRange> a, List<_ColoredTextRange> b) {
+    if (identical(a, b)) return true;
+    if (a.length != b.length) return false;
+    for (var i = 0; i < a.length; i++) {
+      if (a[i].range.baseOffset != b[i].range.baseOffset ||
+          a[i].range.extentOffset != b[i].range.extentOffset ||
+          a[i].color != b[i].color) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   @override
   void paint(PaintingContext context, Offset offset) {
     if (child is RenderParagraph) {
+      // 0) خطوط التسميع السفلية (أسفل كل شيء): مستطيل رفيع تحت صندوق
+      // حروف كل كلمة بإزاحة ثابتة وفاصل جانبي بين الكلمات.
+      if (_tasmeeUnderlineRanges.isNotEmpty) {
+        _paintTasmeeUnderlines(context, offset);
+      }
       // 1) علامات مرجعية (أسفل طبقة)
       if (_bookmarkRanges.isNotEmpty) {
         _paintColoredRanges(context, offset, _bookmarkRanges);
       }
-      // 2) تحديد الكلمة
+      // 2) الكلمة الجارية في التسميع (تحت تحديد الكلمة وفوقه بروزًا)
+      if (_tasmeeCurrentRange != null) {
+        final paint = Paint()
+          ..color = _tasmeeCurrentColor.withValues(alpha: 0.45);
+        _paintMergedBoxes(
+          child! as RenderParagraph,
+          context,
+          offset,
+          [_tasmeeCurrentRange!],
+          paint,
+        );
+      }
+      // 3) تحديد الكلمة
       if (_wordSelectionRange != null) {
         final paint = Paint()
           ..color = _wordSelectionColor.withValues(alpha: 0.25);
@@ -501,7 +623,7 @@ class _AyahSelectionRenderBox extends RenderProxyBox {
           paint,
         );
       }
-      // 3) تحديد الآية (أعلى طبقة)
+      // 4) تحديد الآية (أعلى طبقة)
       if (_selectedRanges.isNotEmpty) {
         _paintSelectionBackgrounds(context, offset);
       }
@@ -523,6 +645,36 @@ class _AyahSelectionRenderBox extends RenderProxyBox {
     for (final cr in ranges) {
       final paint = Paint()..color = cr.color;
       _paintMergedBoxes(paragraph, context, offset, [cr.range], paint);
+    }
+  }
+
+  /// يرسم خطوط التسميع السفلية: لكل كلمة مستطيل رفيع أسفل صندوق
+  /// حروفها بإزاحة ثابتة (3px) وسماكة 2.5px وفاصل 2px من كل جهة —
+  /// مستقلة عن مقاييس خط QCF التي تجعل TextStyle.underline يقع فوق
+  /// الحروف. مستطيلات قليلة (بكلمات التسميع الظاهرة فقط) وإعادة
+  /// الرسم حدثية عند اكتمال كلمة — بلا أي كلفة على تقليب الصفحات.
+  void _paintTasmeeUnderlines(PaintingContext context, Offset offset) {
+    final paragraph = child! as RenderParagraph;
+    for (final cr in _tasmeeUnderlineRanges) {
+      final boxes = paragraph.getBoxesForSelection(
+        cr.range,
+        boxHeightStyle: BoxHeightStyle.tight,
+      );
+      for (final box in boxes) {
+        final rect = box.toRect();
+        final underline = Rect.fromLTWH(
+          rect.left + 2,
+          rect.bottom - 6,
+          rect.width - 4,
+          2.5,
+        );
+        if (underline.width <= 0) continue;
+        context.canvas.drawRRect(
+          RRect.fromRectAndRadius(
+              underline.shift(offset), const Radius.circular(1.5)),
+          Paint()..color = cr.color,
+        );
+      }
     }
   }
 

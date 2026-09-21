@@ -76,6 +76,7 @@ class _QpcV4FlowingTextState extends State<QpcV4FlowingText> {
     final recitationsRevisionHash =
         WordInfoCtrl.instance.recitationsDataRevision.hashCode;
     final scaleHash = quranCtrl.state.scaleFactor.value.hashCode;
+    final tasmeeHash = tasmeeFingerprint();
 
     return Object.hash(
         selHash,
@@ -87,7 +88,7 @@ class _QpcV4FlowingTextState extends State<QpcV4FlowingText> {
         wordSelectedHash,
         tenRecHash,
         recitationsRevisionHash,
-        Object.hash(overrideHash, scaleHash));
+        Object.hash(overrideHash, scaleHash, tasmeeHash));
   }
 
   @override
@@ -98,45 +99,48 @@ class _QpcV4FlowingTextState extends State<QpcV4FlowingText> {
       id: 'selection_page_${widget.pageIndex}',
       builder: (_) => GetBuilder<WordInfoCtrl>(
         id: 'word_info_data',
-        builder: (_) {
-          final withTajweed = QuranCtrl.instance.state.isTajweedEnabled.value;
-          final isTenRecitations = wordInfoCtrl.isTenRecitations;
+        builder: (_) => GetBuilder<TasmeeCtrl>(
+          id: TasmeeUpdateIds.page(widget.pageIndex),
+          builder: (_) {
+            final withTajweed = QuranCtrl.instance.state.isTajweedEnabled.value;
+            final isTenRecitations = wordInfoCtrl.isTenRecitations;
 
-          if (isTenRecitations &&
-              !withTajweed &&
-              wordInfoCtrl.isKindAvailable(WordInfoKind.recitations)) {
-            final surahs = widget.segments.map((s) => s.surahNumber).toSet();
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              wordInfoCtrl.prewarmRecitationsSurahs(surahs);
-            });
-          }
+            if (isTenRecitations &&
+                !withTajweed &&
+                wordInfoCtrl.isKindAvailable(WordInfoKind.recitations)) {
+              final surahs = widget.segments.map((s) => s.surahNumber).toSet();
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                wordInfoCtrl.prewarmRecitationsSurahs(surahs);
+              });
+            }
 
-          final fp = _computeFingerprint();
-          if (_cachedWidget != null && fp == _lastFingerprint) {
+            final fp = _computeFingerprint();
+            if (_cachedWidget != null && fp == _lastFingerprint) {
+              return _cachedWidget!;
+            }
+            _lastFingerprint = fp;
+
+            _cachedWidget = LayoutBuilder(
+              builder: (ctx, constraints) {
+                final base = PageFontSizeHelper.hafsFontSize(
+                  context: ctx,
+                  maxWidth: constraints.maxWidth,
+                );
+                final quranCtrl = QuranCtrl.instance;
+                final fs = base * quranCtrl.state.scaleFactor.value;
+
+                return _buildFlowingRichText(
+                  wordInfoCtrl,
+                  context,
+                  fs,
+                  withTajweed: withTajweed,
+                  isTenRecitations: isTenRecitations,
+                );
+              },
+            );
             return _cachedWidget!;
-          }
-          _lastFingerprint = fp;
-
-          _cachedWidget = LayoutBuilder(
-            builder: (ctx, constraints) {
-              final base = PageFontSizeHelper.hafsFontSize(
-                context: ctx,
-                maxWidth: constraints.maxWidth,
-              );
-              final quranCtrl = QuranCtrl.instance;
-              final fs = base * quranCtrl.state.scaleFactor.value;
-
-              return _buildFlowingRichText(
-                wordInfoCtrl,
-                context,
-                fs,
-                withTajweed: withTajweed,
-                isTenRecitations: isTenRecitations,
-              );
-            },
-          );
-          return _cachedWidget!;
-        },
+          },
+        ),
       ),
     );
   }
@@ -153,6 +157,18 @@ class _QpcV4FlowingTextState extends State<QpcV4FlowingText> {
     final allBookmarksList =
         widget.bookmarks.values.expand((list) => list).toList();
     final bookmarksAyahsList = bookmarksSet.toList();
+
+    // لون إخفاء كلمات التسميع — يطابق خلفية الصفحة (المخصصة أو الافتراضية).
+    final tasmeeStyle = TasmeeTheme.of(context)?.style ??
+        TasmeeStyle.defaults(isDark: widget.isDark, context: context);
+    final hiddenColor = tasmeeStyle.hiddenWordColor ??
+        tasmeeStyle.backgroundColor ??
+        AppColors.getBackgroundColor(widget.isDark);
+
+    // خطوط التسميع السفلية: تُرسم في صندوق السطر تحت صندوق الحروف
+    // (لا عبر TextStyle الذي يأخذ موضعه من مقاييس خط QCF).
+    final tasmeeUnderlineRanges = <_ColoredTextRange>[];
+    int charOffset = 0;
 
     final spans =
         List<InlineSpan>.generate(widget.segments.length, (segmentIndex) {
@@ -171,7 +187,15 @@ class _QpcV4FlowingTextState extends State<QpcV4FlowingText> {
       final info = wordInfoCtrl.getRecitationsInfoSync(ref);
       final hasKhilaf = info?.hasKhilaf ?? false;
 
-      return _qpcV4SpanSegment(
+      // وضع التسميع: إخفاء/تلوين الكلمة بحسب حالة تلاوتها.
+      final tasmeeStatus = tasmeeStatusOfSegment(seg, widget.pageIndex);
+      final tasmeeUnderline = tasmeeUnderlineColorFor(
+        status: tasmeeStatus,
+        kind: tasmeeErrorKindOfSegment(seg, widget.pageIndex),
+        style: tasmeeStyle,
+      );
+
+      final span = _qpcV4SpanSegment(
         context: context,
         pageIndex: widget.pageIndex,
         isSelected: isSelectedCombined,
@@ -242,16 +266,44 @@ class _QpcV4FlowingTextState extends State<QpcV4FlowingText> {
         ayahBookmarked: widget.ayahBookmarked,
         isDark: widget.isDark,
         onPagePress: widget.onPagePress,
+        hideGlyphs: tasmeeStatus == TasmeeWordStatus.hidden,
+        hiddenGlyphColor: hiddenColor,
       );
+
+      final spanStart = charOffset;
+      charOffset += _countCharsInSpan(span);
+
+      // خط التسميع السفلي: نطاق حروف الكلمة فقط — يُرسم في صندوق
+      // السطر تحت صندوق الحروف.
+      if (tasmeeUnderline != null) {
+        tasmeeUnderlineRanges.add(_ColoredTextRange(
+          range: TextSelection(
+            baseOffset: spanStart,
+            extentOffset: spanStart + seg.glyphs.length,
+          ),
+          color: tasmeeUnderline,
+        ));
+      }
+      return span;
     });
 
-    return RichText(
+    final richText = RichText(
       textDirection: TextDirection.rtl,
       textAlign: TextAlign.justify,
       softWrap: true,
       overflow: TextOverflow.visible,
       maxLines: null,
       text: TextSpan(children: spans),
+    );
+
+    // بلا خطوط تسميع → RichText مباشر كما كان (صفر كلفة إضافية).
+    if (tasmeeUnderlineRanges.isEmpty) return richText;
+
+    return _AyahSelectionWidget(
+      selectedRanges: const [],
+      selectionColor: const Color(0xffCDAD80).withValues(alpha: 0.25),
+      tasmeeUnderlineRanges: tasmeeUnderlineRanges,
+      child: richText,
     );
   }
 }

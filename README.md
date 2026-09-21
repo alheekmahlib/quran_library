@@ -1,6 +1,6 @@
 ## Quran Library
 <p align="center">
-<img src="https://raw.githubusercontent.com/alheekmahlib/thegarlanded/master/Photos/Packages/quran_library/quran_library_banner.png" width="500"/>
+<img src="https://raw.githubusercontent.com/alheekmahlib/data/main/packages/quran_library/quran_library_banner.png" width="500"/>
 </p>
 
 
@@ -83,6 +83,7 @@
 - [Word Audio (Word-by-Word)](#word-audio-word-by-word)
 - [Tafsir](#tafsir)
 - [Audio Playback](#audio-playback)
+- [AI Recitation Checking (التسميع)](#ai-recitation-checking-التسميع)
 - [Sources](#sources)
 - [License](#license)
 
@@ -130,7 +131,7 @@ In the `pubspec.yaml` of your flutter project, add the following dependency:
 ```yaml
 dependencies:
   ...
-  quran_library: ^4.3.0
+  quran_library: ^4.4.2
 ```
 
 Import it:
@@ -877,6 +878,266 @@ QuranLibrary().hafsStyle;
 /// [naskhStyle] is the default style for other text.
 QuranLibrary().naskhStyle;
 ```
+
+## AI Recitation Checking (التسميع)
+
+AI-powered memorization checking: toggle tasmee mode from the Quran top bar (mic
+button) — the page's words are hidden (ayah-end numbers stay visible), audio and
+other controls step aside, and a record/stop bar takes over. While you recite,
+words are revealed progressively: the current word is highlighted, and each
+completed word is colored green (correct) or red (incorrect) after it is fully
+pronounced. Stopping opens a results bottom sheet listing tajweed / pronunciation
+/ tashkeel errors with expected vs recited phonemes.
+
+Two engines are supported:
+
+| Engine | Live word reveal | Internet |
+| --- | --- | --- |
+| **Offline (default)** — Quran-Lab zipformer v3.1 via `sherpa_onnx` | ✅ | Only once — a 73MB model is downloaded at first use (never bundled in assets), then tasmee works fully offline |
+| **Server** — [quran-muaalem](https://github.com/obadx/quran-muaalem) | ❌ (results after stop) | Required |
+
+Engine choice, server URL, and model download are managed from the in-mode
+settings sheet (⚙) and persisted automatically. Server mode is batch-only by
+nature: words appear with the results after stopping.
+
+**Error-type underlines:** each revealed word gets a colored underline drawn by
+the text engine (works with the COLR mushaf fonts): green for correct words,
+and — while reciting — a live-classified color for mistakes: **purple for
+tajweed** (madd/shadda/qalqalah/ghunnah/ikhfaa), **red for pronunciation**
+(wrong/extra/missing letter), **orange for tashkeel**. The final evaluation
+after stopping is authoritative and refines the classification. All colors are
+themeable via `TasmeeStyle.correctColor`, `tajweedErrorColor`,
+`normalErrorColor`, and `tashkeelErrorColor`.
+
+> **Note:** automatic correction can be wrong and does not replace a certified
+> teacher — accuracy is lower for children under 12. (Required by the
+> [Quran-Lab NPL-1.2](https://github.com/alheekmahlib/quran_audio) model license.)
+
+### Programmatic Control (TasmeeCtrl)
+
+Everything the tasmee UI does is available programmatically through
+`TasmeeCtrl.instance`:
+
+* ### Toggle Tasmee Mode
+
+```dart
+final tasmee = TasmeeCtrl.instance;
+
+// Enter tasmee mode (hides the current page's words, stops audio/auto-scroll)
+await tasmee.enterTasmeeMode();
+
+// Or toggle (enter if idle, exit if active)
+tasmee.toggleTasmeeMode();
+
+// Exit and restore the normal view
+tasmee.exitTasmeeMode();
+```
+
+* ### Record & Evaluate
+
+```dart
+// Start recording (prepares the engine — downloads the model on first
+// offline use — then streams live word tracking)
+await tasmee.startRecording();
+
+// Stop, evaluate, and open the results bottom sheet
+await tasmee.stopRecording();
+
+// Re-hide everything and start over on the same page
+await tasmee.retryTasmee();
+```
+
+* ### Peek at the Page & State
+
+```dart
+// Temporarily show all words while staying in tasmee mode (the eye button)
+tasmee.toggleShowAllWords();
+
+// Read the reactive state (usable inside Obx)
+final s = tasmee.state;
+bool active = s.isTasmeeMode.value;          // tasmee mode on?
+bool recording = tasmee.isRecording;         // recording now?
+bool processing = tasmee.isProcessing;       // evaluating after stop?
+int done = s.completedWords.value;           // completed words so far
+int total = s.totalWords.value;              // words on the page
+RecitationResult? result = s.lastResult.value; // last evaluation
+String error = s.lastError.value;            // last error message
+bool modelReady = s.isModelReady.value;      // offline model on disk?
+double progress = s.modelDownloadProgress.value; // 0.0 – 1.0
+```
+
+* ### Word Status Lookup
+
+Each word's tasmee status is keyed by `'$ayahUq:$wordNumber'` (wordNumber is
+1-based, matching `WordRef`/`QpcV4WordSegment`):
+
+```dart
+final status = tasmee.wordStatusOf('$12:3');
+// TasmeeWordStatus.hidden | current | correct | incorrect
+```
+
+* ### Engine Settings
+
+```dart
+// Choose the engine (persisted via GetStorage)
+tasmee.setEngineMode(TasmeeEngineMode.offline); // zipformer (default)
+tasmee.setEngineMode(TasmeeEngineMode.online);  // quran-muaalem server
+
+// Server mode: set and verify the server URL
+tasmee.setServerUrl('http://localhost:8001');
+final ok = await tasmee.testServerConnection();
+
+// Pre-download the offline model ahead of first use
+final ready = await TasmeeModelService().isModelReady();
+if (!ready) {
+  await tasmee.downloadModelIfNeeded(); // progress in state.modelDownloadProgress
+  // or directly:
+  // await TasmeeModelService().downloadModel(onProgress: (p) => print(p));
+}
+```
+
+### Low-Level Engine API
+
+For custom integrations (no UI), the ported engine can be used directly:
+
+```dart
+// ── Offline (default) ─────────────────────────────────────────
+await Recitation.initZipformer(); // model auto-resolved/downloaded separately
+
+// ── Or online (quran-muaalem server) ──────────────────────────
+Recitation.init(serverUrl: 'http://localhost:8001');
+
+// Health & readiness
+final healthy = await Recitation.isEngineHealthy();
+final offline = Recitation.isOffline; // true for zipformer
+final url = Recitation.serverUrl;
+
+// ── Session: whole current page (what the UI uses) ────────────
+final range = TasmeeReferenceStore.instance.buildRange([
+  (suraIdx: 1, ayaIdx: 1),
+  (suraIdx: 1, ayaIdx: 2),
+]);
+final session = Recitation.createSession(range: range);
+
+// Live streaming (offline engine only): word-by-word callbacks
+session.onWordDone = (verseIdx, wordIdx, correct) {
+  // fired when a word is fully pronounced, with its verdict
+};
+session.onRangeComplete = () => print('page completed');
+await session.startLive();
+// ... user recites; session.currentVerseIdx / currentWordIdx update live
+final result = await session.stopLive();
+
+// ── Session: single ayah (batch — works on both engines) ──────
+final s2 = Recitation.createSession(suraIdx: 1, ayaIdx: 1);
+await s2.start();            // records WAV then evaluates on stop
+final r2 = await s2.stop();
+print(r2?.errors);           // List<RecitationError>
+```
+
+* ### Reading the Result
+
+```dart
+final result = session.result.value; // RecitationResult?
+
+result?.hasMatch;        // was a match found in the Quran?
+result?.isFullyCorrect;  // no errors at all?
+result?.start;           // SurahAyahPosition (suraIdx/ayaIdx)
+result?.errors;          // all RecitationError items
+result?.tajweedErrors;   // tajweed-only
+result?.normalErrors;    // wrong-letter pronunciation
+result?.tashkeelErrors;  // haraka mistakes
+result?.predictedPhonemes; // what the user actually recited
+
+// Each error:
+for (final e in result?.errors ?? <RecitationError>[]) {
+  e.description;   // ready-to-show Arabic description
+  e.wordText;      // the affected Quranic word (or null)
+  e.expectedPh;    // expected phoneme
+  e.predictedPh;   // recited phoneme
+  e.suraIdx;       // position (offline range mode)
+  e.ayaIdx;
+  e.wordIdx;       // 0-based word index within the ayah
+}
+```
+
+* ### Model & Reference Internals
+
+```dart
+// Model file management (73MB ONNX — runtime download, never bundled)
+final model = TasmeeModelService();
+await model.isModelReady();     // exists & valid (> 60MB)
+await model.downloadModel(onProgress: (p) {});
+await model.deleteModel();
+print(kZipformerModelUrl);      // the GitHub release URL
+
+// Shared phoneme reference (used to build page ranges)
+final store = TasmeeReferenceStore.instance;
+await store.load();             // loads tokens + full-Quran reference once
+final verseText = store.reference?.getReference(suraIdx: 1, ayaIdx: 1)?.uthmani;
+final pageRange = store.buildRange([(suraIdx: 1, ayaIdx: 1)]);
+
+// Pure tracker (what powers the live word reveal) — testable standalone
+final tracker = RangeLiveTracker(
+  range: pageRange!,
+  onWordDone: (v, w, correct) {},
+  onRangeComplete: () {},
+);
+```
+
+### UI Surfaces & Theming
+
+```dart
+// Control bar (replaces the ayah audio bar inside tasmee mode)
+TasmeeControlWidget(isDark: false);
+
+// Bottom sheets (also open automatically after each evaluation)
+await showTasmeeResultSheet(context: context, isDark: false);
+await showTasmeeSettingsSheet(context: context, isDark: false);
+
+// Top bar entry point
+QuranTopBarStyle(showTasmeeButton: true, tasmeeIconPath: myMicSvg);
+```
+
+Everything is themable via `TasmeeStyle` (control bar, results/settings
+sheets, every label for i18n, hide colour, verdict colours) injected through
+`QuranLibraryTheme(tasmeeStyle: ...)` or read from `TasmeeTheme.of(context)`.
+
+
+### Permissions required from the host app
+
+The package already merges `RECORD_AUDIO` into the Android manifest. iOS/macOS
+hosts must declare microphone usage themselves:
+
+`ios/Runner/Info.plist`:
+
+```xml
+<key>NSMicrophoneUsageDescription</key>
+<string>يستخدم التطبيق الميكروفون لتسجيل تسميعك والتحقق من قراءتك.</string>
+```
+
+`macos/Runner/DebugProfile.entitlements` and `Release.entitlements`:
+
+```xml
+<key>com.apple.security.device.audio-input</key>
+<true/>
+```
+
+### Quick Start
+
+```dart
+// The button lives in the default Quran top bar — nothing else to wire.
+QuranLibraryScreen(isDark: false);
+
+// Optional: pre-download the offline model ahead of first use.
+final ready = await TasmeeModelService().isModelReady();
+if (!ready) {
+  await TasmeeModelService().downloadModel();
+}
+```
+
+> The tasmee button is hidden automatically on web — the microphone and the
+> offline model are not supported there.
 
 ## Sources
 

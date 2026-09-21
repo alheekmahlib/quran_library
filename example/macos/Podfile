@@ -1,4 +1,4 @@
-platform :osx, '10.15'
+platform :osx, '12.0'
 
 # CocoaPods analytics sends network stats synchronously affecting flutter build latency.
 ENV['COCOAPODS_DISABLE_STATS'] = 'true'
@@ -37,6 +37,13 @@ target 'Runner' do
 end
 
 post_install do |installer|
+  # Xcode الحديث لا يقبل أهداف نشر < 12.0 — وحّد كل الـ pods على 12.0.
+  # Modern Xcode rejects deployment targets below 12.0 — unify all pods.
+  installer.pods_project.targets.each do |target|
+    target.build_configurations.each do |config|
+      config.build_settings['MACOSX_DEPLOYMENT_TARGET'] = '12.0'
+    end
+  end
   installer.pods_project.targets.each do |target|
     flutter_additional_macos_build_settings(target)
   end

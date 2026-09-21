@@ -1,0 +1,448 @@
+/// المرجع الصوتي لِكلّ القرآن (6236 آية) بأبجدية Quran-Lab ‏(250 وحدة + blank).
+///
+/// المصدر: ordered_quran_phonemes.json.gz — لكل آية: aya_text، aya_phoneme،
+/// aya_phonemes_list (الوحدات مقسومة كلمة كلمة).
+library;
+
+import 'dart:convert';
+import 'dart:developer' show log;
+import 'dart:typed_data';
+
+import 'package:archive/archive.dart' show GZipDecoder;
+
+import 'asset_loader.dart';
+import 'platform_io.dart';
+
+import 'quran_units.dart';
+
+/// بيانات مرجعية لِآية واحدة، مُقطَّعة إلى وحدات جاهزة لِلمحاذاة.
+class QuranReferenceVerse {
+  const QuranReferenceVerse({
+    required this.verseKey,
+    required this.uthmani,
+    required this.phonemeString,
+    required this.phonemeWords,
+    required this.uthmaniWords,
+    required this.units,
+    required this.unitWordIdx,
+  });
+
+  final String verseKey;
+
+  /// النص العثماني للآية.
+  final String uthmani;
+
+  /// سلسلة الوحدات كاملة (بمسافات الكلمات).
+  final String phonemeString;
+
+  /// كلمات الفونيمات (aya_phonemes_list).
+  final List<String> phonemeWords;
+
+  /// كلمات النص العثماني.
+  final List<String> uthmaniWords;
+
+  /// وحدات الآية كاملة (بالترتيب).
+  final List<QuranUnit> units;
+
+  /// فهرس كلمة كل وحدة (نفس طول units).
+  final List<int> unitWordIdx;
+
+  /// الكلمة العثمانية لِلوحدة رقم i (أو null إن غابت).
+  String? wordAt(int unitIdx) {
+    if (unitIdx < 0 || unitIdx >= unitWordIdx.length) return null;
+    final w = unitWordIdx[unitIdx];
+    if (w < 0 || w >= uthmaniWords.length) return null;
+    return uthmaniWords[w];
+  }
+
+  /// حدود الكلمة التي تضم وحدة ما داخل الآية (بفهارس وحدات الآية) —
+  /// لِلكشف عن إعادة كلمة كاملة في كاشف الأخطاء.
+  QuranRangeWordSpan? spanOfUnit(int unitIdx) {
+    if (unitIdx < 0 || unitIdx >= units.length) return null;
+    final w = unitWordIdx[unitIdx];
+    if (w < 0) return null;
+    var first = unitIdx;
+    while (first > 0 && unitWordIdx[first - 1] == w) {
+      first--;
+    }
+    var last = unitIdx;
+    while (last < units.length - 1 && unitWordIdx[last + 1] == w) {
+      last++;
+    }
+    return QuranRangeWordSpan(
+      verseIdx: 0,
+      wordIdx: w,
+      startUnit: first,
+      endUnit: last,
+    );
+  }
+}
+
+/// حدود كلمة واحدة داخل [QuranReferenceRange] (بوحدات النطاق المفلطحة).
+class QuranRangeWordSpan {
+  const QuranRangeWordSpan({
+    required this.verseIdx,
+    required this.wordIdx,
+    required this.startUnit,
+    required this.endUnit,
+  });
+
+  /// فهرس الآية داخل النطاق (0-based).
+  final int verseIdx;
+
+  /// فهرس الكلمة داخل آيتها (0-based).
+  final int wordIdx;
+
+  /// فهرس أول وحدة للكلمة في الوحدات المتراكمة (شامل).
+  final int startUnit;
+
+  /// فهرس آخر وحدة للكلمة في الوحدات المتراكمة (شامل).
+  final int endUnit;
+}
+
+/// نطاق مرجعي متعدد الآيات (صفحة كاملة مثلاً) — وحدات متراكبة بترتيب التلاوة.
+///
+/// يُبنى عبر [QuranPhonemeReference.getRange] ويُستخدم لمحاذاة تلاوة تمتد
+/// على عدة آيات (وضع الصفحة في التسميع).
+class QuranReferenceRange {
+  const QuranReferenceRange._({
+    required this.verses,
+    required this.units,
+    required this.unitVerseIdx,
+    required this.unitWordIdx,
+    required this.wordSpans,
+    required List<int> unitSpanIdx,
+  }) : _unitSpanIdx = unitSpanIdx;
+
+  /// الآيات المرتبة بترتيب التلاوة.
+  final List<QuranReferenceVerse> verses;
+
+  /// الوحدات المتراكبة (آية بعد آية).
+  final List<QuranUnit> units;
+
+  /// فهرس آية كل وحدة (0-based داخل [verses]).
+  final List<int> unitVerseIdx;
+
+  /// فهرس كلمة كل وحدة داخل آيتها (0-based).
+  final List<int> unitWordIdx;
+
+  /// حدود الكلمات مفلطحة بترتيب التلاوة (الكلمات بلا وحدات تُستثنى).
+  final List<QuranRangeWordSpan> wordSpans;
+
+  /// فهرس الكلمة (داخل wordSpans) لكل وحدة — بحث O(1).
+  final List<int> _unitSpanIdx;
+
+  /// إجمالي الكلمات المتتبَّعة في النطاق.
+  int get wordCount => wordSpans.length;
+
+  /// النص العثماني الكامل للنطاق (آيات مفصولة بفراغ).
+  String get uthmani => verses.map((v) => v.uthmani).join(' ');
+
+  /// سلسلة الفونيمات المرجعية الكاملة.
+  String get phonemeString => verses.map((v) => v.phonemeString).join(' ');
+
+  /// الكلمة العثمانية لوحدة ما (بفهرسها العالمي في النطاق)، أو null.
+  String? wordAt(int unitIdx) {
+    if (unitIdx < 0 || unitIdx >= units.length) return null;
+    final verse = verses[unitVerseIdx[unitIdx]];
+    final w = unitWordIdx[unitIdx];
+    if (w < 0 || w >= verse.uthmaniWords.length) return null;
+    return verse.uthmaniWords[w];
+  }
+
+  /// فهرس الكلمة (داخل wordSpans) لوحدة ما (0-based)، أو -1 — O(1)
+  /// لقياس مسافة الكلمات بين موضعين.
+  int spanIndexAt(int unitIdx) {
+    if (unitIdx < 0 || unitIdx >= units.length) return -1;
+    return _unitSpanIdx[unitIdx];
+  }
+
+  /// حدود الكلمة التي تضم وحدة ما (بفهرسها العالمي)، أو null.
+  QuranRangeWordSpan? spanOfUnit(int unitIdx) {
+    if (unitIdx < 0 || unitIdx >= units.length) return null;
+    final s = _unitSpanIdx[unitIdx];
+    if (s < 0 || s >= wordSpans.length) return null;
+    return wordSpans[s];
+  }
+
+  /// مفتاح آية (سورة/آية 1-based) من فهرسها داخل النطاق.
+  ({int suraIdx, int ayaIdx}) keyOfVerse(int verseIdx) {
+    final parts = verses[verseIdx].verseKey.split(':');
+    return (
+      suraIdx: int.tryParse(parts.first) ?? 1,
+      ayaIdx: parts.length > 1 ? (int.tryParse(parts[1]) ?? 1) : 1,
+    );
+  }
+
+  /// يبني نطاقًا من وحدات كلمة واحدة داخل آيتها — لِلتحقق المصغّر من
+  /// نطق كلمة (نمط المصحح). يعيد null إن لم تكن للكلمة وحدات في المرجع.
+  ///
+  /// [units] هنا وحدات الكلمة وحدها (لا الآية كلها) فتُحاذى التلاوة
+  /// عليها منفردة.
+  static QuranReferenceRange? fromSingleWord(
+    QuranReferenceVerse verse,
+    int wordIdx,
+  ) {
+    final units = <QuranUnit>[];
+    for (var u = 0; u < verse.units.length; u++) {
+      if (verse.unitWordIdx[u] == wordIdx) units.add(verse.units[u]);
+    }
+    if (units.isEmpty) return null;
+    return QuranReferenceRange._(
+      verses: [verse],
+      units: units,
+      unitVerseIdx: List<int>.filled(units.length, 0),
+      unitWordIdx: List<int>.filled(units.length, wordIdx),
+      wordSpans: [
+        QuranRangeWordSpan(
+          verseIdx: 0,
+          wordIdx: wordIdx,
+          startUnit: 0,
+          endUnit: units.length - 1,
+        ),
+      ],
+      unitSpanIdx: List<int>.filled(units.length, 0),
+    );
+  }
+
+  /// يبني النطاق من آيات مرتبة (تراكب الوحدات + خرائط الكلمات).
+  ///
+  /// الكلمة التي لا وحدات لها في المرجع تُستثنى من التتبّع الحيّ.
+  static QuranReferenceRange? fromVerses(List<QuranReferenceVerse> verses) {
+    if (verses.isEmpty) return null;
+    final units = <QuranUnit>[];
+    final unitVerseIdx = <int>[];
+    final unitWordIdx = <int>[];
+    final verseUnitStart = List<int>.filled(verses.length, 0);
+    for (var v = 0; v < verses.length; v++) {
+      verseUnitStart[v] = units.length;
+      final verse = verses[v];
+      for (var u = 0; u < verse.units.length; u++) {
+        units.add(verse.units[u]);
+        unitVerseIdx.add(v);
+        unitWordIdx.add(verse.unitWordIdx[u]);
+      }
+    }
+
+    final spans = <QuranRangeWordSpan>[];
+    final unitSpanIdx = List<int>.filled(units.length, -1);
+    for (var v = 0; v < verses.length; v++) {
+      final verse = verses[v];
+      final start = verseUnitStart[v];
+      for (var w = 0; w < verse.uthmaniWords.length; w++) {
+        var first = -1;
+        var last = -1;
+        for (var u = 0; u < verse.units.length; u++) {
+          if (verse.unitWordIdx[u] != w) continue;
+          if (first < 0) first = start + u;
+          last = start + u;
+        }
+        if (first < 0) continue; // كلمة بلا وحدات.
+        final spanIdx = spans.length;
+        for (var u = first; u <= last; u++) {
+          unitSpanIdx[u] = spanIdx;
+        }
+        spans.add(QuranRangeWordSpan(
+          verseIdx: v,
+          wordIdx: w,
+          startUnit: first,
+          endUnit: last,
+        ));
+      }
+    }
+    return QuranReferenceRange._(
+      verses: verses,
+      units: units,
+      unitVerseIdx: unitVerseIdx,
+      unitWordIdx: unitWordIdx,
+      wordSpans: spans,
+      unitSpanIdx: unitSpanIdx,
+    );
+  }
+}
+
+/// محمّل المرجع من asset أو ملف خارجي (gzip JSON) — تجزئة مؤجّلة لكل آية.
+/// حروف الكلمة العثمانية المطابقة وحدويًا: بلا حركات ولا علامات قرآنية،
+/// والشدة تُضاعف الحرف (تُقابل وحدة الشدة بوزن 2). المطابقة موضعية —
+/// لا مقارنة هوية حروف؛ حفظُ الإجمالي وحده يفصل المسارات.
+List<String> uthmaniWordLetters(String word) {
+  const marks = '\u064B\u064C\u064D\u064E\u064F\u0650\u0651\u0652\u0653'
+      '\u0654\u0655\u0656\u0657\u0658\u0670\u06D6\u06D7\u06D8'
+      '\u06D9\u06DA\u06DB\u06DC\u06DD\u06DE\u06DF\u06E0\u06E1'
+      '\u06E2\u06E3\u06E4\u06E5\u06E6\u06E7\u06E8\u06E9\u06EA'
+      '\u06EB\u06EC\u06ED\u0640';
+  final out = <String>[];
+  for (final r in word.runes) {
+    final ch = String.fromCharCode(r);
+    if (ch == '\u0651') {
+      // شدة: ضاعف الحرف السابق.
+      if (out.isNotEmpty) out.add(out.last);
+    } else if (!marks.contains(ch) &&
+        RegExp(r'\p{L}', unicode: true).hasMatch(ch)) {
+      out.add(ch);
+    }
+  }
+  return out;
+}
+
+/// يسند كل وحدة إلى فهرس كلمتها **العثمانية** — الفونيمات تختلف عن
+/// العثماني في ثلثي المصحف (كلمة فونيمية تدمج «هُدًى لِّلْمُتَّقِينَ»)،
+/// وأي خلط بين الفهرستين يُسقط كلمات من التتبّع كليًا فلا تظهر في
+/// التسميع (وتتركز في نهايات الآيات حيث تُدمج المدود باللامات).
+///
+/// ثلاثة مسارات تصاعديّة الأمان:
+/// 1. تطابق عدد الكلمات الفونيمية مع العثمانية → مطابقة فهرسية.
+/// 2. مشي موضعي بالأوزان (وحدة الشدة = 2، وما عداها = 1) عبر حدود
+///    الكلمات — يُعتمد إن حافظ على الإجمالي وغطّى كل كلمة ذات حروف.
+/// 3. احتياط نسبي رتيب (آيات تُهجّى حروفها فيختل الحفظ كـ«الٓمٓ»).
+List<int> mapUnitsToUthmaniWords({
+  required List<QuranUnit> units,
+  required List<int> phonemeIdx,
+  required List<String> uthmaniWords,
+}) {
+  final wordCount = uthmaniWords.length;
+  if (units.isEmpty || wordCount == 0) return const [];
+  final phonemeCount = phonemeIdx.toSet().length;
+  if (phonemeCount == wordCount) return phonemeIdx;
+
+  // حدود الكلمات بحروفها المطبَّعة.
+  final boundaries = List<int>.filled(wordCount + 1, 0);
+  for (var w = 0; w < wordCount; w++) {
+    boundaries[w + 1] =
+        boundaries[w] + uthmaniWordLetters(uthmaniWords[w]).length;
+  }
+  final totalLetters = boundaries[wordCount];
+  var totalWeight = 0;
+  for (final u in units) {
+    totalWeight += u.isShadda ? 2 : 1;
+  }
+  if (totalWeight == totalLetters) {
+    final result = List<int>.filled(units.length, 0);
+    var pos = 0;
+    var word = 0;
+    for (var i = 0; i < units.length; i++) {
+      while (word + 1 < wordCount && pos >= boundaries[word + 1]) {
+        word++;
+      }
+      result[i] = word;
+      pos += units[i].isShadda ? 2 : 1;
+    }
+    // كل كلمة ذات حروف يجب أن تُغطّى.
+    final covered = List<bool>.filled(wordCount, false);
+    for (final w in result) {
+      covered[w] = true;
+    }
+    var allCovered = true;
+    for (var w = 0; w < wordCount; w++) {
+      if (boundaries[w + 1] > boundaries[w] && !covered[w]) {
+        allCovered = false;
+        break;
+      }
+    }
+    if (allCovered) return result;
+  }
+
+  // احتياط نسبي رتيب.
+  final result = List<int>.filled(units.length, 0);
+  for (var i = 0; i < units.length; i++) {
+    result[i] = ((i + 1) * wordCount) ~/ units.length - 1 < 0
+        ? 0
+        : (((i + 1) * wordCount) ~/ units.length) - 1;
+  }
+  return result;
+}
+
+class QuranPhonemeReference {
+  QuranPhonemeReference({required QuranUnitLexicon lexicon})
+      : _lexicon = lexicon;
+
+  static const defaultAssetPath =
+      'assets/quran_lab/ordered_quran_phonemes.json.gz';
+
+  final QuranUnitLexicon _lexicon;
+  final Map<String, QuranReferenceVerse> _cache = {};
+  Map<String, dynamic> _raw = {};
+  bool _loaded = false;
+
+  bool get isLoaded => _loaded;
+  int get verseCount => _raw.length;
+
+  /// حمّل المرجع (gzip JSON) من ملف أو asset.
+  Future<void> load({String? assetPath, String? filePath}) async {
+    if (_loaded) return;
+    final Uint8List gzBytes;
+    if (filePath != null && await PlatformIo.fileExists(filePath)) {
+      gzBytes = await PlatformIo.readFile(filePath);
+    } else {
+      gzBytes = await loadPackageAssetBytes(assetPath ?? defaultAssetPath);
+    }
+    // فك gzip بِـ archive (صافي Dart — يعمل على الويب أيضاً).
+    _raw = jsonDecode(utf8.decode(const GZipDecoder().decodeBytes(gzBytes)))
+        as Map<String, dynamic>;
+    _loaded = true;
+    log('QuranPhonemeReference: loaded ${_raw.length} verses',
+        name: 'QuranReference');
+  }
+
+  /// ابحث عن آية (sura/aya 1-based) — تُقطَّع الوحدات مرّة واحدة وتُخزَّن.
+  QuranReferenceVerse? getReference(
+      {required int suraIdx, required int ayaIdx}) {
+    final key = '$suraIdx:$ayaIdx';
+    final cached = _cache[key];
+    if (cached != null) return cached;
+    final raw = _raw[key];
+    if (raw is! Map) return null;
+    final m = Map<String, dynamic>.from(raw);
+    final phonemeWords = (m['aya_phonemes_list'] as List).cast<String>();
+    final uthmaniWords =
+        ((m['aya_text'] as String).trim()).split(RegExp(r'\s+'));
+    final units = <QuranUnit>[];
+    final phonemeIdx = <int>[];
+    for (var w = 0; w < phonemeWords.length; w++) {
+      final wordUnits = _lexicon.segment(phonemeWords[w]);
+      if (wordUnits.isEmpty) {
+        log('QuranPhonemeReference: segment failed for $key word $w',
+            name: 'QuranReference', level: 900);
+        return null;
+      }
+      units.addAll(wordUnits);
+      phonemeIdx.addAll(List<int>.filled(wordUnits.length, w));
+    }
+    final verse = QuranReferenceVerse(
+      verseKey: key,
+      uthmani: m['aya_text'] as String,
+      phonemeString: m['aya_phoneme'] as String,
+      phonemeWords: phonemeWords,
+      uthmaniWords: uthmaniWords,
+      units: units,
+      unitWordIdx: mapUnitsToUthmaniWords(
+        units: units,
+        phonemeIdx: phonemeIdx,
+        uthmaniWords: uthmaniWords,
+      ),
+    );
+    _cache[key] = verse;
+    return verse;
+  }
+
+  /// يبني نطاقاً مرجعياً متعدد الآيات (صفحة كاملة) بترتيب المفاتيح المعطاة.
+  ///
+  /// يُعيد null إن لم يُحمَّل المرجع أو غابت أي آية منه أو فشل التقطيع.
+  QuranReferenceRange? getRange(List<({int suraIdx, int ayaIdx})> verseKeys) {
+    if (!_loaded || verseKeys.isEmpty) return null;
+    final verses = <QuranReferenceVerse>[];
+    for (final k in verseKeys) {
+      final v = getReference(suraIdx: k.suraIdx, ayaIdx: k.ayaIdx);
+      if (v == null) return null;
+      verses.add(v);
+    }
+    return QuranReferenceRange.fromVerses(verses);
+  }
+
+  /// حرّر الذاكرة.
+  void dispose() {
+    _raw = {};
+    _cache.clear();
+    _loaded = false;
+  }
+}

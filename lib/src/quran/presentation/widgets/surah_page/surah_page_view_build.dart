@@ -140,7 +140,7 @@ class SurahPageViewBuild extends StatelessWidget {
                       showAyahBookmarkedIcon: showAyahBookmarkedIcon,
                       bookmarksAyahs: bookmarksCtrl.bookmarksAyahs,
                       bookmarksColor: bookmarksColor,
-                                  customBookmarksColor: customBookmarksColor,
+                      customBookmarksColor: customBookmarksColor,
                       ayahSelectedBackgroundColor: ayahSelectedBackgroundColor,
                       isFontsLocal: false,
                       fontsName: '',

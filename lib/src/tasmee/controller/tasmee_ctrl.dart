@@ -1,0 +1,913 @@
+/// متحكم وضع التسميع — يدير الجلسة وحالات الكلمات والنطاق الصفحي.
+///
+/// الدورة: [toggleTasmeeMode] (دخول الوضع: إخفاء الكلمات وإيقاف الصوت
+/// والسكرول التلقائي) → [startRecording] (تسجيل حيّ مع كشف الكلمات) →
+/// [stopRecording] (تقييم نهائي + فتح bottomSheet النتائج) → إعادة أو خروج.
+library;
+
+import 'dart:developer' show log;
+
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
+
+import '../../../quran.dart' as q;
+import '../../audio/audio.dart' as qa;
+import '../constants/tasmee_storage_constants.dart';
+import '../core/services/tasmee_model_service.dart';
+import '../core/services/tasmee_reference_store.dart';
+import '../engine/final_reconciliation.dart';
+import '../engine/models/recitation_result.dart';
+import '../engine/quran_reference.dart';
+import '../engine/recitation.dart';
+import '../engine/recitation_session.dart';
+import '../engine/recitation_state.dart';
+import '../engine/tasmee_error_kind.dart';
+import 'tasmee_mode.dart';
+import 'tasmee_state.dart';
+
+/// معرّفات تحديث الواجهة لِـ GetBuilder.
+class TasmeeUpdateIds {
+  static const String control = 'tasmee_control';
+  static String page(int pageIndex) => 'tasmee_page_$pageIndex';
+}
+
+class TasmeeCtrl extends GetxController {
+  TasmeeCtrl({TasmeeModelService? modelService})
+      : _modelService = modelService ?? TasmeeModelService();
+
+  static TasmeeCtrl? _cachedInstance;
+
+  /// نسخة واحدة ثابتة طوال عمر التطبيق.
+  ///
+  /// حالة التسميع عابرة (وضع مفعّل/جلسة جارية)، لذا لا يجوز أن يحذفها
+  /// GetX مع مسار مضيف (SmartManagement) ويُنشئ نسخة جديدة فارغة — ما كان
+  /// يُبطل وضع التسميع بعد أول خروج عبر Get.offAll. لذلك يُسجَّل الكائن
+  /// [permanent] ويُعاد تسجيله إن أُزيل من السجل، مع الحفاظ على نفس الهوية.
+  static TasmeeCtrl get instance {
+    final instance = _cachedInstance ??= TasmeeCtrl();
+    if (!GetInstance().isRegistered<TasmeeCtrl>()) {
+      Get.put<TasmeeCtrl>(instance, permanent: true);
+    }
+    return instance;
+  }
+
+  final TasmeeModelService _modelService;
+  final TasmeeState state = TasmeeState();
+  final GetStorage _storage = GetStorage();
+
+  RecitationSession? _session;
+  QuranReferenceRange? _range;
+
+  /// جلسة إعادة نطق كلمة واحدة (نمط المصحح) — منفصلة عن الجلسة
+  /// الرئيسية المتوقفة مؤقتًا.
+  RecitationSession? _retrySession;
+  Worker? _retryStateWorker;
+
+  /// مفاتيح الكلمات المكتملة بترتيب إتمامها (لِتقليم ما يظهر بعد الإيقاف).
+  final List<String> _doneWordKeys = [];
+
+  /// مفاتيح الكلمات التي قُبل تصحيحها في شيت المصحّح — التقييم النهائي
+  /// يحترمها: تبقى خضراء وتُصفّى أخطاؤها الأصلية من نتيجة العرض.
+  final Set<String> _acceptedCorrections = {};
+
+  /// تصحيح قيد الفتح (بين حدث الكلمة الخاطئة وضبط الشيت) — يمنع فتح
+  /// تصحيح ثانٍ أثناء انتظار إيقاف الميكروفون (سباق الأحداث المتتالية).
+  bool _correctionPending = false;
+
+  /// إزاحة فهارس الآيات لجلسة النطاق الفرعي (نمط المعلم) — لتأطير
+  /// أحداث الكلمات وتغطية التقييم النهائي على مواضعها الصفحية.
+  int _sessionVerseOffset = 0;
+
+  /// آيات الصفحة مرتبة بترتيب النطاق (لِتحويل فهرس الآية → ayahUq).
+  List<q.AyahModel> _rangeAyahs = const [];
+
+  Worker? _stateWorker;
+  Worker? _verseWorker;
+  Worker? _wordWorker;
+  Worker? _pageWorker;
+
+  /// هل التسجيل جارٍ الآن؟
+  bool get isRecording => state.sessionState.value == RecitationState.recording;
+
+  /// هل المعالجة جارية (بعد الإيقاف)؟
+  bool get isProcessing =>
+      state.sessionState.value == RecitationState.processing;
+
+  /// عدد آيات نطاق الصفحة الحالية (لِحلقة المعلم).
+  int get rangeAyahCount => _rangeAyahs.length;
+
+  /// رقم الآية الفريد (UQ) لآية داخل النطاق — أو -1.
+  int rangeAyahUQ(int verseIdx) =>
+      verseIdx >= 0 && verseIdx < _rangeAyahs.length
+          ? _rangeAyahs[verseIdx].ayahUQNumber
+          : -1;
+
+  // ── التهيئة ────────────────────────────────────────────────────
+
+  @override
+  void onInit() {
+    super.onInit();
+    final mode = _storage.read<String>(TasmeeStorageConstants.engineMode);
+    state.engineMode.value =
+        mode == 'online' ? TasmeeEngineMode.online : TasmeeEngineMode.offline;
+    state.serverUrl.value =
+        _storage.read<String>(TasmeeStorageConstants.serverUrl) ?? '';
+    state.mode.value = tasmeeModeFromName(
+      _storage.read<String>(TasmeeStorageConstants.tasmeeMode),
+    );
+    if (!kIsWeb) {
+      _modelService.isModelReady().then((ready) {
+        state.isModelReady.value = ready;
+      });
+    }
+  }
+
+  /// يبدّل نمط التسميع (تسميع/مصحح/معلم) ويحفظ الاختيار.
+  ///
+  /// إن كان التسجيل نشطًا يُوقف ويُقيَّم أولًا — فتُحفظ نتيجة الصفحة عبر
+  /// مستمع الاكتمال في التطبيق — ثم يُصفَّر النطاق بالنمط الجديد:
+  /// المصحح والمعلم يفرضان إظهار الكلمات، والتسميع يخفيها.
+  Future<void> setMode(TasmeeMode mode) async {
+    if (state.mode.value == mode) return;
+    _disposeRetrySession();
+    state.activeWordCorrection.value = null;
+    state.wordRetryOutcome.value = null;
+    state.wordRetryFeedback.value = null;
+    // اضبط النمط قبل الإيقاف كي تحترس مستمعات المعلم في التطبيق من
+    // تقييم جلسةٍ تنتمي لنمطٍ قديم.
+    state.mode.value = mode;
+    _storage.write(TasmeeStorageConstants.tasmeeMode, mode.storageName);
+    // الآيات ظاهرة دائمًا في المصحح والمعلم؛ والتسميع يبدأ مخفيًا
+    // (وزر العين للمستخدم فيه).
+    state.showAllWords.value = mode.showsWordsByDefault;
+    if (isRecording ||
+        isProcessing ||
+        state.sessionState.value == RecitationState.connecting ||
+        state.sessionState.value == RecitationState.paused) {
+      await stopRecording();
+    }
+    await retryTasmee();
+    update([TasmeeUpdateIds.control]);
+  }
+
+  /// يغيّر المحرك ويحفظ الاختيار.
+  void setEngineMode(TasmeeEngineMode mode) {
+    state.engineMode.value = mode;
+    _storage.write(TasmeeStorageConstants.engineMode,
+        mode == TasmeeEngineMode.online ? 'online' : 'offline');
+    update([TasmeeUpdateIds.control]);
+  }
+
+  /// يضبط عنوان الخادم ويحفظه.
+  void setServerUrl(String url) {
+    state.serverUrl.value = url.trim();
+    _storage.write(TasmeeStorageConstants.serverUrl, state.serverUrl.value);
+  }
+
+  // ── دخول/خروج الوضع ────────────────────────────────────────────
+
+  /// يبدّل وضع التسميع: دخول (إخفاء الكلمات) أو خروج (استعادة الوضع).
+  void toggleTasmeeMode() {
+    if (kIsWeb) return; // الميكروفون/sherpa غير مدعومَين على الويب.
+    if (state.isTasmeeMode.value) {
+      exitTasmeeMode();
+    } else {
+      enterTasmeeMode();
+    }
+  }
+
+  Future<void> enterTasmeeMode() async {
+    if (state.isTasmeeMode.value) return;
+    // أوقف ما يتعارض مع الميكروفون: تشغيل الصوت والسكرول التلقائي.
+    try {
+      await qa.AudioCtrl.instance.state.audioPlayer.stop();
+    } catch (_) {}
+    try {
+      q.AutoScrollCtrl.instance.stopAutoScroll();
+    } catch (_) {}
+
+    state.isTasmeeMode.value = true;
+    state.lastError.value = '';
+    state.lastResult.value = null;
+    // إظهار الكلمات افتراضيًا في المصحح والمعلم، وإخفاؤها في التسميع.
+    state.showAllWords.value = state.mode.value.showsWordsByDefault;
+    // جلسة سابقة قد انتهت بـ finished/error تبقى في الحالة — صفّرها لدخول نظيف.
+    state.sessionState.value = RecitationState.idle;
+    _doneWordKeys.clear();
+    await _buildRangeForCurrentPage();
+    _pageWorker?.dispose();
+    _pageWorker = ever(q.QuranCtrl.instance.state.currentPageNumber,
+        (int page) => _onPageChanged(page));
+    // حدّث صفحة القراءة (إخفاء الكلمات) وعناصر التحكم.
+    _refreshQuranPages();
+    // شاشات لا تستخدم Obx (مثل شاشة الصفحات) تُحدَّث عبر هذا المعرف.
+    q.QuranCtrl.instance.update(['isShowControl']);
+    update([TasmeeUpdateIds.control]);
+  }
+
+  void exitTasmeeMode() {
+    // التقط رقم الصفحة قبل تصفيره — دونه لا يُحدَّث معرّف الصفحة فتبقى
+    // الكلمات مخفية على كاش السطر حتى يلمس المستخدم الشاشة.
+    final page = state.currentRangePage;
+    _disposeRetrySession();
+    state.activeWordCorrection.value = null;
+    state.wordRetryOutcome.value = null;
+    state.wordRetryFeedback.value = null;
+    _cancelSession();
+    _pageWorker?.dispose();
+    _pageWorker = null;
+    state.isTasmeeMode.value = false;
+    state.wordStatuses.clear();
+    state.wordErrorKinds.clear();
+    state.currentWordKey.value = null;
+    state.lastError.value = '';
+    state.completedWords.value = 0;
+    state.totalWords.value = 0;
+    state.sessionState.value = RecitationState.idle;
+    _acceptedCorrections.clear();
+    _range = null;
+    _rangeAyahs = const [];
+    state.currentRangePage = -1;
+    if (page > 0) update([TasmeeUpdateIds.page(page - 1)]);
+    q.QuranCtrl.instance.update(['isShowControl']);
+    update([TasmeeUpdateIds.control]);
+  }
+
+  void _onPageChanged(int page) {
+    if (!state.isTasmeeMode.value) return;
+    if (isRecording || isProcessing) {
+      // تغيير الصفحة أثناء التسجيل — أوقف وقيّم ما تُلِي.
+      stopRecording();
+      return;
+    }
+    _buildRangeForCurrentPage();
+    _refreshQuranPages();
+  }
+
+  // ── بناء النطاق ────────────────────────────────────────────────
+
+  /// يبني النطاق المرجعي لآيات الصفحة الحالية ويصفّر حالات الكلمات.
+  Future<void> _buildRangeForCurrentPage() async {
+    final prevPage = state.currentRangePage;
+    final page = q.QuranCtrl.instance.state.currentPageNumber.value;
+    state.currentRangePage = page;
+    state.wordStatuses.clear();
+    state.wordErrorKinds.clear();
+    state.currentWordKey.value = null;
+    state.completedWords.value = 0;
+    state.totalWords.value = 0;
+    _acceptedCorrections.clear();
+
+    try {
+      await TasmeeReferenceStore.instance.load();
+      // جهّز متغير الخط الشفاف للصفحة (إخفاء الكلمات دون المساس
+      // بالمواضع) — تحميل كسول عند الطلب فقط.
+      state.transparentFontsReady.value =
+          await q.QuranFontsService.ensureTransparentFont(page);
+      final ayahs = q.QuranCtrl.instance.getAyahsByPage(page)
+        ..sort((a, b) => a.ayahUQNumber.compareTo(b.ayahUQNumber));
+      _rangeAyahs = ayahs;
+      _range = TasmeeReferenceStore.instance.buildRange([
+        for (final a in ayahs)
+          if (a.surahNumber != null)
+            (suraIdx: a.surahNumber!, ayaIdx: a.ayahNumber),
+      ]);
+      state.totalWords.value = _range?.wordCount ?? 0;
+      if (_range == null) {
+        state.lastError.value =
+            'تعذّر تجهيز مرجع التسميع لهذه الصفحة (قد تكون البيانات غير محمّلة بعد)';
+        log('TasmeeCtrl: range build failed for page $page',
+            name: 'TasmeeCtrl');
+      }
+    } catch (e) {
+      _range = null;
+      state.lastError.value = 'خطأ في تجهيز التسميع: $e';
+    } finally {
+      // حدّث الصفحة الجديدة — والقديمة أيضًا (تبقى حيّة في PageView وقد
+      // تكون كلماتها مخفية على كاش السطر).
+      _refreshQuranPages();
+      if (prevPage > 0 && prevPage != page) {
+        update([TasmeeUpdateIds.page(prevPage - 1)]);
+      }
+    }
+  }
+
+  // ── التسجيل ────────────────────────────────────────────────────
+
+  /// يبدأ التسجيل بعد التأكد من جاهزية المحرك والنموذج.
+  Future<void> startRecording() async {
+    if (state.isTasmeeMode.value == false ||
+        // نمط المعلم يُدار آية-بآية عبر [startAyahRecording].
+        state.mode.value == TasmeeMode.teacher ||
+        isRecording ||
+        isProcessing ||
+        kIsWeb) {
+      return;
+    }
+    state.lastError.value = '';
+    state.lastResult.value = null;
+
+    if (_range == null) await _buildRangeForCurrentPage();
+    if (_range == null) {
+      update([TasmeeUpdateIds.control]);
+      return;
+    }
+
+    state.isPreparingEngine.value = true;
+    update([TasmeeUpdateIds.control]);
+    final ready = await _ensureEngineReady();
+    state.isPreparingEngine.value = false;
+    if (!ready) {
+      update([TasmeeUpdateIds.control]);
+      return;
+    }
+
+    state.completedWords.value = 0;
+    await _launchLiveSession(range: _range!, verseIdxOffset: 0);
+  }
+
+  /// يبدأ تسجيل تسميع آية واحدة داخل نطاق الصفحة (نمط المعلم) — جلسة
+  /// حيّة بمدى الآية وحدها؛ أحداث كلماتها تُسقَط على مواضعها الصفحية
+  /// فتتراكم حالات الكلمات عبر الآيات المتقنة.
+  Future<void> startAyahRecording(int verseIdx) async {
+    if (!state.isTasmeeMode.value ||
+        state.mode.value != TasmeeMode.teacher ||
+        isRecording ||
+        isProcessing ||
+        kIsWeb) {
+      return;
+    }
+    if (verseIdx < 0 || verseIdx >= _rangeAyahs.length) return;
+    final ayah = _rangeAyahs[verseIdx];
+    if (ayah.surahNumber == null) return;
+
+    state.lastError.value = '';
+    state.lastResult.value = null;
+    state.isPreparingEngine.value = true;
+    update([TasmeeUpdateIds.control]);
+    final ready = await _ensureEngineReady();
+    state.isPreparingEngine.value = false;
+    if (!ready) {
+      update([TasmeeUpdateIds.control]);
+      return;
+    }
+
+    final ayahRange = TasmeeReferenceStore.instance.buildRange([
+      (suraIdx: ayah.surahNumber!, ayaIdx: ayah.ayahNumber),
+    ]);
+    if (ayahRange == null) {
+      state.lastError.value = 'تعذّر تجهيز مرجع الآية للتسميع';
+      update([TasmeeUpdateIds.control]);
+      return;
+    }
+    await _launchLiveSession(range: ayahRange, verseIdxOffset: verseIdx);
+  }
+
+  /// يشغّل جلسة حيّة على النطاق المعطى مع إسقاط فهارس الآيات على
+  /// مواضعها داخل نطاق الصفحة ([verseIdxOffset] لنطاق الآية الواحدة).
+  Future<void> _launchLiveSession({
+    required QuranReferenceRange range,
+    int verseIdxOffset = 0,
+  }) async {
+    try {
+      final session = Recitation.createSession(range: range);
+      _session = session;
+      _sessionVerseOffset = verseIdxOffset;
+      _stateWorker = ever<RecitationState>(session.state, (s) {
+        // انسخ النتيجة قبل إعلان الحالة كي تجدها مستمعات الواجهة
+        // (وإلا فاتها فتح bottomSheet النتائج).
+        if (s == RecitationState.finished) {
+          state.lastResult.value = _session?.result.value;
+        }
+        state.sessionState.value = s;
+        update([TasmeeUpdateIds.control]);
+      });
+      session.onWordDone = (v, w, kind, mistake) =>
+          _onWordDone(v + verseIdxOffset, w, kind, mistake);
+      session.onRangeComplete = () {
+        // أكمل النطاق — أوقف بعد مهلة قصيرة تسمح بآخر وحدة.
+        Future.delayed(const Duration(milliseconds: 800), () {
+          if (isRecording) stopRecording();
+        });
+      };
+
+      // الكلمة الجارية (الوضع الحيّ فقط — offline).
+      _verseWorker = ever<int>(session.currentVerseIdx, (v) {
+        final w = session.currentWordIdx.value;
+        if (v >= 0 && w >= 0) markCurrentWord(v + verseIdxOffset, w);
+      });
+      _wordWorker = ever<int>(session.currentWordIdx, (w) {
+        final v = session.currentVerseIdx.value;
+        if (v >= 0 && w >= 0) markCurrentWord(v + verseIdxOffset, w);
+      });
+      if (Recitation.isOffline) {
+        await session.startLive();
+        // الوضع الحيّ: طور الالتقاط حتى أول كلمة جارية (بداية المستخدم
+        // الفعلية — قد تكون من منتصف الصفحة).
+        state.isAwaitingStart.value = true;
+      } else {
+        // الخادم: دفعة واحدة (بلا كشف حيّ).
+        await session.start();
+      }
+      if (session.state.value == RecitationState.error) {
+        state.lastError.value = session.lastError.value;
+      }
+    } catch (e) {
+      state.lastError.value = 'تعذّر بدء التسجيل: $e';
+      state.sessionState.value = RecitationState.error;
+    }
+    update([TasmeeUpdateIds.control]);
+  }
+
+  /// يوقف التسجيل ويُقيّم — النتيجة في [TasmeeState.lastResult].
+  ///
+  /// التقييم النهائي (المحاذاة الشاملة) هو المرجع **ثنائي الاتجاه**:
+  /// يصحّح الكلمات التي لوّنها التتبّع الحي خطأً، ويسقط ما لم يُتلَ فعلًا،
+  /// ويحفظ الكلمات المقبولة في شيت المصحّح خضراء.
+  Future<void> stopRecording() async {
+    final session = _session;
+    if (session == null) return;
+    try {
+      if (session.isLive.value) {
+        await session.stopLive();
+      } else if (session.state.value == RecitationState.recording) {
+        await session.stop();
+      }
+      final result = session.result.value;
+      if (result == null || !result.hasMatch) {
+        state.lastResult.value = result;
+        state.lastError.value =
+            result?.noMatchMessage ?? session.lastError.value;
+        // لا تقييم شاملًا — أبقِ ما أكمله التتبّع الحي فقط.
+        _trimToCompletedWords();
+      } else {
+        state.lastResult.value = _resultWithoutAcceptedErrors(result);
+        _applyFinalVerdictsToStatuses(result);
+      }
+    } catch (e) {
+      state.lastError.value = 'خطأ في التقييم: $e';
+      _trimToCompletedWords();
+    } finally {
+      _cancelSession();
+      _refreshQuranPages();
+      update([TasmeeUpdateIds.control]);
+    }
+  }
+
+  /// يقصِر الحالات الظاهرة على الكلمات المكتملة فقط — الكلمة "الجارية"
+  /// الأخيرة غير المؤكَّدة تُخفى، فلا يظهر بعد الإيقاف إلا ما تُلِي فعلًا.
+  void _trimToCompletedWords() {
+    final done = _doneWordKeys.toSet();
+    state.wordStatuses.removeWhere((key, _) => !done.contains(key));
+    state.currentWordKey.value = null;
+  }
+
+  /// إعادة التسميع من البداية (الكلمات تُخفى من جديد) — تُنهي أي جلسة
+  /// نشطة أو متوقفة لتصحيح كلمة وتصفّر حالة التصحيح أولًا.
+  Future<void> retryTasmee() async {
+    if (isRecording ||
+        isProcessing ||
+        state.sessionState.value == RecitationState.paused) {
+      await stopRecording();
+    }
+    _disposeRetrySession();
+    state.activeWordCorrection.value = null;
+    state.wordRetryOutcome.value = null;
+    state.wordRetryFeedback.value = null;
+    state.lastResult.value = null;
+    state.lastError.value = '';
+    state.wordErrorKinds.clear();
+    _doneWordKeys.clear();
+    _acceptedCorrections.clear();
+    await _buildRangeForCurrentPage();
+    _refreshQuranPages();
+    update([TasmeeUpdateIds.control]);
+  }
+
+  void _cancelSession() {
+    _stateWorker?.dispose();
+    _stateWorker = null;
+    _verseWorker?.dispose();
+    _verseWorker = null;
+    _wordWorker?.dispose();
+    _wordWorker = null;
+    state.isAwaitingStart.value = false;
+    try {
+      _session?.dispose();
+    } catch (_) {}
+    _session = null;
+    _sessionVerseOffset = 0;
+    if (state.sessionState.value == RecitationState.recording ||
+        state.sessionState.value == RecitationState.processing) {
+      state.sessionState.value = RecitationState.idle;
+    }
+  }
+
+  // ── جاهزية المحرك ──────────────────────────────────────────────
+
+  Future<bool> _ensureEngineReady() async {
+    try {
+      if (state.engineMode.value == TasmeeEngineMode.offline) {
+        if (!state.isModelReady.value) {
+          final ok = await downloadModelIfNeeded();
+          if (!ok) return false;
+        }
+        if (!(Recitation.isInitialized && Recitation.isOffline)) {
+          await Recitation.initZipformer();
+        }
+        return true;
+      }
+      // online — خادم Muaalem.
+      final url = state.serverUrl.value.trim();
+      if (url.isEmpty) {
+        state.lastError.value =
+            'أدخل عنوان خادم التسميع من الإعدادات (⚙) قبل البدء';
+        return false;
+      }
+      if (!(Recitation.isInitialized &&
+          !Recitation.isOffline &&
+          Recitation.serverUrl == url)) {
+        Recitation.init(serverUrl: url);
+      }
+      final healthy = await Recitation.isEngineHealthy();
+      if (!healthy) {
+        state.lastError.value =
+            'لا يمكن الوصول إلى خادم التسميع — تحقّق من العنوان والاتصال';
+        return false;
+      }
+      return true;
+    } catch (e) {
+      state.lastError.value = 'خطأ في تهيئة محرّك التسميع: $e';
+      return false;
+    }
+  }
+
+  /// ينزّل النموذج (73MB) إن لم يكن جاهزاً — مع تقدّم لحظي في الحالة.
+  Future<bool> downloadModelIfNeeded() async {
+    if (state.isDownloadingModel.value) return false;
+    state.isDownloadingModel.value = true;
+    state.modelDownloadProgress.value = 0;
+    update([TasmeeUpdateIds.control]);
+    try {
+      await _modelService.downloadModel(
+        onProgress: (p) {
+          state.modelDownloadProgress.value = p;
+          update([TasmeeUpdateIds.control]);
+        },
+      );
+      state.isModelReady.value = true;
+      state.modelDownloadProgress.value = 1;
+      return true;
+    } catch (e) {
+      state.lastError.value = 'فشل تنزيل نموذج التسميع: $e';
+      return false;
+    } finally {
+      state.isDownloadingModel.value = false;
+      update([TasmeeUpdateIds.control]);
+    }
+  }
+
+  /// يبدّل إظهار كل كلمات الصفحة مؤقتًا (زر العين).
+  void toggleShowAllWords() {
+    // التسميع وحده يسمح بإخفاء/إظهار الكلمات — في المصحح والمعلم
+    // الآيات ظاهرة دائمًا.
+    if (state.mode.value != TasmeeMode.tasmee) return;
+    state.showAllWords.value = !state.showAllWords.value;
+    _refreshQuranPages();
+    update([TasmeeUpdateIds.control]);
+  }
+
+  /// يفحص اتصال خادم التسميع بالعنوان المحفوظ (لِلواجهة).
+  Future<bool> testServerConnection() async {
+    final url = state.serverUrl.value.trim();
+    if (url.isEmpty) return false;
+    try {
+      Recitation.init(serverUrl: url);
+      return await Recitation.isEngineHealthy();
+    } catch (_) {
+      return false;
+    }
+  }
+
+  // ── حالات الكلمات ──────────────────────────────────────────────
+
+  String _wordKey(int verseIdx, int wordIdx) {
+    final ayah = _rangeAyahs[verseIdx];
+    return '${ayah.ayahUQNumber}:${wordIdx + 1}';
+  }
+
+  void _onWordDone(
+    int verseIdx,
+    int wordIdx,
+    TasmeeErrorKind kind,
+    TasmeeWordMistake? mistake,
+  ) {
+    if (verseIdx < 0 || verseIdx >= _rangeAyahs.length) return;
+    final key = _wordKey(verseIdx, wordIdx);
+    // بلا تكرارات — يُستخدم لاحقًا كمجموعة تقليم بعد الإيقاف.
+    if (_doneWordKeys.isEmpty || _doneWordKeys.last != key) {
+      _doneWordKeys.add(key);
+    }
+    final correct = kind == TasmeeErrorKind.correct;
+    state.wordStatuses[key] =
+        correct ? TasmeeWordStatus.correct : TasmeeWordStatus.incorrect;
+    if (correct) {
+      state.wordErrorKinds.remove(key);
+    } else {
+      state.wordErrorKinds[key] = kind;
+    }
+    if (state.currentWordKey.value == key) {
+      state.currentWordKey.value = null;
+    }
+    state.completedWords.value = state.wordStatuses.values
+        .where((s) => s != TasmeeWordStatus.hidden)
+        .length;
+    _refreshQuranPages();
+    // نمط المصحح: أول كلمة خاطئة توقف الجلسة بانتظار تصحيحها.
+    if (state.mode.value == TasmeeMode.corrector) {
+      log(
+          'TasmeeCtrl corrector word-done — v=$verseIdx w=$wordIdx '
+          'kind=$kind active=${state.activeWordCorrection.value != null} '
+          'pending=$_correctionPending',
+          name: 'TasmeeCtrl');
+      if (kind != TasmeeErrorKind.correct) {
+        // بلا انتظار — onWordDone متزامن التوقيع؛ الحارس داخل
+        // _beginWordCorrection (علم متزامن) يمنع الفتح المزدوج أثناء
+        // انتظار إيقاف الميكروفون.
+        _beginWordCorrection(verseIdx, wordIdx, kind, mistake);
+      }
+    }
+  }
+
+  // ── تصحيح الكلمة (نمط المصحح) ──────────────────────────────────
+
+  /// يضبط الكلمة الخاطئة المنتظرة تصحيحًا ويجمّد الجلسة الرئيسية —
+  /// الميكروفون يتوقف فلا يسمع نطق الكلمة من السماعة أثناء الشيت.
+  ///
+  /// الإيقاف يجب أن يكتمل **قبل** ضبط الحالة (الذي يفتح الشيت ويشغّل
+  /// النطق): مسجّل `record` يفكّ جلسة الصوت عند الإيقاف، وتشغيل الصوت
+  /// بالتوازي معها يُقتل أو يتحوّل لسماعة الأذن فيبدو صامتًا.
+  Future<void> _beginWordCorrection(
+    int verseIdx,
+    int wordIdx,
+    TasmeeErrorKind kind,
+    TasmeeWordMistake? mistake,
+  ) async {
+    if (verseIdx < 0 || verseIdx >= _rangeAyahs.length) return;
+    // حارس سباق: أحداث كلمات متتالية أثناء انتظار pauseLive لا تفتح
+    // تصحيحًا ثانيًا — العلم يُضبط متزامنًا قبل أي await.
+    if (_correctionPending || state.activeWordCorrection.value != null) {
+      return;
+    }
+    _correctionPending = true;
+    try {
+      final ayah = _rangeAyahs[verseIdx];
+      final verse = _range != null && verseIdx < _range!.verses.length
+          ? _range!.verses[verseIdx]
+          : null;
+      final wordText = verse != null && wordIdx < verse.uthmaniWords.length
+          ? verse.uthmaniWords[wordIdx]
+          : '';
+      log(
+        'TasmeeCtrl corrector begin — "$wordText" ($verseIdx:$wordIdx) '
+        'mistake=${mistake?.errorType} exp=${mistake?.expectedSymbol} '
+        'pred=${mistake?.predictedSymbol}',
+        name: 'TasmeeCtrl',
+      );
+      await _session?.pauseLive();
+      // غيّر المستخدم النمط/أعاد أثناء انتظار الإيقاف — لا تفتح شيتًا
+      // لجلسة لم تعد قائمة.
+      if (state.mode.value != TasmeeMode.corrector) return;
+      log('TasmeeCtrl corrector paused, opening sheet', name: 'TasmeeCtrl');
+      state.wordRetryOutcome.value = null;
+      state.wordRetryFeedback.value = null;
+      state.activeWordCorrection.value = TasmeeWordCorrection(
+        key: _wordKey(verseIdx, wordIdx),
+        wordText: wordText,
+        errorKind: kind,
+        suraIdx: ayah.surahNumber ?? 1,
+        ayaIdx: ayah.ayahNumber,
+        wordNumber: wordIdx + 1,
+        verseIdx: verseIdx,
+        wordIdx: wordIdx,
+        errorType: mistake?.errorType ?? 'replace',
+        expectedSymbol: mistake?.expectedSymbol,
+        predictedSymbol: mistake?.predictedSymbol,
+      );
+    } finally {
+      _correctionPending = false;
+    }
+  }
+
+  /// يبدأ محاولة إعادة نطق الكلمة المنتظرة — تسجيل دفعي قصير بمدى الكلمة
+  /// وحدها يتوقف تلقائيًا بعد النطق والسكون، ثم يُقيَّم بالمسار المرجعي
+  /// الكامل (محاذاة + كشف أخطاء) — لا بالتتبّع الحيّ الاسترشادي، ولا
+  /// يمسّ بثّ الجلسة الرئيسية المتوقفة (المسار الدفعي يستخدم Stream خاصًا
+  /// به داخل المحرك). الحكم في [TasmeeState.wordRetryOutcome].
+  Future<void> startWordRetry() async {
+    final correction = state.activeWordCorrection.value;
+    if (correction == null || _retrySession != null) return;
+    final verse = _range != null && correction.verseIdx < _range!.verses.length
+        ? _range!.verses[correction.verseIdx]
+        : null;
+    final wordRange = verse == null
+        ? null
+        : QuranReferenceRange.fromSingleWord(verse, correction.wordIdx);
+    if (wordRange == null) {
+      state.wordRetryOutcome.value = TasmeeWordRetryOutcome.incorrect;
+      return;
+    }
+    final session = Recitation.createSession(range: wordRange);
+    _retrySession = session;
+    state.wordRetryOutcome.value = null;
+    state.wordRetryFeedback.value = null;
+    state.isWordRetryListening.value = true;
+    _retryStateWorker = ever<RecitationState>(session.state, (s) {
+      if (s == RecitationState.finished) {
+        final result = session.result.value;
+        // معيار مخفَّف موجَّهًا: الحروف والتجويد الجوهري رادعان، والتشكيل
+        // وطول المدّ الرمزي مُغتفَران (ارتعاج شبه حتمي في نطق معزول).
+        final ok = result != null && isWordRetryAcceptable(result);
+        state.wordRetryOutcome.value = ok
+            ? TasmeeWordRetryOutcome.correct
+            : TasmeeWordRetryOutcome.incorrect;
+        // خطأ هذه المحاولة بالذات (قد يختلف عن خطأ التلاوة الأول:
+        // أصلح المستخدم النطق فصار الخطأ تشكيلًا أو تجويدًا) — يُعرض
+        // في الشيت ليعرف ما يصحّحه الآن.
+        state.wordRetryFeedback.value =
+            ok ? null : retryFeedbackFromErrors(result?.errors ?? const []);
+        _disposeRetrySession();
+      } else if (s == RecitationState.error) {
+        state.lastError.value = session.lastError.value;
+        state.wordRetryOutcome.value = TasmeeWordRetryOutcome.incorrect;
+        state.wordRetryFeedback.value = null;
+        _disposeRetrySession();
+      }
+    });
+    await session.start(
+      stopAfterSilence: const Duration(milliseconds: 1200),
+      maxDuration: const Duration(seconds: 8),
+      // تصاهر بادئ: صدى نطق الكلمة من السماعة (الشيت يشغّله) لا يُحسب
+      // كلامًا فيُقطع التسجيل قبل أن ينطق المستخدم.
+      ignoreInitial: const Duration(milliseconds: 400),
+    );
+  }
+
+  void _disposeRetrySession() {
+    _retryStateWorker?.dispose();
+    _retryStateWorker = null;
+    try {
+      _retrySession?.dispose();
+    } catch (_) {}
+    _retrySession = null;
+    state.isWordRetryListening.value = false;
+  }
+
+  /// يحلّ الكلمة المنتظرة: قبول نطقها الصحيح (تُعلَّم خضراء ويُحمى من
+  /// التقييم النهائي عند الإيقاف) أو تخطّيها (تبقى حمراء) — ثم يستأنف
+  /// الجلسة الرئيسية المتوقفة.
+  Future<void> resolveWordCorrection({required bool accepted}) async {
+    final correction = state.activeWordCorrection.value;
+    if (correction == null) return;
+    _disposeRetrySession();
+    if (accepted) {
+      state.wordStatuses[correction.key] = TasmeeWordStatus.correct;
+      state.wordErrorKinds.remove(correction.key);
+      // الصوت الأصلي ما يزال يحوي النطق الخاطئ الأول — احمِ القبول من
+      // التقييم النهائي لاحقًا (البق: نجاح التصحيح كان يُلغى عند الإيقاف).
+      _acceptedCorrections.add(correction.key);
+      _refreshQuranPages();
+    }
+    state.wordRetryOutcome.value = null;
+    state.wordRetryFeedback.value = null;
+    state.activeWordCorrection.value = null;
+    final session = _session;
+    if (session != null &&
+        session.isLive.value &&
+        session.state.value == RecitationState.paused) {
+      await session.resumeLive();
+    }
+  }
+
+  /// الكلمة الجارية (من محاذاة الوضع الحيّ) — تُبرز لحظيًا.
+  void markCurrentWord(int verseIdx, int wordIdx) {
+    if (verseIdx < 0 || verseIdx >= _rangeAyahs.length) return;
+    // أول كلمة جارية = انتهى طور الالتقاط (حددت بداية التلاوة الفعلية).
+    if (state.isAwaitingStart.value) {
+      state.isAwaitingStart.value = false;
+    }
+    final key = _wordKey(verseIdx, wordIdx);
+    // الكلمة الجارية تُبرَز فور ظهورها (الحالات النهائية تُدار من
+    // onWordDone ولا تُداس هنا).
+    if (state.wordStatuses[key] == null ||
+        state.wordStatuses[key] == TasmeeWordStatus.hidden) {
+      state.wordStatuses[key] = TasmeeWordStatus.current;
+    }
+    state.currentWordKey.value = key;
+    _refreshQuranPages();
+  }
+
+  /// يرقّع حالات الكلمات من التقييم النهائي (المرجع المعتمد ثنائي
+  /// الاتجاه): الكلمة المغطاة بلا أخطاء → صحيحة (حتى لو أخطأ التتبّع الحي
+  /// في وسمها)، وعليها خطأ → خطأة بنوع أعلى أسبقية، وبلا تغطية ولا خطأ →
+  /// تُسقط (لم تُتلَ أصلًا)، والمقبولة في المصحّح تبقى خضراء.
+  void _applyFinalVerdictsToStatuses(RecitationResult result) {
+    // جلسات نطاق فرعي (المعلم): أطِر التغطية على مواضعها الصفحية.
+    final offset = _sessionVerseOffset;
+    final covered = offset == 0
+        ? result.matchedWordSpans
+        : [
+            for (final s in result.matchedWordSpans)
+              (verseIdx: s.verseIdx + offset, wordIdx: s.wordIdx),
+          ];
+    final verdicts = reconcileFinalWordVerdicts(
+      coveredSpans: covered,
+      errors: result.errors,
+      verseIndexOf: _verseIndexOf,
+      keyOf: _wordKey,
+      acceptedCorrectionKeys: _acceptedCorrections,
+    );
+    // أسقط ما لم يُتلَ فعلًا (بلا تغطية ولا خطأ) — مع حفظ المقبول تصحيحها.
+    state.wordStatuses.removeWhere((key, _) =>
+        !verdicts.containsKey(key) && !_acceptedCorrections.contains(key));
+    state.wordErrorKinds.removeWhere((key, _) =>
+        !verdicts.containsKey(key) && !_acceptedCorrections.contains(key));
+    for (final entry in verdicts.entries) {
+      final v = entry.value;
+      state.wordStatuses[entry.key] =
+          v.correct ? TasmeeWordStatus.correct : TasmeeWordStatus.incorrect;
+      if (v.correct || v.errorKind == null) {
+        state.wordErrorKinds.remove(entry.key);
+      } else {
+        state.wordErrorKinds[entry.key] = v.errorKind!;
+      }
+    }
+    // الكلمات المقبولة في المصحّح: خضراء دائمًا حتى لو ظهر لها خطأ في
+    // الصوت الأصلي المسجَّل قبل التصحيح.
+    for (final key in _acceptedCorrections) {
+      if (state.wordStatuses.containsKey(key)) {
+        state.wordStatuses[key] = TasmeeWordStatus.correct;
+        state.wordErrorKinds.remove(key);
+      }
+    }
+    state.currentWordKey.value = null;
+    state.completedWords.value = state.wordStatuses.length;
+    _refreshQuranPages();
+  }
+
+  /// نسخة عرض من النتيجة بلا أخطاء الكلمات التي قُبل تصحيحها في المصحّح.
+  RecitationResult _resultWithoutAcceptedErrors(RecitationResult result) {
+    final filtered = withoutAcceptedErrors(
+      errors: result.errors,
+      verseIndexOf: _verseIndexOf,
+      keyOf: _wordKey,
+      acceptedCorrectionKeys: _acceptedCorrections,
+    );
+    if (identical(filtered, result.errors)) return result;
+    return RecitationResult(
+      start: result.start,
+      end: result.end,
+      predictedPhonemes: result.predictedPhonemes,
+      referencePhonemes: result.referencePhonemes,
+      uthmaniText: result.uthmaniText,
+      errors: filtered,
+      noMatchMessage: result.noMatchMessage,
+      matchedWordSpans: result.matchedWordSpans,
+    );
+  }
+
+  int _verseIndexOf(int suraIdx, int ayaIdx) {
+    for (var i = 0; i < _rangeAyahs.length; i++) {
+      final a = _rangeAyahs[i];
+      if (a.surahNumber == suraIdx && a.ayahNumber == ayaIdx) return i;
+    }
+    return -1;
+  }
+
+  /// حالة كلمة بمفتاحها (لِلطبقة العرضية).
+  TasmeeWordStatus wordStatusOf(String key) =>
+      state.wordStatuses[key] ?? TasmeeWordStatus.hidden;
+
+  /// نوع خطأ كلمة خاطئة بمفتاحها (null للصحيحة/المخفية).
+  TasmeeErrorKind? tasmeeErrorKindOf(String key) => state.wordErrorKinds[key];
+
+  /// يحدّث صفحات القراءة المعروضة (إخفاء/إظهار/تلوين الكلمات).
+  ///
+  /// التحديث موجَّه لِـ `GetBuilder<TasmeeCtrl>` بمعرّف الصفحة — وبصمة
+  /// السطر (tasmeeFingerprint) تتكفّل بإعادة البناء عند تغيّر الحالات.
+  void _refreshQuranPages() {
+    final page = state.currentRangePage;
+    if (page > 0) {
+      update([TasmeeUpdateIds.page(page - 1)]);
+    }
+  }
+
+  @override
+  void onClose() {
+    _cancelSession();
+    _pageWorker?.dispose();
+    _pageWorker = null;
+    super.onClose();
+  }
+}

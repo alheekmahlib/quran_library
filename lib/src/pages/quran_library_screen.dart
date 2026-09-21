@@ -73,6 +73,7 @@ class QuranLibraryScreen extends StatelessWidget {
     this.wordInfoBottomSheetStyle,
     this.isShowDisplayModeBar = true,
     this.autoScrollStyle,
+    this.isShowTasmeeControl = true,
   });
 
   /// إذا قمت بإضافة شريط التطبيقات هنا فإنه سيحل محل شريط التطبيقات الافتراضية [appBar]
@@ -358,6 +359,13 @@ class QuranLibraryScreen extends StatelessWidget {
   /// [isShowDisplayModeBar] To specify whether to show the display mode bar or not
   final bool? isShowDisplayModeBar;
 
+  /// في وضع التسميع: التحكم في إظهار شريط التحكم بالتسميع المدمج.
+  ///
+  /// [isShowTasmeeControl] Whether to show the built-in tasmee control bar
+  /// in tasmee mode. Set it to false if the host app provides its own
+  /// tasmee control UI (e.g. in its own bottom navigation bar).
+  final bool? isShowTasmeeControl;
+
   @override
   Widget build(BuildContext context) {
     // تحديث رابط أيقونة التطبيق إذا تم تمريره / Update app icon URL if provided
@@ -532,7 +540,7 @@ class QuranLibraryScreen extends StatelessWidget {
                                         showAyahBookmarkedIcon,
                                     onAyahLongPress: onAyahLongPress,
                                     bookmarksColor: bookmarksColor,
-                                  customBookmarksColor: customBookmarksColor,
+                                    customBookmarksColor: customBookmarksColor,
                                     surahNameStyle: surahNameStyle,
                                     bannerStyle: bannerStyle,
                                     basmalaStyle: basmalaStyle,
@@ -565,7 +573,7 @@ class QuranLibraryScreen extends StatelessWidget {
                                         showAyahBookmarkedIcon,
                                     onAyahLongPress: onAyahLongPress,
                                     bookmarksColor: bookmarksColor,
-                                  customBookmarksColor: customBookmarksColor,
+                                    customBookmarksColor: customBookmarksColor,
                                     surahNameStyle: surahNameStyle,
                                     bannerStyle: bannerStyle,
                                     basmalaStyle: basmalaStyle,
@@ -598,7 +606,7 @@ class QuranLibraryScreen extends StatelessWidget {
                                         showAyahBookmarkedIcon,
                                     onAyahLongPress: onAyahLongPress,
                                     bookmarksColor: bookmarksColor,
-                                  customBookmarksColor: customBookmarksColor,
+                                    customBookmarksColor: customBookmarksColor,
                                     surahNameStyle: surahNameStyle,
                                     bannerStyle: bannerStyle,
                                     basmalaStyle: basmalaStyle,
@@ -630,7 +638,7 @@ class QuranLibraryScreen extends StatelessWidget {
                                     showAyahBookmarkedIcon:
                                         showAyahBookmarkedIcon,
                                     bookmarksColor: bookmarksColor,
-                                  customBookmarksColor: customBookmarksColor,
+                                    customBookmarksColor: customBookmarksColor,
                                     style: ayahTafsirInlineStyle ??
                                         AyahTafsirInlineStyle.defaults(
                                           isDark: isDark,
@@ -672,6 +680,7 @@ class QuranLibraryScreen extends StatelessWidget {
                           topBarStyle: topBarStyle,
                           isShowDisplayModeBar: isShowDisplayModeBar,
                           autoScrollStyle: autoScrollStyle,
+                          isShowTasmeeControl: isShowTasmeeControl,
                         ),
                       ],
                     ),
@@ -728,7 +737,7 @@ class QuranLibraryScreen extends StatelessWidget {
             showAyahBookmarkedIcon: showAyahBookmarkedIcon,
             onAyahLongPress: onAyahLongPress,
             bookmarksColor: bookmarksColor,
-                                  customBookmarksColor: customBookmarksColor,
+            customBookmarksColor: customBookmarksColor,
             surahNameStyle: surahNameStyle,
             bannerStyle: bannerStyle,
             basmalaStyle: basmalaStyle,
@@ -758,7 +767,7 @@ class QuranLibraryScreen extends StatelessWidget {
       showAyahBookmarkedIcon: showAyahBookmarkedIcon,
       onAyahLongPress: onAyahLongPress,
       bookmarksColor: bookmarksColor,
-                                  customBookmarksColor: customBookmarksColor,
+      customBookmarksColor: customBookmarksColor,
       surahNameStyle: surahNameStyle,
       bannerStyle: bannerStyle,
       basmalaStyle: basmalaStyle,
@@ -814,6 +823,7 @@ class _ControlWidget extends StatelessWidget {
     required this.topBarStyle,
     required this.isShowDisplayModeBar,
     required this.autoScrollStyle,
+    required this.isShowTasmeeControl,
   });
 
   final bool? isShowAudioSlider;
@@ -832,6 +842,7 @@ class _ControlWidget extends StatelessWidget {
   final bool? isShowDisplayModeBar;
   final QuranTopBarStyle? topBarStyle;
   final AutoScrollStyle? autoScrollStyle;
+  final bool? isShowTasmeeControl;
 
   @override
   Widget build(BuildContext context) {
@@ -840,6 +851,9 @@ class _ControlWidget extends StatelessWidget {
       builder: (quranCtrl) {
         return Obx(() {
           final visible = quranCtrl.isShowControl.value;
+          // وضع التسميع: يُستبدل شريط الصوت بشريط التسميع وتُخفى بقية
+          // عناصر التحكم (زر الدخول/الخروج في الشريط العلوي يبقى).
+          final isTasmee = TasmeeCtrl.instance.state.isTasmeeMode.value;
           // إخفاء كل عناصر التحكم أثناء السكرول التلقائي النشط (غير المتوقف)
           final autoScroll = AutoScrollCtrl.instance;
           final isAutoScrollRunning = autoScroll.state.isActive.value &&
@@ -857,18 +871,24 @@ class _ControlWidget extends StatelessWidget {
                   alignment: Alignment.center,
                   children: [
                     // السلايدر السفلي - يظهر من الأسفل للأعلى
-                    // Bottom slider - appears from bottom to top
-                    isShowAudioSlider!
-                        ? AyahsAudioWidget(
-                            style: ayahStyle ??
-                                AyahAudioStyle.defaults(
-                                    isDark: isDark, context: context),
+                    // في وضع التسميع يُستبدل شريط الصوت بشريط التحكم بالتسميع
+                    // (يمكن للتطبيق المضيف إلغاء ذلك عبر isShowTasmeeControl).
+                    isTasmee && isShowTasmeeControl!
+                        ? TasmeeControlWidget(
                             isDark: isDark,
                             languageCode: languageCode,
-                            downloadManagerStyle: ayahDownloadManagerStyle,
                           )
-                        : const SizedBox.shrink(),
-                    kIsWeb
+                        : isShowAudioSlider!
+                            ? AyahsAudioWidget(
+                                style: ayahStyle ??
+                                    AyahAudioStyle.defaults(
+                                        isDark: isDark, context: context),
+                                isDark: isDark,
+                                languageCode: languageCode,
+                                downloadManagerStyle: ayahDownloadManagerStyle,
+                              )
+                            : const SizedBox.shrink(),
+                    kIsWeb && !isTasmee
                         ? JumpingPageControllerWidget(
                             backgroundColor: backgroundColor,
                             isDark: isDark,
@@ -886,7 +906,7 @@ class _ControlWidget extends StatelessWidget {
                             isFontsLocal: isFontsLocal,
                           )
                         : const SizedBox.shrink(),
-                    isShowTabBar!
+                    isShowTabBar! && !isTasmee
                         ? Positioned(
                             top: 70,
                             child: QuranOrTenRecitationsTabBar(
@@ -900,7 +920,7 @@ class _ControlWidget extends StatelessWidget {
                         : const SizedBox.shrink(),
                     // شريط اختيار وضع العرض - يظهر على الجانب
                     // Display mode selector bar - appears on the side
-                    if (isShowDisplayModeBar!)
+                    if (isShowDisplayModeBar! && !isTasmee)
                       Positioned(
                         right: 8,
                         top: 0,
@@ -913,13 +933,14 @@ class _ControlWidget extends StatelessWidget {
                         ),
                       ),
                     // شريط التحكم بسرعة السكرول التلقائي — يبقى ظاهرًا بشكل مستقل
-                    AutoScrollSpeedSlider(
-                      isDark: isDark,
-                      autoScrollStyle: autoScrollStyle ??
-                          AutoScrollStyle.defaults(
-                              isDark: isDark, context: context),
-                      languageCode: languageCode,
-                    ),
+                    if (!isTasmee)
+                      AutoScrollSpeedSlider(
+                        isDark: isDark,
+                        autoScrollStyle: autoScrollStyle ??
+                            AutoScrollStyle.defaults(
+                                isDark: isDark, context: context),
+                        languageCode: languageCode,
+                      ),
                   ],
                 ),
               ),
@@ -1015,7 +1036,7 @@ class _ItemBuilderWidget extends StatelessWidget {
             showAyahBookmarkedIcon: showAyahBookmarkedIcon,
             onAyahLongPress: onAyahLongPress,
             bookmarksColor: bookmarksColor,
-                                  customBookmarksColor: customBookmarksColor,
+            customBookmarksColor: customBookmarksColor,
             surahNameStyle: surahNameStyle,
             bannerStyle: bannerStyle,
             basmalaStyle: basmalaStyle,

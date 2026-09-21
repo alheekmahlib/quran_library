@@ -85,6 +85,7 @@ class PageBuild extends StatelessWidget {
         fit: BoxFit.scaleDown,
         child: Column(
           mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: blocks.map((b) {
             // عند عرض سورة واحدة: نتجاهل الهيدر/البسملة من الـ layout ونتركها للـ SurahPage.
             if (surahFilterNumber != null &&
@@ -137,7 +138,7 @@ class PageBuild extends StatelessWidget {
                   showAyahBookmarkedIcon: showAyahBookmarkedIcon,
                   bookmarksAyahs: bookmarksAyahs,
                   bookmarksColor: bookmarksColor,
-                                  customBookmarksColor: customBookmarksColor,
+                  customBookmarksColor: customBookmarksColor,
                   ayahSelectedBackgroundColor: ayahSelectedBackgroundColor,
                   context: context,
                   quranCtrl: quranCtrl,

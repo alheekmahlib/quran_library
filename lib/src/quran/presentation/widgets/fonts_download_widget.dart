@@ -42,67 +42,69 @@ class FontsDownloadWidget extends StatelessWidget {
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          HeaderDialogWidget(
-            isDark: isDark,
-            title: downloadFontsDialogStyle?.headerTitle ?? 'الخطوط',
-            titleColor: downloadFontsDialogStyle?.titleColor,
-            closeIconColor: downloadFontsDialogStyle?.closeIconColor,
-            backgroundGradient: downloadFontsDialogStyle?.backgroundGradient,
-          ),
-          const SizedBox(height: 8.0),
-          context.horizontalDivider(
-            width: MediaQuery.sizeOf(context).width * .5,
-            color: dividerColor,
-          ),
-          const SizedBox(height: 10.0),
-          Text(
-            downloadFontsDialogStyle?.notes ??
-                'لجعل مظهر المصحف مشابه لمصحف المدينة يمكنك تحميل خطوط المصحف',
-            style: downloadFontsDialogStyle?.notesStyle ??
-                TextStyle(
-                  fontSize: 14.0,
-                  fontFamily: 'cairo',
-                  color: notesColor,
-                  height: 1.5,
-                  package: 'quran_library',
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            HeaderDialogWidget(
+              isDark: isDark,
+              title: downloadFontsDialogStyle?.headerTitle ?? 'الخطوط',
+              titleColor: downloadFontsDialogStyle?.titleColor,
+              closeIconColor: downloadFontsDialogStyle?.closeIconColor,
+              backgroundGradient: downloadFontsDialogStyle?.backgroundGradient,
+            ),
+            const SizedBox(height: 8.0),
+            context.horizontalDivider(
+              width: MediaQuery.sizeOf(context).width * .5,
+              color: dividerColor,
+            ),
+            const SizedBox(height: 10.0),
+            Text(
+              downloadFontsDialogStyle?.notes ??
+                  'لجعل مظهر المصحف مشابه لمصحف المدينة يمكنك تحميل خطوط المصحف',
+              style: downloadFontsDialogStyle?.notesStyle ??
+                  TextStyle(
+                    fontSize: 14.0,
+                    fontFamily: 'cairo',
+                    color: notesColor,
+                    height: 1.5,
+                    package: 'quran_library',
+                  ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 20),
+            Column(
+              children: List.generate(
+                QuranRecitation.values.length,
+                (i) => _FontsRecitationTile(
+                  recitation: QuranRecitation.values[i],
+                  ctrl: effectiveCtrl,
+                  languageCode: languageCode,
+                  isDark: isDark,
+                  isFontsLocal: isFontsLocal,
+                  style: downloadFontsDialogStyle,
+                  accent: accent,
+                  background: background,
+                  outlineColor: outlineColor,
+                  textColor: textColor,
                 ),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 20),
-          Column(
-            children: List.generate(
-              QuranRecitation.values.length,
-              (i) => _FontsRecitationTile(
-                recitation: QuranRecitation.values[i],
-                ctrl: effectiveCtrl,
-                languageCode: languageCode,
-                isDark: isDark,
-                isFontsLocal: isFontsLocal,
-                style: downloadFontsDialogStyle,
-                accent: accent,
-                background: background,
-                outlineColor: outlineColor,
-                textColor: textColor,
               ),
             ),
-          ),
-          TajweedButtonWidget(
-              background: background,
+            TajweedButtonWidget(
+                background: background,
+                outlineColor: outlineColor,
+                downloadFontsDialogStyle: downloadFontsDialogStyle,
+                textColor: textColor,
+                accent: accent),
+            AutoScrollSettingsWidget(
+              isDark: isDark,
+              accent: accent,
               outlineColor: outlineColor,
-              downloadFontsDialogStyle: downloadFontsDialogStyle,
               textColor: textColor,
-              accent: accent),
-          AutoScrollSettingsWidget(
-            isDark: isDark,
-            accent: accent,
-            outlineColor: outlineColor,
-            textColor: textColor,
-          ),
-        ],
+            ),
+          ],
+        ),
       ),
     );
   }

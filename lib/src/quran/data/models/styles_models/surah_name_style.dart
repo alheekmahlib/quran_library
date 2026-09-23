@@ -25,7 +25,7 @@ class SurahNameStyle {
         MediaQuery.of(context).orientation == Orientation.landscape;
     return SurahNameStyle(
       surahNameColor: AppColors.getTextColor(isDark),
-      surahNameSize: isLandscape ? 120.0.sp : 40.0.sp,
+      surahNameSize: isLandscape ? 80.0.sp : 40.0.sp,
     );
   }
 }

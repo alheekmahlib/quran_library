@@ -1,4 +1,10 @@
 
+## 5.0.1
+
+* **FIX:**
+  * Fix Surah name size.
+  * Fix setting RenderFlex overflowed in landscape mode.
+
 ## 5.0.0
 
 ### Added

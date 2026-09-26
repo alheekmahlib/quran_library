@@ -1,7 +1,7 @@
 name: quran_library
 description: "An integrated package for displaying the Holy Qur’an identical to
   the Medina Quran with the narration of Hafs on the authority of Asim."
-version: 5.0.1
+version: 5.0.2
 homepage: https://github.com/alheekmahlib/quran_library
 documentation: https://quran-library.vexaltech.dev/
 
@@ -24,30 +24,18 @@ dependencies:
   html: ^0.15.7
   just_audio: ^0.10.6
   just_audio_media_kit: ^2.1.0
-  # media_kit_libs_windows_audio: ^1.0.9  # Commented out for WASM compatibility
   path: ^1.9.1
   path_provider: ^2.1.6
-  # تسميع بالذكاء الاصطناعي: تسجيل الميكروفون / AI tasmee: mic recording
+  preload_page_view: ^0.2.0
   record: ^7.1.1
   rxdart: ^0.28.0
-  preload_page_view: ^0.2.0
-  # محرك التسميع المحلي (ONNX) — تثبيت مطابق للأصول الأصلية:
-  # إصدارات 1.13.x من طبقة Dart تتطلب رموزًا أصلية 1.13 غير موجودة في
-  # أصول 1.13.8 (يفشل initBindings)، و1.13 يكسر البثّ على macOS arm64.
-  # Dart + natives يجب أن يكونا 1.13.8 معًا.
   sherpa_onnx: 1.13.8
-  # تثبيت الأصول الأصلية نفسها (تبعيات مباشرة لا overrides — الـ overrides
-  # لا تنتقل من مكتبة إلى تطبيق مستهلك، بينما قيود التبعيات المباشرة تُحترم
-  # في حل أي تطبيق يستخدم هذه المكتبة).
-  # Pin the native endorsers themselves (regular dependencies, NOT
-  # overrides — overrides don't propagate to host apps, but exact
-  # dependency constraints do via the version solver).
-  sherpa_onnx_ios: 1.13.8
-  sherpa_onnx_macos: 1.13.8
   sherpa_onnx_android_arm64: 1.13.8
   sherpa_onnx_android_armeabi: 1.13.8
   sherpa_onnx_android_x86: 1.13.8
   sherpa_onnx_android_x86_64: 1.13.8
+  sherpa_onnx_ios: 1.13.8
+  sherpa_onnx_macos: 1.13.8
 
 # This package supports all platforms listed below.
 # But note that it works and fits on mobile size devices
@@ -61,9 +49,9 @@ platforms:
   windows:
 
 dev_dependencies:
+  flutter_lints: ^6.0.0
   flutter_test:
     sdk: flutter
-  flutter_lints: ^6.0.0
   path_provider_platform_interface: ^2.1.2
 
 package_rename_config:

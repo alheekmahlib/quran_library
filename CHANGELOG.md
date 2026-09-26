@@ -1,4 +1,12 @@
 
+## 5.0.2
+
+* **FIX:**
+  * Fixed a crash when ayah recitation crosses a page boundary while auto-scroll mode is active: the page flip is skipped (the vertical list keeps scrolling on its own), playback continues to the next ayah, and the highlight moves with it. Previously the error also aborted the playlist-extension logic, stopping recitation entirely.
+  * Skip-next/skip-previous ayah buttons no longer crash when crossing a page boundary while auto-scroll is paused; page movement is skipped whenever the horizontal page controller has no attached view.
+  * Reduced the Basmala font size in landscape mode from `80.0.sp` to `60.0.sp` so it no longer overflows the screen.
+  * Added vertical padding (`6.0`) around the single-ayah text (`GetSingleAyah`) for better visual spacing.
+
 ## 5.0.1
 
 * **FIX:**

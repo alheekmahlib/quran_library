@@ -3,6 +3,13 @@
 part of '../../audio.dart';
 
 extension AyahCtrlExtension on AudioCtrl {
+  /// التمرير التلقائي فعّال؟ لا يوجد PageView أفقي متصل بـ
+  /// quranPagesController في هذا الوضع (العرض ListView عمودي)،
+  /// فأي استدعاء animateToPage عليه يرمي خطأ.
+  bool get _isAutoScrollActive =>
+      Get.isRegistered<AutoScrollCtrl>() &&
+      AutoScrollCtrl.instance.state.isActive.value;
+
   /// single Ayah
   ///
   Future<void> _playSingleAyahFile(
@@ -215,19 +222,26 @@ extension AyahCtrlExtension on AudioCtrl {
             .toggleAyahSelection(state.currentAyahUniqueNumber.value);
 
         // إن تغيّرت الصفحة، حرّك صفحات المصحف بسلاسة
+        // في وضع التمرير التلقائي لا نقلب الصفحة: التلاوة تتابع للآية التالية
+        // والقائمة العمودية تتكفل بالتمرير، والمتحكم الأفقي غير متصل بأي عرض.
         if (prevAyahUQ != null) {
           final prevPage =
               QuranCtrl.instance.getPageNumberByAyahUqNumber(prevAyahUQ);
           final newPage = QuranCtrl.instance
               .getPageNumberByAyahUqNumber(state.currentAyahUniqueNumber.value);
           if (newPage != prevPage) {
-            log('Page changed: $prevPage -> $newPage, animating...',
-                name: 'AudioController');
-            // animateToPage يستقبل فهرسًا صفريًا
-            await QuranCtrl.instance.quranPagesController.animateToPage(
-                newPage - 1,
-                duration: const Duration(milliseconds: 600),
-                curve: Curves.easeInOut);
+            if (_isAutoScrollActive) {
+              log('Page changed: $prevPage -> $newPage, auto-scroll active — skipping page flip',
+                  name: 'AudioController');
+            } else if (QuranCtrl.instance.quranPagesController.hasClients) {
+              log('Page changed: $prevPage -> $newPage, animating...',
+                  name: 'AudioController');
+              // animateToPage يستقبل فهرسًا صفريًا
+              await QuranCtrl.instance.quranPagesController.animateToPage(
+                  newPage - 1,
+                  duration: const Duration(milliseconds: 600),
+                  curve: Curves.easeInOut);
+            }
           }
         }
 
@@ -421,6 +435,11 @@ extension AyahCtrlExtension on AudioCtrl {
   }
 
   Future<void> moveToNextPage({int? customPageIndex}) {
+    // لا حركة صفحات في وضع التمرير التلقائي أو دون عرض متصل بالمتحكم
+    if (_isAutoScrollActive ||
+        !QuranCtrl.instance.quranPagesController.hasClients) {
+      return Future.value();
+    }
     return QuranCtrl.instance.quranPagesController.animateToPage(
         (customPageIndex ?? QuranCtrl.instance.state.currentPageNumber.value),
         duration: const Duration(milliseconds: 600),
@@ -428,6 +447,11 @@ extension AyahCtrlExtension on AudioCtrl {
   }
 
   Future<void> moveToPreviousPage({bool withScroll = true}) {
+    // لا حركة صفحات في وضع التمرير التلقائي أو دون عرض متصل بالمتحكم
+    if (_isAutoScrollActive ||
+        !QuranCtrl.instance.quranPagesController.hasClients) {
+      return Future.value();
+    }
     return QuranCtrl.instance.quranPagesController.animateToPage(
         (QuranCtrl.instance.state.currentPageNumber.value - 2),
         duration: const Duration(milliseconds: 600),

@@ -44,7 +44,7 @@ class BasmalaStyle {
         MediaQuery.of(context).orientation == Orientation.landscape;
     return BasmalaStyle(
       basmalaColor: AppColors.getTextColor(isDark),
-      basmalaFontSize: isLandscape ? 80.0.sp : 20.0.sp,
+      basmalaFontSize: isLandscape ? 60.0.sp : 20.0.sp,
       verticalPadding: 0.0,
     );
   }

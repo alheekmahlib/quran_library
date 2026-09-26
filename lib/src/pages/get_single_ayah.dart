@@ -209,57 +209,60 @@ class GetSingleAyah extends StatelessWidget {
     final ayahBookmarked = bookmarksAyahs.toList();
     final allBookmarksList = bookmarks.values.expand((list) => list).toList();
 
-    return RichText(
-      textDirection: TextDirection.rtl,
-      textAlign: textAlign ?? TextAlign.right,
-      softWrap: true,
-      overflow: TextOverflow.visible,
-      maxLines: null,
-      text: TextSpan(
-        children: List.generate(segments.length, (segmentIndex) {
-          final seg = segments[segmentIndex];
-          final uq = seg.ayahUq;
-          final isSelectedCombined =
-              quranCtrl.selectedAyahsByUnequeNumber.contains(uq) ||
-                  quranCtrl.externallyHighlightedAyahs.contains(uq);
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6.0),
+      child: RichText(
+        textDirection: TextDirection.rtl,
+        textAlign: textAlign ?? TextAlign.right,
+        softWrap: true,
+        overflow: TextOverflow.visible,
+        maxLines: null,
+        text: TextSpan(
+          children: List.generate(segments.length, (segmentIndex) {
+            final seg = segments[segmentIndex];
+            final uq = seg.ayahUq;
+            final isSelectedCombined =
+                quranCtrl.selectedAyahsByUnequeNumber.contains(uq) ||
+                    quranCtrl.externallyHighlightedAyahs.contains(uq);
 
-          final ref = WordRef(
-            surahNumber: seg.surahNumber,
-            ayahNumber: seg.ayahNumber,
-            wordNumber: seg.wordNumber,
-          );
+            final ref = WordRef(
+              surahNumber: seg.surahNumber,
+              ayahNumber: seg.ayahNumber,
+              wordNumber: seg.wordNumber,
+            );
 
-          final info = wordInfoCtrl.getRecitationsInfoSync(ref);
-          final hasKhilaf = info?.hasKhilaf ?? false;
+            final info = wordInfoCtrl.getRecitationsInfoSync(ref);
+            final hasKhilaf = info?.hasKhilaf ?? false;
 
-          return _qpcV4SpanSegment(
-            context: context,
-            pageIndex: pageNumber - 1,
-            isSelected: isSelectedCombined,
-            showAyahBookmarkedIcon: showAyahBookmarkedIcon,
-            fontSize: fontSize,
-            ayahUQNum: uq,
-            ayahNumber: seg.ayahNumber,
-            glyphs: seg.glyphs,
-            showAyahNumber: (showAyahNumber ?? true) && seg.isAyahEnd,
-            wordRef: ref,
-            isWordKhilaf: hasKhilaf,
-            textColor: textColor ?? AppColors.getTextColor(isDark ?? false),
-            ayahIconColor: ayahIconColor,
-            allBookmarksList: allBookmarksList,
-            bookmarksAyahs: bookmarksAyahs,
-            bookmarksColor: bookmarksColor,
-            customBookmarksColor: customBookmarksColor,
-            ayahSelectedBackgroundColor: ayahSelectedBackgroundColor,
-            isFontsLocal: islocalFont ?? false,
-            fontsName: fontsName ?? '',
-            fontFamilyOverride: null,
-            fontPackageOverride: null,
-            usePaintColoring: true,
-            ayahBookmarked: ayahBookmarked,
-            isDark: isDark ?? false,
-          );
-        }),
+            return _qpcV4SpanSegment(
+              context: context,
+              pageIndex: pageNumber - 1,
+              isSelected: isSelectedCombined,
+              showAyahBookmarkedIcon: showAyahBookmarkedIcon,
+              fontSize: fontSize,
+              ayahUQNum: uq,
+              ayahNumber: seg.ayahNumber,
+              glyphs: seg.glyphs,
+              showAyahNumber: (showAyahNumber ?? true) && seg.isAyahEnd,
+              wordRef: ref,
+              isWordKhilaf: hasKhilaf,
+              textColor: textColor ?? AppColors.getTextColor(isDark ?? false),
+              ayahIconColor: ayahIconColor,
+              allBookmarksList: allBookmarksList,
+              bookmarksAyahs: bookmarksAyahs,
+              bookmarksColor: bookmarksColor,
+              customBookmarksColor: customBookmarksColor,
+              ayahSelectedBackgroundColor: ayahSelectedBackgroundColor,
+              isFontsLocal: islocalFont ?? false,
+              fontsName: fontsName ?? '',
+              fontFamilyOverride: null,
+              fontPackageOverride: null,
+              usePaintColoring: true,
+              ayahBookmarked: ayahBookmarked,
+              isDark: isDark ?? false,
+            );
+          }),
+        ),
       ),
     );
   }

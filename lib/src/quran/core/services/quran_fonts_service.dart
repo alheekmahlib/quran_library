@@ -2,9 +2,9 @@ part of '/quran.dart';
 
 /// خدمة تحميل كسول (lazy) وتسجيل خطوط QCF4 المضغوطة (tajweed).
 ///
-/// الخطوط مخزّنة كملفات `.ttf.gz` في assets. عند الحاجة يتم فك ضغطها
-/// وتسجيلها عبر [loadFontFromList]. تُحفظ النسخ المفكوكة على القرص
-/// (على المنصات غير الويب) لتسريع التشغيلات اللاحقة.
+/// الخطوط تُنزَّل كملفات `.ttf.gz` من المرايا في [_fontBaseUrls] بدل أن تُحزم
+/// في التطبيق (65 MB). عند الحاجة يتم فك ضغطها وتسجيلها عبر [loadFontFromList]،
+/// وتُحفظ النسخ المفكوكة على القرص (على المنصات غير الويب) فلا يُعاد التنزيل.
 ///
 /// **التحميل الكسول**: تُحمّل فقط الصفحات القريبة من الصفحة الحالية،
 /// ثم تُكمَل بقية الصفحات في الخلفية تدريجيًا.
@@ -15,8 +15,8 @@ class QuranFontsService {
 
   /// إصدار كاش الخطوط المفكوكة على القرص.
   ///
-  /// يُرفع هذا الرقم عند أي تحديث لملفات الخطوط في assets كي تُبطَل
-  /// النسخ المفكوكة القديمة لدى المستخدمين القدامى وتُعاد من الـ assets
+  /// يُرفع هذا الرقم عند أي تحديث لمحتوى ملفات الخطوط كي تُبطَل
+  /// النسخ المفكوكة القديمة لدى المستخدمين القدامى وتُعاد من المرايا
   /// تلقائيًا (فحص الوجود وحده لا يكشف تغيّر محتوى الخط).
   ///
   /// بدأ من 2 لأن 4.2.0 حدّثت خطوط 80+ صفحة بينما كاش الإصدارات
@@ -82,31 +82,55 @@ class QuranFontsService {
   /// يقرأ كاش القرص إن وُجد (مثل [_loadSinglePage])، يرقّع كل ألوان CPAL
   /// إلى شفاف تمامًا، ويسجّل العائلة `page{N}t`. يُعيد false عند الفشل
   /// (يتراجع العرض عندها إلى حذف مقاطع الكلمات المخفية).
-  static Future<bool> ensureTransparentFont(int page) {
-    if (_transparentLoadedPages.contains(page)) return Future.value(true);
+  static Future<bool> ensureTransparentFont(int page) async {
+    if (_transparentLoadedPages.contains(page)) return true;
     try {
       final familyName = 'page$page';
-      return _decompressFromAsset(page).then((fontBytes) async {
-        final transparentBytes = _modifyCpalAllColors(
-          Uint8List.fromList(fontBytes),
-          const Color(0x00000000), // شفاف بالكامل — الألفا 0.
-        );
-        await loadFontFromList(transparentBytes, fontFamily: '${familyName}t');
-        _transparentLoadedPages.add(page);
-        return true;
-      });
+      final fontBytes = await _fontBytesFor(page, await _ensureCacheDir());
+      final transparentBytes = _modifyCpalAllColors(
+        Uint8List.fromList(fontBytes),
+        const Color(0x00000000), // شفاف بالكامل — الألفا 0.
+      );
+      await loadFontFromList(transparentBytes, fontFamily: '${familyName}t');
+      _transparentLoadedPages.add(page);
+      return true;
     } catch (e, st) {
       log('QuranFontsService: transparent font failed for page $page: $e',
           name: 'QuranFontsService', stackTrace: st);
-      return Future.value(false);
+      return false;
     }
   }
 
-  /// مسار الـ asset المضغوط للصفحة (1-based).
-  static String _assetPath(int page) {
+  /// مرايا ملفات `.ttf.gz` بالترتيب: jsDelivr أولًا (كاش CDN أوسع)، ثم
+  /// GitHub الخام احتياطًا عند بلوغ حدود المعدّل. المسار مثبَّت على وسم
+  /// المستودع فلا يتغيّر محتوى الخط دون رفع [_cacheVersion].
+  static const List<String> _fontBaseUrls = <String>[
+    'https://cdn.jsdelivr.net/gh/Imad-Ainine/quran_library@v5.0.1-hydro.1/'
+        'assets/fonts/quran_fonts_qfc4/',
+    'https://raw.githubusercontent.com/Imad-Ainine/quran_library/'
+        'v5.0.1-hydro.1/assets/fonts/quran_fonts_qfc4/',
+  ];
+
+  static const Duration _fontConnectTimeout = Duration(seconds: 15);
+  static const Duration _fontReceiveTimeout = Duration(seconds: 60);
+
+  /// Dio مشترك بين كل الصفحات لإعادة استخدام الاتصال.
+  static Dio? _fontDio;
+
+  static Dio get _http {
+    final existing = _fontDio;
+    if (existing != null) return existing;
+    final created = Dio()
+      ..options.connectTimeout = _fontConnectTimeout
+      ..options.receiveTimeout = _fontReceiveTimeout;
+    _fontDio = created;
+    return created;
+  }
+
+  /// اسم الملف المضغوط للصفحة (1-based).
+  static String _fontFileName(int page) {
     final padded = page.toString().padLeft(3, '0');
-    return 'packages/quran_library/assets/fonts/quran_fonts_qfc4/'
-        'QCF4${padded}_COLOR-Regular.ttf.gz';
+    return 'QCF4${padded}_COLOR-Regular.ttf.gz';
   }
 
   // ---------------------------------------------------------------------------
@@ -270,26 +294,8 @@ class QuranFontsService {
     // منع التكرار عند الاستدعاء المتزامن لنفس الصفحة
     return _pageLoadFutures.putIfAbsent(page, () async {
       try {
-        Uint8List fontBytes;
         final familyName = 'page$page';
-
-        // جرّب قراءة الكاش أولاً
-        if (cacheDir != null) {
-          final cachedFile = File('${cacheDir.path}/$familyName.ttf');
-          if (cachedFile.existsSync()) {
-            fontBytes = Uint8List.fromList(await cachedFile.readAsBytes());
-          } else {
-            fontBytes = await _decompressFromAsset(page);
-            try {
-              await cachedFile.writeAsBytes(fontBytes, flush: true);
-            } catch (e) {
-              log('QuranFontsService: cache write failed for page $page: $e',
-                  name: 'QuranFontsService');
-            }
-          }
-        } else {
-          fontBytes = await _decompressFromAsset(page);
-        }
+        final fontBytes = await _fontBytesFor(page, cacheDir);
 
         // 1. خط فاتح أصلي
         await loadFontFromList(fontBytes, fontFamily: familyName);
@@ -326,17 +332,71 @@ class QuranFontsService {
       } catch (e, st) {
         log('QuranFontsService: failed to load font page $page: $e',
             name: 'QuranFontsService', stackTrace: st);
+        // مع التنزيل المؤقت يجب أن تُعاد المحاولة لاحقًا: لو بقي الـ future
+        // الفاشل في الخريطة فلن تطلب الصفحة مرة أخرى أبدًا في هذا التشغيل.
+        _pageLoadFutures.remove(page);
       }
     });
   }
 
-  /// فك ضغط ملف `.ttf.gz` من الـ assets.
-  static Future<Uint8List> _decompressFromAsset(int page) async {
-    final data = await rootBundle.load(_assetPath(page));
-    final gzBytes =
-        data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
-    final decompressed = const GZipDecoder().decodeBytes(gzBytes);
-    return Uint8List.fromList(decompressed);
+  /// بيانات خط الصفحة: من كاش القرص إن وُجد، وإلا تنزيل + فك ضغط ثم تخزين.
+  ///
+  /// يُستخدم هذا المسار نفسه لمتغير التجويد العادي وللشفاف (وضع التسميع)
+  /// كي لا يُنزَّل الملف مرتين.
+  static Future<Uint8List> _fontBytesFor(int page, Directory? cacheDir) async {
+    if (cacheDir != null) {
+      final cachedFile = File('${cacheDir.path}/page$page.ttf');
+      if (cachedFile.existsSync()) {
+        return Uint8List.fromList(await cachedFile.readAsBytes());
+      }
+      final fontBytes = await _downloadAndDecompress(page);
+      try {
+        await cachedFile.writeAsBytes(fontBytes, flush: true);
+      } catch (e) {
+        log('QuranFontsService: cache write failed for page $page: $e',
+            name: 'QuranFontsService');
+      }
+      return fontBytes;
+    }
+    return _downloadAndDecompress(page);
+  }
+
+  /// تنزيل ملف `.ttf.gz` من المرايا وفك ضغطه.
+  ///
+  /// تُرفض الاستجابة غير الـ200 وكل جسم ليس GZip فعلًا (صفحة خطأ)، فلا يصل
+  /// محتوى تالف إلى كاش القرص ولا إلى `loadFontFromList`.
+  static Future<Uint8List> _downloadAndDecompress(int page) async {
+    final fileName = _fontFileName(page);
+    String? failure;
+    for (final base in _fontBaseUrls) {
+      final url = '$base$fileName';
+      try {
+        final response = await _http.get<Uint8List>(
+          url,
+          options: Options(
+            responseType: ResponseType.bytes,
+            headers: const <String, String>{'Accept-Encoding': 'identity'},
+          ),
+        );
+        final gzBytes = response.data;
+        if (response.statusCode != 200 ||
+            gzBytes == null ||
+            gzBytes.length < 2) {
+          failure = 'HTTP ${response.statusCode} from $url';
+          continue;
+        }
+        if (gzBytes[0] != 0x1f || gzBytes[1] != 0x8b) {
+          failure = 'non-gzip body from $url';
+          continue;
+        }
+        return Uint8List.fromList(const GZipDecoder().decodeBytes(gzBytes));
+      } catch (e) {
+        failure = '$e ($url)';
+        log('QuranFontsService: mirror failed: $url: $e',
+            name: 'QuranFontsService');
+      }
+    }
+    throw StateError('QCF font page $page unavailable: $failure');
   }
 
   // ---------------------------------------------------------------------------

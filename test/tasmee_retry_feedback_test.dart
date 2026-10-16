@@ -198,6 +198,73 @@ void main() {
     });
   });
 
+  group('isWordRetryAcceptable — القبول النسبي (دقة الوحدات ≥ 85%)', () {
+    test('خطأ حرف رادع مع دقة 0.90 → مقبولة', () {
+      // كلمة طويلة يخطئ فيها التعرف وحدةً واحدة رغم صحة النطق مرارًا.
+      const result = RecitationResult(
+        uthmaniText: 'كلمة',
+        unitAccuracy: 0.90,
+        errors: [
+          RecitationError(
+              errorType: 'normal',
+              speechErrorType: 'replace',
+              expectedPh: 'س',
+              predictedPh: 'ص'),
+        ],
+      );
+      expect(isWordRetryAcceptable(result), isTrue);
+    });
+
+    test('خطأ حرف رادع مع دقة 0.84 → مرفوضة (دون الحد)', () {
+      const result = RecitationResult(
+        uthmaniText: 'كلمة',
+        unitAccuracy: 0.84,
+        errors: [
+          RecitationError(
+              errorType: 'normal',
+              speechErrorType: 'replace',
+              expectedPh: 'س',
+              predictedPh: 'ص'),
+        ],
+      );
+      expect(isWordRetryAcceptable(result), isFalse);
+    });
+
+    test('حدّ 0.85 بالضبط → مقبولة (الحد شامل)', () {
+      const result = RecitationResult(
+        uthmaniText: 'كلمة',
+        unitAccuracy: kWordRetryMinUnitAccuracy,
+        errors: [
+          RecitationError(
+              errorType: 'normal', speechErrorType: 'delete', expectedPh: 'س'),
+        ],
+      );
+      expect(isWordRetryAcceptable(result), isTrue);
+    });
+
+    test('خطأ حرف بلا دقة وحدات (خادم/مسار قديم) → مرفوضة — يبقى صارمًا', () {
+      const result = RecitationResult(
+        uthmaniText: 'كلمة',
+        errors: [
+          RecitationError(
+              errorType: 'normal',
+              speechErrorType: 'replace',
+              expectedPh: 'س',
+              predictedPh: 'ص'),
+        ],
+      );
+      expect(isWordRetryAcceptable(result), isFalse);
+    });
+
+    test('دقة عالية مع بلا تطابق → مرفوضة (hasMatch أولًا)', () {
+      const result = RecitationResult(
+        noMatchMessage: 'لم يُعثر على تطابق',
+        unitAccuracy: 0.95,
+      );
+      expect(isWordRetryAcceptable(result), isFalse);
+    });
+  });
+
   group('isRecitationAcceptable — إتقان الآية/الصفحة (حلقة المعلم)', () {
     test('تشكيل ومدّ فقط → مقبولة (لا تُعيد الآية إلى ما لا نهاية)', () {
       const result = RecitationResult(

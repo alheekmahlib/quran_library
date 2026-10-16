@@ -104,6 +104,19 @@ void main() {
       expect(dropTrailingDeletes(alignUnits([u('بِ'), u('س')], <QuranUnit>[])),
           isEmpty);
     });
+
+    test('maxUnits: حذف ختامي واحد يُغتفر بسقف 1', () {
+      // سقوط وحدة الذيل من التعرف (حدّ CTC في نطق كلمة معزولة).
+      final ops = alignUnits([u('بِ'), u('س'), u('مِ')], [u('بِ'), u('س')]);
+      final filtered = dropTrailingDeletes(ops, maxUnits: 1);
+      expect(filtered.map((o) => o.type), ['match', 'match']);
+    });
+
+    test('maxUnits: حذفان ختاميان لا يُغتفران بسقف 1', () {
+      final ops = alignUnits([u('بِ'), u('س'), u('مِ')], [u('بِ')]);
+      expect(dropTrailingDeletes(ops, maxUnits: 1).length, 3,
+          reason: 'سلسلة طولها 2 تتجاوز السقف فتبقى');
+    });
   });
 
   group('dropTrailingInserts — ضوضاء الختام لكلمة منفردة', () {
@@ -205,6 +218,19 @@ void main() {
     test('كله حذوف → فارغ', () {
       expect(dropLeadingDeletes(alignUnits([u('بِ'), u('س')], <QuranUnit>[])),
           isEmpty);
+    });
+
+    test('maxUnits: حذف بادئ واحد يُغتفر بسقف 1', () {
+      // سقوط وحدة البداية من التعرف (حدّ CTC في نطق كلمة معزولة).
+      final ops = alignUnits([u('بِ'), u('س'), u('مِ')], [u('س'), u('مِ')]);
+      final filtered = dropLeadingDeletes(ops, maxUnits: 1);
+      expect(filtered.map((o) => o.type), ['match', 'match']);
+    });
+
+    test('maxUnits: حذفان بادئان لا يُغتفران بسقف 1', () {
+      final ops = alignUnits([u('بِ'), u('س'), u('مِ')], [u('مِ')]);
+      expect(dropLeadingDeletes(ops, maxUnits: 1).length, 3,
+          reason: 'سلسلة طولها 2 تتجاوز السقف فتبقى');
     });
   });
 

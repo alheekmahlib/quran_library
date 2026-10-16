@@ -682,6 +682,7 @@ class TasmeeCtrl extends GetxController {
       log('TasmeeCtrl corrector paused, opening sheet', name: 'TasmeeCtrl');
       state.wordRetryOutcome.value = null;
       state.wordRetryFeedback.value = null;
+      state.wordRetryAttempts.value = 0;
       state.activeWordCorrection.value = TasmeeWordCorrection(
         key: _wordKey(verseIdx, wordIdx),
         wordText: wordText,
@@ -732,6 +733,7 @@ class TasmeeCtrl extends GetxController {
         state.wordRetryOutcome.value = ok
             ? TasmeeWordRetryOutcome.correct
             : TasmeeWordRetryOutcome.incorrect;
+        if (!ok) state.wordRetryAttempts.value++;
         // خطأ هذه المحاولة بالذات (قد يختلف عن خطأ التلاوة الأول:
         // أصلح المستخدم النطق فصار الخطأ تشكيلًا أو تجويدًا) — يُعرض
         // في الشيت ليعرف ما يصحّحه الآن.
@@ -781,6 +783,7 @@ class TasmeeCtrl extends GetxController {
     }
     state.wordRetryOutcome.value = null;
     state.wordRetryFeedback.value = null;
+    state.wordRetryAttempts.value = 0;
     state.activeWordCorrection.value = null;
     final session = _session;
     if (session != null &&
@@ -874,6 +877,7 @@ class TasmeeCtrl extends GetxController {
       errors: filtered,
       noMatchMessage: result.noMatchMessage,
       matchedWordSpans: result.matchedWordSpans,
+      unitAccuracy: result.unitAccuracy,
     );
   }
 

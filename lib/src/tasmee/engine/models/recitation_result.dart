@@ -16,6 +16,7 @@ class RecitationResult {
     this.errors = const [],
     this.noMatchMessage,
     this.matchedWordSpans = const [],
+    this.unitAccuracy,
   });
 
   /// موضع بداية التطابق في المصحف (سورة، آية، كلمة، حرف).
@@ -54,6 +55,15 @@ class RecitationResult {
   /// Words covered by final-alignment matches (verse/word indexes 0-based
   /// within the session range) — offline range mode only.
   final List<({int verseIdx, int wordIdx})> matchedWordSpans;
+
+  /// دقة مطابقة الوحدات (0.0–1.0) من إحصاءات المحاذاة بعد التسامحات —
+  /// وضع offline فقط (null من الخادم). أساس القبول النسبي لإعادة نطق
+  /// كلمة معزولة حين يخطئ النموذج وحدةً واحدة رغم صحة النطق.
+  ///
+  /// Unit-level alignment accuracy (0.0–1.0) after tolerances — offline
+  /// engine only (null from the server). Basis for ratio-based word-retry
+  /// acceptance.
+  final double? unitAccuracy;
 
   /// هل وُجد تطابق في القرآن؟
   /// Was a match found in the Quran?

@@ -604,6 +604,142 @@ void main() {
           reason: 'كل كلمات الآية الثانية تكتمل');
     });
   });
+
+  group('RangeLiveTracker — ترتيب الأحداث وحراسة الإرساء', () {
+    int spanIndex(int v, int w) =>
+        range.wordSpans.indexWhere((s) => s.verseIdx == v && s.wordIdx == w);
+
+    test('اكتمال الكلمات المتخطاة يُبلَّغ قبل الكلمة الهابطة (ترتيب قرائي)',
+        () {
+      // انزلاق كبير: القفز كان يُبرز الكلمة الهابطة current قبل وسم
+      // الكلمات المتخطاة done — فتظهر في الواجهة كلمة متأخرة قبل
+      // الكلمات التي تسبقها في التلاوة.
+      final events = <({String type, int span})>[];
+      final tracker = RangeLiveTracker(
+        range: range,
+        onRangeWord: (v, w) =>
+            events.add((type: 'current', span: spanIndex(v, w))),
+        onWordDone: (v, w, k, _) =>
+            events.add((type: 'done', span: spanIndex(v, w))),
+      );
+      const skipFrom = 20;
+      final skipTo = verses[0].units.length + verses[1].units.length + 2;
+      final pred = [
+        ...range.units.sublist(0, skipFrom),
+        ...range.units.sublist(skipTo),
+      ];
+      for (var i = 1; i <= pred.length; i++) {
+        tracker.onUnits(pred.sublist(0, i));
+      }
+      expect(events.where((e) => e.type == 'current'), isNotEmpty,
+          reason: 'السيناريو أنتج أحداث كلمة جارية');
+      var violations = 0;
+      for (var i = 0; i < events.length; i++) {
+        if (events[i].type != 'current') continue;
+        for (var j = i + 1; j < events.length; j++) {
+          if (events[j].type == 'done' && events[j].span < events[i].span) {
+            violations++;
+          }
+        }
+      }
+      expect(violations, 0,
+          reason: 'لا يُبلَّغ اكتمال كلمة سابقة بعد كلمة جارية لاحقة');
+      expect(tracker.isComplete, isTrue);
+    });
+
+    test('إرساء فوري مع انحراف حركة واحدة (نفس الحرف) لا يُسقط الإرساء', () {
+      // ارتعاج حركة من التعرف على حدود البداية شبه حتمي — إسقاط
+      // الإرساء السريع كله بسبله كان يُبقي الجلسة بلا إظهار (يُرى
+      // كفشل تعرّف في وضع المعلم حتى إعادة التلاوة).
+      final done = <(int, int, TasmeeErrorKind)>[];
+      var currentWord = -1;
+      final tracker = RangeLiveTracker(
+        range: range,
+        onRangeWord: (_, w) => currentWord = w,
+        onWordDone: (v, w, k, _) => done.add((v, w, k)),
+      );
+      final refUnit = range.units[2];
+      QuranUnit? alt;
+      for (final cand in lex.bySymbol.values) {
+        if (cand.letter == refUnit.letter &&
+            cand.symbol != refUnit.symbol &&
+            !cand.isMadd &&
+            !cand.isShadda &&
+            !cand.qalqalah &&
+            !cand.ghunna &&
+            !cand.ikhfaa) {
+          alt = cand;
+          break;
+        }
+      }
+      expect(alt, isNotNull, reason: 'المعجم يحوي حركة بديلة لنفس الحرف');
+      final pred = [
+        range.units[0],
+        range.units[1],
+        alt!,
+        range.units[3],
+        range.units[4],
+      ];
+      for (var i = 1; i <= pred.length; i++) {
+        tracker.onUnits(pred.sublist(0, i));
+      }
+      expect(tracker.isAcquiring, isFalse,
+          reason: 'انحراف حركة واحد لا يُفشل الإرساء السريع');
+      expect(tracker.firstConsumedRefIdx, 0);
+      expect(currentWord, greaterThanOrEqualTo(0),
+          reason: 'الكلمات تُبرز فور البداية لا بعد كلمتين');
+      // الوحدة المخالفة تُصنَّف تشكيلًا لا تمرّ صامتة.
+      expect(done, isNotEmpty);
+      expect(done.first.$3, TasmeeErrorKind.tashkeel);
+    });
+
+    test('سلسلة قصيرة بعيدة (خارج نافذة الإرساء) لا تقفز بالمؤشر', () {
+      // إرساء فوري ثم وحدات لا تطابق المتوقع، تحوي 4 وحدات تطابق
+      // موضعًا بعيدًا (فارق > reanchorWindowUnits) — توافق مصادفة في
+      // نص متكرر يجب ألا يقفز المؤشر إليه ويسمّ ما بينهما حذفًا.
+      final tracker = RangeLiveTracker(range: range);
+      // 1) إرساء سريع: أول 5 وحدات مطابقة.
+      for (var i = 1; i <= 5; i++) {
+        tracker.onUnits(range.units.sublist(0, i));
+      }
+      expect(tracker.isAcquiring, isFalse);
+      final anchoredAt = tracker.nextExpectedRefIdx; // 5.
+      // 2) ضوضاء: حرف غائب عن نافذة المطابقة العريضة حول المتوقع.
+      final noiseUnit = _unitWithLetterAbsentNear(lex, range.units, 5);
+      const far = 5 + 30; // أبعد من نافذة 24 → يتطلب سلسلة ≥ 5.
+      final pred = [
+        ...List.generate(8, (_) => noiseUnit),
+        ...range.units.sublist(far, far + 4), // سلسلة 4 فقط.
+      ];
+      tracker.onUnits([...range.units.sublist(0, 5), ...pred]);
+      expect(tracker.nextExpectedRefIdx, anchoredAt,
+          reason: 'قفزة بعيدة بسلسلة قصيرة توافق مصادفة — تُرفض');
+    });
+
+    test('انزلاق حقيقي بعيد بسلسلة طويلة يُقبل (الدليل المتدرج لا يمنعه)', () {
+      final done = <(int, int, TasmeeErrorKind)>[];
+      final tracker = RangeLiveTracker(
+        range: range,
+        onWordDone: (v, w, k, _) => done.add((v, w, k)),
+      );
+      // تقدّم قصير ثم مواصلة فعلية من موضع بعيد (أكثر من نافذة) —
+      // كلام المستخدم الحقيقي يولّد سلسلة طويلة فتجتاز الدليل المتدرج.
+      const skipFrom = 8;
+      final skipTo = verses[0].units.length + verses[1].units.length + 2;
+      final pred = [
+        ...range.units.sublist(0, skipFrom),
+        ...range.units.sublist(skipTo),
+      ];
+      for (var i = 1; i <= pred.length; i++) {
+        tracker.onUnits(pred.sublist(0, i));
+      }
+      final afterGap = done.where((t) => range.wordSpans.any((s) =>
+          s.verseIdx == t.$1 && s.wordIdx == t.$2 && s.startUnit >= skipTo));
+      expect(afterGap, isNotEmpty,
+          reason: 'الانزلاق الحقيقي يُستدرَك رغم الدليل المتدرج');
+      expect(tracker.isComplete, isTrue);
+    });
+  });
 }
 
 /// ينشئ وحدة استبدال حرفُها غائب عن النافذة المرجعية حول [unitIdx] —

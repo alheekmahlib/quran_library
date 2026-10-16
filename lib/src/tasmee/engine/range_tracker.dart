@@ -375,19 +375,31 @@ class RangeLiveTracker {
   }
 
   /// إرساء فوري أثناء الالتقاط: سلسلة الوحدات المتطابقة **بالرمز
-  /// الكامل** (حرفًا وحركةً) من نقطة البداية المرجَّحة — فاتحة النطاق
+  /// الكامل** (حرفًا وحركة) من نقطة البداية المرجَّحة — فاتحة النطاق
   /// عند بدء الجلسة، أو موضع المؤشر بعد إغلاق شيت المصحّح (الاستئناف
   /// المعتاد من الكلمة التالية). يلغي تأخّر الإظهار (~كلمتين بانتظار
   /// امتلاء البافر) دون فتح باب القفل الزائف: مطابقة الرموز المتتالية
   /// بالحركات لا تصدر عن ضوضاء أو تكرار حرفي.
+  ///
+  /// يُغتفر داخل السلسلة رمزٌ واحد مختلف ما دام حرفه مطابقًا — ارتعاج
+  /// حركة/مدّ من CTC على حدود البداية شبه حتمي، وإسقاط الإرساء كله
+  /// بسببه كان يُبقي الجلسة بلا أي إظهار حتى امتلاء البافر (يُرى كفشل
+  /// تعرّف في وضع المعلم). الوحدة المخالفة تُصنَّف عند الاستهلاك
+  /// تشكيلًا/تجويدًا فلا تمرّ صامتة.
   bool _maybeFastAnchor() {
     if (!_acquiring || _insertBuffer.length < fastAnchorUnits) return false;
     final base = _firstConsumedRefIdx < 0 ? 0 : _nextRef;
     if (base + _insertBuffer.length > range.units.length) return false;
+    var symbolMismatches = 0;
     for (var i = 0; i < _insertBuffer.length; i++) {
-      if (_insertBuffer[i].symbol != range.units[base + i].symbol) {
-        return false;
+      final pred = _insertBuffer[i];
+      final ref = range.units[base + i];
+      if (pred.symbol == ref.symbol) continue;
+      if (pred.letter == ref.letter && symbolMismatches == 0) {
+        symbolMismatches++;
+        continue;
       }
+      return false;
     }
     final units = List.of(_insertBuffer);
     _insertBuffer.clear();
@@ -517,6 +529,20 @@ class RangeLiveTracker {
     final newNext = gRef + run.length;
     // لا تراجع: إرساء لا يتقدّم بالمؤشر لا معنى له (تكرار محتوى خلفي).
     if (!_acquiring && newNext <= _nextRef) return;
+    // دليل متدرج بالمسافة: القفز ضمن نافذة الإرساء ([reanchorWindowUnits])
+    // يكفيه الحد الأدنى [minReanchorMatches]، وكل نافذة إضافية تطلب مطابقة
+    // إضافية — سلسلة قصيرة بعيدة توافق مصادفةً نصًّا قرآنيًّا متكررًا فلا
+    // يُقفز إليها المؤشر (وإلا وُسمت كلمات صحيحة حذفًا وظهرت كلمات لاحقة
+    // قبل سابقاتها)، بينما الانزلاق الحقيقي يولّد سلسلة طويلة من كلام
+    // المستخدم الفعلي فتُقبل دومًا. أثناء الالتقاط لا حدّ — بداية
+    // المستخدم قد تكون في أي موضع من النطاق.
+    if (!_acquiring) {
+      final jump = gRef - _nextRef;
+      final extraWindows = jump > reanchorWindowUnits
+          ? ((jump - reanchorWindowUnits) / reanchorWindowUnits).ceil()
+          : 0;
+      if (run.length < minReanchorMatches + extraWindows) return;
+    }
     final wasAcquiring = _acquiring;
     if (!wasAcquiring) {
       // ما بين المتوقَّع والمرساة تخطّاه المستخدم فعليًا → حذف.
@@ -580,8 +606,11 @@ class RangeLiveTracker {
     }
   }
 
-  /// يبلّغ الكلمة الجارية عند تغيّرها.
+  /// يبلّغ الكلمة الجارية عند تغيّرها — وقبلها اكتمال ما تجاوزه المؤشر:
+  /// القفزات وإعادة الإرساء كانت تُبرز الكلمة الهابطة قبل وسم الكلمات
+  /// المتخطاة، فتظهر في الواجهة كلمة متأخرة قبل كلمات تسبقها في التلاوة.
   void _reportCurrentWord() {
+    _reportCompleted();
     final onRangeWord = this.onRangeWord;
     if (onRangeWord == null) return;
     final last = _nextRef - 1;

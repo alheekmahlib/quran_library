@@ -140,11 +140,25 @@ TasmeeRetryFeedback? retryFeedbackFromErrors(List<RecitationError> errors) {
 bool isRetryBlockingError(RecitationError e) =>
     e.errorType != 'tashkeel' && e.errorType != 'tajweed';
 
+/// حد القبول النسبي لإعادة نطق كلمة معزولة (نسبة دقة الوحدات).
+///
+/// كلمة طويلة قد يخطئ فيها النموذج وحدةً واحدةً رغم صحة نطقها مرارًا
+/// (ارتباك حرفي منهجي في التعرف) — صفر أخطاء رادعة يبقى المعيار الأول،
+/// وعند وجود خطأ رادع تُقبل المحاولة فقط إذا بلغت الدقة هذا الحدّ.
+/// الكلمات القصيرة (أقل من ~7 وحدات) تبقى عمليًّا صارمة عنده — مقصود.
+const double kWordRetryMinUnitAccuracy = 0.85;
+
 /// هل تُقبل محاولة إعادة نطق الكلمة؟ — تطابقٌ وأخطاء كلها غير رادعة
-/// ([isRetryBlockingError]). هذا معيار المصحّح المخفَّف موجَّهًا؛
+/// ([isRetryBlockingError])، **أو** قبول نسبي: خطأ رادع مع دقة وحدات
+/// ≥ [kWordRetryMinUnitAccuracy] (يملؤها المحرك offline وحده).
+/// هذا معيار المصحّح المخفَّف موجَّهًا؛
 /// [RecitationResult.isFullyCorrect] الصارم يبقى لمساراته الأخرى.
-bool isWordRetryAcceptable(RecitationResult result) =>
-    isRecitationAcceptable(result);
+bool isWordRetryAcceptable(RecitationResult result) {
+  if (!result.hasMatch) return false;
+  if (result.errors.every((e) => !isRetryBlockingError(e))) return true;
+  final accuracy = result.unitAccuracy;
+  return accuracy != null && accuracy >= kWordRetryMinUnitAccuracy;
+}
 
 /// هل التلاوة **مقبولة** (إتقان)؟ — تطابقٌ ولا خطأ رادعًا واحدًا
 /// ([isRetryBlockingError]).

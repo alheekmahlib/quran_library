@@ -104,7 +104,28 @@ class SherpaZipformerEngine implements LiveCapableRecitationEngine {
     );
     _recognizer = sherpa.OnlineRecognizer(config);
     _initialized = true;
+    _warmUp();
     log('SherpaZipformerEngine: ready ✓', name: 'ZipformerEngine');
+  }
+
+  /// استدلال تسخيني قصير (صمت) بعد التهيئة — أول استدلال يحمل كلفة
+  /// تهيئة ONNX كاملة فتتأخر أول وحدات التعرف في الجلسة الفعلية ويُرى
+  /// كفشل تعرّف لحظي. فشل التسخين لا يمنع التهيئة (تحسين فقط).
+  void _warmUp() {
+    final rec = _recognizer;
+    if (rec == null) return;
+    try {
+      final stream = rec.createStream();
+      stream.acceptWaveform(
+        samples: Float32List(3200), // 0.2s صمت.
+        sampleRate: 16000,
+      );
+      stream.inputFinished();
+      while (rec.isReady(stream)) {
+        rec.decode(stream);
+      }
+      stream.free();
+    } catch (_) {}
   }
 
   /// يحلّ مسار النموذج: مسار صريح → مجلد التطبيق (>60MB) → خطأ واضح.
@@ -235,8 +256,7 @@ class SherpaZipformerEngine implements LiveCapableRecitationEngine {
       int wordIdx,
       TasmeeErrorKind kind,
       TasmeeWordMistake? mistake,
-    )?
-    onWordDone,
+    )? onWordDone,
     void Function()? onRangeComplete,
     int? suraIdx,
     int? ayaIdx,
@@ -251,11 +271,10 @@ class SherpaZipformerEngine implements LiveCapableRecitationEngine {
     _lastLiveWordIdx = -1;
     _liveRef =
         (suraIdx != null && ayaIdx != null && (_reference?.isLoaded ?? false))
-        ? _reference!.getReference(suraIdx: suraIdx, ayaIdx: ayaIdx)
-        : null;
-    _liveRange = (range != null && (_reference?.isLoaded ?? false))
-        ? range
-        : null;
+            ? _reference!.getReference(suraIdx: suraIdx, ayaIdx: ayaIdx)
+            : null;
+    _liveRange =
+        (range != null && (_reference?.isLoaded ?? false)) ? range : null;
     _rangeTracker = _liveRange == null
         ? null
         : RangeLiveTracker(
@@ -320,9 +339,8 @@ class SherpaZipformerEngine implements LiveCapableRecitationEngine {
 
     final lex = _lexicon!;
     // الرموز مُرشَّحة أصلًا في _frameFromResult لِضمان وجودها بالمعجم.
-    final predUnits = frame.units
-        .map((s) => lex.bySymbol[s]!)
-        .toList(growable: false);
+    final predUnits =
+        frame.units.map((s) => lex.bySymbol[s]!).toList(growable: false);
     final ops = alignUnits(ref.units, predUnits);
     final lastIdx = lastMatchedRefIdx(ops);
     final wordIdx = lastIdx < 0 ? -1 : ref.unitWordIdx[lastIdx];
@@ -340,9 +358,8 @@ class SherpaZipformerEngine implements LiveCapableRecitationEngine {
     final tracker = _rangeTracker;
     if (tracker == null) return;
     final lex = _lexicon!;
-    final predUnits = frame.units
-        .map((s) => lex.bySymbol[s]!)
-        .toList(growable: false);
+    final predUnits =
+        frame.units.map((s) => lex.bySymbol[s]!).toList(growable: false);
     tracker.onUnits(predUnits);
   }
 
@@ -420,9 +437,8 @@ class SherpaZipformerEngine implements LiveCapableRecitationEngine {
   }) async {
     final lex = _lexicon!;
     final predictedPhonemes = frame.units.join(' ');
-    final predUnits = frame.units
-        .map((s) => lex.bySymbol[s]!)
-        .toList(growable: false);
+    final predUnits =
+        frame.units.map((s) => lex.bySymbol[s]!).toList(growable: false);
 
     // وضع النطاق (صفحة كاملة) — أولوية على الآية المفردة. الجلسات الحيّة
     // تُقيَّم على نافذة المقطع المتلو فعلًا من المتتبّع (لا الصفحة كلها —
@@ -465,6 +481,7 @@ class SherpaZipformerEngine implements LiveCapableRecitationEngine {
         matchedWordSpans: eval.matchedSpans,
         start: eval.start,
         end: eval.end,
+        unitAccuracy: eval.stats.accuracy,
       );
     }
 
@@ -516,6 +533,7 @@ class SherpaZipformerEngine implements LiveCapableRecitationEngine {
           errors: errors,
           start: SurahAyahPosition(suraIdx: suraIdx, ayaIdx: ayaIdx),
           end: SurahAyahPosition(suraIdx: suraIdx, ayaIdx: ayaIdx),
+          unitAccuracy: stats.accuracy,
         );
       }
       log(
@@ -564,9 +582,8 @@ class SherpaZipformerEngine implements LiveCapableRecitationEngine {
           uthmaniPos: [v.refIdx, v.refIdx + 1],
           phPos: [v.predIdx, v.predIdx + 1],
           expectedPh: refUnits[v.refIdx].symbol,
-          predictedPh: v.predIdx < predUnits.length
-              ? predUnits[v.predIdx].symbol
-              : null,
+          predictedPh:
+              v.predIdx < predUnits.length ? predUnits[v.predIdx].symbol : null,
           expectedLen: v.goldenHarakat,
           predictedLen: v.actualHarakat.round(),
           wordText: wordAt(v.refIdx),

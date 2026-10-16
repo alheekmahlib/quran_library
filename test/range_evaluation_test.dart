@@ -140,6 +140,73 @@ void main() {
     });
   });
 
+  group('evaluateRangeAlignment — تسامح حدود الكلمة الواحدة (إعادة النطق)', () {
+    RangeEvaluation evaluateWord(
+      QuranReferenceVerse verse,
+      int wordIdx,
+      List<QuranUnit> predUnits,
+    ) =>
+        evaluateRangeAlignment(
+          range: QuranReferenceRange.fromSingleWord(verse, wordIdx)!,
+          predUnits: predUnits,
+          frame: LiveRecognitionFrame(
+            units: predUnits.map((u) => u.symbol).toList(),
+            timestamps: const [],
+          ),
+          durationSec: predUnits.length * 0.2,
+          maddTimingConfig: const MaddTimingConfig(),
+        );
+
+    late QuranReferenceVerse wordVerse;
+    late int wordIdx;
+    late List<QuranUnit> wordUnits;
+
+    setUpAll(() {
+      // كلمة طويلة نسبيًّا (≥5 وحدات) من الآية الأولى.
+      wordVerse = verses[0];
+      QuranRangeWordSpan? span;
+      for (var i = 0; i < wordVerse.units.length; i++) {
+        final s = wordVerse.spanOfUnit(i);
+        if (s != null && s.endUnit - s.startUnit + 1 >= 5) {
+          span = s;
+          break;
+        }
+      }
+      wordIdx = span!.wordIdx;
+      wordUnits = wordVerse.units.sublist(span.startUnit, span.endUnit + 1);
+    });
+
+    test('سقوط وحدة البداية من التعرف → لا حذف رادع (تسامح ≤1 بادئ)', () {
+      final eval = evaluateWord(wordVerse, wordIdx, wordUnits.sublist(1));
+      expect(eval.stats.deletions, 0,
+          reason: 'حدّ CTC البادئ في نطق معزول ليس خطأ مستخدم');
+      expect(eval.errors.where((e) => e.errorType == 'normal'), isEmpty);
+    });
+
+    test('سقوط وحدتين من البداية → يبقى الحذف (السقف 1)', () {
+      final eval = evaluateWord(wordVerse, wordIdx, wordUnits.sublist(2));
+      expect(eval.stats.deletions, greaterThan(0),
+          reason: 'تخطي وحدتين فأكثر نطق ناقص فعلي');
+    });
+
+    test('سقوط وحدة الذيل من التعرف → لا حذف رادع (تسامح ≤1 ختامي)', () {
+      final eval = evaluateWord(
+        wordVerse,
+        wordIdx,
+        wordUnits.sublist(0, wordUnits.length - 1),
+      );
+      expect(eval.stats.deletions, 0,
+          reason: 'حدّ CTC الختامي في نطق معزول ليس خطأ مستخدم');
+      expect(eval.errors.where((e) => e.errorType == 'normal'), isEmpty);
+    });
+
+    test('نطق كامل الكلمة → صفر أخطاء', () {
+      final eval = evaluateWord(wordVerse, wordIdx, wordUnits);
+      expect(eval.stats.accuracy, 1.0);
+      expect(eval.errors, isEmpty);
+    });
+  });
+
   group('RecitationError.shiftUthmaniPos', () {
     test('يُزيح موضع البداية والنهاية ويحفظ الحقول', () {
       const e = RecitationError(

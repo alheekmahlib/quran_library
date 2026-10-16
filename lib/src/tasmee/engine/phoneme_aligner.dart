@@ -167,31 +167,47 @@ List<UnitAlignOp> dropLeadingInserts(List<UnitAlignOp> ops) {
 /// الختام: المستخدم أوقف التلاوة قبل نهاية النطاق، فما بعدها ليس
 /// "حروفًا مفقودة" بل غير مُتلوّ أصلًا (تُدار تغطيته في التوفيق النهائي).
 ///
+/// [maxUnits] سقف اختياري لعدد الحذوف الختامية المُغتفَرة (نطاق الكلمة
+/// الواحدة: سقوط وحدة الذيل من التعرف حدّ CTC لا خطأ مستخدم).
+///
 /// Drops the pure trailing run of delete ops after the last match/replace —
 /// trailing-delete tolerance for range mode (user stopped early; the
-/// un-recited tail is not a recitation error).
-List<UnitAlignOp> dropTrailingDeletes(List<UnitAlignOp> ops) {
+/// un-recited tail is not a recitation error). [maxUnits] optionally caps
+/// the tolerated run (single-word boundary tolerance).
+List<UnitAlignOp> dropTrailingDeletes(
+  List<UnitAlignOp> ops, {
+  int? maxUnits,
+}) {
   var cut = ops.length;
   while (cut > 0 && ops[cut - 1].type == 'delete') {
     cut--;
   }
   if (cut == ops.length) return ops;
+  if (maxUnits != null && ops.length - cut > maxUnits) return ops;
   return ops.sublist(0, cut);
 }
 
 /// يحذف سلسلة delete البادئة الخالصة قبل أول match/replace — تسامح
 /// البادئة المرجعية: بداية المستخدم من منتصف النطاق ليست "حروفًا
-/// مفقودة" (للنطاقات متعددة الكلمات؛ إعادة نطق كلمة تبقى صارمة).
+/// مفقودة" (للنطاقات متعددة الكلمات بلا سقف).
+///
+/// [maxUnits] سقف اختياري لعدد الحذوف البادئة المُغتفَرة (نطاق الكلمة
+/// الواحدة: سقوط وحدة البداية من التعرف حدّ CTC لا خطأ مستخدم).
 ///
 /// Drops the pure leading run of delete ops before the first match/replace
 /// — mid-range start tolerance (un-recited prefix is not a recitation
-/// error). Multi-word ranges only; single-word retries stay strict.
-List<UnitAlignOp> dropLeadingDeletes(List<UnitAlignOp> ops) {
+/// error). Multi-word ranges stay uncapped; [maxUnits] caps it for
+/// single-word boundary tolerance.
+List<UnitAlignOp> dropLeadingDeletes(
+  List<UnitAlignOp> ops, {
+  int? maxUnits,
+}) {
   var first = 0;
   while (first < ops.length && ops[first].type == 'delete') {
     first++;
   }
   if (first == 0) return ops;
+  if (maxUnits != null && first > maxUnits) return ops;
   return ops.sublist(first);
 }
 

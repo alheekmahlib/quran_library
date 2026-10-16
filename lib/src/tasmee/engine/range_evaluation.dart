@@ -86,12 +86,19 @@ RangeEvaluation evaluateRangeAlignment({
 
   // تسامحات النطاقات متعددة الكلمات: بادئة الإدراج (بسملة/بداية متأخرة)،
   // بادئة الحذف (بداية من منتصف النطاق)، وختام غير المتلوّ مع ضوضاء CTC
-  // الختامية. إعادة نطق كلمة واحدة تبقى صارمة بلا تسامح حذف.
+  // الختامية. إعادة نطق كلمة واحدة: تسامح حدود التعرف — سقوط وحدة البداية
+  // ووحدة الذيل (حدّ CTC معتاد في نطق معزول) وإدراج ذيل قصير.
   final multiWord = range.wordSpans.length > 1;
   final rawOps = alignUnits(windowUnits, predUnits);
   final ops = multiWord
       ? dropLeadingDeletes(dropTrailingUnmatched(dropLeadingInserts(rawOps)))
-      : dropTrailingInserts(dropLeadingInserts(rawOps), maxUnits: 2);
+      : dropTrailingDeletes(
+          dropLeadingDeletes(
+            dropTrailingInserts(dropLeadingInserts(rawOps), maxUnits: 2),
+            maxUnits: 1,
+          ),
+          maxUnits: 1,
+        );
   final stats = computeUnitStats(ops);
 
   final windowErrors = <RecitationError>[

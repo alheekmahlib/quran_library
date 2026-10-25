@@ -544,6 +544,8 @@ TextField(
   ),
 ),
 ```
+> **Note:** `search()` and `surahSearch()` return an empty list for empty or whitespace-only input (e.g. `"   "`), so you don't need to guard against blank queries before calling them.
+
 <img src="https://raw.githubusercontent.com/alheekmahlib/thegarlanded/master/Photos/Packages/quran_library/search_screen.png" width="320"/>
 
 * ### Word Info (Recitations / Tasreef / Eerab)

@@ -482,7 +482,7 @@ class QuranCtrl extends GetxController {
   }
 
   List<AyahModel> search(String searchText) {
-    if (searchText.isEmpty) {
+    if (searchText.trim().isEmpty) {
       return [];
     } else {
       // تطبيع النصوص المدخلة
@@ -541,7 +541,7 @@ class QuranCtrl extends GetxController {
   }
 
   List<SurahModel> searchSurah(String searchText) {
-    if (searchText.isEmpty) {
+    if (searchText.trim().isEmpty) {
       return [];
     } else {
       // تحويل الأرقام العربية إلى إنجليزية في النص المدخل

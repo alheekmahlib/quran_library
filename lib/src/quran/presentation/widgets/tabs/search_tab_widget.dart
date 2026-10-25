@@ -77,7 +77,7 @@ class _SearchTabState extends State<_SearchTab> {
               },
               onChanged: (txt) {
                 final quranCtrl = QuranCtrl.instance;
-                if (txt.isEmpty) {
+                if (txt.trim().isEmpty) {
                   quranCtrl.searchResultAyahs.value = [];
                   quranCtrl.searchResultSurahs.value = [];
                   return;

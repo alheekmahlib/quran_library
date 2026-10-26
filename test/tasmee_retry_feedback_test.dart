@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:quran_library/src/tasmee/engine/models/recitation_result.dart';
+import 'package:quran_library/src/tasmee/controller/tasmee_state.dart';
 import 'package:quran_library/src/tasmee/engine/tasmee_error_kind.dart';
 
 void main() {
@@ -198,7 +199,7 @@ void main() {
     });
   });
 
-  group('isWordRetryAcceptable — القبول النسبي (دقة الوحدات ≥ 85%)', () {
+  group('isWordRetryAcceptable — القبول النسبي (دقة الوحدات ≥ 75%)', () {
     test('خطأ حرف رادع مع دقة 0.90 → مقبولة', () {
       // كلمة طويلة يخطئ فيها التعرف وحدةً واحدة رغم صحة النطق مرارًا.
       const result = RecitationResult(
@@ -215,10 +216,10 @@ void main() {
       expect(isWordRetryAcceptable(result), isTrue);
     });
 
-    test('خطأ حرف رادع مع دقة 0.84 → مرفوضة (دون الحد)', () {
+    test('خطأ حرف رادع مع دقة 0.74 → مرفوضة (دون الحد)', () {
       const result = RecitationResult(
         uthmaniText: 'كلمة',
-        unitAccuracy: 0.84,
+        unitAccuracy: 0.74,
         errors: [
           RecitationError(
               errorType: 'normal',
@@ -230,7 +231,7 @@ void main() {
       expect(isWordRetryAcceptable(result), isFalse);
     });
 
-    test('حدّ 0.85 بالضبط → مقبولة (الحد شامل)', () {
+    test('حدّ 0.75 بالضبط → مقبولة (الحد شامل)', () {
       const result = RecitationResult(
         uthmaniText: 'كلمة',
         unitAccuracy: kWordRetryMinUnitAccuracy,
@@ -299,6 +300,106 @@ void main() {
         ],
       );
       expect(isRecitationAcceptable(result), isFalse);
+    });
+  });
+
+  group('isContextWordRetryAcceptable — الحكم على المستهدفة وحدها', () {
+    const target = 3;
+
+    test('أخطاء الكلمة السابقة وحدها → مقبولة (لا تُفشل المحاولة)', () {
+      const result = RecitationResult(
+        uthmaniText: 'كلمتان',
+        errors: [
+          RecitationError(
+              errorType: 'normal',
+              speechErrorType: 'delete',
+              expectedPh: 'س',
+              wordIdx: 2),
+        ],
+      );
+      expect(
+        isContextWordRetryAcceptable(result,
+            targetWordIdx: target, targetUnitCount: 5),
+        isTrue,
+        reason: 'وقف الكلمة السابقة (حذف ذيلها) ليس خطأ المستهدفة',
+      );
+    });
+
+    test('خطأ رادع وحيد في مستهدفة طويلة → قبول نسبي 0.75', () {
+      const result = RecitationResult(
+        uthmaniText: 'كلمتان',
+        errors: [
+          RecitationError(
+              errorType: 'normal',
+              speechErrorType: 'replace',
+              expectedPh: 'س',
+              predictedPh: 'ص',
+              wordIdx: target),
+        ],
+      );
+      // 1 من 8 = دقة 0.875 ≥ 0.75.
+      expect(
+        isContextWordRetryAcceptable(result,
+            targetWordIdx: target, targetUnitCount: 8),
+        isTrue,
+      );
+      // 1 من 3 = دقة 0.67 < 0.75.
+      expect(
+        isContextWordRetryAcceptable(result,
+            targetWordIdx: target, targetUnitCount: 3),
+        isFalse,
+      );
+    });
+
+    test('كل أخطاء المستهدفة غير رادعة → مقبولة', () {
+      const result = RecitationResult(
+        uthmaniText: 'كلمتان',
+        errors: [
+          RecitationError(
+              errorType: 'tashkeel',
+              speechErrorType: 'replace',
+              expectedPh: 'سَ',
+              predictedPh: 'سُ',
+              wordIdx: target),
+        ],
+      );
+      expect(
+        isContextWordRetryAcceptable(result,
+            targetWordIdx: target, targetUnitCount: 5),
+        isTrue,
+      );
+    });
+  });
+
+  group('الصرامة — العتبة كمعامل', () {
+    const result = RecitationResult(
+      uthmaniText: 'كلمة',
+      unitAccuracy: 0.78,
+      errors: [
+        RecitationError(
+            errorType: 'normal',
+            speechErrorType: 'replace',
+            expectedPh: 'س',
+            predictedPh: 'ص'),
+      ],
+    );
+
+    test('متوازن (0.75) يقبل 0.78 وصارم (0.85) يرفضها', () {
+      expect(
+        isWordRetryAcceptable(result, minAccuracy: 0.75),
+        isTrue,
+      );
+      expect(
+        isWordRetryAcceptable(result, minAccuracy: 0.85),
+        isFalse,
+      );
+    });
+
+    test('TasmeeStrictness.fromName: الافتراضي متوازن', () {
+      expect(TasmeeStrictness.fromName(null), TasmeeStrictness.balanced);
+      expect(TasmeeStrictness.fromName('strict'), TasmeeStrictness.strict);
+      expect(TasmeeStrictness.fromName('lenient'), TasmeeStrictness.lenient);
+      expect(TasmeeStrictness.fromName('junk'), TasmeeStrictness.balanced);
     });
   });
 }

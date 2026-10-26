@@ -38,8 +38,8 @@ class RecitationSession {
     this.ayaIdx,
     this.range,
     this.referenceText,
-  }) : _engine = engine,
-       _recorder = recorder;
+  })  : _engine = engine,
+        _recorder = recorder;
 
   /// إعدادات المصحف (Hafs افتراضياً).
   /// Moshaf config (Hafs by default).
@@ -166,26 +166,26 @@ class RecitationSession {
     _amplitudeSub = _recorder!
         .onAmplitudeChanged(const Duration(milliseconds: 100))
         .listen((amp) {
-          // عهدة البادئة: صدى نطق الكلمة من السماعة (شيت المصحّح) ليس كلام
-          // المستخدم — لا يُعلّم spoke ولا يُحدّث آخر كلام.
-          if (ignoreInitial != null &&
-              DateTime.now().difference(startedAt) < ignoreInitial) {
-            return;
-          }
-          // كلام البشر عادة > ‎-35dB‏ والسكوت حول ‎-45dB‏ فأدنى.
-          final heard = amp.current > -35;
-          if (heard) {
-            spoke = true;
-            lastVoiceAt = DateTime.now();
-            return;
-          }
-          if (spoke &&
-              lastVoiceAt != null &&
-              DateTime.now().difference(lastVoiceAt!) >= stopAfterSilence &&
-              state.value == RecitationState.recording) {
-            stop();
-          }
-        });
+      // عهدة البادئة: صدى نطق الكلمة من السماعة (شيت المصحّح) ليس كلام
+      // المستخدم — لا يُعلّم spoke ولا يُحدّث آخر كلام.
+      if (ignoreInitial != null &&
+          DateTime.now().difference(startedAt) < ignoreInitial) {
+        return;
+      }
+      // كلام البشر عادة > ‎-35dB‏ والسكوت حول ‎-45dB‏ فأدنى.
+      final heard = amp.current > -35;
+      if (heard) {
+        spoke = true;
+        lastVoiceAt = DateTime.now();
+        return;
+      }
+      if (spoke &&
+          lastVoiceAt != null &&
+          DateTime.now().difference(lastVoiceAt!) >= stopAfterSilence &&
+          state.value == RecitationState.recording) {
+        stop();
+      }
+    });
   }
 
   /// أوقف التسجيل ومرّر الصوت لِلمحرّك لِلتصحيح.
@@ -314,13 +314,36 @@ class RecitationSession {
     int wordIdx,
     TasmeeErrorKind kind,
     TasmeeWordMistake? mistake,
-  )?
-  onWordDone;
+  )? onWordDone;
+
+  /// يُستدعى عند تغيّر الكلمة الجارية في وضع النطاق بالفهرسين **معًا** —
+  /// بعد تحديث [currentVerseIdx] و[currentWordIdx] سويةً، فلا يُقرأ أيٌّ
+  /// منهما بجوار قيمة قديمة من الآية السابقة (إشعار GetX متزامن، وتحديث
+  /// الحقلين فرديًا يكشف لحظيًّا كلمةً من الآية الجديدة برقم قديم).
+  ///
+  /// Called once with both indices after both Rx fields are updated.
+  void Function(int verseIdx, int wordIdx)? onRangeWord;
 
   /// يُستدعى عند اكتمال كل كلمات النطاق (إتمام الصفحة).
   ///
   /// Called when every word in the range has been completed.
   void Function()? onRangeComplete;
+
+  /// يُستدعى عند كشف المحرّك صمتَ نهاية مقطع أثناء البثّ (فاصل — ليس
+  /// إيقافًا). يوصل صمت الختام لِلطبقة الأعلى (إنهاء آلي بوضع المعلم
+  /// عند تقدّم كافٍ عبر [liveRangeProgress]).
+  ///
+  /// Called when the engine detects end-of-utterance silence while live.
+  void Function()? onEndpoint;
+
+  /// تقدّم التلاوة الحيّة على نطاق الجلسة (0..1) أو null — نسبة الوحدات
+  /// المرجعية المستهلَكة. أساس الإنهاء الآلي بالصمت.
+  double? get liveRangeProgress {
+    final engine = _engine;
+    return engine is LiveCapableRecitationEngine
+        ? engine.liveRangeProgress
+        : null;
+  }
 
   /// هل الجلسة في الوضع الحي؟
   /// Is the session in live mode?
@@ -333,6 +356,26 @@ class RecitationSession {
   int _liveChunkCount = 0;
   int _liveTotalBytes = 0;
   double _livePeak = 0.0;
+
+  /// مسجّل تسخيني لإذن الميكروفون — الجلسات تنشئ مسجّلها خاصًّا.
+  static AudioRecorder? _warmupRecorder;
+
+  /// تجهيز مسبق لإذن الميكروفون (pre-roll فحص التسميع C8): طلبه بعد
+  /// انتهاء تلاوة القارئ في وضع المعلم يبتلع أول كلمة — يُطلب أثناء
+  /// التلاوة فيعود فورًا عند بدء التسجيل.
+  static Future<bool> ensureMicPermission() async {
+    try {
+      _warmupRecorder ??= AudioRecorder();
+      return await _warmupRecorder!.hasPermission();
+    } catch (_) {
+      return false;
+    }
+  }
+
+  /// معالجة صوت المنصة (AGC/AEC/NS) للمسار الحي — للتجربة على الجهاز
+  /// (فحص التسميع C8): قد تقطع نهايات الكلمات الخافتة فتُسقط وحدات؛
+  /// جرّب false وقارن قبل تغييره افتراضيًّا.
+  static const bool kLiveVoiceProcessing = true;
 
   /// يبدأ التسجيل الحي — يغذّي المحرّك بِـ PCM ويحدّث [liveUnits] لحظيًا.
   ///
@@ -352,7 +395,8 @@ class RecitationSession {
       liveUnits.clear();
       currentWordIdx.value = -1;
       currentVerseIdx.value = -1;
-      _liveRecorder ??= AudioRecorder();
+      // المسجّل المحقون (اختبارات) يُستخدم في المسارين — الإنتاج لا يحقن.
+      _liveRecorder ??= _recorder ?? AudioRecorder();
       if (!await _liveRecorder!.hasPermission()) {
         throw StateError('Microphone permission denied');
       }
@@ -378,9 +422,11 @@ class RecitationSession {
         onRangeWord: (verseIdx, wordIdx) {
           currentVerseIdx.value = verseIdx;
           currentWordIdx.value = wordIdx;
+          onRangeWord?.call(verseIdx, wordIdx);
         },
         onWordDone: onWordDone,
         onRangeComplete: onRangeComplete,
+        onEndpoint: () => onEndpoint?.call(),
       );
       await _startPcmStreaming(engine);
       isLive.value = true;
@@ -410,8 +456,9 @@ class RecitationSession {
     // وتثبيت الـ tap بتنسيق مأخوذ قبل استقرار تنسيق VPIO قد يُسدّم أصفارًا
     // مستمرة (peak=0) — التسميع يلتقط من الميكروفون مباشرة فلا حاجة
     // لإلغاء الصدى هناك. بقية المنصات تحتفظ بالمعالجة.
-    final useVoiceProcessing =
-        defaultTargetPlatform != TargetPlatform.macOS && !kIsWeb;
+    final useVoiceProcessing = kLiveVoiceProcessing &&
+        defaultTargetPlatform != TargetPlatform.macOS &&
+        !kIsWeb;
     final settings = RecordConfig(
       encoder: AudioEncoder.pcm16bits,
       sampleRate: 16000,
@@ -476,7 +523,8 @@ class RecitationSession {
       return;
     }
     try {
-      _liveRecorder ??= AudioRecorder();
+      // المسجّل المحقون (اختبارات) يُستخدم في المسارين — الإنتاج لا يحقن.
+      _liveRecorder ??= _recorder ?? AudioRecorder();
       await _startPcmStreaming(engine);
       // أعد تسليح طور الالتقاط: وحدات انزلقت أثناء انتظار إيقاف
       // الميكروفون عند فتح الشيت قد قدّمت المؤشر أمام المستخدم —

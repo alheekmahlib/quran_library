@@ -17,6 +17,26 @@ enum TasmeeEngineMode {
   online,
 }
 
+/// صرامة معايير التسميع — عتبة القبول النسبي وإلزام دليلَي الخطأ.
+enum TasmeeStrictness {
+  /// عتبة قبول 0.85 وأول دليل يفتح شيت التصحيح.
+  strict,
+
+  /// الافتراضي: عتبة 0.75 (مدى فحص التسميع) وسياسة الدليلين.
+  balanced,
+
+  /// عتبة 0.70 — كلمات أطول نفَسًا في القبول النسبي.
+  lenient;
+
+  String get storageName => name;
+
+  static TasmeeStrictness fromName(String? n) => switch (n) {
+        'strict' => TasmeeStrictness.strict,
+        'lenient' => TasmeeStrictness.lenient,
+        _ => TasmeeStrictness.balanced,
+      };
+}
+
 /// حالة الكلمة أثناء التسميع.
 enum TasmeeWordStatus {
   /// مخفية — لم يُتَل عليها بعد.
@@ -44,6 +64,7 @@ class TasmeeWordCorrection {
     required this.wordNumber,
     required this.verseIdx,
     required this.wordIdx,
+    this.contextWordText = '',
     this.errorType = 'replace',
     this.expectedSymbol,
     this.predictedSymbol,
@@ -54,6 +75,11 @@ class TasmeeWordCorrection {
 
   /// نص الكلمة العثماني.
   final String wordText;
+
+  /// الكلمة السابقة (سياق إعادة النطق: تُقرأ مع المستهدفة وصلًا) — أو
+  /// '' إن لم توجد. إعادة النطق المنفردة تخفق على مرجع متصل (تنوين
+  /// ساقط/همزة وصل/بلا إدغام) مهما أُعيدت.
+  final String contextWordText;
 
   /// نوع الخطأ المكتشف حيًّا.
   final TasmeeErrorKind errorKind;
@@ -106,6 +132,16 @@ class TasmeeState {
 
   /// نمط التسميع الحالي — يحدّد سلوك الجلسة وإظهار الكلمات الافتراضي.
   final Rx<TasmeeMode> mode = TasmeeMode.tasmee.obs;
+
+  /// صرامة المعايير (عتبة القبول النسبي + سياسة الأدلة) — يُثبَّت عبر
+  /// GetStorage (خيار في إعدادات التسميع بالتطبيق المضيف).
+  final Rx<TasmeeStrictness> strictness = TasmeeStrictness.balanced.obs;
+
+  /// وضع المصحّح غير الحاجز: الكلمة الخاطئة تُعلَّم حمراء بشارة صغيرة
+  /// دون إيقاف الجلسة وفتح شيت مانع — وإن واصل المستخدم القراءة وتقدّم
+  /// المتتبّع مرّت كما هي. يُثبَّت عبر GetStorage (خيار في إعدادات
+  /// التسميع بالتطبيق المضيف).
+  final RxBool nonBlockingCorrector = false.obs;
 
   /// إظهار كل كلمات الصفحة مؤقتًا (زر العين) أثناء وضع التسميع.
   final RxBool showAllWords = false.obs;

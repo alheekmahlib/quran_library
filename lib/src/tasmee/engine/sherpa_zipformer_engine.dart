@@ -98,7 +98,9 @@ class SherpaZipformerEngine implements LiveCapableRecitationEngine {
       decodingMethod: 'greedy_search',
       feat: const sherpa.FeatureConfig(sampleRate: 16000, featureDim: 80),
       enableEndpoint: true,
-      rule1MinTrailingSilence: 2.4,
+      // صمت ختامي 1.4 ث يُنهي مقطع المعلم آليًا عند تقدّم كافٍ (كانت 2.4
+      // فتطول الانتظار بعد آخر كلمة قبل أي رد فعل).
+      rule1MinTrailingSilence: 1.4,
       rule2MinTrailingSilence: 1.2,
       rule3MinUtteranceLength: 20,
     );
@@ -180,8 +182,14 @@ class SherpaZipformerEngine implements LiveCapableRecitationEngine {
     if (decoded == null) {
       return const RecitationResult(noMatchMessage: 'تعذّر قراءة ملفّ الصوت');
     }
-    final samples = _normalizeAmplitude(decoded.samples);
-    final durationSec = samples.length / decoded.sampleRate;
+    final normalized = _normalizeAmplitude(decoded.samples);
+    // صمت بادئ 0.4 ث: التعرّف البثّي يُسقط أول وحدة كثيرًا حين يبدأ
+    // الكلام فور انطلاق الدفق بلا سياق — ونطق الكلمة المعزولة في
+    // المصحّح أشد عرضة له (فحص التسميع C6: 300–500 مللي ثانية).
+    final leadSilence = (decoded.sampleRate * 0.4).round();
+    final samples = Float64List(normalized.length + leadSilence);
+    samples.setRange(leadSilence, samples.length, normalized);
+    final durationSec = normalized.length / decoded.sampleRate;
     final frame = _recognizeBuffer(samples, decoded.sampleRate);
     return _evaluateUnits(
       frame: frame,
@@ -289,9 +297,20 @@ class SherpaZipformerEngine implements LiveCapableRecitationEngine {
   void feedPcm(Float32List samples) {
     final stream = _liveStream;
     if (stream == null || !_initialized) return;
-    stream.acceptWaveform(samples: samples, sampleRate: 16000);
+    stream.acceptWaveform(samples: _applyLiveAgc(samples), sampleRate: 16000);
+    // قياس زمن الاستدلال (فحص التسميع C8): استدلال يتجاوز ~40 مللي على
+    // خيط الواجهة يعني تأخيرًا حيًّا — إن قيس على الجهاز يُنقل المحرك
+    // إلى Isolate.
+    final sw = Stopwatch()..start();
     while (_recognizer!.isReady(stream)) {
       _recognizer!.decode(stream);
+    }
+    sw.stop();
+    if (sw.elapsedMilliseconds > 40) {
+      log(
+          'feedPcm decode took ${sw.elapsedMilliseconds}ms '
+          '(${samples.length} samples)',
+          name: 'ZipformerEngine');
     }
     if (_recognizer!.isEndpoint(stream)) {
       _onEndpoint?.call();
@@ -301,12 +320,58 @@ class SherpaZipformerEngine implements LiveCapableRecitationEngine {
     _maybeReportLiveWord(frame);
   }
 
+  /// تقدير القمة المتحرك (صعود فوري/هبوط بطيء) للـAGC الحي.
+  double _livePeakEst = 0.0;
+
+  /// AGC حي بسيط (فحص التسميع C8): المسار الدفعي يطبّع السعة أصلًا
+  /// بينما الحي كان يُغذّى خامًا فتضعف التعرّف عند انخفاض الصوت —
+  /// ربح متحرك يستهدف قمة 0.7 بحدّ 10× ويقتل نفسه في الصمت.
+  Float32List _applyLiveAgc(Float32List samples) {
+    var peak = 0.0;
+    for (final v in samples) {
+      final a = v < 0 ? -v : v;
+      if (a > peak) peak = a;
+    }
+    if (peak > _livePeakEst) {
+      _livePeakEst = peak;
+    } else {
+      _livePeakEst = 0.999 * _livePeakEst + 0.001 * peak;
+    }
+    if (_livePeakEst < 1e-4) return samples; // صمت — لا تضخيم ضوضاء.
+    var gain = 0.7 / _livePeakEst;
+    if (gain > 10) gain = 10;
+    if (gain <= 1.01) return samples;
+    final out = Float32List(samples.length);
+    for (var i = 0; i < samples.length; i++) {
+      var v = samples[i] * gain;
+      if (v > 1) {
+        v = 1;
+      } else if (v < -1) {
+        v = -1;
+      }
+      out[i] = v;
+    }
+    return out;
+  }
+
   @override
   void onLiveResumed() {
     // استئناف إثر إيقاف المصحّح: أعد تسليح الالتقاط ليُرسّي المتتبّع على
     // موضع المستخدم الفعلي بعد إغلاق الشيت — لا على موضع المؤشر المنزلق
     // أثناء انتظار إيقاف الميكروفون عند فتحه.
     _rangeTracker?.rearmAcquisition();
+  }
+
+  @override
+  double? get liveRangeProgress {
+    final tracker = _rangeTracker;
+    final liveRange = _liveRange;
+    if (tracker == null || liveRange == null) return null;
+    if (tracker.firstConsumedRefIdx < 0) return null; // لم يُرسَ بعد.
+    final total = liveRange.units.length;
+    if (total == 0) return null;
+    final progress = tracker.nextExpectedRefIdx / total;
+    return progress < 0 ? 0 : (progress > 1 ? 1 : progress);
   }
 
   /// نافذة المقطع المتلو من متتبّع الجلسة الحيّة — أو null لتقييم النطاق

@@ -12,4 +12,10 @@ class TasmeeStorageConstants {
 
   /// نمط التسميع الأخير: 'tasmee' (افتراضي) أو 'corrector' أو 'teacher'.
   static const String tasmeeMode = 'TASMEE_MODE';
+
+  /// وضع المصحّح غير الحاجز (شارة بلا شيت مانع): 'true' لِلتفعيل.
+  static const String nonBlockingCorrector = 'TASMEE_NON_BLOCKING_CORRECTOR';
+
+  /// صرامة المعايير: 'strict' أو 'balanced' (افتراضي) أو 'lenient'.
+  static const String strictness = 'TASMEE_STRICTNESS';
 }

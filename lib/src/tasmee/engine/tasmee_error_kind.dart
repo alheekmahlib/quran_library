@@ -39,6 +39,7 @@ class TasmeeWordMistake {
     required this.errorType,
     this.expectedSymbol,
     this.predictedSymbol,
+    this.wrongUnits = 1,
   });
 
   /// أسوأ نوع خطأ في الكلمة (المستخدم للون والشارة).
@@ -53,6 +54,10 @@ class TasmeeWordMistake {
 
   /// رمز الوحدة المنطوقة فعلًا (null عند النقص).
   final String? predictedSymbol;
+
+  /// عدد وحدات الكلمة الموسومة بخطأ — دليل الخطأ في الكلمة (الحذف أو
+  /// الاستبدال المعزول الأول لا يفتح شيتًا مصحّحًا؛ يلزم دليلان).
+  final int wrongUnits;
 }
 
 /// أسبقية الدمج عند تعدد أنواع الأخطاء في كلمة واحدة
@@ -142,22 +147,45 @@ bool isRetryBlockingError(RecitationError e) =>
 
 /// حد القبول النسبي لإعادة نطق كلمة معزولة (نسبة دقة الوحدات).
 ///
-/// كلمة طويلة قد يخطئ فيها النموذج وحدةً واحدةً رغم صحة نطقها مرارًا
+/// كلمة طويلة قد يخطئ فيها النموذج وحدةً أو وحدتين رغم صحة نطقها مرارًا
 /// (ارتباك حرفي منهجي في التعرف) — صفر أخطاء رادعة يبقى المعيار الأول،
 /// وعند وجود خطأ رادع تُقبل المحاولة فقط إذا بلغت الدقة هذا الحدّ.
-/// الكلمات القصيرة (أقل من ~7 وحدات) تبقى عمليًّا صارمة عنده — مقصود.
-const double kWordRetryMinUnitAccuracy = 0.85;
+/// 75% (مدى فحص التسميع 70–75%) مع تسامح أطراف الوقف.
+const double kWordRetryMinUnitAccuracy = 0.75;
 
 /// هل تُقبل محاولة إعادة نطق الكلمة؟ — تطابقٌ وأخطاء كلها غير رادعة
 /// ([isRetryBlockingError])، **أو** قبول نسبي: خطأ رادع مع دقة وحدات
 /// ≥ [kWordRetryMinUnitAccuracy] (يملؤها المحرك offline وحده).
 /// هذا معيار المصحّح المخفَّف موجَّهًا؛
 /// [RecitationResult.isFullyCorrect] الصارم يبقى لمساراته الأخرى.
-bool isWordRetryAcceptable(RecitationResult result) {
+bool isWordRetryAcceptable(
+  RecitationResult result, {
+  double minAccuracy = kWordRetryMinUnitAccuracy,
+}) {
   if (!result.hasMatch) return false;
   if (result.errors.every((e) => !isRetryBlockingError(e))) return true;
   final accuracy = result.unitAccuracy;
-  return accuracy != null && accuracy >= kWordRetryMinUnitAccuracy;
+  return accuracy != null && accuracy >= minAccuracy;
+}
+
+/// هل تُقبل محاولة إعادة نطق كلمة قُرئت **بسياقها** (الكلمة السابقة مع
+/// المستهدفة — نطاق وحدتيهما)؟
+///
+/// الحكم على وحدات الكلمة المستهدفة وحدها ([targetWordIdx]): أخطاء
+/// الكلمة السابقة (اختلاف وقفها مثلًا) لا تُفشل المحاولة، والدقة
+/// النسبية تُحسب على وحداتها ([targetUnitCount] من نطاق السياق).
+bool isContextWordRetryAcceptable(
+  RecitationResult result, {
+  required int targetWordIdx,
+  required int targetUnitCount,
+  double minAccuracy = kWordRetryMinUnitAccuracy,
+}) {
+  if (!result.hasMatch || targetUnitCount <= 0) return false;
+  final target = result.errors.where((e) => e.wordIdx == targetWordIdx);
+  if (target.every((e) => !isRetryBlockingError(e))) return true;
+  // قبول نسبي على وحدات المستهدفة: كل خطأ وحدة واحدة تقريبًا.
+  final accuracy = 1 - target.length / targetUnitCount;
+  return accuracy >= minAccuracy;
 }
 
 /// هل التلاوة **مقبولة** (إتقان)؟ — تطابقٌ ولا خطأ رادعًا واحدًا

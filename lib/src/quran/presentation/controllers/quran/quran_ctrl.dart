@@ -181,7 +181,25 @@ class QuranCtrl extends GetxController {
   //   await quranSearch.loadModel(); // تحميل نموذج BERT
   // }
 
-  Future<void> loadQuranDataV3() async {
+  /// مستقبل تحميل بيانات المصحف الجاري/المنجز — تذريد الاستدعاءات:
+  /// حارس «القائمة فارغة» القديم كان يُفحص قبل await تحميل ملف بميغابايتات
+  /// فتسابق مستدعيان (init المباشر + onInit المؤجل + surah/audio) ويكمل
+  /// كلاهما الإضافة — فتتضاعف آيات المصحف كلها وتتكرر آيات كل صفحة.
+  Future<void>? _quranDataLoadFuture;
+
+  Future<void> loadQuranDataV3() {
+    final existing = _quranDataLoadFuture;
+    if (existing != null) return existing;
+    final future = _loadQuranDataV3().catchError((Object e) {
+      // فشل التحميل: صفّر المستقبل ليسمح بإعادة المحاولة لاحقًا.
+      _quranDataLoadFuture = null;
+      throw e;
+    });
+    _quranDataLoadFuture = future;
+    return future;
+  }
+
+  Future<void> _loadQuranDataV3() async {
     lastPage = _quranRepository.getLastPage() ?? 1;
     state.currentPageNumber.value = lastPage;
     if (lastPage != 0) {
@@ -457,14 +475,28 @@ class QuranCtrl extends GetxController {
   }
 
   List<AyahModel> getAyahsByPage(int page) {
-    // تصفية القائمة بناءً على رقم الصفحة
-    final filteredAyahs =
-        state.allAyahs.where((ayah) => ayah.page == page).toList();
+    // تصفية القائمة بناءً على رقم الصفحة ثم ترتيب مصحفي وإزالة أي ازدواج.
+    return sortedUniquePageAyahs(
+      state.allAyahs.where((ayah) => ayah.page == page),
+    );
+  }
 
-    // فرز القائمة حسب رقم الآية
-    filteredAyahs.sort((a, b) => a.ayahNumber.compareTo(b.ayahNumber));
-
-    return filteredAyahs;
+  /// آيات الصفحة بترتيبها المصحفي (الرقم الموحد — لا رقمها داخل سورتها
+  /// الذي يتصفّر عند حدود السور فيتشابك ترتيب صفحة تضم سورتين)، وبلا
+  /// تكرار: الآية لا تتكرر في صفحة ببيانات سليمة، وأي ازدواج متتالٍ
+  /// يتسرب لقائمة الآيات (سباق تحميل مزدوج مثلًا) يكرر آيات نطاق
+  /// التسميع ويوقف تتبّع الصفحة عند توقّع الآية ثانيةً.
+  @visibleForTesting
+  static List<AyahModel> sortedUniquePageAyahs(Iterable<AyahModel> ayahs) {
+    final sorted = ayahs.toList()
+      ..sort((a, b) => a.ayahUQNumber.compareTo(b.ayahUQNumber));
+    final out = <AyahModel>[];
+    for (final ayah in sorted) {
+      if (out.isEmpty || out.last.ayahUQNumber != ayah.ayahUQNumber) {
+        out.add(ayah);
+      }
+    }
+    return out;
   }
 
   Future<void> fetchSurahs() async {

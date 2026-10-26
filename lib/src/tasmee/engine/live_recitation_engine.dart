@@ -75,4 +75,11 @@ abstract interface class LiveCapableRecitationEngine
     String? referenceText,
     required LiveRecognitionFrame frame,
   });
+
+  /// تقدّم التلاوة الحيّة على نطاق الجلسة (0..1) — نسبة الوحدات
+  /// المرجعية المستهلَكة، أو null قبل إرساء المتتبّع/بلا نطاق.
+  ///
+  /// أساس الإنهاء الآلي بالصمت في وضع المعلم: صمت ختامي مع تقدّم كافٍ
+  /// يُنهي التسجيل والتقييم النهائي الشامل يحكم.
+  double? get liveRangeProgress;
 }

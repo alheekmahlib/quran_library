@@ -15,6 +15,11 @@ import 'platform_io.dart';
 
 import 'quran_units.dart';
 
+// إسناد الوحدات إلى الكلمات العثمانية — منطق نقي في ملف مستقل ليُستخدم
+// أيضًا من سكربت التوليد المسبق خارج Flutter (tool/generate_unit_word_map).
+export 'quran_word_mapping.dart';
+import 'quran_word_mapping.dart';
+
 /// بيانات مرجعية لِآية واحدة، مُقطَّعة إلى وحدات جاهزة لِلمحاذاة.
 class QuranReferenceVerse {
   const QuranReferenceVerse({
@@ -165,6 +170,15 @@ class QuranReferenceRange {
     return wordSpans[s];
   }
 
+  /// عدد وحدات كلمة داخل النطاق، أو 0 إن لم تكن لها وحدات — لِلقبول
+  /// النسبي لإعادة النطق بالسياق (الحكم على وحدات المستهدفة وحدها).
+  int wordUnitCount(int wordIdx) {
+    for (final s in wordSpans) {
+      if (s.wordIdx == wordIdx) return s.endUnit - s.startUnit + 1;
+    }
+    return 0;
+  }
+
   /// مفتاح آية (سورة/آية 1-based) من فهرسها داخل النطاق.
   ({int suraIdx, int ayaIdx}) keyOfVerse(int verseIdx) {
     final parts = verses[verseIdx].verseKey.split(':');
@@ -202,6 +216,60 @@ class QuranReferenceRange {
         ),
       ],
       unitSpanIdx: List<int>.filled(units.length, 0),
+    );
+  }
+
+  /// يبني نطاق تحقّق إعادة نطق كلمة **بسياقها**: وحدات الكلمة السابقة
+  /// والمستهدفة معًا — إعادة النطق المنفردة تقف على الكلمة (تُسقط نون
+  /// التنوين، وتُقرأ همزة الوصل، ولا يُدغم) بينما المرجع متصل الوصل،
+  /// فتخفق المحاذاة الصارمة مهما أُعيدت. قراءة السابقة مع المستهدفة
+  /// تعيد الوصل والإدغام والتنوين إلى حالها كما في التلاوة الحقيقية،
+  /// والحكم يبقى على وحدات الكلمة المستهدفة وحدها (انظر
+  /// [targetWordUnitCount]).
+  ///
+  /// يعيد null إن لم تكن للمستهدفة وحدات في المرجع.
+  static QuranReferenceRange? fromWordWithContext(
+    QuranReferenceVerse verse,
+    int wordIdx,
+  ) {
+    final firstWord = wordIdx > 0 ? wordIdx - 1 : wordIdx;
+    final units = <QuranUnit>[];
+    final unitWordIdx = <int>[];
+    final spans = <QuranRangeWordSpan>[];
+    var targetHasUnits = false;
+    for (var w = firstWord; w <= wordIdx; w++) {
+      var first = -1;
+      var last = -1;
+      for (var u = 0; u < verse.units.length; u++) {
+        if (verse.unitWordIdx[u] != w) continue;
+        if (first < 0) first = units.length;
+        last = units.length;
+        units.add(verse.units[u]);
+        unitWordIdx.add(w);
+      }
+      if (first < 0) continue; // كلمة بلا وحدات (مدموجة كليًا).
+      if (w == wordIdx) targetHasUnits = true;
+      spans.add(QuranRangeWordSpan(
+        verseIdx: 0,
+        wordIdx: w,
+        startUnit: first,
+        endUnit: last,
+      ));
+    }
+    if (!targetHasUnits) return null;
+    final unitSpanIdx = List<int>.filled(units.length, -1);
+    for (var s = 0; s < spans.length; s++) {
+      for (var u = spans[s].startUnit; u <= spans[s].endUnit; u++) {
+        unitSpanIdx[u] = s;
+      }
+    }
+    return QuranReferenceRange._(
+      verses: [verse],
+      units: units,
+      unitVerseIdx: List<int>.filled(units.length, 0),
+      unitWordIdx: unitWordIdx,
+      wordSpans: spans,
+      unitSpanIdx: unitSpanIdx,
     );
   }
 
@@ -262,96 +330,6 @@ class QuranReferenceRange {
 }
 
 /// محمّل المرجع من asset أو ملف خارجي (gzip JSON) — تجزئة مؤجّلة لكل آية.
-/// حروف الكلمة العثمانية المطابقة وحدويًا: بلا حركات ولا علامات قرآنية،
-/// والشدة تُضاعف الحرف (تُقابل وحدة الشدة بوزن 2). المطابقة موضعية —
-/// لا مقارنة هوية حروف؛ حفظُ الإجمالي وحده يفصل المسارات.
-List<String> uthmaniWordLetters(String word) {
-  const marks = '\u064B\u064C\u064D\u064E\u064F\u0650\u0651\u0652\u0653'
-      '\u0654\u0655\u0656\u0657\u0658\u0670\u06D6\u06D7\u06D8'
-      '\u06D9\u06DA\u06DB\u06DC\u06DD\u06DE\u06DF\u06E0\u06E1'
-      '\u06E2\u06E3\u06E4\u06E5\u06E6\u06E7\u06E8\u06E9\u06EA'
-      '\u06EB\u06EC\u06ED\u0640';
-  final out = <String>[];
-  for (final r in word.runes) {
-    final ch = String.fromCharCode(r);
-    if (ch == '\u0651') {
-      // شدة: ضاعف الحرف السابق.
-      if (out.isNotEmpty) out.add(out.last);
-    } else if (!marks.contains(ch) &&
-        RegExp(r'\p{L}', unicode: true).hasMatch(ch)) {
-      out.add(ch);
-    }
-  }
-  return out;
-}
-
-/// يسند كل وحدة إلى فهرس كلمتها **العثمانية** — الفونيمات تختلف عن
-/// العثماني في ثلثي المصحف (كلمة فونيمية تدمج «هُدًى لِّلْمُتَّقِينَ»)،
-/// وأي خلط بين الفهرستين يُسقط كلمات من التتبّع كليًا فلا تظهر في
-/// التسميع (وتتركز في نهايات الآيات حيث تُدمج المدود باللامات).
-///
-/// ثلاثة مسارات تصاعديّة الأمان:
-/// 1. تطابق عدد الكلمات الفونيمية مع العثمانية → مطابقة فهرسية.
-/// 2. مشي موضعي بالأوزان (وحدة الشدة = 2، وما عداها = 1) عبر حدود
-///    الكلمات — يُعتمد إن حافظ على الإجمالي وغطّى كل كلمة ذات حروف.
-/// 3. احتياط نسبي رتيب (آيات تُهجّى حروفها فيختل الحفظ كـ«الٓمٓ»).
-List<int> mapUnitsToUthmaniWords({
-  required List<QuranUnit> units,
-  required List<int> phonemeIdx,
-  required List<String> uthmaniWords,
-}) {
-  final wordCount = uthmaniWords.length;
-  if (units.isEmpty || wordCount == 0) return const [];
-  final phonemeCount = phonemeIdx.toSet().length;
-  if (phonemeCount == wordCount) return phonemeIdx;
-
-  // حدود الكلمات بحروفها المطبَّعة.
-  final boundaries = List<int>.filled(wordCount + 1, 0);
-  for (var w = 0; w < wordCount; w++) {
-    boundaries[w + 1] =
-        boundaries[w] + uthmaniWordLetters(uthmaniWords[w]).length;
-  }
-  final totalLetters = boundaries[wordCount];
-  var totalWeight = 0;
-  for (final u in units) {
-    totalWeight += u.isShadda ? 2 : 1;
-  }
-  if (totalWeight == totalLetters) {
-    final result = List<int>.filled(units.length, 0);
-    var pos = 0;
-    var word = 0;
-    for (var i = 0; i < units.length; i++) {
-      while (word + 1 < wordCount && pos >= boundaries[word + 1]) {
-        word++;
-      }
-      result[i] = word;
-      pos += units[i].isShadda ? 2 : 1;
-    }
-    // كل كلمة ذات حروف يجب أن تُغطّى.
-    final covered = List<bool>.filled(wordCount, false);
-    for (final w in result) {
-      covered[w] = true;
-    }
-    var allCovered = true;
-    for (var w = 0; w < wordCount; w++) {
-      if (boundaries[w + 1] > boundaries[w] && !covered[w]) {
-        allCovered = false;
-        break;
-      }
-    }
-    if (allCovered) return result;
-  }
-
-  // احتياط نسبي رتيب.
-  final result = List<int>.filled(units.length, 0);
-  for (var i = 0; i < units.length; i++) {
-    result[i] = ((i + 1) * wordCount) ~/ units.length - 1 < 0
-        ? 0
-        : (((i + 1) * wordCount) ~/ units.length) - 1;
-  }
-  return result;
-}
-
 class QuranPhonemeReference {
   QuranPhonemeReference({required QuranUnitLexicon lexicon})
       : _lexicon = lexicon;
@@ -359,8 +337,16 @@ class QuranPhonemeReference {
   static const defaultAssetPath =
       'assets/quran_lab/ordered_quran_phonemes.json.gz';
 
+  /// أصل إسناد الوحدات إلى الكلمات العثمانية المولَّد مسبقًا — يُنتج بـ
+  /// `dart run tool/generate_unit_word_map.dart` (نفس منطق
+  /// [mapUnitsToUthmaniWords]) فيوفّر حساب المحاذاة وقت التشغيل ويثبّت
+  /// النتيجة للمراجعة. اختياري: غيابه يُسقط للمسارات الحية.
+  static const defaultUnitWordMapAssetPath =
+      'assets/quran_lab/unit_word_map.json.gz';
+
   final QuranUnitLexicon _lexicon;
   final Map<String, QuranReferenceVerse> _cache = {};
+  final Map<String, List<int>> _unitWordMap = {};
   Map<String, dynamic> _raw = {};
   bool _loaded = false;
 
@@ -368,7 +354,15 @@ class QuranPhonemeReference {
   int get verseCount => _raw.length;
 
   /// حمّل المرجع (gzip JSON) من ملف أو asset.
-  Future<void> load({String? assetPath, String? filePath}) async {
+  ///
+  /// خريطة الإسناد المولدة اختيارية: تُقرأ من [unitWordMapFilePath] إن
+  /// أعطي، وإلا من الأصل الافتراضي إن وُجد — وأي غياب يُتجاهل (المسارات
+  /// الحية في [mapUnitsToUthmaniWords] تكفي).
+  Future<void> load({
+    String? assetPath,
+    String? filePath,
+    String? unitWordMapFilePath,
+  }) async {
     if (_loaded) return;
     final Uint8List gzBytes;
     if (filePath != null && await PlatformIo.fileExists(filePath)) {
@@ -382,6 +376,32 @@ class QuranPhonemeReference {
     _loaded = true;
     log('QuranPhonemeReference: loaded ${_raw.length} verses',
         name: 'QuranReference');
+    await _tryLoadUnitWordMap(unitWordMapFilePath);
+  }
+
+  Future<void> _tryLoadUnitWordMap(String? filePath) async {
+    try {
+      final Uint8List mapBytes;
+      if (filePath != null && await PlatformIo.fileExists(filePath)) {
+        mapBytes = await PlatformIo.readFile(filePath);
+      } else {
+        mapBytes = await loadPackageAssetBytes(defaultUnitWordMapAssetPath);
+      }
+      final decoded = jsonDecode(utf8.decode(
+        const GZipDecoder().decodeBytes(mapBytes),
+      )) as Map<String, dynamic>;
+      _unitWordMap
+        ..clear()
+        ..addAll(decoded.map((k, v) => MapEntry(k, (v as List).cast<int>())));
+      log(
+          'QuranPhonemeReference: unit word map loaded (${_unitWordMap.length}'
+          ' verses)',
+          name: 'QuranReference');
+    } catch (_) {
+      // الأصل اختياري — المسارات الحية تكفي عند غيابه.
+      log('QuranPhonemeReference: unit word map absent — computing live',
+          name: 'QuranReference');
+    }
   }
 
   /// ابحث عن آية (sura/aya 1-based) — تُقطَّع الوحدات مرّة واحدة وتُخزَّن.
@@ -408,6 +428,16 @@ class QuranPhonemeReference {
       units.addAll(wordUnits);
       phonemeIdx.addAll(List<int>.filled(wordUnits.length, w));
     }
+    // الخريطة المولدة مسبقًا تُقدَّم إن طابقت طول الوحدات — وإلا المسارات
+    // الحية (تطابق عدد/مشي أوزان/محاذاة DP).
+    final preset = _unitWordMap[key];
+    final unitWordIdx = preset != null && preset.length == units.length
+        ? preset
+        : mapUnitsToUthmaniWords(
+            units: units,
+            phonemeIdx: phonemeIdx,
+            uthmaniWords: uthmaniWords,
+          );
     final verse = QuranReferenceVerse(
       verseKey: key,
       uthmani: m['aya_text'] as String,
@@ -415,11 +445,7 @@ class QuranPhonemeReference {
       phonemeWords: phonemeWords,
       uthmaniWords: uthmaniWords,
       units: units,
-      unitWordIdx: mapUnitsToUthmaniWords(
-        units: units,
-        phonemeIdx: phonemeIdx,
-        uthmaniWords: uthmaniWords,
-      ),
+      unitWordIdx: unitWordIdx,
     );
     _cache[key] = verse;
     return verse;

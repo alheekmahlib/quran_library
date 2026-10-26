@@ -12,7 +12,9 @@
 ///    بالإزاحة نفسها (دليل تجاوز فعلي)، وإلا عُدَّت الوحدة الأولى إدراجًا.
 ///    المطابقة بالحرف الأساسي فقط (بلا حركات) والحروف العربية تتكرر
 ///    كثيرًا — لولا التأكيد المضاعف لانزلق المؤشر وحداتٍ أمامية مع كل
-///    حرف متكرر فتظهر كلمات لم تُتلَ بعد.
+///    حرف متكرر فتظهر كلمات لم تُتلَ بعد. وتُجمع **كل** المواضع المطابقة
+///    في النافذة ويُقبل الموضع المتعاقب المتوقع إن كان بينها — أول
+///    تطابق كثيرًا ما يكون حرفًا زائدًا لا الموضع الحقيقي.
 /// 3. **لا تطابق** → تُجمَّع الوحدة في بافر إدراجات مؤجَّل (لا خطأ فوريًا):
 ///    - عادت مطابقة فورية عند المتوقَّع → البافر نطق زائد فعلي (زيادة).
 ///    - امتلأ البافر ([maxBufferedInserts]) → مُحاولة **إعادة إرساء**
@@ -41,6 +43,8 @@
 /// (المحاذاة الشاملة عند الإيقاف) يبقى المرجع.
 library;
 
+import 'dart:developer' show log;
+
 import 'quran_reference.dart';
 import 'quran_units.dart';
 import 'tasmee_error_kind.dart';
@@ -57,6 +61,13 @@ class RangeLiveTracker {
     this.minReanchorMatches = 4,
     this.reanchorPreferNearestMargin = 4,
     this.fastAnchorUnits = 5,
+    this.fastAnchorLeadTolerance = 3,
+    this.fastAnchorMissTolerance = 4,
+    this.coldAcquireNearUnits = 45,
+    this.coldAcquireFarMinMatches = 7,
+    this.resumeBackUnits = 8,
+    this.resumeAheadUnits = 30,
+    this.acquisitionTrimUnits = 8,
     this.onRangeWord,
     this.onWordDone,
     this.onRangeComplete,
@@ -91,10 +102,36 @@ class RangeLiveTracker {
   /// الأقرب أمام تكرار النص القرآني).
   final int reanchorPreferNearestMargin;
 
-  /// عدد الوحدات المتطابقة **رمزيًا** (حرفًا وحركةً) المتتالية من نقطة
-  /// البداية المرجَّحة التي تُرسّي المؤشر فورًا دون انتظار امتلاء البافر
-  /// — تطابق الرموز الكامل أقوى دليل من أي عتبة عددية.
+  /// عدد الوحدات المتطابقة **بالحرف الأساسي** (بلا حركات) المتتالية من
+  /// نقطة البداية المرجَّحة التي تُرسّي المؤشر فورًا دون انتظار امتلاء
+  /// البافر — إرساء على مستوى الحرف: وحدة زائدة في أول المخزن (نفَس/
+  /// همزة/صمت) أو حركة مختلفة لا تُسقط الإرساء لبقية الجلسة.
   final int fastAnchorUnits;
+
+  /// أقصى وحدات **زائدة** تُغتفر في أول بافر الالتقاط قبل سلسلة الإرساء.
+  final int fastAnchorLeadTolerance;
+
+  /// أقصى وحدات **ساقطة** من بداية المرجع يُغتفر تخطّيها (تأخر بدء
+  /// الميكروفون يبتلع أول وحدات النطق).
+  final int fastAnchorMissTolerance;
+
+  /// البداية الباردة: ضمن أول هذا العدد من وحدات النطاق تكفي سلسلة
+  /// [minReanchorMatches] — فرضية «بدأ المستخدم من أول النطاق».
+  final int coldAcquireNearUnits;
+
+  /// البداية الباردة بعيدًا عن أول النطاق: تشترط سلسلة بهذا الطول على
+  /// الأقل (مطابقة قصيرة بعيدة سهلة المصادفة في النص المتكرر).
+  final int coldAcquireFarMinMatches;
+
+  /// استئناف بعد إعادة تسليح الالتقاط: نافذة الإرساء خلف المؤشر.
+  final int resumeBackUnits;
+
+  /// استئناف بعد إعادة تسليح الالتقاط: نافذة الإرساء أمام المؤشر.
+  final int resumeAheadUnits;
+
+  /// فشل إعادة الإرساء أثناء الالتقاط: يُبقى على آخر هذا العدد من
+  /// وحدات البافر (انزلاقي) بدل إهداره.
+  final int acquisitionTrimUnits;
 
   final void Function(int verseIdx, int wordIdx)? onRangeWord;
   final void Function(
@@ -104,6 +141,14 @@ class RangeLiveTracker {
     TasmeeWordMistake? mistake,
   )? onWordDone;
   final void Function()? onRangeComplete;
+
+  /// تسامح اكتمال آخر كلمة في النطاق (وحدات): تكتمل باستُهلاك كل وحداتها
+  /// **إلا هذا العدد** — وحدة الختام كثيرًا ما تسقط من التعرّف أو تُستبدل.
+  static const int lastWordTailTolerance = 1;
+
+  /// عدد وحدات كل كلمة الموسومة بخطأ — دليل الحكم في المصحّح: الحذف أو
+  /// الاستبدال المعزول الأول لا يفتح شيتًا؛ يلزم دليلان.
+  final Map<QuranRangeWordSpan, int> _wordMarkedUnitCounts = {};
 
   /// فهرس الوحدة المرجعية المتوقَّعة التالية (0-based).
   int _nextRef = 0;
@@ -180,6 +225,10 @@ class RangeLiveTracker {
     _acquiring = true;
     _clearPending();
     _insertBuffer.clear();
+    // سياق ما قبل الإيقاف يُفرَّغ أيضًا: بقاؤه يجعل إعادة الإرساء أثناء
+    // الالتقاط تغلب تتابعًا قديمًا (يظهر أولًا في المسح) على كلام
+    // المستخدم الجديد فيُرمى كلامه وُتعوَّض الكلمات السليمة وسمًا كاذبًا.
+    _recentPred.clear();
   }
 
   /// يُغذّى بِالقائمة الكاملة المتنامية للوحدات المتعرَّف عليها.
@@ -225,8 +274,12 @@ class RangeLiveTracker {
     }
 
     // 2) قفزة واسعة — تحتاج تأكيد وحدات متتالية على مواضع متعاقبة.
-    final wide = _findMatch(pred, maxSkipUnits);
-    if (wide < 0) {
+    // تُجمع **كل** المواضع المطابقة في النافذة لا أولها: الحروف
+    // العربية تتكرر داخل الكلمة الواحدة، وأول تطابق صادفه المسح كثيرًا
+    // ما يكون حرفًا متقدمًا زائدًا لا الموضع المتعاقب الحقيقي — فيُفقد
+    // التزامن على حذف وحدة واحدة ويتسلسل الوسم الكاذب.
+    final cands = _allMatches(pred, maxSkipUnits);
+    if (cands.isEmpty) {
       // 3) لا مطابقة → بافر إدراجات مؤجَّل (والقفزة المؤقتة ساقطة).
       if (_pendingK >= 0) _resolvePendingAsInsert();
       _bufferInsert(pred);
@@ -234,10 +287,15 @@ class RangeLiveTracker {
     }
     if (_pendingK >= 0) {
       final expected = _pendingK + _confirmUnits.length + 1;
-      if (wide == expected) {
+      if (cands.contains(expected)) {
         // تأكيد جزئي: وحدة إضافية على الموضع المتعاقب التالي.
         _confirmUnits.add(pred);
-        if (_confirmUnits.length + 1 >= confirmUnits) {
+        // قرب نهاية النطاق لا يُمكن جمع [confirmUnits] كاملة — بقيت
+        // القفزة معلَّقة تُحلّ إدراجات فلا يكتمل النطاق أبدًا؛ تُقبل
+        // بالمتاح متى قلّ الباقي عن المطلوب.
+        final unitsAfterExpected = range.units.length - expected;
+        if (_confirmUnits.length + 1 >= confirmUnits ||
+            (unitsAfterExpected < confirmUnits && _confirmUnits.isNotEmpty)) {
           // تأكيد كامل — بشرط مسافة الكلمة الواحدة: حذف حرف أو كلمة
           // يقفز كلمةً واحدة على الأكثر. قفزة تعبر أكثر من كلمة ليست
           // حذفًا بل انزلاق كبير (النص القرآني متكرر فثلاث وحدات
@@ -268,14 +326,27 @@ class RangeLiveTracker {
         // إزاحتان مختلفتان → الأولى إدراج مؤجَّل، والثانية قفزة جديدة.
         _resolvePendingAsInsert();
         _pendingUnit = pred;
-        _pendingK = wide;
+        _pendingK = cands.first;
         _confirmUnits.clear();
       }
       return;
     }
     _pendingUnit = pred;
-    _pendingK = wide;
+    _pendingK = cands.first;
     _confirmUnits.clear();
+  }
+
+  /// كل المواضع المرجعية (من المتوقَّع حتى [skip] بعده) التي يطابق
+  /// حرفها الأساسي حرف الوحدة.
+  List<int> _allMatches(QuranUnit pred, int skip) {
+    final limit = (_nextRef + skip < range.units.length)
+        ? _nextRef + skip
+        : range.units.length - 1;
+    final out = <int>[];
+    for (var k = _nextRef; k <= limit; k++) {
+      if (range.units[k].letter == pred.letter) out.add(k);
+    }
+    return out;
   }
 
   /// أول فهرس مرجعي (من المتوقَّع حتى [skip] بعده) يطابق حرف الوحدة.
@@ -374,37 +445,62 @@ class RangeLiveTracker {
     _drainInsertsIfNeeded();
   }
 
-  /// إرساء فوري أثناء الالتقاط: سلسلة الوحدات المتطابقة **بالرمز
-  /// الكامل** (حرفًا وحركة) من نقطة البداية المرجَّحة — فاتحة النطاق
-  /// عند بدء الجلسة، أو موضع المؤشر بعد إغلاق شيت المصحّح (الاستئناف
-  /// المعتاد من الكلمة التالية). يلغي تأخّر الإظهار (~كلمتين بانتظار
-  /// امتلاء البافر) دون فتح باب القفل الزائف: مطابقة الرموز المتتالية
-  /// بالحركات لا تصدر عن ضوضاء أو تكرار حرفي.
+  /// إرساء فوري أثناء الالتقاط: سلسلة وحدات متطابقة **بالحرف الأساسي**
+  /// (بلا حركات) من نقطة البداية المرجَّحة — فاتحة النطاق عند بدء
+  /// الجلسة، أو موضع المؤشر بعد إغلاق شيت المصحّح (الاستئناف المعتاد
+  /// من الكلمة التالية). يلغي تأخّر الإظهار (~كلمتين بانتظار امتلاء
+  /// البافر) دون فتح باب القفل الزائف.
   ///
-  /// يُغتفر داخل السلسلة رمزٌ واحد مختلف ما دام حرفه مطابقًا — ارتعاج
-  /// حركة/مدّ من CTC على حدود البداية شبه حتمي، وإسقاط الإرساء كله
-  /// بسببه كان يُبقي الجلسة بلا أي إظهار حتى امتلاء البافر (يُرى كفشل
-  /// تعرّف في وضع المعلم). الوحدة المخالفة تُصنَّف عند الاستهلاك
-  /// تشكيلًا/تجويدًا فلا تمرّ صامتة.
+  /// تسامح الحواف: حتى [fastAnchorLeadTolerance] وحدات زائدة في أول
+  /// المخزن (نفَس/همزة/صمت تسبق الكلام)، وحتى [fastAnchorMissTolerance]
+  /// وحدات ساقطة من بداية المرجع (تأخر الميكروفون يبتلع أول النطق —
+  /// وضع المعلم خاصة). أفضل مرشّح بأصغر (زائد+ساقط)؛ الوحدات المخالفة
+  /// داخل السلسلة تُصنَّف عند الاستهلاك تشكيلًا/تجويدًا فلا تمرّ صامتة.
   bool _maybeFastAnchor() {
     if (!_acquiring || _insertBuffer.length < fastAnchorUnits) return false;
     final base = _firstConsumedRefIdx < 0 ? 0 : _nextRef;
-    if (base + _insertBuffer.length > range.units.length) return false;
-    var symbolMismatches = 0;
-    for (var i = 0; i < _insertBuffer.length; i++) {
-      final pred = _insertBuffer[i];
-      final ref = range.units[base + i];
-      if (pred.symbol == ref.symbol) continue;
-      if (pred.letter == ref.letter && symbolMismatches == 0) {
-        symbolMismatches++;
-        continue;
+    final units = range.units;
+    final maxLead = _insertBuffer.length - fastAnchorUnits;
+    final leadCap =
+        fastAnchorLeadTolerance < maxLead ? fastAnchorLeadTolerance : maxLead;
+    var bestLead = -1;
+    var bestMiss = 0;
+    var bestCost = -1;
+    for (var lead = 0; lead <= leadCap; lead++) {
+      for (var miss = 0; miss <= fastAnchorMissTolerance; miss++) {
+        if (base + miss + fastAnchorUnits > units.length) continue;
+        var ok = true;
+        for (var i = 0; i < fastAnchorUnits; i++) {
+          if (_insertBuffer[lead + i].letter != units[base + miss + i].letter) {
+            ok = false;
+            break;
+          }
+        }
+        if (ok && (bestCost < 0 || lead + miss < bestCost)) {
+          bestCost = lead + miss;
+          bestLead = lead;
+          bestMiss = miss;
+        }
       }
-      return false;
     }
-    final units = List.of(_insertBuffer);
+    if (bestLead < 0) return false;
+    final start = base + bestMiss;
+    final anchored = _insertBuffer.sublist(bestLead);
     _insertBuffer.clear();
-    for (var i = 0; i < units.length; i++) {
-      _consume(base + i, units[i]);
+    _acquiring = false;
+    // نقطة بداية المقطع راسخية: أول إرساء في الجلسة يبقى البداية —
+    // إعادة التسليح بعد شيت المصحّح توسّع نافذة التقييم ولا تُزيحها.
+    _firstConsumedRefIdx = _firstConsumedRefIdx >= 0
+        ? (_firstConsumedRefIdx < start ? _firstConsumedRefIdx : start)
+        : start;
+    // ابتلع بصمت ما قبل نقطة الإرساء — كلماتٌ لم تُتلَ.
+    while (_doneCursor < range.wordSpans.length &&
+        range.wordSpans[_doneCursor].endUnit < start) {
+      _doneCursor++;
+    }
+    for (var i = 0; i < anchored.length; i++) {
+      if (start + i >= units.length) break;
+      _consume(start + i, anchored[i]);
     }
     return true;
   }
@@ -420,8 +516,18 @@ class RangeLiveTracker {
     // الحقيقي يطابق البافر كاملًا تقريبًا فتغلبه أطولُ سلسلة.
     _tryReanchor();
     if (_insertBuffer.length >= maxBufferedInserts) {
-      // لا مرساة واثقة — نطق زائد فعلي على الكلمة المتوقعة.
-      _flushInserts();
+      if (_acquiring) {
+        // أثناء الالتقاط لا يُهدر المخزن: احتفظ بآخر وحداته (انزلاقي)
+        // — بداية كلام المستخدم الفعلية قد تكون في آخره وما قبلها
+        // ضوضاء افتتاح تُقلَّم تدريجيًا حتى ينجح الإرساء.
+        if (_insertBuffer.length > acquisitionTrimUnits) {
+          _insertBuffer.removeRange(
+              0, _insertBuffer.length - acquisitionTrimUnits);
+        }
+      } else {
+        // لا مرساة واثقة — نطق زائد فعلي على الكلمة المتوقعة.
+        _flushInserts();
+      }
     }
   }
 
@@ -468,10 +574,14 @@ class RangeLiveTracker {
 
   /// سلسلة وحدات متتالية متطابقة بالحرف الأساسي: بافر عند [predStart]
   /// مقابل مرجع عند [refStart] بطول [length].
+  /// [nearUnits] (بداية باردة): أفضلية موضعية — فرضية «بدأ المستخدم من
+  /// أول النطاق»: ضمن أول [nearUnits] وحدة تكفي سلسلة [minReanchorMatches]
+  ///، وبعدها تشترط [coldAcquireFarMinMatches].
   ({int refStart, int predStart, int length})? _bestDiagonalRun(
     List<QuranUnit> refWindow,
-    List<QuranUnit> buffer,
-  ) {
+    List<QuranUnit> buffer, {
+    int? nearUnits,
+  }) {
     var bestLen = 0;
     var bestRef = -1;
     var bestPred = -1;
@@ -485,8 +595,11 @@ class RangeLiveTracker {
             refWindow[w + len].letter == buffer[b + len].letter) {
           len++;
         }
+        final need = nearUnits == null || w < nearUnits
+            ? minReanchorMatches
+            : coldAcquireFarMinMatches;
         if (!found) {
-          if (len >= minReanchorMatches) {
+          if (len >= need) {
             bestLen = len;
             bestRef = w;
             bestPred = b;
@@ -520,9 +633,30 @@ class RangeLiveTracker {
   /// الالتقاط يُنهيه الإرساء نفسه مع ابتلاع ما قبله بصمتًا.
   void _tryReanchor() {
     if (_insertBuffer.isEmpty || _nextRef >= range.units.length) return;
-    final windowStart = _acquiring ? 0 : _nextRef;
-    final refWindow = range.units.sublist(windowStart);
-    final run = _bestDiagonalRun(refWindow, _recentPred);
+    // نافذة البحث:
+    // - استئناف بعد إعادة تسليح الالتقاط (بداية راسخة سابقًا): نافذة
+    //   محلية حول المؤشر [next-resumeBackUnits, next+resumeAheadUnits]
+    //   — فحص الصفحة كلها يقدّم توافقًا مصادفةً بعيدًا على كلام المستخدم
+    //   الجديد قرب موقعه الفعلي.
+    // - بداية باردة: النطاق كله مع أفضلية موضعية (قرب أول النطاق سلسلة
+    //   قصيرة تكفي، وبعيدًا تشترط الأطول).
+    // - تتبّع عادي: من المتوقَّع إلى نهاية النطاق.
+    int windowStart;
+    var windowEnd = range.units.length;
+    int? nearUnits;
+    if (_acquiring && _firstConsumedRefIdx >= 0) {
+      windowStart = _nextRef - resumeBackUnits;
+      if (windowStart < 0) windowStart = 0;
+      final ahead = _nextRef + resumeAheadUnits;
+      if (ahead < windowEnd) windowEnd = ahead;
+    } else if (_acquiring) {
+      windowStart = 0;
+      nearUnits = coldAcquireNearUnits;
+    } else {
+      windowStart = _nextRef;
+    }
+    final refWindow = range.units.sublist(windowStart, windowEnd);
+    final run = _bestDiagonalRun(refWindow, _recentPred, nearUnits: nearUnits);
     if (run == null) return;
 
     final gRef = windowStart + run.refStart;
@@ -593,6 +727,7 @@ class RangeLiveTracker {
   }) {
     final span = range.spanOfUnit(unitIdx);
     if (span == null) return;
+    _wordMarkedUnitCounts[span] = (_wordMarkedUnitCounts[span] ?? 0) + 1;
     final prev = _wordKinds[span];
     if (prev == null || mergeTasmeeErrorKinds(prev, kind) != prev) {
       _wordKinds[span] =
@@ -602,6 +737,16 @@ class RangeLiveTracker {
         errorType: errorType,
         expectedSymbol: expectedSymbol,
         predictedSymbol: predictedSymbol,
+        wrongUnits: _wordMarkedUnitCounts[span]!,
+      );
+    } else if (_wordMistakes[span] != null) {
+      // عدّد الدليل ارتفع — حدّثه في التفصيل المعتمد نفسه.
+      _wordMistakes[span] = TasmeeWordMistake(
+        kind: _wordMistakes[span]!.kind,
+        errorType: _wordMistakes[span]!.errorType,
+        expectedSymbol: _wordMistakes[span]!.expectedSymbol,
+        predictedSymbol: _wordMistakes[span]!.predictedSymbol,
+        wrongUnits: _wordMarkedUnitCounts[span]!,
       );
     }
   }
@@ -626,15 +771,51 @@ class RangeLiveTracker {
 
   /// يبلّغ الكلمات التي تجاوزها المؤشّر (آخر وحدة فيها مُطابَقة)
   /// مع نوع خطأها وتفصيله (correct وبلا تفصيل إن كانت سليمة).
+  ///
+  /// الكلمة الأخيرة من النطاق يكفيها تسامح [lastWordTailTolerance]
+  /// على وحداتها الختامية — وحدة الختام كثيرًا ما تسقط من التعرّف.
   void _reportCompleted() {
     final onWordDone = this.onWordDone;
-    while (_doneCursor < range.wordSpans.length &&
-        range.wordSpans[_doneCursor].endUnit < _nextRef) {
+    final lastSpan = range.wordSpans.length - 1;
+    while (_doneCursor < range.wordSpans.length) {
       final span = range.wordSpans[_doneCursor];
-      onWordDone?.call(span.verseIdx, span.wordIdx,
-          _wordKinds[span] ?? TasmeeErrorKind.correct, _wordMistakes[span]);
+      final tailTolerance = _doneCursor == lastSpan ? lastWordTailTolerance : 0;
+      if (span.endUnit >= _nextRef + tailTolerance) break;
+      final kind = _wordKinds[span] ?? TasmeeErrorKind.correct;
+      if (kind != TasmeeErrorKind.correct) {
+        _debugLogMarkedWord(span, kind, _wordMistakes[span]);
+      }
+      onWordDone?.call(span.verseIdx, span.wordIdx, kind, _wordMistakes[span]);
       _doneCursor++;
     }
+  }
+
+  /// تشخيص (debug فقط): كل كلمة موسومة تُسجَّل بوحداتها المرجعية وآخر
+  /// ما تنبَّأ به المحرك وسبب الوسم — لمعايرة العتبات من حالات تعثر
+  /// حقيقية على الجهاز.
+  void _debugLogMarkedWord(
+    QuranRangeWordSpan span,
+    TasmeeErrorKind kind,
+    TasmeeWordMistake? mistake,
+  ) {
+    var debugMode = false;
+    assert(() {
+      debugMode = true;
+      return true;
+    }());
+    if (!debugMode) return;
+    final expected = range.units
+        .sublist(span.startUnit, span.endUnit + 1)
+        .map((u) => u.symbol)
+        .join(' ');
+    final recent = _recentPred.map((u) => u.symbol).join(' ');
+    log(
+      'MARKED v${span.verseIdx} w${span.wordIdx} kind=$kind '
+      'type=${mistake?.errorType} expected=[$expected] '
+      'expectedSym=${mistake?.expectedSymbol} gotSym=${mistake?.predictedSymbol} '
+      'wrongUnits=${mistake?.wrongUnits} recentPred=[$recent] next=$_nextRef',
+      name: 'RangeLiveTracker',
+    );
   }
 
   /// يبلّغ اكتمال النطاق مرة واحدة فقط.

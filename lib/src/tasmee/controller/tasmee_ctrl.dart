@@ -75,6 +75,11 @@ class TasmeeCtrl extends GetxController {
   /// تصحيح ثانٍ أثناء انتظار إيقاف الميكروفون (سباق الأحداث المتتالية).
   bool _correctionPending = false;
 
+  /// كلمات عليها دليل خطأ أول (وحدة واحدة) ولم تُفتح بعد — سياسة
+  /// الدليلين: الحذف أو الاستبدال المعزول الأول يعلِّم حمراء بلا شيت،
+  /// ويُفتح التصحيح عند دليل ثانٍ (حرفان خاطئان أو تكرار الكلمة).
+  final Set<String> _wordFirstEvidence = {};
+
   /// إزاحة فهارس الآيات لجلسة النطاق الفرعي (نمط المعلم) — لتأطير
   /// أحداث الكلمات وتغطية التقييم النهائي على مواضعها الصفحية.
   int _sessionVerseOffset = 0;
@@ -83,8 +88,6 @@ class TasmeeCtrl extends GetxController {
   List<q.AyahModel> _rangeAyahs = const [];
 
   Worker? _stateWorker;
-  Worker? _verseWorker;
-  Worker? _wordWorker;
   Worker? _pageWorker;
 
   /// هل التسجيل جارٍ الآن؟
@@ -116,12 +119,32 @@ class TasmeeCtrl extends GetxController {
     state.mode.value = tasmeeModeFromName(
       _storage.read<String>(TasmeeStorageConstants.tasmeeMode),
     );
+    state.nonBlockingCorrector.value =
+        _storage.read<bool>(TasmeeStorageConstants.nonBlockingCorrector) ??
+            false;
+    ever<bool>(state.nonBlockingCorrector, (v) {
+      _storage.write(TasmeeStorageConstants.nonBlockingCorrector, v);
+    });
+    state.strictness.value = TasmeeStrictness.fromName(
+      _storage.read<String>(TasmeeStorageConstants.strictness),
+    );
+    ever<TasmeeStrictness>(state.strictness, (v) {
+      _storage.write(TasmeeStorageConstants.strictness, v.storageName);
+    });
     if (!kIsWeb) {
       _modelService.isModelReady().then((ready) {
         state.isModelReady.value = ready;
       });
     }
   }
+
+  /// عتبة القبول النسبي لإعادة نطق الكلمة بحسب [TasmeeState.strictness]:
+  /// صارم 0.85 / متوازن 0.75 (مدى فحص التسميع) / متسامح 0.70.
+  double get wordRetryMinAccuracy => switch (state.strictness.value) {
+        TasmeeStrictness.strict => 0.85,
+        TasmeeStrictness.balanced => 0.75,
+        TasmeeStrictness.lenient => 0.70,
+      };
 
   /// يبدّل نمط التسميع (تسميع/مصحح/معلم) ويحفظ الاختيار.
   ///
@@ -220,6 +243,7 @@ class TasmeeCtrl extends GetxController {
     state.isTasmeeMode.value = false;
     state.wordStatuses.clear();
     state.wordErrorKinds.clear();
+    _wordFirstEvidence.clear();
     state.currentWordKey.value = null;
     state.lastError.value = '';
     state.completedWords.value = 0;
@@ -258,6 +282,7 @@ class TasmeeCtrl extends GetxController {
     state.completedWords.value = 0;
     state.totalWords.value = 0;
     _acceptedCorrections.clear();
+    _wordFirstEvidence.clear();
 
     try {
       await TasmeeReferenceStore.instance.load();
@@ -362,6 +387,16 @@ class TasmeeCtrl extends GetxController {
       return;
     }
     await _launchLiveSession(range: ayahRange, verseIdxOffset: verseIdx);
+    // إنهاء آلي بالصمت (وضع المعلم): فاصل صمت بعد تلاوة ≥80% من وحدات
+    // الآية يُنهي التسجيل ويكل التقييم النهائي الشامل بالحكم — لا انتظار
+    // زر الإيقاف بعد آخر كلمة، والتأخير كان يُدفع إعادة تلاوة كاملة.
+    _session?.onEndpoint = () {
+      if (!isRecording) return;
+      final progress = _session?.liveRangeProgress;
+      if (progress != null && progress >= 0.8) {
+        stopRecording();
+      }
+    };
   }
 
   /// يشغّل جلسة حيّة على النطاق المعطى مع إسقاط فهارس الآيات على
@@ -392,15 +427,10 @@ class TasmeeCtrl extends GetxController {
         });
       };
 
-      // الكلمة الجارية (الوضع الحيّ فقط — offline).
-      _verseWorker = ever<int>(session.currentVerseIdx, (v) {
-        final w = session.currentWordIdx.value;
-        if (v >= 0 && w >= 0) markCurrentWord(v + verseIdxOffset, w);
-      });
-      _wordWorker = ever<int>(session.currentWordIdx, (w) {
-        final v = session.currentVerseIdx.value;
-        if (v >= 0 && w >= 0) markCurrentWord(v + verseIdxOffset, w);
-      });
+      // الكلمة الجارية (الوضع الحيّ فقط — offline): نداء واحد ذري
+      // بالفهرسين معًا — عاملان منفصلان على RxInt يقرأ أحدهما الآخر
+      // بقيمة قديمة عند انتقال الآية فتكشف كلمة متأخرة قبل أختها.
+      session.onRangeWord = (v, w) => markCurrentWord(v + verseIdxOffset, w);
       if (Recitation.isOffline) {
         await session.startLive();
         // الوضع الحيّ: طور الالتقاط حتى أول كلمة جارية (بداية المستخدم
@@ -488,10 +518,6 @@ class TasmeeCtrl extends GetxController {
   void _cancelSession() {
     _stateWorker?.dispose();
     _stateWorker = null;
-    _verseWorker?.dispose();
-    _verseWorker = null;
-    _wordWorker?.dispose();
-    _wordWorker = null;
     state.isAwaitingStart.value = false;
     try {
       _session?.dispose();
@@ -624,18 +650,42 @@ class TasmeeCtrl extends GetxController {
         .where((s) => s != TasmeeWordStatus.hidden)
         .length;
     _refreshQuranPages();
-    // نمط المصحح: أول كلمة خاطئة توقف الجلسة بانتظار تصحيحها.
+    // نمط المصحح: الكلمة الخاطئة توقف الجلسة بانتظار تصحيحها — لكن لا
+    // لأول حذف/استبدال معزول: سياسة الدليلين (حرفان خاطئان، أو الكلمة
+    // نفسها في موضعين) تحمي من وسم كاذب من التتبّع الحي يفتح شيتًا على
+    // كلمة سليمة ويوهم المستخدم بالعلق.
     if (state.mode.value == TasmeeMode.corrector) {
       log(
           'TasmeeCtrl corrector word-done — v=$verseIdx w=$wordIdx '
-          'kind=$kind active=${state.activeWordCorrection.value != null} '
+          'kind=$kind wrongUnits=${mistake?.wrongUnits ?? 1} '
+          'active=${state.activeWordCorrection.value != null} '
           'pending=$_correctionPending',
           name: 'TasmeeCtrl');
       if (kind != TasmeeErrorKind.correct) {
+        final wrongUnits = mistake?.wrongUnits ?? 1;
+        // الصرامة الصارمة: أول دليل يكفي لفتح الشيت (سلوك ما قبل الفحص).
+        final requireTwoEvidences =
+            state.strictness.value != TasmeeStrictness.strict;
+        final twoEvidences = !requireTwoEvidences ||
+            wrongUnits >= 2 ||
+            _wordFirstEvidence.contains(key);
+        if (!twoEvidences) {
+          // دليل وحيد معزول: علِّم حمراء (فوق) وتابع التلاوة بلا شيت؛
+          // التقييم النهائي عند الإيقاف هو المرجع في تأكيدها أو رفعها.
+          _wordFirstEvidence.add(key);
+          return;
+        }
+        if (state.nonBlockingCorrector.value) {
+          // وضع غير حاجز (خيار): الشارة الحمراء تكفي والجلسة تتابع —
+          // تقدّم المتتبّع بعدها يتركها كما هي بلا شيت أصلًا.
+          return;
+        }
         // بلا انتظار — onWordDone متزامن التوقيع؛ الحارس داخل
         // _beginWordCorrection (علم متزامن) يمنع الفتح المزدوج أثناء
         // انتظار إيقاف الميكروفون.
         _beginWordCorrection(verseIdx, wordIdx, kind, mistake);
+      } else {
+        _wordFirstEvidence.remove(key);
       }
     }
   }
@@ -669,6 +719,10 @@ class TasmeeCtrl extends GetxController {
       final wordText = verse != null && wordIdx < verse.uthmaniWords.length
           ? verse.uthmaniWords[wordIdx]
           : '';
+      // الكلمة السابقة سياقًا لإعادة النطق (تُقرأ معها وصلًا) — إعادة
+      // النطق المنفردة تقف على الكلمة فيخفق التنوين والإدغام وهمزة الوصل.
+      final contextWordText =
+          verse != null && wordIdx > 0 ? verse.uthmaniWords[wordIdx - 1] : '';
       log(
         'TasmeeCtrl corrector begin — "$wordText" ($verseIdx:$wordIdx) '
         'mistake=${mistake?.errorType} exp=${mistake?.expectedSymbol} '
@@ -686,6 +740,7 @@ class TasmeeCtrl extends GetxController {
       state.activeWordCorrection.value = TasmeeWordCorrection(
         key: _wordKey(verseIdx, wordIdx),
         wordText: wordText,
+        contextWordText: contextWordText,
         errorKind: kind,
         suraIdx: ayah.surahNumber ?? 1,
         ayaIdx: ayah.ayahNumber,
@@ -714,7 +769,8 @@ class TasmeeCtrl extends GetxController {
         : null;
     final wordRange = verse == null
         ? null
-        : QuranReferenceRange.fromSingleWord(verse, correction.wordIdx);
+        : QuranReferenceRange.fromWordWithContext(verse, correction.wordIdx);
+    final targetUnitCount = wordRange?.wordUnitCount(correction.wordIdx) ?? 0;
     if (wordRange == null) {
       state.wordRetryOutcome.value = TasmeeWordRetryOutcome.incorrect;
       return;
@@ -727,9 +783,19 @@ class TasmeeCtrl extends GetxController {
     _retryStateWorker = ever<RecitationState>(session.state, (s) {
       if (s == RecitationState.finished) {
         final result = session.result.value;
-        // معيار مخفَّف موجَّهًا: الحروف والتجويد الجوهري رادعان، والتشكيل
-        // وطول المدّ الرمزي مُغتفَران (ارتعاج شبه حتمي في نطق معزول).
-        final ok = result != null && isWordRetryAcceptable(result);
+        // معيار مخفَّف موجَّهًا **لكلمة المستهدفة وحدها** (النطاق يشمل
+        // الكلمة السابقة سياقًا فلا تُفشل المحاولة أخطاؤها): الحروف
+        // والتجويد الجوهري رادعان، والقبول النسبي على وحداتها.
+        final targetErrors = (result?.errors ?? const [])
+            .where((e) => e.wordIdx == correction.wordIdx)
+            .toList();
+        final ok = result != null &&
+            isContextWordRetryAcceptable(
+              result,
+              targetWordIdx: correction.wordIdx,
+              targetUnitCount: targetUnitCount,
+              minAccuracy: wordRetryMinAccuracy,
+            );
         state.wordRetryOutcome.value = ok
             ? TasmeeWordRetryOutcome.correct
             : TasmeeWordRetryOutcome.incorrect;
@@ -738,7 +804,7 @@ class TasmeeCtrl extends GetxController {
         // أصلح المستخدم النطق فصار الخطأ تشكيلًا أو تجويدًا) — يُعرض
         // في الشيت ليعرف ما يصحّحه الآن.
         state.wordRetryFeedback.value =
-            ok ? null : retryFeedbackFromErrors(result?.errors ?? const []);
+            ok ? null : retryFeedbackFromErrors(targetErrors);
         _disposeRetrySession();
       } else if (s == RecitationState.error) {
         state.lastError.value = session.lastError.value;

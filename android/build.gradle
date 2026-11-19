@@ -1,4 +1,19 @@
+buildscript {
+    repositories { google(); mavenCentral() }
+    dependencies {
+        if (rootProject.findProperty('quranLibraryEnableTajweedFormer') == 'true') {
+            classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:2.2.20'
+        }
+    }
+}
+
+// جسر TajweedFormer V4 مفعّل افتراضيًا (المكتبة عامة والجسر داخل الحزمة)؛
+// يعطَّل صراحةً بـ quranLibraryDisableTajweedFormer=true لمن لا يريد حجمه.
+def tajweedFormerEnabled =
+        rootProject.findProperty('quranLibraryDisableTajweedFormer') != 'true'
+
 apply plugin: 'com.android.library'
+if (tajweedFormerEnabled) apply plugin: 'kotlin-android'
 
 android {
     compileSdkVersion 36
@@ -9,6 +24,18 @@ android {
         targetSdkVersion 36
         versionCode 1
         versionName "1.0"
+        consumerProguardFiles 'consumer-rules.pro'
+        manifestPlaceholders = [quranLibraryTajweedFormerOverride: tajweedFormerEnabled
+                ? 'ai.quranlab.tajweedformer' : 'com.alheekmah.quranPackage.unused']
+    }
+
+    if (tajweedFormerEnabled) {
+        sourceSets.main.java.srcDir 'src/tajweedformer/kotlin'
+        compileOptions {
+            sourceCompatibility JavaVersion.VERSION_17
+            targetCompatibility JavaVersion.VERSION_17
+        }
+        kotlinOptions { jvmTarget = '17' }
     }
 
     buildTypes {
@@ -23,4 +50,5 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'com.google.android.material:material:1.9.0'
     implementation 'androidx.media:media:1.6.0'
+    if (tajweedFormerEnabled) implementation 'ai.quranlab:tajweedformer:3.1.5'
 }

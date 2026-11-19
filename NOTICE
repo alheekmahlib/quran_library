@@ -1,5 +1,27 @@
 Additional Terms for QCF Fonts and QUL Resources
 
+The optional TajweedFormer web bridge bundles Quran Lab's web SDK 3.1.3.
+The opt-in Android bridge depends on Quran Lab's Android SDK 3.1.5. Its
+license is in third_party_licenses/quranlab_tajweedformer_android_3.1.5_LICENSE.
+The opt-in iOS bridge depends on Quran Lab's Apple SDK 3.1.4, licensed under
+third_party_licenses/quranlab_tajweedformer_apple_3.1.4_LICENSE.
+It is distributed under the Quran-Lab No-Profit License 1.2, available in
+third_party_licenses/quranlab_tajweedformer_web_3.1.3_LICENSE. This SDK and
+the features it powers are subject to that license, separately from the MIT
+license for this repository's own code.
+The V4 site-candidate implementation in
+lib/src/tasmee/engine/tajweedformer_site_candidates.dart follows Quran Lab's
+NPL-1.2 scorer and is subject to the same license.
+The V4 CTC rescorer in lib/src/tasmee/engine/tajweedformer_ctc.dart follows
+Quran Lab's NPL-1.2 tj_ctc.c and is subject to the same license.
+The V4 timing alignment in lib/src/tasmee/engine/tajweedformer_timing.dart
+follows Quran Lab's NPL-1.2 score.c and is subject to the same license.
+The optional lattice preparation and reference-audit tools use Quran Lab's
+quran-p2g data, also under NPL-1.2. Generated V4 lattice and word-map assets
+are derived from that source and are subject to those terms.
+The V4 timing reference is derived from Quran Lab's quran-g2p and
+quran-tajweed-phonetics dataset and is also subject to NPL-1.2.
+
 The code in this repository is licensed under the MIT License (see LICENSE file).
 This grant does not apply to Quranic fonts (QCF) and any tafsir/translation
 files or other resources obtained from Quranic Universal Library (QUL) or King

@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import '../../../../quran.dart' as q;
 import '../../../core/utils/app_colors.dart';
 import '../../controller/tasmee_ctrl.dart';
+import '../../controller/tasmee_mode.dart';
+import '../../controller/tasmee_state.dart';
 import '../../engine/models/recitation_result.dart';
 
 /// يفتح bottomSheet نتائج آخر جلسة تسميع.
@@ -50,6 +52,7 @@ class _TasmeeResultSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final result = ctrl.state.lastResult.value;
+    final showDiagnostics = showTasmeeDiagnostics(ctrl.state.engineMode.value);
     final bgColor =
         defaults.backgroundColor ?? AppColors.getBackgroundColor(isDark);
     final textColor = defaults.textColor ?? AppColors.getTextColor(isDark);
@@ -96,11 +99,18 @@ class _TasmeeResultSheet extends StatelessWidget {
             _NoMatchView(
                 defaults: defaults, message: ctrl.state.lastError.value)
           else ...[
-            _ErrorSummaryBar(result: result, defaults: defaults),
-            const SizedBox(height: 12),
-            if (result.errors.isEmpty)
-              _SuccessRow(defaults: defaults)
+            if (!result.assessmentComplete && !showDiagnostics)
+              Text(
+                  'تم تتبّع التلاوة. لا تُعرض ملاحظات التصحيح حتى يكتمل التحقق من دقتها.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: textColor, fontSize: 12))
             else
+              _ErrorSummaryBar(result: result, defaults: defaults),
+            const SizedBox(height: 12),
+            if (result.errors.isEmpty && result.assessmentComplete)
+              _SuccessRow(defaults: defaults)
+            else if ((result.assessmentComplete || showDiagnostics) &&
+                result.errors.isNotEmpty)
               Flexible(
                 child: ListView.builder(
                   shrinkWrap: true,
@@ -115,7 +125,15 @@ class _TasmeeResultSheet extends StatelessWidget {
           const SizedBox(height: 12),
           // إخلاء المسؤولية (إلزامي — رخصة NPL-1.2).
           Text(
-            defaults.disclaimer ?? '',
+            [
+              if (showDiagnostics &&
+                  result != null &&
+                  !result.assessmentComplete)
+                'ملاحظات اختبار غير مؤكدة؛ قد تكون خاطئة ولا تُعدّ حكمًا على التلاوة.',
+              if ((defaults.disclaimer ?? '').isNotEmpty) defaults.disclaimer!,
+              if (ctrl.state.engineMode.value == TasmeeEngineMode.tajweedFormer)
+                'Automatic tajweed feedback can be wrong. It does not replace a qualified teacher.',
+            ].join('\n'),
             textAlign: TextAlign.center,
             style: TextStyle(
               color: textColor.withValues(alpha: 0.55),
@@ -130,21 +148,44 @@ class _TasmeeResultSheet extends StatelessWidget {
               Expanded(
                 child: OutlinedButton.icon(
                   icon: const Icon(Icons.replay_rounded, size: 20),
-                  label: Text(defaults.retryLabel ?? 'إعادة التسميع'),
+                  label: Text(ctrl.state.mode.value == TasmeeMode.teacher
+                      ? 'إعادة الآية'
+                      : defaults.retryLabel ?? 'إعادة التسميع'),
                   onPressed: () {
                     Navigator.of(context).pop();
-                    ctrl.retryTasmee();
+                    if (ctrl.state.mode.value == TasmeeMode.teacher) {
+                      ctrl.selectTeacherAyah(ctrl.state.teacherAyahIndex.value);
+                    } else {
+                      ctrl.retryTasmee();
+                    }
                   },
                 ),
               ),
               const SizedBox(width: 8),
               Expanded(
                 child: OutlinedButton.icon(
-                  icon: const Icon(Icons.close_rounded, size: 20),
-                  label: Text(defaults.exitLabel ?? 'خروج'),
+                  icon: Icon(
+                      ctrl.state.mode.value == TasmeeMode.teacher &&
+                              ctrl.state.teacherAyahIndex.value + 1 <
+                                  ctrl.state.teacherAyahTotal.value
+                          ? Icons.skip_next_rounded
+                          : Icons.close_rounded,
+                      size: 20),
+                  label: Text(ctrl.state.mode.value == TasmeeMode.teacher &&
+                          ctrl.state.teacherAyahIndex.value + 1 <
+                              ctrl.state.teacherAyahTotal.value
+                      ? 'الآية التالية'
+                      : defaults.exitLabel ?? 'خروج'),
                   onPressed: () {
                     Navigator.of(context).pop();
-                    ctrl.exitTasmeeMode();
+                    if (ctrl.state.mode.value == TasmeeMode.teacher &&
+                        ctrl.state.teacherAyahIndex.value + 1 <
+                            ctrl.state.teacherAyahTotal.value) {
+                      ctrl.selectTeacherAyah(
+                          ctrl.state.teacherAyahIndex.value + 1);
+                    } else {
+                      ctrl.exitTasmeeMode();
+                    }
                   },
                 ),
               ),
@@ -370,26 +411,7 @@ class _ErrorCard extends StatelessWidget {
                     package: 'quran_library',
                   ),
                 ),
-                if (error.wordText != null && error.wordText!.isNotEmpty) ...[
-                  const SizedBox(height: 6),
-                  Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                    decoration: BoxDecoration(
-                      color: iconColor.withValues(alpha: .08),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Text(
-                      error.wordText!,
-                      style: TextStyle(
-                        fontSize: 15,
-                        color: iconColor,
-                        fontFamily: 'hafs',
-                        package: 'quran_library',
-                      ),
-                    ),
-                  ),
-                ],
+                _ErrorWord(error: error, color: iconColor),
                 if (error.expectedPh != null &&
                     error.expectedPh!.isNotEmpty) ...[
                   const SizedBox(height: 6),
@@ -417,6 +439,53 @@ class _ErrorCard extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _ErrorWord extends StatelessWidget {
+  const _ErrorWord({required this.error, required this.color});
+  final RecitationError error;
+  final Color color;
+
+  static Future<q.QpcHafsWordByWordStore>? _store;
+
+  @override
+  Widget build(BuildContext context) {
+    Widget word(String? value) {
+      if (value == null || value.isEmpty) return const SizedBox.shrink();
+      return Padding(
+        padding: const EdgeInsets.only(top: 6),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+          decoration: BoxDecoration(
+            color: color.withValues(alpha: .08),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Text(value,
+              style: TextStyle(
+                  fontSize: 15,
+                  color: color,
+                  fontFamily: 'hafs',
+                  package: 'quran_library')),
+        ),
+      );
+    }
+
+    if (error.wordText != null && error.wordText!.isNotEmpty) {
+      return word(error.wordText);
+    }
+    final surah = error.suraIdx, ayah = error.ayaIdx, index = error.wordIdx;
+    if (surah == null || ayah == null || index == null || index < 0) {
+      return const SizedBox.shrink();
+    }
+    return FutureBuilder<q.QpcHafsWordByWordStore>(
+      future: _store ??= q.QpcHafsWordByWordAssetsLoader.load(),
+      builder: (context, snapshot) => word(snapshot.data?.textFor(
+        surah: surah,
+        ayah: ayah,
+        word: index + 1,
+      )),
     );
   }
 }

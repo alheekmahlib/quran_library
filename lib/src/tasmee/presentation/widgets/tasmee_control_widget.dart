@@ -9,11 +9,15 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../../quran.dart' as q;
+import '../../../audio/audio.dart' as qa;
 import '../../../core/utils/app_colors.dart';
 import '../../controller/tasmee_ctrl.dart';
+import '../../controller/tasmee_mode.dart';
+import '../../controller/tasmee_state.dart';
 import '../../engine/recitation_state.dart';
 import 'tasmee_result_sheet.dart';
 import 'tasmee_settings_sheet.dart';
+import 'tasmee_word_correction_sheet.dart';
 
 class TasmeeControlWidget extends StatefulWidget {
   const TasmeeControlWidget({
@@ -35,7 +39,9 @@ class TasmeeControlWidget extends StatefulWidget {
 
 class _TasmeeControlWidgetState extends State<TasmeeControlWidget> {
   Worker? _resultWorker;
+  Worker? _correctionWorker;
   bool _sheetOpen = false;
+  bool _correctionSheetOpen = false;
 
   @override
   void initState() {
@@ -51,6 +57,26 @@ class _TasmeeControlWidgetState extends State<TasmeeControlWidget> {
       if (s == RecitationState.finished && !_sheetOpen && mounted) {
         _openResultSheet();
       }
+    });
+    // نمط المصحح: تجميد الجلسة على كلمة خاطئة يضبط الحالة — افتح شيت
+    // التصحيح ليستمع ويعيد النطق أو يتخطى، وإلا بقيت الجلسة متوقفة بلا
+    // وسيلة ظاهرة لإكمالها من الشريط المشترك.
+    _correctionWorker =
+        ever<TasmeeWordCorrection?>(ctrl.state.activeWordCorrection,
+            (correction) {
+      if (correction == null ||
+          _correctionSheetOpen ||
+          ctrl.state.mode.value != TasmeeMode.corrector ||
+          !mounted) {
+        return;
+      }
+      _correctionSheetOpen = true;
+      showTasmeeWordCorrectionSheet(
+        context: context,
+        isDark: widget.isDark,
+        style: widget.style,
+        languageCode: widget.languageCode,
+      ).then((_) => _correctionSheetOpen = false);
     });
   }
 
@@ -77,6 +103,7 @@ class _TasmeeControlWidgetState extends State<TasmeeControlWidget> {
   @override
   void dispose() {
     _resultWorker?.dispose();
+    _correctionWorker?.dispose();
     super.dispose();
   }
 
@@ -146,22 +173,39 @@ class _TasmeeControlWidgetState extends State<TasmeeControlWidget> {
                         : _toggleResultSheet,
                   ),
                 // زر إظهار/إخفاء كل كلمات الصفحة (لا يعمل أثناء التسجيل).
-                IconButton(
-                  tooltip: state.showAllWords.value
-                      ? defaults.hideWordsLabel
-                      : defaults.showWordsLabel,
-                  icon: Icon(
-                    state.showAllWords.value
-                        ? Icons.visibility_off_outlined
-                        : Icons.visibility_outlined,
-                    color: state.showAllWords.value
-                        ? defaults.accentColor
-                        : defaults.iconColor,
+                if (state.mode.value == TasmeeMode.teacher)
+                  IconButton(
+                    tooltip: 'استمع إلى الآية',
+                    icon: Icon(Icons.volume_up_outlined,
+                        color: defaults.iconColor),
+                    onPressed: sessionState == RecitationState.recording ||
+                            sessionState == RecitationState.processing ||
+                            state.isPreparingEngine.value ||
+                            ctrl.rangeAyahUQ(state.teacherAyahIndex.value) < 0
+                        ? null
+                        : () => qa.AudioCtrl.instance.playAyah(
+                              context,
+                              ctrl.rangeAyahUQ(state.teacherAyahIndex.value),
+                              playSingleAyah: true,
+                            ),
+                  )
+                else
+                  IconButton(
+                    tooltip: state.showAllWords.value
+                        ? defaults.hideWordsLabel
+                        : defaults.showWordsLabel,
+                    icon: Icon(
+                      state.showAllWords.value
+                          ? Icons.visibility_off_outlined
+                          : Icons.visibility_outlined,
+                      color: state.showAllWords.value
+                          ? defaults.accentColor
+                          : defaults.iconColor,
+                    ),
+                    onPressed: sessionState == RecitationState.recording
+                        ? null
+                        : ctrl.toggleShowAllWords,
                   ),
-                  onPressed: sessionState == RecitationState.recording
-                      ? null
-                      : ctrl.toggleShowAllWords,
-                ),
                 // زر إعادة التسميع من البداية (إخفاء الكلمات من جديد).
                 IconButton(
                   tooltip: defaults.retryLabel,
@@ -260,7 +304,10 @@ class _TasmeeControlWidgetState extends State<TasmeeControlWidget> {
           );
         }
         return Text(
-          defaults.startRecordingLabel ?? 'ابدأ التسميع',
+          state.mode.value == TasmeeMode.teacher &&
+                  state.teacherAyahIndex.value >= 0
+              ? 'الآية ${state.teacherAyahIndex.value + 1} / ${state.teacherAyahTotal.value}'
+              : defaults.startRecordingLabel ?? 'ابدأ التسميع',
           style: _textStyle(defaults),
           overflow: TextOverflow.ellipsis,
         );
@@ -293,7 +340,9 @@ class _TasmeeControlWidgetState extends State<TasmeeControlWidget> {
           color: defaults.recordButtonColor,
           icon: Icons.mic_rounded,
           label: defaults.startRecordingLabel,
-          onPressed: ctrl.startRecording,
+          onPressed: ctrl.state.mode.value == TasmeeMode.teacher
+              ? () => ctrl.startAyahRecording(ctrl.state.teacherAyahIndex.value)
+              : ctrl.startRecording,
         );
     }
   }

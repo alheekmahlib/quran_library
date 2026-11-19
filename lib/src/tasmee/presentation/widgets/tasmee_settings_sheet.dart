@@ -7,7 +7,9 @@ import 'package:get/get.dart';
 import '../../../../quran.dart' as q;
 import '../../../core/utils/app_colors.dart';
 import '../../controller/tasmee_ctrl.dart';
+import '../../controller/tasmee_mode.dart';
 import '../../controller/tasmee_state.dart';
+import '../../engine/models/tasmee_tolerance.dart';
 
 /// يفتح bottomSheet إعدادات التسميع.
 Future<void> showTasmeeSettingsSheet({
@@ -92,6 +94,24 @@ class _TasmeeSettingsSheetState extends State<_TasmeeSettingsSheet> {
                 style: _titleStyle(textColor),
               ),
               const SizedBox(height: 16),
+              Text('نمط التسميع', style: _titleStyle(textColor)),
+              const SizedBox(height: 8),
+              Wrap(
+                spacing: 8,
+                children: [
+                  for (final entry in const [
+                    (mode: TasmeeMode.tasmee, label: 'تسميع'),
+                    (mode: TasmeeMode.corrector, label: 'المصحّح'),
+                    (mode: TasmeeMode.teacher, label: 'المعلّم'),
+                  ])
+                    ChoiceChip(
+                      label: Text(entry.label),
+                      selected: ctrl.state.mode.value == entry.mode,
+                      onSelected: (_) => ctrl.setMode(entry.mode),
+                    ),
+                ],
+              ),
+              const SizedBox(height: 16),
               _engineOption(
                 ctrl: ctrl,
                 mode: TasmeeEngineMode.offline,
@@ -103,12 +123,23 @@ class _TasmeeSettingsSheetState extends State<_TasmeeSettingsSheet> {
               const SizedBox(height: 8),
               _engineOption(
                 ctrl: ctrl,
+                mode: TasmeeEngineMode.tajweedFormer,
+                title: 'TajweedFormer V4',
+                icon: Icons.graphic_eq_rounded,
+              ),
+              const SizedBox(height: 8),
+              _engineOption(
+                ctrl: ctrl,
                 mode: TasmeeEngineMode.online,
                 title: widget.defaults.engineServerLabel ?? 'خادم Muaalem',
                 icon: Icons.dns_rounded,
               ),
               if (ctrl.state.engineMode.value == TasmeeEngineMode.online)
                 _onlineSection(ctrl, textColor),
+              if (ctrl.state.engineMode.value == TasmeeEngineMode.tajweedFormer) ...[
+                _v4Section(ctrl, textColor),
+                _toleranceSection(ctrl, textColor),
+              ],
               const SizedBox(height: 12),
             ],
           ),
@@ -174,6 +205,217 @@ class _TasmeeSettingsSheetState extends State<_TasmeeSettingsSheet> {
         ),
       ),
     );
+  }
+
+  /// قسم نموذج V4: تنزيل مسبق وقت التشغيل (مثل نموذج Zipformer ونهتدي).
+  Widget _v4Section(TasmeeCtrl ctrl, Color textColor) {
+    final state = ctrl.state;
+    return Padding(
+      padding: const EdgeInsets.only(top: 8, bottom: 4, right: 8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (state.isDownloadingV4Model.value) ...[
+            ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: LinearProgressIndicator(
+                value: state.v4ModelDownloadProgress.value == 0
+                    ? null
+                    : state.v4ModelDownloadProgress.value,
+              ),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              'تنزيل نموذج TajweedFormer — '
+              '${(state.v4ModelDownloadProgress.value * 100).toInt()}%',
+              style: _bodyStyle(textColor, alpha: .8),
+            ),
+          ] else if (state.isV4ModelReady.value)
+            Row(
+              children: [
+                Icon(Icons.check_circle_rounded,
+                    size: 18, color: widget.defaults.correctColor),
+                const SizedBox(width: 6),
+                Expanded(
+                  child: Text(
+                    'نموذج V4 جاهز — التسميع يعمل دون إنترنت',
+                    style: _bodyStyle(textColor, alpha: .8),
+                  ),
+                ),
+                TextButton(
+                  onPressed: () => ctrl.removeV4Model(),
+                  child: const Text('حذف النموذج'),
+                ),
+              ],
+            )
+          else ...[
+            Text(
+              'يُنزَّل نموذج V4 مرة واحدة على الجهاز (وقت التشغيل) ويُخزَّنه SDK '
+              'Quran Lab؛ اضغط التنزيل الآن أو ابدأ التسميع وسيدخل تلقائيًا.',
+              style: _bodyStyle(textColor, alpha: .7),
+            ),
+            CheckboxListTile(
+              value: state.v4WifiOnly.value,
+              onChanged: (v) => ctrl.setV4WifiOnly(v ?? true),
+              controlAffinity: ListTileControlAffinity.leading,
+              contentPadding: EdgeInsets.zero,
+              dense: true,
+              title: Text('التنزيل عبر Wi-Fi فقط',
+                  style: _bodyStyle(textColor)),
+            ),
+            OutlinedButton.icon(
+              icon: const Icon(Icons.download_rounded, size: 20),
+              label: const Text('تنزيل نموذج V4'),
+              onPressed: () => ctrl.downloadV4Model(),
+            ),
+          ],
+          if (state.lastError.value.isNotEmpty &&
+              state.engineMode.value == TasmeeEngineMode.tajweedFormer &&
+              !state.isV4ModelReady.value) ...[
+            const SizedBox(height: 6),
+            Text(
+              state.lastError.value,
+              style: TextStyle(
+                color: widget.defaults.incorrectColor,
+                fontSize: 12,
+                fontFamily: 'cairo',
+                package: 'quran_library',
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _toleranceSection(TasmeeCtrl ctrl, Color textColor) {
+    final profile = ctrl.state.tolerance.value;
+    final matchedPreset = _tolerancePresetOf(profile);
+    final accent = widget.defaults.accentColor ?? textColor;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 20),
+        Row(
+          children: [
+            Expanded(
+              child:
+                  Text('مستوى الصرامة والتسامح', style: _titleStyle(textColor)),
+            ),
+            if (matchedPreset == null)
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: accent.withValues(alpha: .7)),
+                ),
+                child: Text(
+                  'مخصّص',
+                  style: TextStyle(
+                    color: accent,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                    fontFamily: 'cairo',
+                    package: 'quran_library',
+                  ),
+                ),
+              ),
+          ],
+        ),
+        const SizedBox(height: 6),
+        Text(
+          'تسري على محرك TajweedFormer V4 فقط وتضبط مؤشراته التجريبية؛ '
+          'لا تُصدر حكمًا نهائيًا بصحة التلاوة.',
+          style: _bodyStyle(textColor, alpha: .75),
+        ),
+        const SizedBox(height: 10),
+        Wrap(spacing: 6, children: [
+          for (final preset in TasmeeStrictness.values)
+            ChoiceChip(
+              label: Text(switch (preset) {
+                TasmeeStrictness.lenient => 'مُيسّر',
+                TasmeeStrictness.balanced => 'متوازن',
+                TasmeeStrictness.strict => 'متقن',
+              }),
+              selected: matchedPreset == preset,
+              onSelected: (_) => ctrl.setTolerancePreset(preset),
+            ),
+        ]),
+        const SizedBox(height: 6),
+        Text(
+          matchedPreset == null
+              ? 'مخصّص — مستويات مستقلة لكل محور'
+              : switch (matchedPreset) {
+                  TasmeeStrictness.lenient =>
+                    'يتجاوز الهفوات الخفيفة ويركّز على الأخطاء الواضحة',
+                  TasmeeStrictness.balanced =>
+                    'توازن معتدل للأخطاء الجلية والحركات والمدود',
+                  TasmeeStrictness.strict =>
+                    'تدقيق عالٍ يلتقط التغيرات الدقيقة في التشكيل والمدود',
+                },
+          style: _bodyStyle(textColor, alpha: .75),
+        ),
+        _toleranceAxis(
+          title: 'الحروف والكلمات',
+          subtitle: 'إبدال أو سقوط أو زيادة حرف',
+          selected: profile.letters,
+          allowSkip: false,
+          onChanged: (level) =>
+              ctrl.setToleranceProfile(profile.copyWith(letters: level)),
+          textColor: textColor,
+        ),
+        _toleranceAxis(
+          title: 'التشكيل والحركات',
+          subtitle: 'تبديل الفتحة والكسرة والضمة',
+          selected: profile.tashkeel,
+          allowSkip: true,
+          onChanged: (level) =>
+              ctrl.setToleranceProfile(profile.copyWith(tashkeel: level)),
+          textColor: textColor,
+        ),
+        _toleranceAxis(
+          title: 'المدود',
+          subtitle: 'قياس طول المد مقارنة بالحركة القصيرة',
+          selected: profile.madd,
+          allowSkip: true,
+          onChanged: (level) =>
+              ctrl.setToleranceProfile(profile.copyWith(madd: level)),
+          textColor: textColor,
+        ),
+      ],
+    );
+  }
+
+  Widget _toleranceAxis({
+    required String title,
+    required String subtitle,
+    required TasmeeToleranceLevel selected,
+    required bool allowSkip,
+    required ValueChanged<TasmeeToleranceLevel> onChanged,
+    required Color textColor,
+  }) {
+    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      const SizedBox(height: 10),
+      Text(title, style: _bodyStyle(textColor)),
+      const SizedBox(height: 2),
+      Text(subtitle, style: _bodyStyle(textColor, alpha: .65)),
+      const SizedBox(height: 6),
+      Wrap(spacing: 6, children: [
+        for (final level in TasmeeToleranceLevel.values)
+          if (allowSkip || level != TasmeeToleranceLevel.skip)
+            ChoiceChip(
+              label: Text(switch (level) {
+                TasmeeToleranceLevel.skip => 'تجاهل',
+                TasmeeToleranceLevel.lenient => 'متسامح',
+                TasmeeToleranceLevel.balanced => 'متوازن',
+                TasmeeToleranceLevel.strict => 'صارم',
+              }),
+              selected: selected == level,
+              onSelected: (_) => onChanged(level),
+            ),
+      ]),
+    ]);
   }
 
   /// قسم النموذج المحلي: حالة/تنزيل.
@@ -311,4 +553,18 @@ class _TasmeeSettingsSheetState extends State<_TasmeeSettingsSheet> {
           : 'تعذّر الاتصال بالخادم — تحقّق من العنوان والتشغيل';
     });
   }
+}
+
+/// المسبق العام المطابق للملف، أو null إذا خالفه أي محور (مخصّص).
+TasmeeStrictness? _tolerancePresetOf(TasmeeToleranceProfile profile) {
+  for (final preset in TasmeeStrictness.values) {
+    final level = TasmeeToleranceLevel.parse(
+        preset.name, TasmeeToleranceLevel.balanced);
+    if (profile.letters == level &&
+        profile.tashkeel == level &&
+        profile.madd == level) {
+      return preset;
+    }
+  }
+  return null;
 }

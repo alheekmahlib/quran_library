@@ -18,4 +18,11 @@ class TasmeeStorageConstants {
 
   /// صرامة المعايير: 'strict' أو 'balanced' (افتراضي) أو 'lenient'.
   static const String strictness = 'TASMEE_STRICTNESS';
+  static const String tolerance = 'TASMEE_TOLERANCE_V4';
+
+  /// هل نُزِّل نموذج V4 مسبقًا (وقت التشغيل عبر SDK Quran Lab)؟
+  static const String v4ModelReady = 'TASMEE_V4_MODEL_READY';
+
+  /// تنزيل نموذج V4 عبر Wi-Fi فقط: 'true' (افتراضي) أو 'false'.
+  static const String v4WifiOnly = 'TASMEE_V4_WIFI_ONLY';
 }

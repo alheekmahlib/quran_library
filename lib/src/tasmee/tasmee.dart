@@ -19,6 +19,18 @@ export 'engine/recitation_state.dart';
 export 'engine/muaalem_client.dart';
 export 'engine/sherpa_factory.dart';
 export 'engine/zipformer_model.dart';
+export 'engine/tajweedformer_web.dart';
+export 'engine/tajweedformer_android.dart';
+export 'engine/tajweedformer_apple.dart';
+export 'engine/tajweedformer_factory.dart';
+export 'engine/tajweedformer_client.dart';
+export 'engine/tajweedformer_key_source.dart';
+export 'engine/tajweedformer_coverage.dart';
+export 'engine/tajweedformer_reference.dart';
+export 'engine/tajweedformer_live_tracker.dart';
+export 'engine/tajweedformer_word_progress.dart';
+export 'engine/tajweedformer_range_session.dart';
+export 'engine/tajweedformer_audio_session.dart';
 export 'engine/quran_units.dart';
 export 'engine/quran_reference.dart';
 export 'engine/phoneme_aligner.dart';
@@ -28,6 +40,7 @@ export 'engine/error_detector.dart';
 export 'engine/madd_timing.dart';
 export 'engine/wav_decoder.dart';
 export 'engine/models/muaalem_config.dart';
+export 'engine/models/tasmee_tolerance.dart';
 export 'engine/models/recitation_result.dart';
 
 // ── الخدمات / Services ───────────────────────────────────────
@@ -39,6 +52,7 @@ export 'constants/tasmee_storage_constants.dart';
 export 'controller/tasmee_mode.dart';
 export 'controller/tasmee_state.dart';
 export 'controller/tasmee_ctrl.dart';
+export 'controller/word_retry_policy.dart';
 
 // ── الواجهة / UI ───────────────────────────────────────────────
 export 'presentation/widgets/tasmee_control_widget.dart';
@@ -46,3 +60,5 @@ export 'presentation/widgets/tasmee_result_sheet.dart'
     show showTasmeeResultSheet;
 export 'presentation/widgets/tasmee_settings_sheet.dart'
     show showTasmeeSettingsSheet;
+export 'presentation/widgets/tasmee_word_correction_sheet.dart'
+    show showTasmeeWordCorrectionSheet;

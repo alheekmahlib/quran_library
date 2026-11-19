@@ -1,3 +1,9 @@
+import 'tasmee_tolerance.dart';
+
+/// V4's own evidence presets. They are not Zipformer retry thresholds.
+/// Feedback remains experimental regardless of the selected preset.
+enum TajweedFormerFeedbackPreset { strict, balanced, sensitive }
+
 /// إعدادات المصحف لِخادم quran-muaalem.
 ///
 /// Moshaf attributes for the quran-muaalem server.
@@ -10,6 +16,8 @@
 class MuaalemConfig {
   const MuaalemConfig({
     this.rewaya = 'hafs',
+    this.tajweedFormerPreset = TajweedFormerFeedbackPreset.balanced,
+    this.tajweedFormerTolerance,
     this.recitationSpeed = 'murattal',
     this.maddMonfaselLen = 4,
     this.maddMottaselLen = 4,
@@ -44,6 +52,13 @@ class MuaalemConfig {
 
   /// رواية المصحف (hafs أو warsh أو qalon...).
   final String rewaya;
+
+  /// Model-specific evidence preset for V4's diagnostic candidates.
+  /// Not sent to the quran-muaalem server and not a correctness guarantee.
+  final TajweedFormerFeedbackPreset tajweedFormerPreset;
+
+  /// Optional independent V4 diagnostics; null preserves the legacy preset.
+  final TasmeeToleranceProfile? tajweedFormerTolerance;
 
   /// سرعة التلاوة (murattal أو mujawwad).
   final String recitationSpeed;
@@ -138,4 +153,46 @@ class MuaalemConfig {
   @override
   String toString() =>
       'MuaalemConfig(rewaya: $rewaya, speed: $recitationSpeed)';
+
+  /// إعدادات القيم فوق الافتراضي الحفصي التي لا يقيّمها TajweedFormer V4.
+  ///
+  /// Names of the recitation settings this config carries beyond the Hafs
+  /// defaults that TajweedFormer V4 does not assess. V4 reads only
+  /// [rewaya] (Hafs only, rejected separately) and [tajweedFormerPreset];
+  /// every other field belongs to the server/Zipformer paths. Returning a
+  /// non-empty list is an explicit "unsupported", not a silent ignore: the
+  /// V4 session refuses to record with such settings instead of pretending
+  /// they were honored.
+  List<String> unsupportedTajweedFormerSettings() => [
+        if (recitationSpeed != 'murattal') 'recitationSpeed',
+        if (maddMonfaselLen != 4) 'maddMonfaselLen',
+        if (maddMottaselLen != 4) 'maddMottaselLen',
+        if (maddAaredLen != 4) 'maddAaredLen',
+        if (maddLazemLen != 6) 'maddLazemLen',
+        if (maddLeenLen != 2) 'maddLeenLen',
+        if (takbeer != 'no_takbeer') 'takbeer',
+        if (ghonnaLamAndRaa != 'no_ghonna') 'ghonnaLamAndRaa',
+        if (ghonnaNaqis != 'no_ghonna') 'ghonnaNaqis',
+        if (sakenBeforeHamz != 'tahqeek') 'sakenBeforeHamz',
+        if (medOomMadd != 'talith') 'medOomMadd',
+        if (dtaah != 'no_idgham') 'dtaah',
+        if (dghnmkhfaa != 'no_idgham') 'dghnmkhfaa',
+        if (naqlHamzatWassel != 'no') 'naqlHamzatWassel',
+        if (isbaal != 'no') 'isbaal',
+        if (bslamYaa != 'no') 'bslamYaa',
+        if (maddMottaselSukoonLen != 2) 'maddMottaselSukoonLen',
+        if (naskhStyle != 'no_naskh') 'naskhStyle',
+        if (haaPronunciation != 'no_tahfif') 'haaPronunciation',
+        if (tafkheemLetters != 'tafkheem') 'tafkheemLetters',
+        if (istitala != 'tafweem') 'istitala',
+        if (tafashie != 'shidda') 'tafashie',
+        if (safeer != 'shidda') 'safeer',
+        if (qalqla != 'qalqla_kubra') 'qalqla',
+        if (ghonna != 'no_ghonna') 'ghonna',
+        if (tikraar != 'no_tikraar') 'tikraar',
+        if (hamsOrJahr != 'jahr') 'hamsOrJahr',
+        if (shiddaOrRakhawa != 'shidda') 'shiddaOrRakhawa',
+        if (tafkheemOrTaqeeq != 'tafkheem') 'tafkheemOrTaqeeq',
+        if (itbaq != 'no_itbaq') 'itbaq',
+      ];
 }

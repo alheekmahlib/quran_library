@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:developer' show log;
 
 import 'madd_timing.dart';
@@ -9,6 +10,10 @@ import 'recitation_session.dart';
 // شرطي: يستبعد sherpa_onnx (dart:ffi) من بناء الويب.
 // Conditional: keeps sherpa_onnx (dart:ffi) out of web builds.
 import 'sherpa_factory.dart';
+import 'tajweedformer_apple.dart';
+import 'tajweedformer_factory.dart';
+import 'tajweedformer_recitation_engine.dart';
+import 'tajweedformer_reference_store.dart';
 
 /// نقطة الدخول العامة لِميزة التسميع (تصحيح التلاوة).
 ///
@@ -56,6 +61,18 @@ class Recitation {
   static RecitationEngine? _engine;
   static String? _serverUrl;
   static bool _isOffline = false;
+  static Future<void> _previousClose = Future.value();
+
+  static Future<void> _releaseEngine() {
+    final old = _engine;
+    _engine = null;
+    if (old is TajweedFormerRecitationEngine) {
+      _previousClose = _previousClose.then((_) => old.close());
+    } else {
+      old?.dispose();
+    }
+    return _previousClose;
+  }
 
   /// هل الوحدة مهيّأة؟
   /// Is the module initialized?
@@ -64,6 +81,7 @@ class Recitation {
   /// هل المحرّك offline (ONNX)؟
   /// Is the engine offline (ONNX)?
   static bool get isOffline => _isOffline;
+  static bool get isTajweedFormer => _engine is TajweedFormerRecitationEngine;
 
   /// عنوان الخادم (online) أو null.
   /// The server URL (online) or null.
@@ -83,12 +101,15 @@ class Recitation {
           name: 'Recitation');
       return;
     }
-    _engine?.dispose();
+    unawaited(_releaseEngine().catchError((Object error) {
+      log('Unable to close previous recitation engine: $error',
+          name: 'Recitation');
+    }));
     _engine = MuaalemClient(baseUrl: trimmed);
     _serverUrl = trimmed;
     _isOffline = false;
-    log('Recitation initialized (online). serverUrl=$trimmed',
-        name: 'Recitation');
+    // لا يُسجَّل العنوان نفسه — سجل تشغيلي فقط.
+    log('Recitation initialized (online).', name: 'Recitation');
   }
 
   // ── Offline ─────────────────────────────────────────────────
@@ -106,7 +127,7 @@ class Recitation {
     String? referencePath,
     MaddTimingConfig maddTimingConfig = const MaddTimingConfig(),
   }) async {
-    _engine?.dispose();
+    await _releaseEngine();
     _engine = await createSherpaZipformerEngine(
       modelPath: modelPath,
       tokensPath: tokensPath,
@@ -119,13 +140,40 @@ class Recitation {
         name: 'Recitation');
   }
 
+  /// Initializes the opt-in V4 engine using an app-scoped key.
+  /// Apple hosts may instead supply QuranLabKey in their configuration.
+  static Future<void> initTajweedFormer({String? key}) async {
+    await _releaseEngine();
+    final client = await createTajweedFormerClient();
+    if (client == null) throw UnsupportedError('TajweedFormer is unavailable');
+    try {
+      final configured = key?.trim() ?? '';
+      final metadata = configured.isNotEmpty
+          ? await client.initialize(configured)
+          : client is TajweedFormerApple
+              ? await client.initializeFromHost()
+              : throw StateError('Quran Lab key is not configured');
+      final store = await TajweedFormerReferenceStore.load(
+          client: client, metadata: metadata);
+      _engine = TajweedFormerRecitationEngine(
+          client: client, metadata: metadata, store: store);
+      _serverUrl = null;
+      _isOffline = true;
+    } catch (_) {
+      await client.close();
+      rethrow;
+    }
+  }
+
   // ── مشترك ───────────────────────────────────────────────────
 
   /// أعد ضبط الوحدة (نسيان المحرّك).
   /// Reset the module (forget the engine).
   static void reset() {
-    _engine?.dispose();
-    _engine = null;
+    unawaited(_releaseEngine().catchError((Object error) {
+      log('Unable to close previous recitation engine: $error',
+          name: 'Recitation');
+    }));
     _serverUrl = null;
     _isOffline = false;
   }

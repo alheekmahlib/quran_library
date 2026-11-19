@@ -15,6 +15,7 @@ import 'package:path_provider/path_provider.dart';
 
 import '../../engine/platform_io.dart';
 import '../../engine/zipformer_model.dart';
+import 'zipformer_download_client.dart';
 
 /// يدير نموذج Zipformer على القرص (فحص/تنزيل/حذف).
 class TasmeeModelService {
@@ -22,11 +23,12 @@ class TasmeeModelService {
     Dio? dio,
     int minValidBytes = kZipformerMinValidBytes,
     String? modelUrl,
-  })  : _dio = dio ?? Dio(),
+  })  : _dio = dio,
         _minValidBytes = minValidBytes,
         _modelUrl = modelUrl ?? kZipformerModelUrl;
 
-  final Dio _dio;
+  final Dio? _dio;
+  Future<Dio>? _defaultDio;
 
   /// أقل حجم صالح (قابل لِلحقن لِلاختبارات).
   final int _minValidBytes;
@@ -63,7 +65,9 @@ class TasmeeModelService {
     try {
       await PlatformIo.deleteFile(partial);
       log('TasmeeModelService: downloading model…', name: 'TasmeeModel');
-      await _dio.download(
+      final dio =
+          _dio ?? await (_defaultDio ??= createZipformerDownloadClient());
+      await dio.download(
         _modelUrl,
         partial,
         cancelToken: cancelToken,

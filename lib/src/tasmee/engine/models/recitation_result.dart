@@ -1,3 +1,5 @@
+import '../tajweedformer_coverage.dart';
+
 /// نتيجة تصحيح تلاوة من خادم quran-muaalem.
 ///
 /// Recitation correction result from the quran-muaalem server.
@@ -17,6 +19,8 @@ class RecitationResult {
     this.noMatchMessage,
     this.matchedWordSpans = const [],
     this.unitAccuracy,
+    this.assessmentComplete = true,
+    this.coverage,
   });
 
   /// موضع بداية التطابق في المصحف (سورة، آية، كلمة، حرف).
@@ -65,13 +69,22 @@ class RecitationResult {
   /// acceptance.
   final double? unitAccuracy;
 
+  /// False when the engine has not evaluated every supported rule category.
+  /// Existing results default to true for backward compatibility.
+  final bool assessmentComplete;
+
+  /// Per-category coverage of a V4 assessment: what was attempted and why
+  /// anything was left unassessed. An empty error list alone never implies
+  /// a rule was checked. Null for engines without category coverage.
+  final TajweedFormerTakeCoverage? coverage;
+
   /// هل وُجد تطابق في القرآن؟
   /// Was a match found in the Quran?
   bool get hasMatch => noMatchMessage == null && uthmaniText != null;
 
   /// هل التلاوة صحيحة تماماً (لا أخطاء)؟
   /// Is the recitation fully correct (no errors)?
-  bool get isFullyCorrect => hasMatch && errors.isEmpty;
+  bool get isFullyCorrect => hasMatch && assessmentComplete && errors.isEmpty;
 
   /// أخطاء التجويد فقط.
   /// Tajweed errors only.
@@ -103,6 +116,21 @@ class RecitationResult {
       referencePhonemes: json['reference_phonemes'] as String?,
       uthmaniText: uthmani,
       noMatchMessage: json['message'] as String?,
+      assessmentComplete: json['assessment_complete'] as bool? ?? true,
+      coverage: json['v4_coverage'] is Map
+          ? TajweedFormerTakeCoverage.fromJson(
+              Map<String, dynamic>.from(json['v4_coverage'] as Map))
+          : null,
+      unitAccuracy: (json['unit_accuracy'] as num?)?.toDouble(),
+      matchedWordSpans:
+          (json['matched_word_spans'] as List<dynamic>?)?.map((value) {
+                final item = value as Map;
+                return (
+                  verseIdx: item['verse_idx'] as int,
+                  wordIdx: item['word_idx'] as int,
+                );
+              }).toList() ??
+              const [],
       errors: (json['errors'] as List<dynamic>?)
               ?.map((e) => RecitationError.fromJson(
                     Map<String, dynamic>.from(e as Map),
@@ -112,6 +140,25 @@ class RecitationResult {
           const [],
     );
   }
+
+  /// A lossless representation suitable for a host that saves results.
+  /// In particular, partial assessments must retain their completeness flag.
+  Map<String, dynamic> toJson() => {
+        if (start != null) 'start': start!.toJson(),
+        if (end != null) 'end': end!.toJson(),
+        if (predictedPhonemes != null) 'predicted_phonemes': predictedPhonemes,
+        if (referencePhonemes != null) 'reference_phonemes': referencePhonemes,
+        if (uthmaniText != null) 'uthmani_text': uthmaniText,
+        if (noMatchMessage != null) 'message': noMatchMessage,
+        'assessment_complete': assessmentComplete,
+        if (coverage != null) 'v4_coverage': coverage!.toJson(),
+        if (unitAccuracy != null) 'unit_accuracy': unitAccuracy,
+        'matched_word_spans': [
+          for (final span in matchedWordSpans)
+            {'verse_idx': span.verseIdx, 'word_idx': span.wordIdx},
+        ],
+        'errors': [for (final error in errors) error.toJson()],
+      };
 
   @override
   String toString() =>
@@ -371,15 +418,49 @@ class RecitationError {
       // استخرج الكلمة المتأثّرة من النصّ العثماني عند موضع الخطأ — إلا
       // الإدراجات: موضعها من الخادم بلا معنى ([0,0]) فكانت تُنسب زورًا
       // لأول كلمة في الآية.
-      wordText: uthmaniText != null && speechErrorTypeValue(j) != 'insert'
-          ? _extractWordFromUthmani(uthmaniText, uthmaniPos)
-          : null,
+      wordText: j.containsKey('word_text')
+          ? j['word_text'] as String?
+          : (uthmaniText != null && speechErrorTypeValue(j) != 'insert'
+              ? _extractWordFromUthmani(uthmaniText, uthmaniPos)
+              : null),
+      isWordRepeat: j['is_word_repeat'] as bool? ?? false,
+      suraIdx: (j['sura_idx'] as num?)?.toInt(),
+      ayaIdx: (j['aya_idx'] as num?)?.toInt(),
+      wordIdx: (j['word_idx'] as num?)?.toInt(),
       refTajweedRules: _parseRules(j['ref_tajweed_rules']),
       insertedTajweedRules: _parseRules(j['inserted_tajweed_rules']),
       replacedTajweedRules: _parseRules(j['replaced_tajweed_rules']),
       missingTajweedRules: _parseRules(j['missing_tajweed_rules']),
     );
   }
+
+  Map<String, dynamic> toJson() => {
+        'error_type': errorType,
+        'speech_error_type': speechErrorType,
+        'uthmani_pos': uthmaniPos,
+        'ph_pos': phPos,
+        if (expectedPh != null) 'expected_ph': expectedPh,
+        if (predictedPh != null) 'predicted_ph': predictedPh,
+        if (expectedLen != null) 'expected_len': expectedLen,
+        if (predictedLen != null) 'predicted_len': predictedLen,
+        'word_text': wordText,
+        'is_word_repeat': isWordRepeat,
+        if (suraIdx != null) 'sura_idx': suraIdx,
+        if (ayaIdx != null) 'aya_idx': ayaIdx,
+        if (wordIdx != null) 'word_idx': wordIdx,
+        'ref_tajweed_rules': [
+          for (final rule in refTajweedRules) rule.toJson()
+        ],
+        'inserted_tajweed_rules': [
+          for (final rule in insertedTajweedRules) rule.toJson()
+        ],
+        'replaced_tajweed_rules': [
+          for (final rule in replacedTajweedRules) rule.toJson()
+        ],
+        'missing_tajweed_rules': [
+          for (final rule in missingTajweedRules) rule.toJson()
+        ],
+      };
 
   /// نوع خطأ النطق من JSON (مفتاح الخادم، أو null).
   static String? speechErrorTypeValue(Map<String, dynamic> j) =>
@@ -476,6 +557,13 @@ class TajweedRule {
     );
   }
 
+  Map<String, dynamic> toJson() => {
+        'name': {'ar': nameAr, 'en': nameEn},
+        if (goldenLen != null) 'golden_len': goldenLen,
+        if (correctnessType != null) 'correctness_type': correctnessType,
+        if (tag != null) 'tag': tag,
+      };
+
   @override
   String toString() => nameAr.isNotEmpty ? nameAr : nameEn;
 }
@@ -520,6 +608,14 @@ class SurahAyahPosition {
         uthmaniCharIdx: (j['uthmani_char_idx'] as num?)?.toInt() ?? 0,
         phonemesIdx: (j['phonemes_idx'] as num?)?.toInt() ?? 0,
       );
+
+  Map<String, dynamic> toJson() => {
+        'sura_idx': suraIdx,
+        'aya_idx': ayaIdx,
+        'uthmani_word_idx': uthmaniWordIdx,
+        'uthmani_char_idx': uthmaniCharIdx,
+        'phonemes_idx': phonemesIdx,
+      };
 
   @override
   String toString() => '$suraIdx:$ayaIdx';

@@ -21,7 +21,10 @@ class QpcHafsWordByWordAssetsLoader {
 
   static Future<QpcHafsWordByWordStore> load() async {
     const jsonService = GzipJsonAssetService();
-    final decoded = await jsonService.loadJsonDynamic(_wbwGzPath);
+    final decoded = await jsonService.loadJsonDynamic(
+      _wbwGzPath,
+      fallbackPlainAssetPath: 'assets/jsons/qpc-hafs-word-by-word.json.gz',
+    );
     if (decoded is! Map) {
       throw const FormatException(
           'qpc-hafs-word-by-word.json must be a JSON Map');

@@ -117,6 +117,7 @@ class QuranReferenceRange {
     required this.unitWordIdx,
     required this.wordSpans,
     required List<int> unitSpanIdx,
+    this.selectedDisplayedWords,
   }) : _unitSpanIdx = unitSpanIdx;
 
   /// الآيات المرتبة بترتيب التلاوة.
@@ -136,6 +137,10 @@ class QuranReferenceRange {
 
   /// فهرس الكلمة (داخل wordSpans) لكل وحدة — بحث O(1).
   final List<int> _unitSpanIdx;
+
+  /// Explicit displayed-word window for model-specific reference builders.
+  /// Null means the whole verse range; indices are independent of token IDs.
+  final Set<({int verseIndex, int wordIndex})>? selectedDisplayedWords;
 
   /// إجمالي الكلمات المتتبَّعة في النطاق.
   int get wordCount => wordSpans.length;
@@ -216,6 +221,8 @@ class QuranReferenceRange {
         ),
       ],
       unitSpanIdx: List<int>.filled(units.length, 0),
+      selectedDisplayedWords:
+          Set.unmodifiable({(verseIndex: 0, wordIndex: wordIdx)}),
     );
   }
 
@@ -270,6 +277,10 @@ class QuranReferenceRange {
       unitWordIdx: unitWordIdx,
       wordSpans: spans,
       unitSpanIdx: unitSpanIdx,
+      selectedDisplayedWords: Set.unmodifiable({
+        for (var word = firstWord; word <= wordIdx; word++)
+          (verseIndex: 0, wordIndex: word),
+      }),
     );
   }
 

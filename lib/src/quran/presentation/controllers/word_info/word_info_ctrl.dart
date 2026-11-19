@@ -168,8 +168,9 @@ class WordInfoCtrl extends GetxController
   /// هل تمت تهيئة خدمة صوت الكلمات (OAuth2 credentials)؟
   bool get isWordAudioInitialized => WordAudioService.instance.isInitialized;
 
-  /// تشغيل صوت كلمة واحدة.
-  Future<void> playWordAudio(WordRef ref) async {
+  /// تشغيل صوت كلمة واحدة — تعيد false إن لم يبدأ التشغيل (انظر
+  /// [WordAudioService.playWord])؛ الإيقاف المتعمّد بنقرة ثانية ليس فشلًا.
+  Future<bool> playWordAudio(WordRef ref) async {
     final svc = WordAudioService.instance;
 
     // إذا كانت نفس الكلمة تُشغّل، أوقف
@@ -177,11 +178,12 @@ class WordInfoCtrl extends GetxController
         !svc.isPlayingAyahWords.value &&
         svc.currentPlayingRef.value == ref) {
       await stopWordAudio();
-      return;
+      return true;
     }
 
-    await svc.playWord(ref);
+    final started = await svc.playWord(ref);
     update(['word_info_audio']);
+    return started;
   }
 
   /// تشغيل كل كلمات الآية بالتسلسل.

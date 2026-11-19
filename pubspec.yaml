@@ -74,8 +74,13 @@ flutter:
       android:
         package: com.alheekmah.quranPackage
         pluginClass: QuranLibraryPlugin
-      # ios:
-      #   pluginClass: QuranLibraryPlugin
+      # جسر TajweedFormer V4 مدمج مباشرة (SPM) — لا حزم إضافية على المضيف.
+      ios:
+        pluginClass: QuranLibraryTajweedFormerApplePlugin
+        sharedDarwinSource: true
+      macos:
+        pluginClass: QuranLibraryTajweedFormerApplePlugin
+        sharedDarwinSource: true
   assets:
     - assets/
     - assets/fonts/
@@ -88,6 +93,8 @@ flutter:
     - assets/saadi.json.gz
     - assets/en.json.gz
     - assets/quran_lab/
+    - assets/tajweedformer_web/
+    - assets/tajweedformer_web/assets/
     - assets/fonts/quran_fonts_qfc4/
 
   fonts:

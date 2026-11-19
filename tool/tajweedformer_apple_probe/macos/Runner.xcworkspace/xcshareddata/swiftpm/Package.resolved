@@ -1,0 +1,14 @@
+{
+  "pins" : [
+    {
+      "identity" : "tajweedformer-apple",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/Quran-Lab/tajweedformer-apple",
+      "state" : {
+        "revision" : "c0158080cb0b3c1855dc5dbef7c68f54eaba125b",
+        "version" : "3.1.4"
+      }
+    }
+  ],
+  "version" : 2
+}

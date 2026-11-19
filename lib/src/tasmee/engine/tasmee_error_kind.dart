@@ -162,7 +162,7 @@ bool isWordRetryAcceptable(
   RecitationResult result, {
   double minAccuracy = kWordRetryMinUnitAccuracy,
 }) {
-  if (!result.hasMatch) return false;
+  if (!result.hasMatch || !result.assessmentComplete) return false;
   if (result.errors.every((e) => !isRetryBlockingError(e))) return true;
   final accuracy = result.unitAccuracy;
   return accuracy != null && accuracy >= minAccuracy;
@@ -180,7 +180,9 @@ bool isContextWordRetryAcceptable(
   required int targetUnitCount,
   double minAccuracy = kWordRetryMinUnitAccuracy,
 }) {
-  if (!result.hasMatch || targetUnitCount <= 0) return false;
+  if (!result.hasMatch || !result.assessmentComplete || targetUnitCount <= 0) {
+    return false;
+  }
   final target = result.errors.where((e) => e.wordIdx == targetWordIdx);
   if (target.every((e) => !isRetryBlockingError(e))) return true;
   // قبول نسبي على وحدات المستهدفة: كل خطأ وحدة واحدة تقريبًا.
@@ -198,6 +200,6 @@ bool isContextWordRetryAcceptable(
 /// [RecitationResult.isFullyCorrect] الصارم (صفر أخطاء مطلقًا) يبقى
 /// لمن أراد التقصيَ الصارم.
 bool isRecitationAcceptable(RecitationResult result) {
-  if (!result.hasMatch) return false;
+  if (!result.hasMatch || !result.assessmentComplete) return false;
   return result.errors.every((e) => !isRetryBlockingError(e));
 }

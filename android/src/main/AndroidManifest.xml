@@ -2,6 +2,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.alheekmah.quranPackage">
 
+    <!-- The optional V4 bridge is never loaded below API 26. Zipformer remains
+         available on API 24–25 even when the opt-in dependency is present. -->
+    <uses-sdk tools:overrideLibrary="${quranLibraryTajweedFormerOverride}" />
+
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK"/>

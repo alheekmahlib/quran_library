@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
@@ -25,10 +26,23 @@ class _FakeRecorder implements AudioRecorder {
   dynamic noSuchMethod(Invocation invocation) => null;
 }
 
+class _StreamRecorder extends _FakeRecorder {
+  final controller = StreamController<Uint8List>(sync: true);
+  @override
+  Future<Stream<Uint8List>> startStream(RecordConfig config) async =>
+      controller.stream;
+  @override
+  Future<String?> stop() async => null;
+  @override
+  Future<void> dispose() async => controller.close();
+}
+
 /// محرّك حي مزوّر — يحتفظ باستدعاءات startLive ليطلقها الاختبار يدويًا.
 class _FakeLiveEngine implements RecitationEngine, LiveCapableRecitationEngine {
   void Function(int verseIdx, int wordIdx)? onRangeWord;
   void Function()? onEndpoint;
+  final samples = <double>[];
+  var ended = false;
 
   @override
   void startLive({
@@ -58,12 +72,24 @@ class _FakeLiveEngine implements RecitationEngine, LiveCapableRecitationEngine {
   double? get liveRangeProgress => progressOverride;
 
   @override
-  void feedPcm(Float32List samples) {}
+  void feedPcm(Float32List samples) => this.samples.addAll(samples);
 
   @override
   Future<LiveRecognitionFrame> endLive() async {
+    ended = true;
     return const LiveRecognitionFrame(units: [], timestamps: []);
   }
+
+  @override
+  Future<RecitationResult> evaluateLive({
+    required MuaalemConfig config,
+    int? suraIdx,
+    int? ayaIdx,
+    QuranReferenceRange? range,
+    String? referenceText,
+    required LiveRecognitionFrame frame,
+  }) async =>
+      const RecitationResult(uthmaniText: 'test');
 
   @override
   Future<RecitationResult> correctRecitation({
@@ -93,6 +119,54 @@ class _FakeLiveEngine implements RecitationEngine, LiveCapableRecitationEngine {
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+
+  test('live capture preserves PCM samples split across chunks', () async {
+    final recorder = _StreamRecorder();
+    final engine = _FakeLiveEngine();
+    final session = RecitationSession(
+        config: const MuaalemConfig(), engine: engine, recorder: recorder);
+    await session.startLive();
+    recorder.controller.add(Uint8List.fromList([0, 128, 255]));
+    recorder.controller.add(Uint8List.fromList([127, 0, 0]));
+    await session.stopLive();
+    expect(engine.samples, [-1.0, 32767 / 32768, 0.0]);
+    expect(engine.ended, isTrue);
+    expect(session.state.value, RecitationState.finished);
+  });
+
+  test('live capture errors and incomplete samples never produce a result',
+      () async {
+    for (final streamError in [false, true]) {
+      final recorder = _StreamRecorder();
+      final engine = _FakeLiveEngine();
+      final session = RecitationSession(
+          config: const MuaalemConfig(), engine: engine, recorder: recorder);
+      await session.startLive();
+      if (streamError) {
+        recorder.controller.addError(StateError('capture failed'));
+      } else {
+        recorder.controller.add(Uint8List.fromList([1]));
+      }
+      await session.stopLive();
+      expect(engine.ended, isFalse);
+      expect(session.result.value, isNull);
+      expect(session.state.value, RecitationState.error);
+    }
+  });
+
+  test('unexpected microphone stream closure prevents evaluation', () async {
+    final recorder = _StreamRecorder();
+    final engine = _FakeLiveEngine();
+    final session = RecitationSession(
+        config: const MuaalemConfig(), engine: engine, recorder: recorder);
+    await session.startLive();
+    recorder.controller.add(Uint8List.fromList([0, 128]));
+    await recorder.controller.close();
+    await session.stopLive();
+    expect(engine.ended, isFalse);
+    expect(session.result.value, isNull);
+    expect(session.state.value, RecitationState.error);
+  });
 
   test(
       'C5: onRangeWord الذري — انتقال الآية يسلّم الفهرسين معًا متسقين لحظيًّا',

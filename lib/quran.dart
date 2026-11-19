@@ -43,7 +43,9 @@ import 'src/tasmee/tasmee.dart'
         TasmeeWordStatus,
         TasmeeErrorKind,
         TasmeeUpdateIds,
-        TasmeeControlWidget;
+        TasmeeControlWidget,
+        QuranLabKeys,
+        configureQuranLabKeys;
 
 part 'src/core/theme/quran_library_theme.dart';
 part 'src/core/utils/assets_path.dart';

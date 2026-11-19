@@ -90,3 +90,32 @@ Float32List pcm16ToFloats(final Uint8List chunk) {
   }
   return floats;
 }
+
+/// Reassembles PCM16 samples split across arbitrary stream chunks.
+class Pcm16StreamDecoder {
+  int? _pendingByte;
+
+  bool get hasIncompleteSample => _pendingByte != null;
+
+  Float32List add(Uint8List bytes) {
+    final count = (bytes.length + (_pendingByte == null ? 0 : 1)) ~/ 2;
+    final result = Float32List(count);
+    var input = 0;
+    var output = 0;
+    if (_pendingByte != null && bytes.isNotEmpty) {
+      result[output++] = _convert(_pendingByte!, bytes[input++]);
+      _pendingByte = null;
+    }
+    while (input + 1 < bytes.length) {
+      result[output++] = _convert(bytes[input], bytes[input + 1]);
+      input += 2;
+    }
+    if (input < bytes.length) _pendingByte = bytes[input];
+    return result;
+  }
+
+  static double _convert(int low, int high) {
+    final value = low | (high << 8);
+    return (value >= 0x8000 ? value - 0x10000 : value) / 32768.0;
+  }
+}

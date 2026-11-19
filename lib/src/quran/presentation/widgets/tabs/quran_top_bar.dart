@@ -100,9 +100,8 @@ class _QuranTopBar extends StatelessWidget {
             const Spacer(),
             Row(
               children: [
-                // زر وضع التسميع — يخفى كلمات الصفحة ويبدأ التسميع
-                // (يُخفى على الويب: الميكروفون غير مدعوم).
-                if (!kIsWeb && (defaults.showTasmeeButton ?? true))
+                // زر وضع التسميع — يخفى كلمات الصفحة ويبدأ التسميع.
+                if (defaults.showTasmeeButton ?? true)
                   Obx(() {
                     final isTasmeeActive =
                         TasmeeCtrl.instance.state.isTasmeeMode.value;

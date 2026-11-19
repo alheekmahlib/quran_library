@@ -1,0 +1,11 @@
+# Flutter-related
+**/Flutter/ephemeral/
+**/Pods/
+
+# Xcode-related
+**/dgph
+**/xcuserdata/
+
+Runner/Configs/Secrets.xcconfig
+
+Runner/Configs/Signing.xcconfig

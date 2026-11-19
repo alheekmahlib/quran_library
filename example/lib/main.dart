@@ -5,7 +5,19 @@ import 'package:quran_library/quran_library.dart';
 
 Future<void> main() async {
   await WidgetsFlutterBinding.ensureInitialized();
-  await QuranLibrary.init();
+  // مفاتيح TajweedFormer V4 (اختياري): سجّل تطبيقك في https://sdk.quranlab.ai
+  // ثم مرر مفتاح كل منصة، أو استخدم --dart-define=QURANLAB_KEY=qlk_v1_...
+  // await QuranLibrary.init(
+  //   quranLabKeys: const QuranLabKeys(
+  //     android: 'qlk_v1_...',
+  //     apple: 'qlk_v1_...',
+  //     web: 'qlk_v1_...',
+  //     desktop: 'qlk_v1_...',
+  //   ),
+  // );
+  await QuranLibrary.init(
+      // quranLabKeys: const QuranLabKeys(androidAndApple: ''),
+      );
   QuranLibrary.initWordAudio();
   runApp(
     // DevicePreview(

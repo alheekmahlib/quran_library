@@ -49,13 +49,19 @@ class QuranLibrary {
   ///
   /// [init] initializes the FlutterQuran,
   /// and must be called before starting using the package
+  ///
+  /// [quranLabKeys] مفاتيح TajweedFormer V4 الخاصة بتطبيقك حسب المنصة
+  /// (سجّل تطبيقك في https://sdk.quranlab.ai). تُحفَظ في الذاكرة فقط،
+  /// ويكفي `--dart-define=QURANLAB_KEY=...` بديلًا عنها إن فضّلت سرّيته.
   static Future<void> init({
     Map<int, List<BookmarkModel>>? userBookmarks,
     bool overwriteBookmarks = false,
     NumberConverterCallback? numberConverter,
+    QuranLabKeys? quranLabKeys,
   }) async {
     if (_isInitialized) return;
     customNumberConverter = numberConverter;
+    configureQuranLabKeys(quranLabKeys);
 
     await GetStorage.init();
     final connectivityService = InternetConnectionService();
@@ -863,28 +869,31 @@ class QuranLibrary {
   ///   ref: const WordRef(surahNumber: 1, ayahNumber: 1, wordNumber: 1),
   /// );
   /// ```
-  Future<void> playWordAudio({required WordRef ref}) async {
-    await WordInfoCtrl.instance.playWordAudio(ref);
+  Future<bool> playWordAudio({required WordRef ref}) async {
+    return WordInfoCtrl.instance.playWordAudio(ref);
   }
 
-  /// تشغيل صوت كلمة واحدة عبر أرقام (سورة/آية/كلمة).
+  /// تشغيل صوت كلمة واحدة عبر أرقام (سورة/آية/كلمة) — يعيد false إن لم
+  /// يبدأ التشغيل (فشل تحميل/تشغيل أو خدمة غير مهيّأة) لِيبلّغ المستدعي
+  /// المستخدم بدل الفشل الصامت.
   ///
-  /// Play a single word audio by (surah/ayah/word) numbers.
+  /// Play a single word audio by (surah/ayah/word) numbers. Returns false
+  /// when playback did not start, instead of failing silently.
   ///
   /// مثال / Example:
   /// ```dart
-  /// await QuranLibrary().playWordAudioByNumbers(
+  /// final started = await QuranLibrary().playWordAudioByNumbers(
   ///   surahNumber: 1,
   ///   ayahNumber: 1,
   ///   wordNumber: 1,
   /// );
   /// ```
-  Future<void> playWordAudioByNumbers({
+  Future<bool> playWordAudioByNumbers({
     required int surahNumber,
     required int ayahNumber,
     required int wordNumber,
   }) async {
-    await playWordAudio(
+    return playWordAudio(
       ref: WordRef(
         surahNumber: surahNumber,
         ayahNumber: ayahNumber,

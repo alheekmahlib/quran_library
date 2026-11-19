@@ -83,8 +83,12 @@ class WordAudioService {
   // ─── التشغيل ───
 
   /// تشغيل كلمة واحدة.
-  Future<void> playWord(WordRef ref) async {
-    if (!isInitialized) return;
+  ///
+  /// تعيد true إن بدأ التشغيل فعلًا، وfalse إن لم يبدأ (الخدمة غير مهيّأة
+  /// أو بلا اتصال أو فشل التحميل/التشغيل) — الاستدعاء لا يرمي؛ الخطأ
+  /// هنا نتيجة صريحة كي يبلغ المستدعي المستخدم بدل الفشل الصامت.
+  Future<bool> playWord(WordRef ref) async {
+    if (!isInitialized) return false;
     final isConnected = InternetConnectionController.instance.isConnected;
 
     if (isConnected) {
@@ -108,17 +112,20 @@ class WordAudioService {
 
         _listenForCompletion();
         await _audioPlayer.play();
+        return true;
       } catch (e) {
         log('WordAudioService.playWord error: $e', name: 'WordAudioService');
         isLoading.value = false;
         isPlaying.value = false;
         currentPlayingRef.value = null;
+        return false;
       }
     } else {
       ToastUtils().showToast(
         Get.context!,
         'لا يوجد اتصال بالإنترنت',
       );
+      return false;
     }
   }
 

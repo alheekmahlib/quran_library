@@ -2,8 +2,11 @@
 library;
 
 import 'package:get/get.dart';
+import 'package:flutter/foundation.dart' show kDebugMode;
 
 import '../engine/models/recitation_result.dart';
+import '../engine/models/muaalem_config.dart';
+import '../engine/models/tasmee_tolerance.dart';
 import '../engine/tasmee_error_kind.dart';
 import '../engine/recitation_state.dart';
 import 'tasmee_mode.dart';
@@ -13,9 +16,18 @@ enum TasmeeEngineMode {
   /// نموذج Zipformer محلي — عرض حيّ ويعمل دون إنترنت.
   offline,
 
+  /// Quran Lab TajweedFormer V4, enabled explicitly by the host/user.
+  tajweedFormer,
+
   /// خادم quran-muaalem — تصحيح دفعي بعد الإيقاف (بلا عرض حيّ).
   online,
 }
+
+/// Unverified V4 evidence is visible only in explicitly enabled debug builds.
+bool showTasmeeDiagnostics(TasmeeEngineMode engine) =>
+    kDebugMode &&
+    const bool.fromEnvironment('TAJWEEDFORMER_SHOW_DIAGNOSTICS') &&
+    engine == TasmeeEngineMode.tajweedFormer;
 
 /// صرامة معايير التسميع — عتبة القبول النسبي وإلزام دليلَي الخطأ.
 enum TasmeeStrictness {
@@ -29,6 +41,14 @@ enum TasmeeStrictness {
   lenient;
 
   String get storageName => name;
+
+  /// A stricter learner setting requests more sensitive V4 evidence; V4's
+  /// own `strict` preset is the most conservative about raising flags.
+  TajweedFormerFeedbackPreset get tajweedFormerPreset => switch (this) {
+        TasmeeStrictness.strict => TajweedFormerFeedbackPreset.sensitive,
+        TasmeeStrictness.balanced => TajweedFormerFeedbackPreset.balanced,
+        TasmeeStrictness.lenient => TajweedFormerFeedbackPreset.strict,
+      };
 
   static TasmeeStrictness fromName(String? n) => switch (n) {
         'strict' => TasmeeStrictness.strict,
@@ -45,12 +65,29 @@ enum TasmeeWordStatus {
   /// الكلمة الجارية التي يُتلوها الآن (مُبرزة).
   current,
 
+  /// Matched in the live stream; the final evaluation has not judged it yet.
+  heard,
+
   /// اكتمل نطقها صحيحة (أخضر).
   correct,
 
   /// اكتمل نطقها وفيها خطأ (أحمر) — التقييم النهائي هو المرجع.
   incorrect,
 }
+
+/// Partial assessments reveal matched words without asserting correctness.
+TasmeeWordStatus finalTasmeeWordStatus({
+  required bool assessmentComplete,
+  required bool correct,
+  bool showUnverifiedErrors = false,
+}) =>
+    !assessmentComplete
+        ? (!correct && showUnverifiedErrors
+            ? TasmeeWordStatus.incorrect
+            : TasmeeWordStatus.heard)
+        : correct
+            ? TasmeeWordStatus.correct
+            : TasmeeWordStatus.incorrect;
 
 /// كلمة تنتظر تصحيحًا في نمط المصحح — تُضبط عند أول كلمة خاطئة (مع
 /// تجميد الجلسة الرئيسية) وتُصفَّر عند حلّها (قبول/تخطٍّ).
@@ -106,7 +143,13 @@ class TasmeeWordCorrection {
 }
 
 /// نتيجة محاولة إعادة نطق كلمة في نمط المصحح.
-enum TasmeeWordRetryOutcome { correct, incorrect }
+enum TasmeeWordRetryOutcome {
+  correct,
+  incorrect,
+
+  /// The recording was evaluated only partially; no pass/fail is available.
+  inconclusive,
+}
 
 /// أطوار جلسة معلم القرآن (آية بآية داخل صفحة النطاق).
 enum TasmeeTeacherPhase {
@@ -122,8 +165,42 @@ enum TasmeeTeacherPhase {
   /// جارٍ تقييم محاولة المستخدم.
   evaluating,
 
-  /// أُتقنت كل آيات الصفحة واكتمل التسميع.
+  /// انتهى الالتقاط والتقييم بلا حكم إتقان — القرار (إعادة الآية أو
+  /// الانتقال) بيد المتعلم. تغطية الكلمات أو غياب المرشحات ليست إتقانًا.
+  awaitingDecision,
+
+  /// أُتقنت كل آيات الصفحة واكتمل التسميع — بقرار مصدر حكم مثبت فقط
+  /// (خطاف التقدّم الآلي)، لا بمجرد تغطية الكلمات.
   pageDone,
+}
+
+/// قرار طور المعلم بعد اكتمال تقييم محاولة آية — منطق نقي بلا GetX.
+///
+/// [verdictAccepted] قرار مصدر حكم مثبت (خطاف التقدّم الآلي) بأن الآية
+/// أُتقنت؛ يُطلب فقط بعد [RecitationResult.assessmentComplete] وتطابق.
+/// بلا مصدر حكم يبقى false والطور [TasmeeTeacherPhase.awaitingDecision]:
+/// قرار المتابعة يدوي صريح، والنتيجة الجزئية لا تُتقن شيئًا.
+({TasmeeTeacherPhase phase, int nextAyahIndex})
+    tasmeeTeacherDecisionAfterEvaluation({
+  required RecitationResult? result,
+  required int ayahIndex,
+  required int ayahTotal,
+  bool verdictAccepted = false,
+}) {
+  final accepted = result != null &&
+      result.hasMatch &&
+      result.assessmentComplete &&
+      verdictAccepted;
+  if (!accepted) {
+    return (
+      phase: TasmeeTeacherPhase.awaitingDecision,
+      nextAyahIndex: ayahIndex,
+    );
+  }
+  if (ayahIndex + 1 >= ayahTotal) {
+    return (phase: TasmeeTeacherPhase.pageDone, nextAyahIndex: ayahIndex);
+  }
+  return (phase: TasmeeTeacherPhase.idle, nextAyahIndex: ayahIndex + 1);
 }
 
 class TasmeeState {
@@ -136,6 +213,10 @@ class TasmeeState {
   /// صرامة المعايير (عتبة القبول النسبي + سياسة الأدلة) — يُثبَّت عبر
   /// GetStorage (خيار في إعدادات التسميع بالتطبيق المضيف).
   final Rx<TasmeeStrictness> strictness = TasmeeStrictness.balanced.obs;
+
+  /// Per-category V4 diagnostic sensitivity, persisted independently.
+  final Rx<TasmeeToleranceProfile> tolerance =
+      const TasmeeToleranceProfile().obs;
 
   /// وضع المصحّح غير الحاجز: الكلمة الخاطئة تُعلَّم حمراء بشارة صغيرة
   /// دون إيقاف الجلسة وفتح شيت مانع — وإن واصل المستخدم القراءة وتقدّم
@@ -225,6 +306,18 @@ class TasmeeState {
 
   /// جارٍ تهيئة المحرك (تحميل النموذج في الذاكرة)؟
   final RxBool isPreparingEngine = false.obs;
+
+  /// هل نُزِّل نموذج V4 مسبقًا عبر SDK؟
+  final RxBool isV4ModelReady = false.obs;
+
+  /// جارٍ تنزيل نموذج V4 (prefetch)؟
+  final RxBool isDownloadingV4Model = false.obs;
+
+  /// تقدّم تنزيل نموذج V4 (0.0–1.0؛ 0 حيث لا تدعم المنصة التقدم).
+  final RxDouble v4ModelDownloadProgress = 0.0.obs;
+
+  /// تنزيل نموذج V4 عبر Wi-Fi فقط؟
+  final RxBool v4WifiOnly = true.obs;
 
   /// عدد الكلمات المكتملة في الجلسة الحالية.
   final RxInt completedWords = 0.obs;

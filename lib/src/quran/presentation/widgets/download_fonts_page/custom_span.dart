@@ -226,6 +226,8 @@ Color? tasmeeUnderlineColorFor({
         _ => style.incorrectColor,
       },
     TasmeeWordStatus.current => null,
+    // Neutral: recognition progress, not a correctness verdict.
+    TasmeeWordStatus.heard => const Color(0xff777777),
     TasmeeWordStatus.hidden => null,
   };
 }

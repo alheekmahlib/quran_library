@@ -10,6 +10,7 @@ import audio_session
 import connectivity_plus
 import just_audio
 import path_provider_foundation
+import quran_library
 import record_macos
 import sqflite_darwin
 
@@ -19,6 +20,7 @@ func RegisterGeneratedPlugins(registry: FlutterPluginRegistry) {
   ConnectivityPlusPlugin.register(with: registry.registrar(forPlugin: "ConnectivityPlusPlugin"))
   JustAudioPlugin.register(with: registry.registrar(forPlugin: "JustAudioPlugin"))
   PathProviderPlugin.register(with: registry.registrar(forPlugin: "PathProviderPlugin"))
+  QuranLibraryTajweedFormerApplePlugin.register(with: registry.registrar(forPlugin: "QuranLibraryTajweedFormerApplePlugin"))
   RecordMacOsPlugin.register(with: registry.registrar(forPlugin: "RecordMacOsPlugin"))
   SqflitePlugin.register(with: registry.registrar(forPlugin: "SqflitePlugin"))
 }

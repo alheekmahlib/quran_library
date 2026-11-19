@@ -891,16 +891,85 @@ completed word is colored green (correct) or red (incorrect) after it is fully
 pronounced. Stopping opens a results bottom sheet listing tajweed / pronunciation
 / tashkeel errors with expected vs recited phonemes.
 
-Two engines are supported:
+Three engines are supported:
 
 | Engine | Live word reveal | Internet |
 | --- | --- | --- |
 | **Offline (default)** — Quran-Lab zipformer v3.1 via `sherpa_onnx` | ✅ | Only once — a 73MB model is downloaded at first use (never bundled in assets), then tasmee works fully offline |
+| **TajweedFormer V4** (opt-in, experimental) — Quran Lab SDK | ✅ | Only for the model download — it is fetched at runtime by the user (settings button or first session), then runs on-device |
 | **Server** — [quran-muaalem](https://github.com/obadx/quran-muaalem) | ❌ (results after stop) | Required |
 
 Engine choice, server URL, and model download are managed from the in-mode
 settings sheet (⚙) and persisted automatically. Server mode is batch-only by
 nature: words appear with the results after stopping.
+
+### TajweedFormer V4 (opt-in engine + your own API keys)
+
+V4 is an experimental second on-device engine with independent
+strictness/tolerance axes (letters, tashkeel, madd — see the settings sheet).
+It is **opt-in per platform bridge** and requires **your own** Quran Lab app
+keys — the library ships without any key.
+
+**1. The bridge ships with the library — no manual steps**
+
+| Platform | How |
+| --- | --- |
+| Android | compiled in automatically. To opt out (save ~3.6 MB), set `quranLibraryDisableTajweedFormer=true` in your `android/gradle.properties` |
+| iOS / macOS | compiled in automatically via Swift Package Manager (`darwin/quran_library`) |
+| Web | built in |
+
+> **Apple notes:** the Quran Lab SDK requires Swift Package Manager for Flutter
+> plugins (enable it once with `flutter config --enable-swift-package-manager`
+> on older projects) and ships `arm64` slices only (`ios-arm64`,
+> `ios-arm64-simulator`, `macos-arm64`). If your project builds universal
+> simulator binaries, exclude Intel like the sample app does:
+> `"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = x86_64;` — V4 cannot run on
+> Intel Mac simulators. V4 also requires iOS 15+ / macOS 12+.
+
+**2. Get your own keys** at [sdk.quranlab.ai](https://sdk.quranlab.ai):
+sign in, register **your app's real identifiers** (Android `applicationId`,
+Apple bundle id, web `https://` origin, desktop bundle id) and issue one key
+per platform. A key binds to the first app identifier that launches with it —
+never reuse another app's key.
+
+**3. Pass the keys** — per-platform keys in `main()`:
+
+```dart
+await QuranLibrary.init(
+  quranLabKeys: const QuranLabKeys(
+    androidAndApple: 'qlk_v1_...', // your Android + iOS key
+    web: 'qlk_v1_...',             // your web key (origin-scoped)
+    desktop: 'qlk_v1_...',         // your desktop key (macOS)
+  ),
+);
+```
+
+Keys live in memory only — never persisted, never logged. Alternatives, in
+resolution order:
+
+1. `QuranLabKeys` passed to `init` (above) — highest priority;
+2. `--dart-define=QURANLAB_KEY=qlk_v1_...` — one fallback value for any
+   platform whose field is empty (keeps the key out of your code, e.g. a
+   git-ignored launch config);
+3. Apple only: `QuranLabKey` in the host's `Info.plist` (populate it from a
+   git-ignored `Secrets.xcconfig`).
+
+**Model download:** the V4 model is a runtime download (like the Zipformer
+model, never bundled): the settings sheet shows a download button with a
+Wi-Fi-only option and live progress, plus a delete action; starting a session
+without it downloads it automatically first.
+
+**Troubleshooting**
+
+| Message | Meaning / fix |
+| --- | --- |
+| `مفتاح Quran Lab غير مضبوط` / `missing_key` | no key resolved — pass `quranLabKeys` / dart-define / Info.plist |
+| `app_not_allowed` | the key belongs to a different app identifier — register this app's id and use its own key |
+| web key rejected | web keys are scoped to registered origins — a dev key only works on `localhost` |
+
+> **Note:** V4 assessment is experimental and incomplete; candidate mistakes
+> are not shown as verdicts to learners in release builds. Model files stay
+> inside the Quran Lab SDK's own storage ([NPL-1.2](https://github.com/alheekmahlib/quran_audio)).
 
 **Error-type underlines:** each revealed word gets a colored underline drawn by
 the text engine (works with the COLR mushaf fonts): green for correct words,

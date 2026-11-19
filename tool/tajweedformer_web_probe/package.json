@@ -1,0 +1,17 @@
+{
+  "name": "quran-library-tajweedformer-web-probe",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host localhost --port 5173 --strictPort",
+    "build": "vite build",
+    "build:bridge": "vite build --config vite.bridge.config.js"
+  },
+  "dependencies": {
+    "@quran-lab/tajweedformer": "3.1.6"
+  },
+  "devDependencies": {
+    "playwright-core": "1.65.1",
+    "vite": "7.3.8"
+  }
+}
